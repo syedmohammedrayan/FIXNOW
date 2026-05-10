@@ -144,10 +144,10 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[80px] border border-white/50 rounded-[3.5rem] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] relative overflow-hidden group/card"
+              className="backdrop-blur-[80px] border border-white/50 rounded-[3.5rem] p-12 relative overflow-hidden group/card"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
-                boxShadow: 'inset 0 0 40px rgba(255,255,255,0.3), 0 40px 100px -20px rgba(0,0,0,0.15)'
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%)',
+                boxShadow: 'inset 0 0 80px rgba(255,255,255,0.5), 0 40px 100px -20px rgba(0,0,0,0.3)'
               }}
             >
               {/* Back Arrow */}
