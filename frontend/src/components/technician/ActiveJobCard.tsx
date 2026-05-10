@@ -134,36 +134,38 @@ export default function ActiveJobCard({
             {jobStatus !== "In Progress" ? (
               <>
                 <div className="grid sm:grid-cols-2 gap-6 mb-10">
-                  <div className="glass-panel border-white/40 backdrop-blur-md p-6 rounded-[2rem] border border-white/60 shadow-sm">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  <div className="glass-panel border-white/40 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/60 shadow-sm flex flex-col justify-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] lg:tracking-[0.2em] mb-4">
                       Service Protocol Location
                     </p>
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-center gap-3 lg:gap-4">
                       <div className="size-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
                         <MapPin className="size-5 text-indigo-600" />
                       </div>
-                      <p className="text-white font-bold text-sm leading-relaxed">
-                        {liveAddress || currentJob.address || "Locating..."}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold text-xs lg:text-sm leading-relaxed line-clamp-2">
+                          {liveAddress || currentJob.address || "Locating..."}
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <a 
                     href={`tel:${currentJob.contactNumber}`}
-                    className="glass-panel border-white/40 backdrop-blur-md p-6 rounded-[2rem] border border-white/60 shadow-sm hover:border-emerald-500/50 transition-all active:scale-[0.98] group/call"
+                    className="glass-panel border-white/40 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/60 shadow-sm hover:border-emerald-500/50 transition-all active:scale-[0.98] group/call flex flex-col justify-center"
                   >
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] lg:tracking-[0.2em] mb-4">
                       Secure Client Line
                     </p>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 lg:gap-4">
                       <div className="size-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover/call:bg-emerald-500 group-hover/call:text-white transition-colors">
                         <Phone className="size-5 text-emerald-600 group-hover/call:text-white" />
                       </div>
-                      <div>
-                        <p className="text-white font-bold text-sm tracking-widest">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold text-xs lg:text-sm tracking-wider truncate">
                           {currentJob.contactNumber || "Contact Encrypted"}
                         </p>
-                        <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1 opacity-0 group-hover/call:opacity-100 transition-opacity">
-                          Click to Connect Now
+                        <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1 opacity-0 group-hover/call:opacity-100 transition-opacity truncate">
+                          Click to Connect
                         </p>
                       </div>
                     </div>
