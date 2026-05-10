@@ -76,11 +76,11 @@ export default function LandingPage() {
               transition={{ delay: 0.7, duration: 0.6 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-5"
             >
-              <Link href="/auth/signup?role=customer" className="group w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-slate-950 text-white font-black text-lg transition-all shadow-2xl shadow-slate-950/30 hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4">
+              <Link href="/auth/signup?role=customer" className="group w-full sm:w-auto px-10 py-5 rounded-[2.5rem] bg-white text-slate-950 font-black text-lg uppercase tracking-widest transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] hover:bg-slate-50 hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4">
                 Book Service
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
               </Link>
-              <Link href="/auth/signup?role=technician" className="w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-white/40 backdrop-blur-3xl border border-white/70 text-slate-900 font-black text-lg hover:bg-white/60 transition-all hover:scale-[1.05] active:scale-95 text-center flex items-center justify-center shadow-xl shadow-white/10">
+              <Link href="/auth/signup?role=technician" className="w-full sm:w-auto px-10 py-5 rounded-[2.5rem] bg-white/10 backdrop-blur-2xl border border-white/40 text-white font-black text-lg uppercase tracking-widest hover:bg-white/20 transition-all hover:scale-[1.05] active:scale-95 text-center flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                 Join Network
               </Link>
             </motion.div>
