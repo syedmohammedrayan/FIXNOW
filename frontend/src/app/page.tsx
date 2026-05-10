@@ -36,12 +36,12 @@ export default function LandingPage() {
             
             {/* Hero Heading — clean stacked lines, zero overlap */}
             <div className="flex flex-col items-center gap-0 leading-none w-full">
-              {/* Line 1: RELIABLE — dark, grounded */}
+              {/* Line 1: RELIABLE — light, glowing */}
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 }}
-                className="block font-black uppercase italic tracking-[-0.05em] text-slate-950 text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
+                className="block font-black uppercase italic tracking-[-0.05em] text-white drop-shadow-2xl [text-shadow:0_0_40px_rgba(255,255,255,0.4)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
               >
                 Reliable
               </motion.span>
