@@ -121,44 +121,15 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Feature Grid */}
-        <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-10">
-              <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.06em] leading-[0.75] uppercase italic">
-                Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_30px_rgba(6,182,212,0.4)]">Infrastructure.</span>
-              </h2>
-              <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
-                Proprietary Architecture for High-Stake Execution.
-              </p>
-            </div>
-            
-            <div className="grid sm:grid-cols-2 gap-6">
-              <FeatureCard 
-                icon={<Activity className="size-6 text-cyan-600" />}
-                title="Gemini AI Support"
-                desc="Multilingual voice understanding for seamless communication."
-                delay={0}
-              />
-              <FeatureCard 
-                icon={<Shield className="size-6 text-cyan-600" />}
-                title="Secure Settlement"
-                desc="Encrypted payments and transparent material cost estimation."
-                delay={0.1}
-              />
-              <FeatureCard 
-                icon={<Sparkles className="size-6 text-cyan-600" />}
-                title="Quality Protocol"
-                desc="Top-rated professionals vetted through a multi-point verification."
-                delay={0.2}
-              />
-              <FeatureCard 
-                icon={<Zap className="size-6 text-cyan-600" />}
-                title="Instant Sync"
-                desc="Real-time updates between customers, technicians, and admin."
-                delay={0.3}
-              />
-            </div>
+        {/* Feature Section */}
+        <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+          <div className="space-y-10 max-w-4xl">
+            <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.06em] leading-[0.75] uppercase italic">
+              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_30px_rgba(6,182,212,0.4)]">Infrastructure.</span>
+            </h2>
+            <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
+              Proprietary Architecture for High-Stake Execution.
+            </p>
           </div>
         </section>
 
