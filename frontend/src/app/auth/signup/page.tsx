@@ -65,20 +65,76 @@ function SignupInner() {
 
   useEffect(() => {
     setMounted(true);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && !isGoogleLinked) {
-        setFormData(prev => ({
-          ...prev,
-          name: user.displayName || '',
-          email: user.email || '',
-          password: 'GoogleUser123!',
-        }));
-        setIsGoogleLinked(true);
-        setMethod('email');
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user || isGoogleLinked) return;
+
+      // Pre-fill form data from Google account
+      setFormData(prev => ({
+        ...prev,
+        name: user.displayName || '',
+        email: user.email || '',
+        password: 'GoogleUser123!',
+      }));
+      setIsGoogleLinked(true);
+
+      // Check if this Google user already has a DB profile
+      try {
+        const profileRes = await fetch(`${API_BASE}/api/users/${user.uid}`);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          if (profileData.success && profileData.user) {
+            // Existing user — redirect straight to their dashboard
+            const dbRole = profileData.user.role;
+            if (dbRole === 'technician') {
+              if (!profileData.user.approved) {
+                setError('Your account is pending admin approval.');
+                return;
+              }
+              router.replace('/technician/dashboard');
+            } else if (dbRole === 'admin') {
+              router.replace('/admin/dashboard');
+            } else {
+              router.replace('/customer/dashboard');
+            }
+            return;
+          }
+        }
+      } catch {}
+
+      // New Google user — if role is 'customer', auto-register immediately
+      if (role === 'customer') {
+        try {
+          setLoading(true);
+          const payload = {
+            id: user.uid,
+            name: user.displayName || '',
+            email: user.email || '',
+            phone: '',
+            address: '',
+            password: 'GoogleUser123!',
+            role: 'customer',
+            passwordHint: '',
+          };
+          const res = await fetch(`${API_BASE}/api/users/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (data.success) {
+            router.replace('/customer/dashboard');
+            return;
+          }
+        } catch (err: any) {
+          setError(err.message || 'Auto-registration failed. Please complete the form.');
+        } finally {
+          setLoading(false);
+        }
       }
+      // For technicians or when role is not yet set — stay on form to collect extra info
     });
     return () => { unsubscribe(); };
-  }, [isGoogleLinked]);
+  }, [isGoogleLinked, role, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +219,14 @@ function SignupInner() {
   };
 
   if (!mounted) return null;
+
+  if (loading) return (
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-6">
+      <BackgroundParticles />
+      <div className="size-14 border-2 border-white/20 border-t-cyan-400 rounded-full animate-spin" />
+      <p className="text-white font-black uppercase tracking-[0.2em] text-sm animate-pulse">Setting up your account...</p>
+    </div>
+  );
 
   return (
     <div className={cn(

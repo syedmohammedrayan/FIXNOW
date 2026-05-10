@@ -43,36 +43,39 @@ export default function LoginPage() {
   useEffect(() => {
     setMounted(true);
     const unsubscribe = onAuthStateChanged(auth, async (user: any) => {
-      if (user && mounted) {
-        try {
-          if (loading) return;
-          setLoading(true);
-          const profileRes = await fetch(`${API_BASE}/api/users/${user.uid}`);
-          if (profileRes.ok) {
-            const profileData = await profileRes.json();
-            if (profileData.success && profileData.user) {
-              const dbRole = profileData.user.role;
-              if (dbRole === 'technician') {
-                if (!profileData.user.approved) throw new Error('ID verification in progress.');
-                router.replace('/technician/dashboard');
-              } else if (dbRole === 'admin') {
-                router.replace('/admin/dashboard');
-              } else {
-                router.replace('/customer/dashboard');
+      if (!user) return;
+      try {
+        setLoading(true);
+        setError('');
+        const profileRes = await fetch(`${API_BASE}/api/users/${user.uid}`);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          if (profileData.success && profileData.user) {
+            const dbRole = profileData.user.role;
+            if (dbRole === 'technician') {
+              if (!profileData.user.approved) {
+                setError('Your account is pending admin approval. Please wait.');
+                setLoading(false);
+                return;
               }
-              return;
+              router.replace('/technician/dashboard');
+            } else if (dbRole === 'admin') {
+              router.replace('/admin/dashboard');
+            } else {
+              router.replace('/customer/dashboard');
             }
+            return;
           }
-          router.replace(`/auth/signup?role=${role}`);
-        } catch (err: any) {
-          setError(err.message || 'Error processing authentication.');
-        } finally {
-          setLoading(false);
         }
+        // User is authenticated but has no DB profile — redirect to signup
+        router.replace(`/auth/signup?role=${role}`);
+      } catch (err: any) {
+        setError(err.message || 'Error processing authentication.');
+        setLoading(false);
       }
     });
     return () => unsubscribe();
-  }, [router, mounted]);
+  }, [router, role]);
 
   useEffect(() => {
     if (initialRole && (initialRole === 'customer' || initialRole === 'technician' || initialRole === 'admin')) {
@@ -104,6 +107,14 @@ export default function LoginPage() {
   };
 
   if (!mounted) return null;
+
+  if (loading) return (
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-6">
+      <BackgroundParticles />
+      <div className="size-14 border-2 border-white/20 border-t-cyan-400 rounded-full animate-spin" />
+      <p className="text-white font-black uppercase tracking-[0.2em] text-sm animate-pulse">Signing you in...</p>
+    </div>
+  );
 
   return (
     <div className={cn(
