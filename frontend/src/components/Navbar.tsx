@@ -134,7 +134,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       "w-[95%] max-w-7xl bg-indigo-950/30 backdrop-blur-2xl border border-indigo-400/20 shadow-[0_8px_32px_rgba(79,70,229,0.2)]",
       visible ? (scrolled ? "top-2 py-3 rounded-[2rem] opacity-100" : "top-4 py-4 rounded-[2rem] opacity-100") : "-top-32 opacity-0 pointer-events-none"
     )}>
-      <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link href="/" className="group">
           <Logo 
             isAdmin={profile?.role === 'admin'} 
@@ -201,7 +201,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                     )}
                   </AnimatePresence>
                 </div>
-                <div className="flex items-center gap-3 pl-4 border-l border-white/10">
+                <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-white/10">
                    <div className="relative group/profile">
                       <button className="flex items-center gap-3 group">
                         <div className="size-10 rounded-2xl overflow-hidden border border-white/20 group-hover:border-indigo-400 transition shadow-sm">
@@ -237,7 +237,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-5">
+              <div className="hidden lg:flex items-center gap-5">
                 <Link href="/auth/login" className={cn(
                   "text-[10px] font-black uppercase tracking-[0.2em] transition-all text-indigo-200 hover:text-white"
                 )}>
@@ -286,14 +286,33 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               >
                 About Protocol
               </button>
-              {!user && (
+              {!user && !customProfile && (
                 <div className="pt-6 flex flex-col gap-4">
-                  <Link href="/auth/login" className={cn(
+                  <Link href="/auth/login" onClick={() => setIsOpen(false)} className={cn(
                     "w-full py-4 text-center rounded-2xl font-black text-[10px] uppercase tracking-widest border transition-all bg-indigo-500/10 text-indigo-100 border-indigo-400/20 hover:bg-indigo-500/20"
                   )}>Login</Link>
-                  <Link href="/auth/signup" className={cn(
+                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className={cn(
                     "w-full py-4 text-center rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all bg-indigo-500 text-white shadow-indigo-500/30 hover:bg-indigo-400"
                   )}>Register</Link>
+                </div>
+              )}
+              {(user || customProfile) && (
+                <div className="pt-6 flex flex-col gap-4 border-t border-indigo-400/20">
+                  <Link href={`/${profile?.role || 'customer'}/dashboard`} onClick={() => setIsOpen(false)} className={cn(
+                    "flex items-center gap-3 w-full py-4 px-6 rounded-2xl font-black text-[10px] uppercase tracking-widest border transition-all bg-indigo-500/10 text-indigo-100 border-indigo-400/20 hover:bg-indigo-500/20"
+                  )}>
+                    <LayoutDashboard className="size-4 text-indigo-400" /> Control Panel
+                  </Link>
+                  <Link href={`/${profile?.role || 'customer'}/dashboard#profile`} onClick={() => setIsOpen(false)} className={cn(
+                    "flex items-center gap-3 w-full py-4 px-6 rounded-2xl font-black text-[10px] uppercase tracking-widest border transition-all bg-indigo-500/10 text-indigo-100 border-indigo-400/20 hover:bg-indigo-500/20"
+                  )}>
+                    <User className="size-4 text-indigo-400" /> Identity Profile
+                  </Link>
+                  <button onClick={handleLogout} className={cn(
+                    "flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 hover:text-rose-300"
+                  )}>
+                    <LogOut className="size-4" /> Terminate Session
+                  </button>
                 </div>
               )}
             </div>
