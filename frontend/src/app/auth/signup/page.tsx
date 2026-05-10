@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useId, useEffect } from 'react';
+import React, { useState, useId, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +27,18 @@ import { Label } from "@/components/ui/label";
 import { cn } from '@/lib/utils';
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="size-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    }>
+      <SignupInner />
+    </Suspense>
+  );
+}
+
+function SignupInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = useId();
