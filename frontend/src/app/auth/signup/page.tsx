@@ -184,6 +184,20 @@ export default function SignupPage() {
       <BackgroundParticles />
       <FloatingOrbs />
 
+      {/* Admin Quick Access */}
+      <div className="absolute top-8 right-8 z-50">
+        <Link 
+          href={role === 'admin' ? '/auth/signup?role=customer' : '/auth/signup?role=admin'}
+          className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all group backdrop-blur-md shadow-2xl"
+        >
+          <div className="size-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+            {role === 'admin' ? 'Exit Admin Terminal' : 'Admin Terminal Access'}
+          </span>
+          <Shield className="size-4 text-amber-500 group-hover:scale-110 transition-transform" />
+        </Link>
+      </div>
+
       <motion.div 
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
