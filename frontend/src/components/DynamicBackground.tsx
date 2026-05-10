@@ -109,12 +109,11 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 1000;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 4 + scrollRatio * 8; // 4px -> 12px
-        // Use near 100% transparency
-        const opacity = 0.02 + scrollRatio * 0.15; // 0.02 -> 0.17
+        const blur = 2 + scrollRatio * 6; // 2px -> 8px (very subtle)
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
-        overlayRef.current.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
+        // Fully transparent background as requested
+        overlayRef.current.style.backgroundColor = 'transparent';
       }
 
       animFrameId.current = requestAnimationFrame(animate);
@@ -157,7 +156,7 @@ export default function DynamicBackground() {
         ))}
       </div>
 
-      {/* ─── Layer 2: Ultra Transparent Overlay (z-index: -1) ─── */}
+      {/* ─── Layer 2: Fully Transparent Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
         className="dynamic-bg-overlay"
@@ -165,11 +164,11 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'rgba(255, 255, 255, 0.02)', 
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+          backgroundColor: 'transparent', 
+          backdropFilter: 'blur(2px)',
+          WebkitBackdropFilter: 'blur(2px)',
           pointerEvents: 'none',
-          willChange: 'backdrop-filter, background-color',
+          willChange: 'backdrop-filter',
         }}
       />
 
