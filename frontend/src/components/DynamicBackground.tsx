@@ -149,6 +149,7 @@ export default function DynamicBackground() {
               backgroundPosition: 'center center',
               opacity: 0,
               transform: 'scale(1.1)',
+              filter: 'blur(2px)',
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity, transform',
             }}
