@@ -2,75 +2,57 @@
 
 import React, { useEffect, useRef, useCallback } from 'react';
 
-// ─── Image URLs ───
+// ─── Image URLs (Using high-quality technician imagery) ───
 const BACKGROUND_IMAGES = [
-  'https://ik.imagekit.io/smr2007/technician_webp_1.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_2.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_3.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_4.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_5.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_6.webp?tr=q-60,f-webp',
+  'https://ik.imagekit.io/smr2007/technician_webp_1.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_2.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_3.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_4.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_5.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_6.webp?tr=q-80,f-webp',
   'https://ik.imagekit.io/smr2007/electrician_switchboard_open.webp',
-  'https://ik.imagekit.io/smr2007/carpenter_professional_lock.webp?tr=w-1920,q-60',
-  'https://ik.imagekit.io/smr2007/indian_technician_8.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/indian_technician_9.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/washing_machine_technician.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/technician_webp_6.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/technician_webp_4.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/laptop_technician_home.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/technician_webp_5.webp?tr=q-60,f-webp',
-  'https://ik.imagekit.io/smr2007/technician_webp_3.webp?tr=q-60,f-webp',
+  'https://ik.imagekit.io/smr2007/carpenter_professional_lock.webp?tr=w-1920,q-80',
+  'https://ik.imagekit.io/smr2007/indian_technician_8.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/indian_technician_9.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/washing_machine_technician.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/technician_webp_6.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/technician_webp_4.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/laptop_technician_home.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/technician_webp_5.webp?tr=q-80,f-webp',
+  'https://ik.imagekit.io/smr2007/technician_webp_3.webp?tr=q-80,f-webp',
 ];
 
-const SLIDE_DURATION = 5000;      // 5s per image
-const TRANSITION_DURATION = 1800; // 1.8s cinematic crossfade
-const LERP_FACTOR = 0.07;        // Cursor smoothing
+const SLIDE_DURATION = 6000;      // 6s per image for better appreciation
+const TRANSITION_DURATION = 2000; // 2s smooth cinematic crossfade
+const LERP_FACTOR = 0.05;        // Smoother cursor movement
 
 export default function DynamicBackground() {
-  // Refs for DOM elements
   const sliderRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
-  // Animation state refs (no re-renders)
   const mousePos = useRef({ x: 0, y: 0 });
   const smoothMouse = useRef({ x: 0, y: 0 });
   const scrollY = useRef(0);
   const animFrameId = useRef<number>(0);
   const currentSlide = useRef(0);
   const slideTimer = useRef<ReturnType<typeof setTimeout>>();
-  const imagesLoadedRef = useRef<boolean[]>(new Array(BACKGROUND_IMAGES.length).fill(false));
 
-  // ─── Preload images ───
-  useEffect(() => {
-    BACKGROUND_IMAGES.forEach((src, i) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        imagesLoadedRef.current[i] = true;
-      };
-    });
-  }, []);
-
-  // ─── Mouse tracking (passive) ───
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
     };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // ─── Scroll tracking (passive) ───
-  useEffect(() => {
     const handleScroll = () => {
       scrollY.current = window.scrollY;
     };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  // ─── Background Slider Logic ───
   const advanceSlide = useCallback(() => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -79,70 +61,60 @@ export default function DynamicBackground() {
     const current = currentSlide.current;
     const next = (current + 1) % BACKGROUND_IMAGES.length;
 
-    // Fade out current
     const currentEl = slides[current];
     if (currentEl) {
       currentEl.style.opacity = '0';
-      currentEl.style.transform = 'scale(1.02)';
+      currentEl.style.transform = 'scale(1.05) rotate(0.02deg)';
     }
 
-    // Fade in next
     const nextEl = slides[next];
     if (nextEl) {
       nextEl.style.opacity = '1';
-      nextEl.style.transform = 'scale(1.01)';
+      nextEl.style.transform = 'scale(1) rotate(0deg)';
     }
 
     currentSlide.current = next;
   }, []);
 
   useEffect(() => {
-    // Initialize first slide
     const slider = sliderRef.current;
     if (slider) {
       const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
       if (slides[0]) {
         slides[0].style.opacity = '1';
-        slides[0].style.transform = 'scale(1.01)';
+        slides[0].style.transform = 'scale(1)';
       }
     }
-
-    // Set up auto-advance timer
     slideTimer.current = setInterval(advanceSlide, SLIDE_DURATION);
-
     return () => {
       if (slideTimer.current) clearInterval(slideTimer.current);
     };
   }, [advanceSlide]);
 
-  // ─── Unified Animation Loop ───
   useEffect(() => {
     const animate = () => {
-      // 1. Lerp cursor position
       smoothMouse.current.x += (mousePos.current.x - smoothMouse.current.x) * LERP_FACTOR;
       smoothMouse.current.y += (mousePos.current.y - smoothMouse.current.y) * LERP_FACTOR;
 
-      // 2. Update cursor glow
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${smoothMouse.current.x - 275}px, ${smoothMouse.current.y - 275}px, 0)`;
+        cursorRef.current.style.transform = `translate3d(${smoothMouse.current.x - 300}px, ${smoothMouse.current.y - 300}px, 0)`;
       }
 
-      // 3. Parallax depth shift on background
       const sy = scrollY.current;
       if (sliderRef.current) {
-        const parallaxY = sy * -0.02;
-        sliderRef.current.style.transform = `translate3d(0, ${parallaxY}px, 0) scale(1.01)`;
+        const parallaxY = sy * -0.05;
+        sliderRef.current.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
       }
 
-      // 4. Dynamic blur + opacity on glass overlay based on scroll
       if (overlayRef.current) {
-        const maxScroll = 800;
+        const maxScroll = 1000;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 12 + scrollRatio * 8;           // 12px → 20px
-        const opacity = 0.85 + scrollRatio * 0.1;     // 0.85 → 0.95
+        const blur = 8 + scrollRatio * 12; // 8px -> 20px
+        // Use a much lighter, white-tinted glassmorphism
+        const opacity = 0.4 + scrollRatio * 0.3; // 0.4 -> 0.7
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
-        overlayRef.current.style.backgroundColor = `rgba(2, 6, 23, ${opacity})`;
+        overlayRef.current.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
       }
 
       animFrameId.current = requestAnimationFrame(animate);
@@ -175,19 +147,17 @@ export default function DynamicBackground() {
               inset: 0,
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center 10%', // Higher up to show faces on small screens
+              backgroundPosition: 'center center',
               opacity: 0,
-              transform: 'scale(1.02)', // Reduced starting scale to prevent over-zoom on mobile
-              transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+              transform: 'scale(1.1)',
+              transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity, transform',
             }}
           />
         ))}
       </div>
 
-      {/* ─── Layer 2: Frosted Glass Overlay (z-index: -1) ─── */}
-      {/* Semi-transparent WHITE overlay so dark text stays readable */}
-      {/* Background images show through as soft, blurred shapes */}
+      {/* ─── Layer 2: Frosted White Glass Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
         className="dynamic-bg-overlay"
@@ -195,39 +165,37 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'rgba(2, 6, 23, 0.85)', // Deep black/slate-950 overlay
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.4)', // Premium White Transparency
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
           pointerEvents: 'none',
-          willChange: 'backdrop-filter',
+          willChange: 'backdrop-filter, background-color',
         }}
       />
 
-      {/* ─── Layer 3: Cursor Light Effect (z-index: 0) ─── */}
+      {/* ─── Layer 3: High-End White Glow Cursor (z-index: 0) ─── */}
       <div
         ref={cursorRef}
-        className="dynamic-bg-cursor"
+        className="dynamic-bg-cursor hidden md:block"
         style={{
           position: 'fixed',
-          width: '550px',
-          height: '550px',
+          width: '600px',
+          height: '600px',
           borderRadius: '50%',
           zIndex: 0,
           pointerEvents: 'none',
           background: `radial-gradient(
             circle at center,
-            rgba(255, 255, 255, 0.08) 0%,
-            rgba(255, 255, 255, 0.04) 25%,
-            rgba(255, 255, 255, 0.01) 50%,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.1) 30%,
             transparent 70%
           )`,
           willChange: 'transform',
-          transform: 'translate3d(-275px, -275px, 0)',
-          mixBlendMode: 'normal',
+          transform: 'translate3d(-300px, -300px, 0)',
         }}
       />
 
-      {/* ─── Layer 4: Subtle Grain/Noise Overlay ─── */}
+      {/* ─── Layer 4: Subtle Texture ─── */}
       <div
         className="dynamic-bg-grain"
         style={{
@@ -235,10 +203,10 @@ export default function DynamicBackground() {
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
-          opacity: 0.03,
+          opacity: 0.015,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '128px 128px',
+          backgroundSize: '256px 256px',
         }}
       />
     </>

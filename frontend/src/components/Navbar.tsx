@@ -153,19 +153,17 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
           />
         </Link>
 
-        {!isLanding && (
-          <div className="hidden lg:flex items-center gap-10">
-            <NavLink href="/services" active={pathname === '/services'} isLanding={true}>Services</NavLink>
-            <button 
-              onClick={openAboutModal}
-              className={cn(
-                "text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 text-slate-400 hover:text-white"
-              )}
-            >
-              About Protocol
-            </button>
-          </div>
-        )}
+        <div className="hidden lg:flex items-center gap-10">
+          <NavLink href="/services" active={pathname === '/services'} isLanding={true}>Services</NavLink>
+          <button 
+            onClick={openAboutModal}
+            className={cn(
+              "text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 text-slate-400 hover:text-white"
+            )}
+          >
+            About Protocol
+          </button>
+        </div>
 
         <div className="flex items-center gap-6">
           <LanguageSelector />
@@ -252,20 +250,18 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                 </div>
               </div>
             ) : (
-              !isLanding && (
-                <div className="hidden lg:flex items-center gap-5">
-                  <Link href="/auth/login" className={cn(
-                    "text-[10px] font-black uppercase tracking-[0.2em] transition-all text-slate-300 hover:text-white"
-                  )}>
-                    Login
-                  </Link>
-                  <Link href="/auth/signup" className={cn(
-                    "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-white text-slate-900 hover:bg-slate-100 shadow-white/10"
-                  )}>
-                    Register
-                  </Link>
-                </div>
-              )
+              <div className="hidden lg:flex items-center gap-5">
+                <Link href="/auth/login" className={cn(
+                  "text-[10px] font-black uppercase tracking-[0.2em] transition-all text-slate-300 hover:text-white"
+                )}>
+                  Login
+                </Link>
+                <Link href="/auth/signup" className={cn(
+                  "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl bg-white text-slate-900 hover:bg-slate-100 shadow-white/10"
+                )}>
+                  Register
+                </Link>
+              </div>
             )}
           </AnimatePresence>
 
@@ -292,22 +288,18 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             )}
           >
             <div className="p-10 space-y-6">
-              {!isLanding && (
-                <>
-                  <Link href="/services" className={cn(
-                    "block text-sm font-black uppercase tracking-widest transition-colors text-slate-400 hover:text-white"
-                  )}>Services</Link>
-                  <button 
-                    onClick={() => { setIsOpen(false); openAboutModal(); }} 
-                    className={cn(
-                      "block text-sm font-black uppercase tracking-widest text-left w-full transition-colors text-slate-400 hover:text-white"
-                    )}
-                  >
-                    About Protocol
-                  </button>
-                </>
-              )}
-              {!user && !customProfile && !isLanding && (
+              <Link href="/services" className={cn(
+                "block text-sm font-black uppercase tracking-widest transition-colors text-slate-400 hover:text-white"
+              )}>Services</Link>
+              <button 
+                onClick={() => { setIsOpen(false); openAboutModal(); }} 
+                className={cn(
+                  "block text-sm font-black uppercase tracking-widest text-left w-full transition-colors text-slate-400 hover:text-white"
+                )}
+              >
+                About Protocol
+              </button>
+              {!user && !customProfile && (
                 <div className="pt-6 flex flex-col gap-4">
                   <Link href="/auth/login" onClick={() => setIsOpen(false)} className={cn(
                     "w-full py-4 text-center rounded-2xl font-black text-[10px] uppercase tracking-widest border transition-all bg-white/5 text-slate-100 border-white/10 hover:bg-white/10"
@@ -467,3 +459,5 @@ function NavLink({ href, children, active, isLanding }: { href: string, children
 }
 
 
+/ /   d u m m y  
+ 
