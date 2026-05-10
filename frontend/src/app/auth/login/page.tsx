@@ -229,13 +229,14 @@ export default function LoginPage() {
               </div>
             </motion.div>
           ) : (
-            /* ─────────────────── STANDARD LOGIN CARD (DARK THEME) ─────────────────── */
+            /* ─────────────────── STANDARD LOGIN CARD (GLASS THEME) ─────────────────── */
             <motion.div
               key="standard-card"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="bg-slate-900/35 backdrop-blur-[40px] border border-white/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
+              style={{ boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)' }}
             >
               {/* Back Arrow */}
               <button 
@@ -248,24 +249,29 @@ export default function LoginPage() {
                 <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
               </button>
 
-              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full -mr-16 -mt-16" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-slate-500/10 blur-3xl rounded-full -ml-16 -mb-16" />
+              {/* Glass glint layers */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-0 right-0 w-60 h-60 bg-cyan-500/10 blur-[100px] -mr-20 -mt-20 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-60 h-60 bg-violet-500/10 blur-[100px] -ml-20 -mb-20 pointer-events-none" />
 
-              <div className="text-center mb-10">
+              <div className="text-center mb-10 relative z-10">
                 <Link href="/" className="inline-block mb-8 hover:scale-105 transition-transform">
                   <Logo isAdmin={false} showText />
                 </Link>
-                <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic leading-none mb-4">
-                  Authorized <br/> <span className="text-white [text-shadow:0_0_30px_rgba(255,255,255,0.3)]">Access.</span>
+                <h1 className="text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+                  Welcome <br/>
+                  <span className="text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
+                    Back.
+                  </span>
                 </h1>
-                
+
                 {/* Role Switcher */}
-                <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl mb-6 max-w-[280px] mx-auto">
+                <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-6 max-w-[280px] mx-auto">
                   <button
                     onClick={() => setRole('customer')}
                     className={cn(
                       "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                      role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                      role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white"
                     )}
                   >
                     Customer
@@ -274,16 +280,17 @@ export default function LoginPage() {
                     onClick={() => setRole('technician')}
                     className={cn(
                       "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                      role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                      role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white"
                     )}
                   >
                     Technician
                   </button>
                 </div>
 
-                <p className="text-cyan-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">
-                  Active Node: {role}
-                </p>
+                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-white/5 border border-white/10 rounded-full w-fit mx-auto backdrop-blur-xl">
+                  <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <p className="text-white font-black uppercase tracking-[0.3em] text-[9px]">{role} Login</p>
+                </div>
               </div>
 
               <AnimatePresence mode="wait">
@@ -301,15 +308,15 @@ export default function LoginPage() {
                       </motion.div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-5">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Registry Email</Label>
-                        <div className="relative group">
-                          <Mail className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-slate-500 group-focus-within:text-cyan-400 transition" />
+                    <form onSubmit={handleLogin} className="space-y-5 relative z-10">
+                      <div className="space-y-2.5">
+                        <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Email Address</Label>
+                        <div className="relative group/input">
+                          <Mail className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-cyan-400 transition-colors" />
                           <Input 
                             type="email" 
-                            placeholder="operator@fixnow.app" 
-                            className="bg-white/5 border-white/10 rounded-2xl h-14 pl-14 text-white font-bold focus:border-cyan-500/30 transition-all placeholder:text-slate-600"
+                            placeholder="your@email.com" 
+                            className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             required
@@ -317,14 +324,14 @@ export default function LoginPage() {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Passkey</Label>
-                        <div className="relative group">
-                          <Lock className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-slate-500 group-focus-within:text-cyan-400 transition" />
+                      <div className="space-y-2.5">
+                        <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Password</Label>
+                        <div className="relative group/input">
+                          <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-cyan-400 transition-colors" />
                           <Input 
                             type={showPassword ? "text" : "password"} 
                             placeholder="••••••••" 
-                            className="bg-white/5 border-white/10 rounded-2xl h-14 pl-14 pr-14 text-white font-bold focus:border-cyan-500/30 transition-all placeholder:text-slate-600"
+                            className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.password}
                             onChange={(e) => setFormData({...formData, password: e.target.value})}
                             required
@@ -332,29 +339,29 @@ export default function LoginPage() {
                           <button 
                             type="button" 
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
+                            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
                           >
                             {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                           </button>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between px-2 pt-2">
+                      <div className="flex items-center justify-between px-2 pt-1">
                         <div className="flex items-center gap-3">
                           <Checkbox id="remember" className="rounded-md border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500" />
-                          <Label htmlFor="remember" className="text-[11px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer hover:text-slate-300 transition">Persistent Session</Label>
+                          <Label htmlFor="remember" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-200 transition">Remember Me</Label>
                         </div>
-                        <button type="button" onClick={() => setView('reset')} className="text-[11px] font-black text-cyan-400 uppercase tracking-widest hover:text-cyan-300 transition underline underline-offset-4">Lost Passkey?</button>
+                        <button type="button" onClick={() => setView('reset')} className="text-[11px] font-black text-cyan-400 uppercase tracking-widest hover:text-cyan-300 transition underline underline-offset-4">Forgot Password?</button>
                       </div>
 
-                      <Button type="submit" disabled={loading} className="w-full h-14 bg-white text-slate-950 font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-4 shadow-xl">
-                        {loading ? <Loader2 className="size-5 animate-spin" /> : <>Initialize Session <ArrowRight className="size-5 ml-2" /></>}
+                      <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-6 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                        {loading ? <Loader2 className="size-6 animate-spin" /> : <>Login <ArrowRight className="size-5 ml-2" /></>}
                       </Button>
                     </form>
 
-                    <div className="relative py-6">
+                    <div className="relative py-5">
                       <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
-                      <div className="relative flex justify-center"><span className="bg-[#0f172a] px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Alternate Channel</span></div>
+                      <div className="relative flex justify-center"><span className="bg-transparent backdrop-blur-xl px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Or continue with</span></div>
                     </div>
 
                     <Button 
