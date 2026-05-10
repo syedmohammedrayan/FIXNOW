@@ -33,24 +33,48 @@ export default function LandingPage() {
               <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
             </motion.div>
             
-            <h1 className="text-5xl sm:text-7xl md:text-[10rem] font-black tracking-[-0.06em] leading-[0.8] text-slate-950 uppercase italic">
-              Reliable <br className="hidden sm:block"/>
-              <span className="relative inline-block text-white">
-                Home Services,
-                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-white to-purple-400 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-text">
+            <h1 className="text-[5.5rem] sm:text-[8rem] md:text-[12rem] font-black tracking-[-0.07em] leading-[0.75] text-slate-950 uppercase italic relative group">
+              <motion.span 
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="block hover:skew-x-2 transition-transform duration-500 cursor-default"
+              >
+                Reliable
+              </motion.span>
+              <div className="relative inline-block mt-[-0.1em]">
+                <span className="relative text-white [text-shadow:0_0_80px_rgba(255,255,255,0.4)]">
                   Home Services,
+                  <span className="absolute inset-0 bg-gradient-to-r from-rose-500 via-cyan-400 via-purple-500 to-amber-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text">
+                    Home Services,
+                  </span>
+                  <motion.span 
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      rotate: [0, 5, -5, 0],
+                      opacity: [0.2, 0.5, 0.2]
+                    }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                    className="absolute -inset-10 bg-cyan-400/20 blur-[100px] rounded-full -z-10" 
+                  />
                 </span>
-                <span className="absolute -inset-2 bg-white/20 blur-3xl rounded-full -z-10 animate-pulse" />
-              </span>
+              </div>
               <br/>
-              <span className="text-slate-400 opacity-60 font-black tracking-[-0.04em] not-italic">
+              <motion.span 
+                initial={{ opacity: 0, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="block text-transparent bg-clip-text bg-gradient-to-b from-slate-600 to-slate-900 font-black tracking-[-0.02em] not-italic mt-[-0.1em] relative"
+                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}
+              >
                 Lucid Execution.
-              </span>
+                <span className="absolute left-0 top-0 text-slate-400/10 blur-[2px] -z-10">Lucid Execution.</span>
+              </motion.span>
             </h1>
             
-            <p className="text-lg md:text-xl text-slate-600 font-black max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.1em] drop-shadow-sm opacity-80">
-              High-Precision Service Ecosystem. <br/>
-              Where intelligent routing meets real-time execution.
+            <p className="text-lg md:text-2xl text-slate-800 font-black max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.2em] drop-shadow-2xl opacity-90">
+              <span className="bg-slate-950 text-white px-4 py-1 rounded-lg mr-2">High-Precision</span> 
+              Service Ecosystem.
             </p>
 
             <motion.div 
