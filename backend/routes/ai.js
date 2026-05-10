@@ -5,7 +5,7 @@ const fs = require('fs');
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Filter out known invalid keys and empty values
 const groqKeys = [
@@ -299,7 +299,7 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
   try {
     // Try Groq Vision First (Multimodal Llama 4)
     try {
-      const base64Image = fs.readFileSync(req.file.path).toString("base64");
+      const base64Image = req.file.buffer.toString("base64");
       const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
 
       const completion = await fetchGroqWithFallback({
@@ -318,7 +318,6 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
       });
 
       const data = safeJsonParse(completion.choices[0].message.content);
-      fs.unlinkSync(req.file.path);
       return res.json({ success: true, data });
     } catch (groqError) {
       console.warn("⚠️ Groq Vision failed, falling back to Gemini:", groqError.message);
@@ -327,7 +326,7 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
       const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
       const imagePart = {
         inlineData: {
-          data: fs.readFileSync(req.file.path).toString("base64"),
+          data: req.file.buffer.toString("base64"),
           mimeType: req.file.mimetype
         }
       };
@@ -336,12 +335,10 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
       const response = await result.response;
       const data = safeJsonParse(response.text());
 
-      fs.unlinkSync(req.file.path);
       return res.json({ success: true, data });
     }
   } catch (error) {
     console.error("Total Vision Analysis Error:", error);
-    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     res.status(500).json({ success: false, error: "Vision analysis failed: " + error.message });
   }
 });
