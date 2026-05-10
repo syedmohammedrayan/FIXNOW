@@ -75,30 +75,43 @@ export default function LanguageSelector() {
           <>
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-48 bg-[#0d0d1b]/95 backdrop-blur-3xl border border-white/20 rounded-[1.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-50 overflow-hidden py-2"
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute right-0 mt-4 w-60 bg-[#0a0a14]/90 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-[0_30px_70px_rgba(0,0,0,0.7)] z-50 overflow-hidden p-3"
+              style={{
+                boxShadow: 'inset 0 0 30px rgba(255,255,255,0.02), 0 30px 70px rgba(0,0,0,0.7)'
+              }}
             >
-              <div className="px-4 py-2 border-b border-white/10 mb-1">
-                <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Select Language</p>
+              <div className="px-5 py-4 border-b border-white/5 mb-2">
+                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Language Node</p>
               </div>
-              <div className="max-h-64 overflow-y-auto custom-scrollbar px-1">
+              <div className="max-h-72 overflow-y-auto pr-1 space-y-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {LANGUAGES.map(lang => (
                   <button
                     key={lang.code}
                     onClick={() => changeLanguage(lang.code)}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-between ${
+                    className={`w-full text-left px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-between group ${
                       currentLang === lang.code 
-                        ? 'bg-indigo-500/20 text-indigo-300' 
-                        : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                        ? 'bg-gradient-to-r from-indigo-500/20 to-cyan-500/10 text-white shadow-inner border border-white/5' 
+                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    {lang.name}
-                    {currentLang === lang.code && <div className="size-1.5 rounded-full bg-indigo-400" />}
+                    <span className="flex items-center gap-3">
+                       {lang.name}
+                    </span>
+                    {currentLang === lang.code && (
+                      <motion.div 
+                        layoutId="active-indicator"
+                        className="size-1.5 rounded-full bg-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.8)]" 
+                      />
+                    )}
                   </button>
                 ))}
+              </div>
+              <div className="mt-2 pt-3 border-t border-white/5 text-center">
+                 <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest italic">Global Mesh Protocol v4.2</p>
               </div>
             </motion.div>
           </>
