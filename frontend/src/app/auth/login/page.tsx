@@ -144,30 +144,36 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="bg-white/60 backdrop-blur-[40px] border border-slate-950/10 rounded-[3rem] p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] relative overflow-hidden"
+              className="bg-white/80 backdrop-blur-[60px] border border-white/60 rounded-[3.5rem] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] relative overflow-hidden group/card"
             >
-              <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 blur-3xl -mr-20 -mt-20" />
+              {/* Premium Glint Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
               
-              <div className="text-center mb-12">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="mb-10 justify-center" />
-                <h1 className="text-5xl font-black text-slate-950 tracking-tighter uppercase italic leading-none mb-4">
-                  System <br/> <span className="text-amber-600">Access.</span>
+              <div className="absolute top-0 right-0 w-60 h-60 bg-amber-500/10 blur-[100px] -mr-30 -mt-30" />
+              
+              <div className="text-center mb-12 relative z-10">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-6xl font-black text-slate-950 tracking-[-0.06em] uppercase italic leading-[0.8] mb-6">
+                  Admin <br/> 
+                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
+                    Terminal
+                  </span>
                 </h1>
-                <div className="flex items-center justify-center gap-3 py-1.5 px-4 bg-amber-500/10 border border-amber-500/20 rounded-full w-fit mx-auto">
-                  <Terminal className="size-3.5 text-amber-600" />
-                  <p className="text-amber-700 font-black uppercase tracking-[0.2em] text-[9px]">Administrative Node 01</p>
+                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-slate-950/5 border border-slate-950/10 rounded-full w-fit mx-auto backdrop-blur-xl">
+                  <Terminal className="size-4 text-slate-950" />
+                  <p className="text-slate-950 font-black uppercase tracking-[0.3em] text-[9px]">Node Authorization Required</p>
                 </div>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Root Registry Email</Label>
-                  <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-amber-600 transition" />
+              <form onSubmit={handleLogin} className="space-y-7 relative z-10">
+                <div className="space-y-2.5">
+                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Security Identifier</Label>
+                  <div className="relative group/input">
+                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-slate-950 transition-colors" />
                     <Input 
                       type="email" 
-                      placeholder="admin@fixnow.app" 
-                      className="bg-slate-950/5 border-slate-950/10 rounded-2xl h-14 pl-14 text-slate-950 font-bold focus:border-amber-500/30 transition-all placeholder:text-slate-400"
+                      placeholder="admin.root@fixnow.app" 
+                      className="bg-white/40 border-slate-950/5 rounded-3xl h-16 pl-16 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       required
@@ -175,14 +181,14 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Cryptographic Passkey</Label>
-                  <div className="relative group">
-                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-amber-600 transition" />
+                <div className="space-y-2.5">
+                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Encrypted Passkey</Label>
+                  <div className="relative group/input">
+                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-slate-950 transition-colors" />
                     <Input 
                       type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="bg-slate-950/5 border-slate-950/10 rounded-2xl h-14 pl-14 pr-14 text-slate-950 font-bold focus:border-amber-500/30 transition-all placeholder:text-slate-400"
+                      className="bg-white/40 border-slate-950/5 rounded-3xl h-16 pl-16 pr-16 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner"
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
                       required
@@ -190,19 +196,19 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-950 transition"
+                      className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-950 transition-colors"
                     >
                       {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                     </button>
                   </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-slate-900 transition-all active:scale-[0.98] mt-6 shadow-2xl shadow-slate-950/20">
-                  {loading ? <Loader2 className="size-5 animate-spin" /> : <>Execute Authorization <ArrowRight className="size-5 ml-2" /></>}
+                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-900 transition-all active:scale-[0.98] mt-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]">
+                  {loading ? <Loader2 className="size-6 animate-spin" /> : <>Access System <ArrowRight className="size-5 ml-2" /></>}
                 </Button>
               </form>
 
-              <div className="mt-12 pt-8 border-t border-slate-950/5 text-center space-y-6">
+              <div className="mt-14 pt-10 border-t border-slate-950/10 text-center space-y-8 relative z-10">
                 <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
                   Need administrative credentials? <br/>
                   <Link href="/auth/signup?role=admin" className="text-amber-600 hover:text-amber-700 transition underline underline-offset-4 mt-2 inline-block">

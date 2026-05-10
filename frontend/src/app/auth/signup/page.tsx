@@ -184,31 +184,40 @@ export default function SignupPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="bg-white/70 backdrop-blur-[40px] border border-slate-950/10 rounded-[3rem] p-12 shadow-2xl overflow-hidden"
+              className="bg-white/80 backdrop-blur-[60px] border border-white/60 rounded-[3.5rem] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] relative overflow-hidden group/card"
             >
-              <div className="text-center mb-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="justify-center mb-8" />
-                <h1 className="text-4xl font-black text-slate-950 tracking-tighter uppercase italic leading-none mb-4">
-                  Registry <br/> <span className="text-amber-600">Expansion.</span>
+              {/* Premium Glint Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+              
+              <div className="text-center mb-12 relative z-10">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="justify-center mb-10 group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-5xl font-black text-slate-950 tracking-[-0.06em] uppercase italic leading-[0.85] mb-6">
+                  Registry <br/> 
+                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
+                    Expansion.
+                  </span>
                 </h1>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Administrator Onboarding Protocol</p>
+                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-slate-950/5 border border-slate-950/10 rounded-full w-fit mx-auto backdrop-blur-xl">
+                  <Terminal className="size-4 text-slate-950" />
+                  <p className="text-slate-950 font-black uppercase tracking-[0.3em] text-[9px]">Node Allocation Protocol</p>
+                </div>
               </div>
 
-              <form onSubmit={handleSignup} className="space-y-5">
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Full Name</Label>
-                  <Input required placeholder="System Operator" className="bg-slate-950/5 border-slate-950/10 rounded-2xl h-14 px-6 text-slate-950 font-bold" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+              <form onSubmit={handleSignup} className="space-y-6 relative z-10">
+                <div className="space-y-2.5">
+                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Operator Name</Label>
+                  <Input required placeholder="System Admin 01" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Authorized Email</Label>
-                  <Input required type="email" placeholder="root@fixnow.app" className="bg-slate-950/5 border-slate-950/10 rounded-2xl h-14 px-6 text-slate-950 font-bold" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                <div className="space-y-2.5">
+                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Primary Terminal Email</Label>
+                  <Input required type="email" placeholder="root@fixnow.app" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Secure Passkey</Label>
-                  <Input required type="password" placeholder="••••••••" className="bg-slate-950/5 border-slate-950/10 rounded-2xl h-14 px-6 text-slate-950 font-bold" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                <div className="space-y-2.5">
+                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Master Passkey</Label>
+                  <Input required type="password" placeholder="••••••••" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-slate-900 mt-6">
-                  {loading ? 'Processing...' : 'Initialize Node'}
+                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-900 mt-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]">
+                  {loading ? 'Initializing...' : 'Authorize Expansion'}
                 </Button>
               </form>
 
