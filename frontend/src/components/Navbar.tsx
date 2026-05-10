@@ -381,5 +381,3 @@ function NavLink({ href, children, active, isLanding }: { href: string, children
 function Loader2({ className }: { className?: string }) {
   return <div className={cn("border-2 border-white/10 border-t-white rounded-full animate-spin", className)} />;
 }
-;
-}
