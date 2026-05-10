@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -133,8 +134,31 @@ export default function LoginPage() {
             <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic leading-none mb-4">
               Authorized <br/> <span className="text-white [text-shadow:0_0_30px_rgba(255,255,255,0.3)]">Access.</span>
             </h1>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">
-              Secure Terminal for {role} node
+            
+            {/* Role Switcher */}
+            <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl mb-6 max-w-[280px] mx-auto">
+              <button
+                onClick={() => setRole('customer')}
+                className={cn(
+                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                  role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                )}
+              >
+                Customer
+              </button>
+              <button
+                onClick={() => setRole('technician')}
+                className={cn(
+                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                  role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                )}
+              >
+                Technician
+              </button>
+            </div>
+
+            <p className="text-cyan-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">
+              Active Node: {role}
             </p>
           </div>
 

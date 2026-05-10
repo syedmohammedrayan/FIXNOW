@@ -24,6 +24,7 @@ import IdVerificationBox from "@/components/technician/IdVerificationBox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from '@/lib/utils';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -243,6 +244,29 @@ export default function SignupPage() {
                 <p className="text-sm text-slate-400 mt-1.5 font-medium">
                   {role === 'admin' ? 'Set up administrator access' : <span>Get started with <span className="notranslate">FixNow</span> today</span>}
                 </p>
+
+                {role && role !== 'admin' && (
+                  <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl mt-6 max-w-[280px] mx-auto">
+                    <button
+                      onClick={() => setRole('customer')}
+                      className={cn(
+                        "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                        role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                      )}
+                    >
+                      Customer
+                    </button>
+                    <button
+                      onClick={() => setRole('technician')}
+                      className={cn(
+                        "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                        role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-500 hover:text-white"
+                      )}
+                    >
+                      Technician
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
