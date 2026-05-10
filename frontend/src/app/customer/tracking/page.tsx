@@ -420,15 +420,6 @@ export default function TrackingPage() {
                 </div>
              </motion.div>
 
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
-                <div className="size-8 lg:size-12 bg-emerald-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-emerald-100 shrink-0">
-                   <Activity className="size-4 lg:size-6 text-emerald-600 animate-pulse" />
-                </div>
-                <div className="min-w-0">
-                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate mb-0.5">System</p>
-                   <p className="text-xs lg:text-lg font-black text-emerald-600 tracking-tighter truncate leading-none">CONN.</p>
-                </div>
-             </motion.div>
           </div>
         </section>
 
