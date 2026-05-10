@@ -156,7 +156,7 @@ export default function DynamicBackground() {
         ))}
       </div>
 
-      {/* ─── Layer 2: Fully Transparent Overlay (z-index: -1) ─── */}
+      {/* ─── Layer 2: 3D Glassmorphic Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
         className="dynamic-bg-overlay"
@@ -169,32 +169,47 @@ export default function DynamicBackground() {
           WebkitBackdropFilter: 'blur(2px)',
           pointerEvents: 'none',
           willChange: 'backdrop-filter',
+          // 3D Glass Depth: Inner glow and subtle vignette
+          boxShadow: 'inset 0 0 100px rgba(255, 255, 255, 0.05), inset 0 0 40px rgba(255, 255, 255, 0.02)',
         }}
       />
 
-      {/* ─── Layer 3: High-End White Glow Cursor (z-index: 0) ─── */}
+      {/* ─── Layer 3: Premium Glass Glint (Diagonal Light Streak) ─── */}
+      <div 
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: -1,
+          pointerEvents: 'none',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 40%, rgba(255,255,255,0.02) 50%, transparent 60%, rgba(255,255,255,0.05) 100%)',
+          opacity: 0.5,
+        }}
+      />
+
+      {/* ─── Layer 4: High-End White Glow Cursor (z-index: 0) ─── */}
       <div
         ref={cursorRef}
         className="dynamic-bg-cursor hidden md:block"
         style={{
           position: 'fixed',
-          width: '600px',
-          height: '600px',
+          width: '800px',
+          height: '800px',
           borderRadius: '50%',
           zIndex: 0,
           pointerEvents: 'none',
           background: `radial-gradient(
             circle at center,
-            rgba(255, 255, 255, 0.4) 0%,
-            rgba(255, 255, 255, 0.1) 30%,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 30%,
             transparent 70%
           )`,
           willChange: 'transform',
-          transform: 'translate3d(-300px, -300px, 0)',
+          transform: 'translate3d(-400px, -400px, 0)',
+          filter: 'blur(40px)',
         }}
       />
 
-      {/* ─── Layer 4: Subtle Texture ─── */}
+      {/* ─── Layer 5: Subtle Cinematic Texture ─── */}
       <div
         className="dynamic-bg-grain"
         style={{
@@ -202,10 +217,10 @@ export default function DynamicBackground() {
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
-          opacity: 0.015,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+          opacity: 0.02,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '256px 256px',
+          backgroundSize: '128px 128px',
         }}
       />
     </>
