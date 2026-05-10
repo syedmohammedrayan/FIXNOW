@@ -271,13 +271,14 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
             </div>
             
             <div className="absolute -bottom-2 -right-2 flex gap-2">
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="size-10 bg-white rounded-xl shadow-lg border border-slate-100 flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+              <label 
+                htmlFor="avatar-upload"
+                className="size-10 bg-white rounded-xl shadow-lg border border-slate-100 flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-95 cursor-pointer"
                 title="Update Photo"
               >
                 <Camera className="size-5" />
-              </button>
+              </label>
+              <input id="avatar-upload" type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleAvatarUpload} />
               {profile.avatar && (
                 <button 
                   onClick={handleAvatarDelete}
@@ -288,7 +289,6 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
                 </button>
               )}
             </div>
-            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
           </div>
 
           <div className="text-center md:text-left flex-1">

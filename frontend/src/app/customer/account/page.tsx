@@ -202,7 +202,7 @@ export default function CustomerAccount() {
                   )}
                 </div>
                 <div className="absolute -bottom-2 -right-2 flex gap-2">
-                  <input type="file" hidden id="avatar-up" accept="image/*" onChange={handleAvatarUpload} />
+                  <input type="file" className="hidden" id="avatar-up" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleAvatarUpload} />
                   <label htmlFor="avatar-up" className="p-3 glass-panel border-white/10 hover:bg-indigo-50 text-indigo-600 rounded-2xl shadow-xl border border-slate-100 cursor-pointer transition-all active:scale-90">
                     <Camera className="w-5 h-5" />
                   </label>
