@@ -41,7 +41,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 }}
-                className="block font-black uppercase italic tracking-[-0.05em] text-white drop-shadow-2xl [text-shadow:0_0_40px_rgba(255,255,255,0.4)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
+                className="block font-black uppercase italic tracking-[-0.05em] text-white drop-shadow-lg [text-shadow:0_0_20px_rgba(255,255,255,0.15)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
               >
                 Reliable
               </motion.span>
@@ -53,7 +53,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.7, delay: 0.45 }}
                 className="block font-black uppercase italic tracking-[-0.05em] leading-none text-[4rem] sm:text-[6rem] md:text-[9rem] select-none
                   bg-gradient-to-r from-rose-500 via-violet-500 to-cyan-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text
-                  drop-shadow-[0_4px_40px_rgba(139,92,246,0.35)]"
+                  drop-shadow-[0_4px_20px_rgba(139,92,246,0.2)]"
               >
                 Home Services
               </motion.span>
@@ -95,7 +95,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center mb-20"
           >
-            <h2 className="text-4xl md:text-8xl font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
+            <h2 className="text-4xl md:text-8xl font-black text-white drop-shadow-lg [text-shadow:0_0_15px_rgba(255,255,255,0.15)] tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
             <div className="w-48 h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
           </motion.div>
           
@@ -124,8 +124,8 @@ export default function LandingPage() {
         {/* Feature Section */}
         <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
           <div className="space-y-10 max-w-4xl">
-            <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.06em] leading-[0.75] uppercase italic">
-              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_30px_rgba(6,182,212,0.4)]">Infrastructure.</span>
+            <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-lg [text-shadow:0_0_15px_rgba(255,255,255,0.15)] tracking-[-0.06em] leading-[0.75] uppercase italic">
+              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_15px_rgba(6,182,212,0.2)]">Infrastructure.</span>
             </h2>
             <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
               Proprietary Architecture for High-Stake Execution.
