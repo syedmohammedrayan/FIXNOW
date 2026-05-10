@@ -53,7 +53,13 @@ export default function AdminDashboard() {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'live-map' | 'approvals' | 'techs' | 'bookings' | 'tools' | 'transactions' | 'notifications'>('overview');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth >= 1024) {
+      setSidebarOpen(true);
+    }
+  }, []);
 
   const [newTech, setNewTech] = useState({
     name: '',

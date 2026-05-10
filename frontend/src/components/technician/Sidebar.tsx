@@ -136,7 +136,7 @@ export default function TechnicianSidebar() {
     window.location.href = '/auth/login';
   };
 
-  const sidebarWidth = collapsed ? 'w-[78px]' : 'w-[280px]';
+  const sidebarWidth = collapsed ? 'w-[78px]' : 'w-full md:w-[280px]';
 
   return (
     <React.Fragment>
@@ -144,7 +144,7 @@ export default function TechnicianSidebar() {
       <div className="fixed top-4 left-4 z-[60] md:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-3 bg-white/80 border border-indigo-100 rounded-2xl backdrop-blur-md hover:bg-indigo-50 shadow-lg text-indigo-600 active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
+          className="p-3 bg-white/80 border border-slate-100 rounded-2xl backdrop-blur-md hover:bg-slate-50 shadow-lg text-slate-900 active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
         >
           {isMobileMenuOpen ? (
             <ChevronLeft className="size-5 text-indigo-600" />
@@ -177,8 +177,8 @@ export default function TechnicianSidebar() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
         style={{
-          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(248, 250, 252, 0.7) 50%, rgba(255, 255, 255, 0.6) 100%)',
-          borderRight: '1px solid rgba(99, 102, 241, 0.15)',
+          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 250, 252, 0.7) 50%, rgba(255, 255, 255, 0.6) 100%)',
+          borderRight: '1px solid rgba(15, 23, 42, 0.15)',
           backdropFilter: 'blur(40px) saturate(180%)',
         }}
       >
@@ -220,7 +220,7 @@ export default function TechnicianSidebar() {
               <span className="text-[15px] font-black tracking-tight text-slate-800 uppercase leading-none">
                 FixNow
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.35em] text-indigo-600/80 mt-0.5 flex items-center gap-1">
+              <span className="text-[9px] font-bold uppercase tracking-[0.35em] text-slate-900/80 mt-0.5 flex items-center gap-1">
                 <Crown className="size-2.5" />
                 Pro Technician
               </span>
@@ -277,7 +277,7 @@ export default function TechnicianSidebar() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-bold text-slate-800 truncate">Active & Ready</p>
-                  <p className="text-[10px] text-indigo-600/70 font-medium">{currentTime || 'Loading...'}</p>
+                  <p className="text-[10px] text-slate-900/70 font-medium">{currentTime || 'Loading...'}</p>
                 </div>
                 <div className="shrink-0">
                   <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/15">
@@ -328,8 +328,8 @@ export default function TechnicianSidebar() {
                   "relative flex items-center gap-3.5 rounded-[14px] transition-all duration-300 group",
                   collapsed ? "justify-center p-3 mx-auto" : "px-4 py-3",
                   isActive
-                    ? "text-indigo-900"
-                    : "text-slate-500 hover:text-indigo-600"
+                    ? "text-slate-900"
+                    : "text-slate-500 hover:text-slate-900"
                 )}
               >
                 {/* Active background */}
@@ -338,9 +338,9 @@ export default function TechnicianSidebar() {
                     layoutId="techSidebarActive"
                     className="absolute inset-0 rounded-[14px]"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.05) 100%)',
-                      border: '1px solid rgba(99,102,241,0.2)',
-                      boxShadow: '0 4px 15px -3px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.5)',
+                      background: 'linear-gradient(135deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.02) 100%)',
+                      border: '1px solid rgba(15,23,42,0.1)',
+                      boxShadow: '0 4px 15px -3px rgba(15,23,42,0.05), inset 0 1px 0 rgba(255,255,255,0.5)',
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
@@ -366,8 +366,8 @@ export default function TechnicianSidebar() {
                     layoutId="techSidebarIndicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
                     style={{
-                      background: 'linear-gradient(180deg, #818cf8, #6366f1)',
-                      boxShadow: '0 0 12px 2px rgba(99,102,241,0.3)',
+                      background: 'linear-gradient(180deg, #1e293b, #0f172a)',
+                      boxShadow: '0 0 12px 2px rgba(15,23,42,0.2)',
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
@@ -391,7 +391,7 @@ export default function TechnicianSidebar() {
                   
                   {/* Icon glow for active */}
                   {isActive && (
-                    <div className="absolute inset-0 rounded-lg bg-indigo-500/20 blur-md animate-pulse" />
+                    <div className="absolute inset-0 rounded-lg bg-slate-900/10 blur-md animate-pulse" />
                   )}
                 </div>
 
@@ -424,7 +424,7 @@ export default function TechnicianSidebar() {
                     animate={{ opacity: 1, x: 0 }}
                     className="relative z-10"
                   >
-                    <ArrowUpRight className="size-3.5 text-indigo-600/50" />
+                    <ArrowUpRight className="size-3.5 text-slate-900/50" />
                   </motion.div>
                 )}
 

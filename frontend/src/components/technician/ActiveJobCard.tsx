@@ -108,9 +108,9 @@ export default function ActiveJobCard({
         </div>
       )}
 
-      <div className="glass-neon-card p-0 shadow-2xl overflow-x-auto flex border-none glass-panel border-white/80 backdrop-blur-2xl">
-        <div className="flex min-w-[900px] w-full">
-          <div className="p-8 lg:p-10 flex-1">
+      <div className="glass-neon-card p-0 shadow-2xl overflow-hidden flex border-none glass-panel border-white/80 backdrop-blur-2xl">
+        <div className="flex flex-col lg:flex-row w-full">
+          <div className="p-6 lg:p-10 flex-1">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
               <div>
                 <div className="flex items-center gap-2 mb-3">

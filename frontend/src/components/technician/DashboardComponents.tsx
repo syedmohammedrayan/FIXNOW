@@ -17,15 +17,15 @@ export function StatCard({
 }) {
   const colors: Record<string, string> = {
     indigo:
-      "text-indigo-600 bg-indigo-50 border-slate-800 shadow-indigo-200/50",
+      "text-slate-900 bg-slate-50 border-slate-200 shadow-slate-200/50",
     emerald:
       "text-emerald-600 bg-emerald-50 border-emerald-100 shadow-emerald-200/50",
     sky: "text-sky-600 bg-sky-50 border-sky-100 shadow-sky-200/50",
-    slate: "text-indigo-200 glass-panel border-white/10 border-slate-100 shadow-slate-200/50",
+    slate: "text-slate-400 glass-panel border-white/10 border-slate-100 shadow-slate-200/50",
   };
 
   return (
-    <div className="glass-neon-card p-4 sm:p-6 lg:p-7 flex items-center justify-between group hover:border-indigo-500/30 overflow-hidden">
+    <div className="glass-neon-card p-4 sm:p-6 lg:p-7 flex items-center justify-between group hover:border-slate-900/30 overflow-hidden">
       <div className="flex items-center gap-3 sm:gap-5 min-w-0">
         <div
           className={cn(
@@ -78,7 +78,7 @@ export function MetricRow({
   return (
     <div className="group">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-indigo-600 transition-colors">
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-900 transition-colors">
           {label}
         </span>
         <span className="text-xs font-black text-white">{value}</span>
@@ -88,7 +88,7 @@ export function MetricRow({
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="h-full bg-indigo-600 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.3)]"
+          className="h-full bg-slate-900 rounded-full shadow-[0_0_10px_rgba(15,23,42,0.3)]"
         />
       </div>
     </div>
@@ -126,7 +126,7 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
         <h3 className="text-2xl font-black text-white tracking-tight mb-2">
           Service Manifest
         </h3>
-        <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-[0.15em] mb-10 leading-relaxed max-w-[220px]">
+        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-10 leading-relaxed max-w-[280px]">
           Command center for mission critical assignments & field logistics.
         </p>
 
@@ -159,7 +159,7 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
 
       <Link
         href="/technician/bookings"
-        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-slate-900 text-white pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-600 transition-all active:scale-95 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/30 group/btn"
+        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-slate-900 text-white pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/10 hover:shadow-slate-900/30 group/btn"
       >
         <span>Initialize Console</span>
         <div className="size-8 rounded-xl glass-panel border-white/10 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">

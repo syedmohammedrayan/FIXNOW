@@ -144,9 +144,9 @@ export function TransactionLedger({
             exit={{ opacity: 0, height: 0 }}
             className="glass-neon-card overflow-hidden"
           >
-            <div className="overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="glass-panel border-white/10 text-indigo-300 font-bold uppercase text-[9px] tracking-[0.2em] border-b border-slate-100">
+                <thead className="glass-panel border-white/10 text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] border-b border-slate-100">
                   <tr>
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">Type</th>
@@ -180,7 +180,7 @@ export function TransactionLedger({
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-xs text-indigo-300 font-medium">
+                      <td className="px-6 py-4 text-xs text-slate-400 font-medium">
                         {new Date(txn.createdAt).toLocaleDateString()}
                       </td>
                       <td
@@ -198,12 +198,42 @@ export function TransactionLedger({
                   ))}
                 </tbody>
               </table>
-              {transactions.length === 0 && (
-                <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
-                  No transaction history available
-                </div>
-              )}
             </div>
+
+            {/* Mobile View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {transactions.map((txn) => (
+                <div key={txn.id} className="p-4 flex flex-col gap-2">
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <span className={cn(
+                        "text-[10px] font-black uppercase tracking-widest",
+                        txn.type === "service_payment" ? "text-emerald-600" : "text-rose-600"
+                      )}>
+                        {txn.type.replace("_", " ")}
+                      </span>
+                      <span className="text-[9px] text-slate-400 font-bold">REF: {txn.bookingId || txn.orderId}</span>
+                    </div>
+                    <span className={cn(
+                      "text-sm font-black",
+                      txn.type === "service_payment" ? "text-emerald-600" : "text-rose-600"
+                    )}>
+                      {txn.type === "service_payment" ? "+" : "-"}₹{txn.amount}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold">
+                    <span>{new Date(txn.createdAt).toLocaleDateString()}</span>
+                    <span className="font-mono">{txn.id.slice(0, 8)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {transactions.length === 0 && (
+              <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                No transaction history available
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
