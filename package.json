@@ -1,0 +1,25 @@
+{
+  "name": "fixnow-marketplace",
+  "version": "0.1.0",
+  "description": "FIXNOW Root Project",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend"
+  },
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "@google/generative-ai": "^0.24.1",
+    "@insforge/sdk": "^1.2.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.8.0",
+    "groq-sdk": "^1.1.2",
+    "multer": "^2.1.1",
+    "openai": "^6.34.0",
+    "razorpay": "^2.9.6",
+    "socket.io": "^4.8.3"
+  }
+}

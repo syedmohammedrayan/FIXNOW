@@ -1,0 +1,371 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --primary: #4f46e5;
+    --primary-foreground: #ffffff;
+    --secondary: #10b981;
+    --secondary-foreground: #ffffff;
+    --accent: #6366f1;
+    --muted: #e2e8f0;
+    --muted-foreground: #475569;
+    --card: rgba(255, 255, 255, 0.8);
+    --card-foreground: #0f172a;
+    --border: rgba(79, 70, 229, 0.4);
+    --input: #e2e8f0;
+    --ring: #4f46e5;
+    --radius: 1.5rem;
+  }
+}
+
+body {
+  background-color: transparent;
+  color: var(--foreground);
+  min-height: 100vh;
+  position: relative;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Ensure all direct body children (except background layers and chatbot) sit above z-index: 0 */
+body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor):not(.dynamic-bg-grain):not(.chatbot-container) {
+  position: relative;
+  z-index: 1;
+}
+
+.chatbot-container {
+  position: fixed !important;
+  bottom: 0;
+  right: 0;
+  z-index: 99999 !important;
+  pointer-events: none;
+}
+
+/* ─── Glass Panel System (used by services, landing, etc.) ─── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03); /* Complete glassmorphic transparency */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(129, 140, 248, 0.3); /* Neon blue accent */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-strong {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(79, 70, 229, 0.05));
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow:
+    0 12px 40px -8px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Glow Typography System ─── */
+.glow-heading {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+}
+
+.glow-heading-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.2));
+}
+
+.glow-subtext {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* ─── Glass-Neon Design System ─── */
+.glass-neon-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(99, 102, 241, 0.08));
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.4),
+    0 0 20px -5px rgba(99, 102, 241, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  color: #f8fafc;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 640px) {
+  .glass-neon-card {
+    border-radius: 2.5rem;
+  }
+}
+
+.glass-neon-card:hover {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(99, 102, 241, 0.12));
+  border-color: rgba(165, 180, 252, 0.6);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.5),
+    0 0 30px -5px rgba(99, 102, 241, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 640px) {
+  .glass-neon-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.neon-border-indigo {
+  box-shadow: 0 0 15px -3px rgba(79, 70, 229, 0.4);
+}
+
+.neon-border-emerald {
+  box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.neon-text-indigo {
+  text-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+}
+
+/* Legacy support for crispy-card with new aesthetic */
+.crispy-card {
+  @apply glass-neon-card;
+}
+
+/* ─── Typography ─── */
+.heading-primary {
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  @apply neon-text-indigo;
+}
+
+.subtext-muted {
+  color: #cbd5e1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ─── Custom Scrollbar (Premium Slider Aesthetic) ─── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4f46e5, #818cf8);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #4338ca, #6366f1);
+  background-clip: content-box;
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4f46e5 rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Float animation for landing badges ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ─── Pulse glow animation ─── */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Global transparent wrapper so the DynamicBackground is visible everywhere */
+  .min-h-screen {
+    background-color: transparent !important;
+  }
+}
+
+/* ─── Responsive Utilities ─── */
+
+/* Mobile-safe notification toasts */
+@media (max-width: 639px) {
+  .glass-neon-card {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Responsive modal/overlay safe area */
+@supports (padding: max(0px)) {
+  .modal-safe-area {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
+
+/* Responsive table scroll hint */
+.table-scroll-container {
+  position: relative;
+}
+
+.table-scroll-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, rgba(15, 23, 42, 0.8), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+@media (max-width: 1023px) {
+  .table-scroll-container::after {
+    opacity: 1;
+  }
+}
+
+/* Google Places Autocomplete Styling */
+.pac-container {
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(129, 140, 248, 0.4) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.5) !important;
+  margin-top: 10px !important;
+  font-family: inherit !important;
+  z-index: 9999 !important;
+  color: #f8fafc !important;
+}
+
+.pac-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 12px 20px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.pac-item:first-child {
+  border-top: none !important;
+}
+
+.pac-item:hover {
+  background-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.pac-item-query {
+  font-size: 14px !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+}
+
+.pac-matched {
+  color: #a5b4fc !important;
+}
+
+.pac-icon {
+  margin-right: 12px !important;
+  filter: invert(1);
+}
+
+.pac-logo:after {
+  display: none !important;
+}
+
+/* Hide Google Maps API error container/modal completely from showing */
+.gm-err-container, .gm-err-modal, .gm-err-content, [class*="gm-err"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ─── Strict Google Translate Purge ─── */
+.goog-te-banner-frame, 
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+iframe.goog-te-menu-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+iframe[id=":1.container"],
+iframe[id=":2.container"],
+iframe[id=":0.container"],
+.skiptranslate {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  pointer-events: none !important;
+  z-index: -1000 !important;
+  overflow: hidden !important;
+}
+
+body, html {
+  top: 0px !important;
+  position: static !important;
+}
+
+#google_translate_element,
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-menu-value,
+.goog-te-menu-frame,
+.goog-logo-link {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide the hover tooltip and highlighting */
+.goog-tooltip,
+.goog-tooltip:hover,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.skiptranslate[style*="visibility: visible"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
