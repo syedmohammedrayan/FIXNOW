@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { XCircle } from "lucide-react";
+import { XCircle, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JobQueueProps {
@@ -21,9 +21,9 @@ export default function JobQueue({
   return (
     <section>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-black text-white flex items-center gap-3">
+        <h2 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight">
           Dispatch Queue{" "}
-          <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-xs rounded-lg font-bold">
+          <span className="px-3 py-1 bg-white/5 border border-white/10 text-white text-xs rounded-full font-black">
             {activeJobs.length}
           </span>
         </h2>
@@ -37,11 +37,11 @@ export default function JobQueue({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel border-white/10 border border-slate-200 hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/5 rounded-3xl p-6 transition-all group"
+              className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 hover:border-cyan-500/50 rounded-[2rem] p-6 transition-all group"
             >
               <div className="flex flex-col sm:flex-row justify-between gap-6">
                 <div className="flex gap-5">
-                  <div className="w-14 h-14 glass-panel border-white/10 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-xl">
                     {job.category === "Electrical"
                       ? "⚡"
                       : job.category === "Plumbing"
@@ -49,19 +49,19 @@ export default function JobQueue({
                         : "🛠️"}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight">
                       {job.category} Request
                     </h3>
-                    <p className="text-indigo-300 text-sm mt-1">
-                      {job.address || "Local Radius • 2.4km"}
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-1">
+                      {job.address || "Local Radius • Syncing..."}
                     </p>
                     <div className="flex items-center gap-3 mt-3">
-                      <span className="text-emerald-600 font-black text-sm">
+                      <span className="text-cyan-400 font-black text-sm">
                         {job.estimatedCostRange}
                       </span>
-                      <span className="w-1 h-1 bg-slate-200 rounded-full" />
-                      <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                        Estimate
+                      <span className="w-1 h-1 bg-white/10 rounded-full" />
+                      <span className="text-slate-600 text-[9px] font-black uppercase tracking-[0.2em]">
+                        Valuation
                       </span>
                     </div>
                   </div>
@@ -71,17 +71,18 @@ export default function JobQueue({
                     onClick={() => (profile.online ? acceptJob(job) : null)}
                     disabled={!profile.online}
                     className={cn(
-                      "flex-1 sm:flex-none px-8 py-3 rounded-2xl text-sm font-black transition-all shadow-lg",
+                      "flex-1 sm:flex-none px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center gap-2",
                       profile.online
-                        ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
-                        : "bg-slate-500/50 text-slate-300 cursor-not-allowed border border-white/5",
+                        ? "bg-white text-slate-950 hover:bg-slate-100 shadow-white/10"
+                        : "bg-white/5 text-slate-700 cursor-not-allowed border border-white/5",
                     )}
                   >
+                    <Zap className={cn("size-3.5", profile.online ? "text-cyan-500" : "text-slate-700")} />
                     {profile.online ? "Deploy" : "Offline"}
                   </button>
                   <button
                     onClick={() => declineJob(job.id)}
-                    className="w-12 h-12 glass-panel border-white/10 hover:bg-rose-50 text-slate-400 hover:text-white border border-slate-100 rounded-2xl flex items-center justify-center transition-all"
+                    className="w-14 h-14 bg-white/5 border border-white/10 hover:bg-rose-500/10 text-slate-500 hover:text-rose-500 rounded-2xl flex items-center justify-center transition-all group-hover:border-rose-500/30"
                   >
                     <XCircle className="w-5 h-5" />
                   </button>
@@ -91,8 +92,8 @@ export default function JobQueue({
           ))}
         </AnimatePresence>
         {activeJobs.length === 0 && (
-          <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs border border-slate-100 rounded-3xl glass-panel border-white/10 shadow-sm">
-            Queue Empty • Listening for signals
+          <div className="p-16 text-center text-slate-600 font-black uppercase tracking-[0.3em] text-[10px] border-2 border-dashed border-white/5 rounded-[3rem] bg-white/2">
+            Queue Empty • Scanning for Signals
           </div>
         )}
       </div>

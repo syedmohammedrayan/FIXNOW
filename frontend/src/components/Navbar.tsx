@@ -76,6 +76,8 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     return () => unsubscribe();
   }, []);
 
+  const isLanding = pathname === '/';
+
   // Automatic logout when returning to landing page
   useEffect(() => {
     if (isLanding && user) {
@@ -133,7 +135,6 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     }
   };
 
-  const isLanding = pathname === '/';
 
   return (
     <nav className={cn(
@@ -348,29 +349,31 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl"
               onClick={() => setShowAboutModal(false)}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-[#0a0a0f]/90 backdrop-blur-3xl border border-white/20 rounded-[3rem] shadow-[0_0_50px_rgba(34,211,238,0.15)] overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-white/10" />
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500" />
+              <div className="absolute -top-24 -left-24 size-48 bg-cyan-500/10 blur-[80px] rounded-full" />
+              <div className="absolute -bottom-24 -right-24 size-48 bg-purple-500/10 blur-[80px] rounded-full" />
               
-              <div className="p-10">
+              <div className="p-10 relative z-10">
                 <div className="flex justify-between items-start mb-10">
                   <div>
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest mb-6 shadow-xl">
-                      <Shield className="size-3.5 text-cyan-400" /> Admin Protocol
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-black uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                      <Shield className="size-3.5" /> Admin Protocol
                     </div>
-                    <h2 className="text-3xl font-black text-white tracking-tight">System Identity</h2>
+                    <h2 className="text-4xl font-black text-white tracking-tighter leading-none">System Identity</h2>
                   </div>
                   <button 
                     onClick={() => setShowAboutModal(false)}
-                    className="p-3 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 rounded-2xl transition duration-300"
+                    className="p-3 text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 hover:border-white/20 rounded-2xl transition-all duration-300"
                   >
                     <X className="size-6" />
                   </button>
@@ -378,61 +381,64 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
 
                 <div className="space-y-8">
                   {loadingAdmin ? (
-                    <div className="flex flex-col items-center justify-center py-16 space-y-6">
-                      <div className="size-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Syncing Admin Records...</p>
+                    <div className="flex flex-col items-center justify-center py-20 space-y-6">
+                      <div className="size-12 border-4 border-white/5 border-t-cyan-400 rounded-full animate-spin shadow-[0_0_20px_rgba(34,211,238,0.3)]" />
+                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Syncing Encrypted Records...</p>
                     </div>
                   ) : (
-                    <div className="bg-slate-900/50 rounded-[2rem] p-8 border border-white/10 space-y-8 backdrop-blur-sm shadow-inner">
-                      <div className="flex items-center gap-5">
-                        <div className="size-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg transition-all hover:border-white/20">
-                          <User className="size-8 text-white" />
+                    <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/10 space-y-8 backdrop-blur-md shadow-[inset_0_0_30px_rgba(255,255,255,0.02)]">
+                      <div className="flex items-center gap-6">
+                        <div className="size-20 rounded-[1.8rem] bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 border border-white/20 flex items-center justify-center shadow-2xl relative group overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <User className="size-10 text-white relative z-10" />
                         </div>
                         <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Assigned Liaison</p>
-                          <p className="text-2xl font-black text-white tracking-tight">{adminDetails?.name || 'System Admin'}</p>
+                          <p className="text-[9px] font-black text-cyan-400/70 uppercase tracking-[0.25em] mb-1.5">Assigned Liaison</p>
+                          <p className="text-3xl font-black text-white tracking-tighter leading-none">{adminDetails?.name || 'System Admin'}</p>
                         </div>
                       </div>
                       
-                      <div className="h-px bg-white/10 w-full" />
+                      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent w-full" />
                       
-                      <div className="space-y-6">
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1 p-2 rounded-xl bg-white/5 border border-white/10 text-white transition-all hover:border-white/20">
+                      <div className="space-y-7">
+                        <div className="flex items-start gap-5 group">
+                          <div className="mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 group-hover:text-cyan-400 group-hover:border-cyan-500/30 transition-all duration-300 shadow-lg">
                             <LayoutDashboard className="size-4" />
                           </div>
                           <div>
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Organization</p>
-                            <p className="text-white font-bold text-sm tracking-tight">{adminDetails?.company || <span><span className="notranslate">FIXNOW</span> Technologies</span>}</p>
+                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-1.5 group-hover:text-cyan-400/50 transition-colors">Organization</p>
+                            <p className="text-white font-black text-sm tracking-tight">{adminDetails?.company || <span><span className="notranslate">FIXNOW</span> Technologies</span>}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1 p-2 rounded-xl bg-white/5 border border-white/10 text-white transition-all hover:border-white/20">
+                        <div className="flex items-start gap-5 group">
+                          <div className="mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 group-hover:text-indigo-400 group-hover:border-indigo-500/30 transition-all duration-300 shadow-lg">
                             <MapPin className="size-4" />
                           </div>
                           <div>
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Deployment Zone</p>
-                            <p className="text-white font-bold text-sm tracking-tight leading-relaxed">{adminDetails?.address || 'Global Service Mesh'}</p>
+                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-1.5 group-hover:text-indigo-400/50 transition-colors">Deployment Zone</p>
+                            <p className="text-white font-black text-sm tracking-tight leading-relaxed">{adminDetails?.address || 'Global Service Mesh'}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1 p-2 rounded-xl bg-white/5 border border-white/10 text-white transition-all hover:border-white/20">
+                        <div className="flex items-start gap-5 group">
+                          <div className="mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 group-hover:text-purple-400 group-hover:border-purple-500/30 transition-all duration-300 shadow-lg">
                             <Settings className="size-4" />
                           </div>
                           <div>
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Communication Channels</p>
-                            <p className="text-white font-bold text-sm tracking-tight">{adminDetails?.phone || 'Encrypted'}</p>
-                            <p className="text-cyan-400 font-bold text-sm tracking-tight hover:text-cyan-300 transition">{adminDetails?.email || 'admin@fixnow.app'}</p>
+                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-1.5 group-hover:text-purple-400/50 transition-colors">Comm Channels</p>
+                            <div className="space-y-1">
+                              <p className="text-white font-black text-sm tracking-tight">{adminDetails?.phone || '+1 (888) FIX-NOW-1'}</p>
+                              <p className="text-cyan-400 font-black text-xs tracking-widest hover:text-cyan-300 transition-colors cursor-pointer">{adminDetails?.email || 'HQ@FIXNOW.APP'}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   )}
                   
-                  <div className="text-center pt-4">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">© {new Date().getFullYear()} <span className="notranslate">FIXNOW</span> Service Ecosystem</p>
+                  <div className="text-center pt-6 opacity-40">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">© {new Date().getFullYear()} <span className="notranslate">FIXNOW</span> Service Mesh Ecosystem</p>
                   </div>
                 </div>
               </div>

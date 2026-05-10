@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Package, Clock, CheckCircle2, Zap } from 'lucide-react';
@@ -21,11 +23,11 @@ export function ToolsTab({ toolOrders, updateToolOrderStatus, handleVerifyPaymen
     >
       <div className="flex justify-between items-end mb-4">
         <div>
-          <h2 className="text-3xl font-black text-white tracking-tight">LOGISTICS & SUPPLY</h2>
-          <p className="text-indigo-300 font-medium mt-1">Real-time tool and material request management center</p>
+          <h2 className="text-3xl font-black text-white tracking-tight uppercase">LOGISTICS & SUPPLY</h2>
+          <p className="text-slate-500 font-medium mt-1 uppercase tracking-widest text-[10px]">Real-time supply chain management center</p>
         </div>
         <div className="flex gap-4">
-          <div className="glass-panel border-white/10 px-5 py-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-2xl shadow-sm flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Live Flow</span>
           </div>
@@ -33,10 +35,10 @@ export function ToolsTab({ toolOrders, updateToolOrderStatus, handleVerifyPaymen
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-        <StatItem icon={<Package />} label="Total Requisitions" value={toolOrders.length} color="indigo" />
+        <StatItem icon={<Package />} label="Total Requisitions" value={toolOrders.length} color="white" />
         <StatItem icon={<Clock />} label="Awaiting Approval" value={toolOrders.filter(o => o.status === 'Pending').length} color="amber" trend="Critical Action" />
         <StatItem icon={<CheckCircle2 />} label="In Transit" value={toolOrders.filter(o => o.status === 'Approved').length} color="emerald" trend="Active Deliveries" />
-        <StatItem icon={<Zap />} label="Inventory Value" value={`₹${toolOrders.reduce((acc, o) => acc + (o.totalAmount || 0), 0)}`} color="sky" />
+        <StatItem icon={<Zap />} label="Inventory Value" value={`₹${toolOrders.reduce((acc, o) => acc + (o.totalAmount || 0), 0)}`} color="cyan" />
       </div>
 
       <div className="space-y-4">
@@ -50,9 +52,9 @@ export function ToolsTab({ toolOrders, updateToolOrderStatus, handleVerifyPaymen
           />
         ))}
         {toolOrders.length === 0 && (
-          <div className="text-center py-32 glass-panel border-white/10 rounded-[3rem] border-2 border-dashed border-slate-100">
-            <Package className="w-20 h-20 text-slate-100 mx-auto mb-6" />
-            <h3 className="text-xl font-bold text-slate-300">No Requisition Logs Found</h3>
+          <div className="text-center py-32 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[3rem]">
+            <Package className="w-20 h-20 text-slate-800 mx-auto mb-6" />
+            <h3 className="text-xl font-bold text-slate-500 uppercase tracking-widest text-xs">No Requisition Logs Found</h3>
           </div>
         )}
       </div>

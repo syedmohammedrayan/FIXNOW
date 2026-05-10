@@ -1,6 +1,7 @@
 export function statusColor(s: string) {
-  if (s === 'Pending') return 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20';
-  if (s === 'Completed' || s === 'Approved' || s === 'Delivered') return 'bg-green-500/10 text-green-500 border border-green-500/20';
-  if (s === 'Rejected') return 'bg-red-500/10 text-red-500 border border-red-500/20';
-  return 'bg-sky-500/10 text-sky-500 border border-sky-500/20';
+  if (s === 'Pending') return 'bg-amber-400/10 text-amber-400 border border-amber-400/20';
+  if (s === 'Completed' || s === 'Approved' || s === 'Delivered') return 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20';
+  if (s === 'Rejected' || s === 'Cancelled' || s === 'Refused') return 'bg-rose-400/10 text-rose-400 border border-rose-400/20';
+  if (s === 'Accepted' || s === 'On the Way' || s === 'Arrived' || s === 'In Progress') return 'bg-cyan-400/10 text-cyan-400 border border-cyan-400/20';
+  return 'bg-white/10 text-white border border-white/20';
 }

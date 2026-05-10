@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Ban } from "lucide-react";
@@ -52,7 +54,7 @@ export function DeclinedHistory({
             className="grid gap-4 overflow-hidden"
           >
             {declinedJobs.length === 0 ? (
-              <div className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs border border-slate-100 rounded-3xl glass-panel border-white/10 shadow-sm">
+              <div className="p-10 text-center text-slate-500 font-bold uppercase tracking-widest text-xs bg-white/5 border border-white/10 rounded-3xl shadow-sm">
                 No declined bookings
               </div>
             ) : (
@@ -61,18 +63,18 @@ export function DeclinedHistory({
                   key={job.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-panel border-white/10 border border-slate-200 rounded-3xl p-6 group shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 group shadow-sm transition-shadow"
                 >
                   <div className="flex flex-col sm:flex-row justify-between gap-4">
                     <div className="flex gap-5">
-                      <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-xl shrink-0">
+                      <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl shrink-0">
                         <Ban className="w-5 h-5 text-rose-500" />
                       </div>
                       <div>
                         <h3 className="text-base font-bold text-white">
                           {job.category} Request
                         </h3>
-                        <p className="text-slate-400 text-sm mt-1">
+                        <p className="text-slate-500 text-sm mt-1">
                           {job.address || "No address provided"}
                         </p>
                         <div className="flex items-center gap-3 mt-2 flex-wrap">
@@ -81,7 +83,7 @@ export function DeclinedHistory({
                               ₹{job.estimatedCostRange}
                             </span>
                           )}
-                          <span className="w-1 h-1 bg-slate-200 rounded-full" />
+                          <span className="w-1 h-1 bg-white/10 rounded-full" />
                           <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">
                             Declined{" "}
                             {job.createdAt
@@ -98,7 +100,7 @@ export function DeclinedHistory({
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <span className="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest">
+                      <span className="px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-black uppercase tracking-widest">
                         Declined
                       </span>
                     </div>
@@ -130,7 +132,7 @@ export function TransactionLedger({
         </h2>
         <button
           onClick={() => setShowTransactions(!showTransactions)}
-          className="px-6 py-2 glass-panel border-white/50 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest hover:glass-panel border-white/10 transition-all"
+          className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-white"
         >
           {showTransactions ? "Hide Details" : "Open Ledger"}
         </button>
@@ -142,11 +144,11 @@ export function TransactionLedger({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="glass-neon-card overflow-hidden"
+            className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] overflow-hidden"
           >
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="glass-panel border-white/10 text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] border-b border-slate-100">
+                <thead className="bg-white/5 border-white/10 text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] border-b border-white/10">
                   <tr>
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">Type</th>
@@ -158,10 +160,10 @@ export function TransactionLedger({
                   {transactions.map((txn) => (
                     <tr
                       key={txn.id}
-                      className="hover:glass-panel border-white/10 transition-colors group"
+                      className="hover:bg-white/5 transition-colors group"
                     >
-                      <td className="px-6 py-4 font-mono text-[10px] text-slate-400">
-                        {txn.id.slice(0, 10)}...
+                      <td className="px-6 py-4 font-mono text-[10px] text-slate-500">
+                        {txn.id.slice(0, 10).toUpperCase()}...
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
@@ -175,12 +177,12 @@ export function TransactionLedger({
                           >
                             {txn.type.replace("_", " ")}
                           </span>
-                          <span className="text-[10px] text-slate-400 mt-0.5 font-bold">
+                          <span className="text-[10px] text-slate-500 mt-0.5 font-bold">
                             REF: {txn.bookingId || txn.orderId}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-400 font-medium">
+                      <td className="px-6 py-4 text-xs text-slate-500 font-medium">
                         {new Date(txn.createdAt).toLocaleDateString()}
                       </td>
                       <td
@@ -201,7 +203,7 @@ export function TransactionLedger({
             </div>
 
             {/* Mobile View */}
-            <div className="md:hidden divide-y divide-slate-100">
+            <div className="md:hidden divide-y divide-white/5">
               {transactions.map((txn) => (
                 <div key={txn.id} className="p-4 flex flex-col gap-2">
                   <div className="flex justify-between items-start">
@@ -212,7 +214,7 @@ export function TransactionLedger({
                       )}>
                         {txn.type.replace("_", " ")}
                       </span>
-                      <span className="text-[9px] text-slate-400 font-bold">REF: {txn.bookingId || txn.orderId}</span>
+                      <span className="text-[9px] text-slate-500 font-bold">REF: {txn.bookingId || txn.orderId}</span>
                     </div>
                     <span className={cn(
                       "text-sm font-black",
@@ -221,16 +223,16 @@ export function TransactionLedger({
                       {txn.type === "service_payment" ? "+" : "-"}₹{txn.amount}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold">
+                  <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold">
                     <span>{new Date(txn.createdAt).toLocaleDateString()}</span>
-                    <span className="font-mono">{txn.id.slice(0, 8)}</span>
+                    <span className="font-mono">{txn.id.slice(0, 8).toUpperCase()}</span>
                   </div>
                 </div>
               ))}
             </div>
 
             {transactions.length === 0 && (
-              <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+              <div className="p-12 text-center text-slate-600 font-bold uppercase tracking-widest text-[10px]">
                 No transaction history available
               </div>
             )}
@@ -240,4 +242,3 @@ export function TransactionLedger({
     </section>
   );
 }
-

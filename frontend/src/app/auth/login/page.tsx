@@ -384,6 +384,8 @@ export default function LoginPage() {
                     {/* Remember / Forgot */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
+                        <Checkbox 
+                          id={`${id}-remember`}
                           className="size-[18px] rounded-md border-white/15 data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-slate-900" 
                         />
                         <Label htmlFor={`${id}-remember`} className="text-[13px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors font-medium">

@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Zap, Lock, Mail, Shield, User, Wrench, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Shield, User, Wrench, ArrowLeft, Eye, EyeOff, Activity } from 'lucide-react';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { API_BASE } from '@/lib/config';
+import { cn } from '@/lib/utils';
 
 export default function DynamicLoginPage() {
   const router = useRouter();
@@ -88,20 +88,19 @@ export default function DynamicLoginPage() {
   };
 
   const roleConfig = {
-    customer: { icon: <User className="w-6 h-6" />, label: 'Customer', color: 'indigo' },
-    technician: { icon: <Wrench className="w-6 h-6" />, label: 'Technician', color: 'cyan' },
-    admin: { icon: <Shield className="w-6 h-6" />, label: 'Administrator', color: 'amber' },
+    customer: { icon: <User className="w-6 h-6" />, label: 'Customer', accent: 'cyan' },
+    technician: { icon: <Wrench className="w-6 h-6" />, label: 'Technician', accent: 'cyan' },
+    admin: { icon: <Shield className="w-6 h-6" />, label: 'Administrator', accent: 'amber' },
   };
 
   const config = roleConfig[roleParam] || roleConfig.customer;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#020617] text-slate-200 font-sans relative overflow-hidden selection:bg-indigo-500/30">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-950 text-slate-200 font-sans relative overflow-hidden selection:bg-cyan-500/30">
       {/* Background Atmosphere */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[150px] animate-pulse-slow" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+        <div className="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-500/5 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full bg-slate-500/5 blur-[150px] animate-pulse-slow" />
       </div>
 
       <motion.div 
@@ -113,43 +112,49 @@ export default function DynamicLoginPage() {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-full max-w-md z-10"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-blue-500/20 blur-3xl -z-10 rounded-[2.5rem]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-slate-500/10 blur-3xl -z-10 rounded-[2.5rem]" />
         
-        <div className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 sm:p-12">
+        <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 sm:p-12">
           <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
             <header className="text-center mb-10">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring" }}
-                className={`inline-flex items-center justify-center p-3 rounded-2xl bg-${config.color}-500/10 border border-${config.color}-500/20 mb-6`}
+                className={cn(
+                  "inline-flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-xl",
+                  config.accent === 'amber' ? "text-amber-500" : "text-cyan-400"
+                )}
               >
                 {config.icon}
               </motion.div>
-              <h2 className="text-3xl font-black tracking-tight text-white mb-2 uppercase">
+              <h2 className="text-3xl font-black tracking-tighter text-white mb-2 uppercase italic">
                 {config.label} Portal
               </h2>
-              <p className="text-slate-400 text-sm font-medium tracking-wide">
-                Initialize session for localized {roleParam} login
-              </p>
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <Activity className="size-3 text-cyan-400 animate-pulse" />
+                <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                  Secure Authentication Node
+                </p>
+              </div>
             </header>
 
             <form onSubmit={handleLogin} className="space-y-6">
               {error && (
-                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold text-center">
+                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-widest text-center">
                   {error}
                 </div>
               )}
               
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-indigo-300 font-bold ml-1">Comm Vector (Email)</Label>
+                <Label className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black ml-1">Identity Vector</Label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-300 group-focus-within:text-indigo-400 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-white transition-colors" />
                   <Input 
                     required 
                     type="email" 
-                    placeholder="vector@nexus.com" 
-                    className="pl-12 h-14 rounded-2xl bg-slate-950/40 border-white/5 text-white placeholder:text-indigo-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500/50" 
+                    placeholder="ENTER EMAIL ADDRESS" 
+                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold uppercase text-xs" 
                     value={formData.email} 
                     onChange={e => setFormData({...formData, email: e.target.value})} 
                   />
@@ -157,21 +162,21 @@ export default function DynamicLoginPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-indigo-300 font-bold ml-1">Login Cipher (Password)</Label>
+                <Label className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black ml-1">Access Cipher</Label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-300 group-focus-within:text-indigo-400 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-white transition-colors" />
                   <Input 
                     required 
                     type={showPassword ? "text" : "password"} 
                     placeholder="••••••••" 
-                    className="pl-12 pr-12 h-14 rounded-2xl bg-slate-950/40 border-white/5 text-white placeholder:text-indigo-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500/50" 
+                    className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold text-xs" 
                     value={formData.password} 
                     onChange={e => setFormData({...formData, password: e.target.value})} 
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-indigo-300 hover:text-slate-300 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -181,19 +186,15 @@ export default function DynamicLoginPage() {
               <Button 
                 disabled={loading} 
                 type="submit" 
-                className={`w-full h-16 rounded-2xl font-black text-xs tracking-[0.2em] uppercase mt-4 transition-all duration-500 shadow-xl ${
-                  roleParam === 'admin'
-                    ? 'bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-amber-500/20'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20'
-                }`}
+                className="w-full h-16 rounded-2xl font-black text-xs tracking-[0.4em] uppercase mt-4 transition-all duration-500 shadow-xl bg-white text-slate-950 hover:bg-slate-200 shadow-white/10 active:scale-[0.98]"
               >
-                {loading ? 'Verifying Login...' : 'Initialize Dashboard'}
+                {loading ? 'Verifying Cipher...' : 'Initialize Session'}
               </Button>
             </form>
 
             <footer className="mt-12 text-center pt-8 border-t border-white/5">
-              <Link href="/auth/login" className="flex items-center justify-center gap-2 text-[10px] font-black text-indigo-300 hover:text-indigo-400 transition-colors uppercase tracking-widest">
-                <ArrowLeft className="w-3 h-3" /> Revert to Nexus Terminal
+              <Link href="/auth/login" className="flex items-center justify-center gap-3 text-[10px] font-black text-slate-500 hover:text-white transition-all uppercase tracking-[0.2em]">
+                <ArrowLeft className="w-3.5 h-3.5" /> Revert to Global Terminal
               </Link>
             </footer>
           </div>
@@ -206,10 +207,10 @@ export default function DynamicLoginPage() {
         transition={{ delay: 1 }}
         className="mt-12 text-center z-10"
       >
-        <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.5em] flex items-center gap-3">
-          <span className="w-8 h-px bg-slate-800" />
-          {roleParam.toUpperCase()} NODE • SECURE LINK
-          <span className="w-8 h-px bg-slate-800" />
+        <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.5em] flex items-center gap-4">
+          <span className="w-12 h-px bg-white/5" />
+          {roleParam.toUpperCase()} NODE • ENCRYPTED LINK
+          <span className="w-12 h-px bg-white/5" />
         </p>
       </motion.div>
     </div>
