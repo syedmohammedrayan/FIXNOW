@@ -23,7 +23,9 @@ import {
   XCircle,
   AlertTriangle,
   Loader2,
-  X
+  X,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import axios from 'axios';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, OverlayView, Polyline } from '@react-google-maps/api';
@@ -89,6 +91,7 @@ export default function TrackingPage() {
   const directionsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<any>(null);
   const [hasFitBounds, setHasFitBounds] = useState(false);
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   // Cancellation states
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -315,7 +318,12 @@ export default function TrackingPage() {
       <main className="flex-1 min-h-0 flex flex-col lg:flex-row relative overflow-hidden">
         
         {/* MAP SECTION */}
-        <section className="h-[40vh] md:h-[50vh] lg:h-full lg:flex-1 relative overflow-hidden bg-slate-100 border-b lg:border-b-0 border-slate-200">
+        <section className={cn(
+          "relative overflow-hidden bg-slate-100 transition-all duration-500",
+          isMapFullscreen 
+            ? "fixed inset-0 z-[150] h-full w-full" 
+            : "h-[40vh] md:h-[50vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-slate-200"
+        )}>
           {!isLoaded && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm z-10">
               <div className="relative">
@@ -382,18 +390,32 @@ export default function TrackingPage() {
             </GoogleMap>
           )}
 
-           {/* THEME SWITCHER */}
-           <div className="absolute top-6 right-6 z-50 pointer-events-auto">
-             <button
-               onClick={() => setIsDarkMode(!isDarkMode)}
-               className={cn(
-                 "p-3 rounded-full shadow-2xl backdrop-blur-md transition-all border flex items-center justify-center",
-                 isDarkMode ? "bg-slate-800/80 border-slate-700 text-amber-400 hover:bg-slate-700" : "bg-white/80 border-slate-200 text-indigo-600 hover:bg-slate-50"
-               )}
-             >
-               {isDarkMode ? <Sun className="size-5" /> : <Moon className="size-5" />}
-             </button>
-           </div>
+            <div className="absolute top-6 right-6 z-50 flex flex-col gap-3 pointer-events-auto">
+              <button
+                onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                className={cn(
+                  "p-3 rounded-full shadow-2xl backdrop-blur-md transition-all border flex items-center justify-center",
+                  isDarkMode ? "bg-slate-800/80 border-slate-700 text-indigo-400 hover:bg-slate-700" : "bg-white/80 border-slate-200 text-indigo-600 hover:bg-slate-50"
+                )}
+                title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
+              >
+                {isMapFullscreen ? (
+                  <Minimize2 className="size-5" />
+                ) : (
+                  <Maximize2 className="size-5" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={cn(
+                  "p-3 rounded-full shadow-2xl backdrop-blur-md transition-all border flex items-center justify-center",
+                  isDarkMode ? "bg-slate-800/80 border-slate-700 text-amber-400 hover:bg-slate-700" : "bg-white/80 border-slate-200 text-indigo-600 hover:bg-slate-50"
+                )}
+              >
+                {isDarkMode ? <Sun className="size-5" /> : <Moon className="size-5" />}
+              </button>
+            </div>
 
           {/* FLOATING INTELLIGENCE HUD - TOP ON MOBILE, LEFT ON DESKTOP */}
           <div className="absolute top-4 lg:top-32 left-4 lg:left-6 w-[calc(100%-4.5rem)] lg:w-auto flex flex-wrap lg:flex-col gap-2 lg:gap-4 pointer-events-none z-20">
