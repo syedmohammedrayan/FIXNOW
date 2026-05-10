@@ -115,7 +115,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
   return (
     <nav className={cn(
       "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-500",
-      "w-[95%] max-w-7xl bg-slate-900/90 backdrop-blur-3xl border border-white/10 shadow-2xl",
+      "w-[95%] max-w-7xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl",
       visible ? (scrolled ? "top-2 py-3 rounded-[2rem] opacity-100" : "top-4 py-4 rounded-[2rem] opacity-100") : "-top-32 opacity-0 pointer-events-none"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
