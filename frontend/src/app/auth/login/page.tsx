@@ -368,7 +368,7 @@ export default function LoginPage() {
                     </Button>
 
                     <p className="text-center text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-8 leading-relaxed">
-                      First deployment? <Link href={`/auth/signup?role=${role}`} className="text-cyan-400 hover:text-cyan-300 transition underline underline-offset-4 font-black">Register Node</Link>
+                      Don't have an account? <Link href={`/auth/signup?role=${role}`} className="text-cyan-400 hover:text-cyan-300 transition underline underline-offset-4 font-black">Sign Up</Link>
                     </p>
                   </motion.div>
                 ) : (

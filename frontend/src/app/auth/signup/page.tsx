@@ -402,7 +402,7 @@ function SignupInner() {
 
               <div className="mt-8 pt-6 border-t border-white/10 text-center relative z-10">
                 <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
-                  Already registered? <Link href={`/auth/login${role ? `?role=${role}` : ''}`} className="text-cyan-400 hover:text-cyan-300 transition underline underline-offset-4 font-black">Access Terminal</Link>
+                  Already have an account? <Link href={`/auth/login${role ? `?role=${role}` : ''}`} className="text-cyan-400 hover:text-cyan-300 transition underline underline-offset-4 font-black">Login</Link>
                 </p>
               </div>
             </motion.div>
