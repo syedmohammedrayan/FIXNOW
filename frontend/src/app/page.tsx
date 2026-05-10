@@ -41,7 +41,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 }}
-                className="block font-black uppercase italic tracking-[-0.05em] text-white drop-shadow-lg [text-shadow:0_0_20px_rgba(255,255,255,0.15)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
+                className="block font-black uppercase italic tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
               >
                 Reliable
               </motion.span>
@@ -64,7 +64,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-base md:text-lg text-slate-700 font-bold max-w-xl mx-auto leading-relaxed uppercase tracking-[0.18em]"
+              className="text-base md:text-lg text-white/70 font-bold max-w-xl mx-auto leading-relaxed uppercase tracking-[0.18em] drop-shadow-lg"
             >
               High-Precision Service Ecosystem.
             </motion.p>
@@ -95,7 +95,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center mb-20"
           >
-            <h2 className="text-4xl md:text-8xl font-black text-white drop-shadow-lg [text-shadow:0_0_15px_rgba(255,255,255,0.15)] tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
+            <h2 className="text-4xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
             <div className="w-48 h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
           </motion.div>
           
@@ -124,8 +124,8 @@ export default function LandingPage() {
         {/* Feature Section */}
         <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
           <div className="space-y-10 max-w-4xl">
-            <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-lg [text-shadow:0_0_15px_rgba(255,255,255,0.15)] tracking-[-0.06em] leading-[0.75] uppercase italic">
-              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_15px_rgba(6,182,212,0.2)]">Infrastructure.</span>
+            <h2 className="text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.06em] leading-[0.75] uppercase italic">
+              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_20px_rgba(6,182,212,0.3)]">Infrastructure.</span>
             </h2>
             <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
               Proprietary Architecture for High-Stake Execution.
@@ -155,8 +155,8 @@ function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: 
       <div className="w-24 h-24 rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
         {icon}
       </div>
-      <h3 className="text-2xl font-black text-white drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
-      <p className="text-slate-200 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10 drop-shadow-sm">{desc}</p>
+      <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
+      <p className="text-white/70 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10">{desc}</p>
     </motion.div>
   );
 }
