@@ -146,6 +146,11 @@ export default function LoginPage() {
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               className="bg-white/80 backdrop-blur-[60px] border border-white/60 rounded-[3.5rem] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] relative overflow-hidden group/card"
             >
+              {/* Back Arrow */}
+              <Link href="/" className="absolute top-8 left-8 z-20 text-slate-400 hover:text-slate-950 transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-slate-950/5">
+                <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
+              </Link>
+
               {/* Premium Glint Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
               
@@ -229,6 +234,11 @@ export default function LoginPage() {
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               className="bg-slate-900/35 backdrop-blur-[40px] border border-white/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
             >
+              {/* Back Arrow */}
+              <Link href="/" className="absolute top-8 left-8 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-white/10">
+                <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
+              </Link>
+
               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full -mr-16 -mt-16" />
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-slate-500/10 blur-3xl rounded-full -ml-16 -mb-16" />
 
