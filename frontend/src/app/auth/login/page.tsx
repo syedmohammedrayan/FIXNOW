@@ -136,7 +136,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-900/60 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+          className="bg-slate-900/35 backdrop-blur-[40px] border border-white/20 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full -mr-16 -mt-16" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-slate-500/10 blur-3xl rounded-full -ml-16 -mb-16" />

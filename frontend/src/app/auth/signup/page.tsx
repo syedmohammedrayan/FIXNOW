@@ -218,10 +218,10 @@ export default function SignupPage() {
         {/* ─── Main Card ─── */}
         <div className="relative w-full rounded-[2rem] overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.01) 100%)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.02) 100%)',
+            border: '1px solid rgba(255,255,255,0.2)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(24px) saturate(150%)',
+            backdropFilter: 'blur(40px) saturate(150%)',
           }}
         >
           {/* Top accent */}
