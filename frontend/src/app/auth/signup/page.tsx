@@ -340,7 +340,7 @@ export default function SignupPage() {
                             >
                               <option value="" disabled className="bg-slate-900">Select Professional Specialization</option>
                               {ALL_SERVICES.map(s => (
-                                <option key={s} value={s} className="bg-slate-900">{s}</option>
+                                <option key={s.category} value={s.category} className="bg-slate-900">{s.category}</option>
                               ))}
                             </select>
                             <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 size-5 text-slate-500 pointer-events-none" />
