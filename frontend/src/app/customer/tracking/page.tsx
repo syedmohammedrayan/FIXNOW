@@ -88,6 +88,7 @@ export default function TrackingPage() {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const directionsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<any>(null);
+  const [hasFitBounds, setHasFitBounds] = useState(false);
 
   // Cancellation states
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -236,13 +237,14 @@ export default function TrackingPage() {
   }, [bookingId]);
 
   useEffect(() => {
-    if (map && techLocation && userLocation && window.google?.maps) {
+    if (map && techLocation && userLocation && window.google?.maps && !hasFitBounds) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(userLocation);
       map.fitBounds(bounds, { top: 150, right: 100, bottom: 250, left: 100 });
+      setHasFitBounds(true);
     }
-  }, [map, techLocation, userLocation]);
+  }, [map, techLocation, userLocation, hasFitBounds]);
 
   useEffect(() => {
     // We now rely on instant localDistance for the UI and ETA
