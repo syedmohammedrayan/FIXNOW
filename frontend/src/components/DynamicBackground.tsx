@@ -109,9 +109,9 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 1000;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 8 + scrollRatio * 12; // 8px -> 20px
-        // Use a much lighter, white-tinted glassmorphism
-        const opacity = 0.4 + scrollRatio * 0.3; // 0.4 -> 0.7
+        const blur = 4 + scrollRatio * 8; // 4px -> 12px
+        // Use near 100% transparency
+        const opacity = 0.02 + scrollRatio * 0.15; // 0.02 -> 0.17
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
         overlayRef.current.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
@@ -157,7 +157,7 @@ export default function DynamicBackground() {
         ))}
       </div>
 
-      {/* ─── Layer 2: Frosted White Glass Overlay (z-index: -1) ─── */}
+      {/* ─── Layer 2: Ultra Transparent Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
         className="dynamic-bg-overlay"
@@ -165,9 +165,9 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'rgba(255, 255, 255, 0.4)', // Premium White Transparency
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.02)', 
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
           pointerEvents: 'none',
           willChange: 'backdrop-filter, background-color',
         }}
