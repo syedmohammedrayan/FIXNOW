@@ -27,10 +27,10 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="glass-neon-card p-6 cursor-pointer hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all relative group overflow-hidden border border-white/60 shadow-xl"
+              className="glass-neon-card p-6 cursor-pointer hover:border-white/80 hover:shadow-2xl hover:shadow-white/10 transition-all relative group overflow-hidden border border-white/60 shadow-xl"
               onClick={() => onSelect(tech)}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/[0.03] blur-[40px] -mr-16 -mt-16 group-hover:bg-indigo-500/10 transition-all duration-500" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-[40px] -mr-16 -mt-16 group-hover:bg-white/20 transition-all duration-500" />
               
               <div className="flex items-center gap-5 relative z-10">
                 <div className="size-16 rounded-[1.25rem] glass-panel border-white/10 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
@@ -49,7 +49,7 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <h4 className="font-black text-white truncate tracking-tight group-hover:text-indigo-600 transition-colors">{tech.name}</h4>
+                    <h4 className="font-black text-white truncate tracking-tight group-hover:text-white transition-colors">{tech.name}</h4>
                     {tech.online !== false ? (
                       <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 shrink-0">
                          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -69,12 +69,12 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
               <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-indigo-600" />
+                    <Sparkles className="size-3.5 text-white" />
                     <span className="text-xs font-black text-white">{tech.rating}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MapPin className="size-3.5 text-slate-400" />
-                    <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">{tech.distance}</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{tech.distance}</span>
                   </div>
                 </div>
               </div>

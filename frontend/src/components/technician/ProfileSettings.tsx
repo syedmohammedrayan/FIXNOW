@@ -260,20 +260,23 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
             <div className="size-32 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl relative bg-slate-100 transition-transform group-hover:scale-105 duration-500">
               {uploadingAvatar && (
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
-                  <div className="size-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                  <div className="size-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
                 </div>
               )}
               {profile.avatar && profile.avatar.length > 5 ? (
-                <img src={profile.avatar} className="size-full object-contain bg-slate-50 p-2" />
+                <div className="relative size-full">
+                  <img src={profile.avatar} className="size-full object-contain bg-slate-50 p-2" />
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] pointer-events-none" />
+                </div>
               ) : (
-                <div className="size-full bg-indigo-600 flex items-center justify-center text-5xl">👷</div>
+                <div className="size-full bg-slate-900 flex items-center justify-center text-5xl">👷</div>
               )}
             </div>
             
             <div className="absolute -bottom-2 -right-2 flex gap-2">
               <label 
                 htmlFor="avatar-upload"
-                className="size-10 bg-white rounded-xl shadow-lg border border-slate-100 flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-95 cursor-pointer"
+                className="size-10 bg-white rounded-xl shadow-lg border border-slate-100 flex items-center justify-center text-slate-900 hover:bg-slate-900 hover:text-white transition-all active:scale-95 cursor-pointer"
                 title="Update Photo"
               >
                 <Camera className="size-5" />
@@ -300,9 +303,9 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
                  <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                  <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Active Specialist</span>
               </div>
-              <div className="px-5 py-2 bg-indigo-50 border border-indigo-100 rounded-full flex items-center gap-2">
-                 <Shield className="size-3 text-indigo-600" />
-                 <span className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">ID: {user?.uid.slice(0, 8).toUpperCase()}</span>
+              <div className="px-5 py-2 bg-slate-900 border border-slate-800 rounded-full flex items-center gap-2">
+                 <Shield className="size-3 text-white" />
+                 <span className="text-[10px] font-black text-white uppercase tracking-widest">ID: {user?.uid.slice(0, 8).toUpperCase()}</span>
               </div>
             </div>
           </div>

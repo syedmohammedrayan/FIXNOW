@@ -454,7 +454,7 @@ export default function TrackingPage() {
             <div className="absolute top-6 lg:top-10 right-6 lg:right-10 z-30">
               <button 
                 onClick={() => router.push('/customer/dashboard')}
-                className="size-10 lg:size-12 rounded-xl lg:rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-100 hover:bg-white transition-all shadow-sm group"
+                className="size-10 lg:size-12 rounded-xl lg:rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/50 hover:bg-slate-900 transition-all shadow-sm group"
               >
                 <ArrowLeft className="size-5 lg:size-6 group-hover:-translate-x-1 transition-transform" />
               </button>
@@ -470,8 +470,9 @@ export default function TrackingPage() {
               <div className="bg-slate-50 rounded-[3rem] p-8 border border-slate-100 relative overflow-hidden group">
                  <div className="flex items-center gap-6 mb-8">
                     <div className="relative">
-                      <div className="size-20 rounded-[2rem] bg-white border border-slate-200 overflow-hidden shadow-xl">
-                        {techDetails.avatar ? <img src={techDetails.avatar} className="w-full h-full object-contain bg-slate-50 p-1" /> : <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-600 font-black text-2xl">{techDetails.name.charAt(0)}</div>}
+                      <div className="size-20 rounded-[2rem] bg-white border border-slate-200 overflow-hidden shadow-xl relative">
+                        {techDetails.avatar ? <img src={techDetails.avatar} className="w-full h-full object-contain bg-slate-50 p-1" /> : <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-900 font-black text-2xl">{techDetails.name.charAt(0)}</div>}
+                        <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] pointer-events-none" />
                       </div>
                       <div className="absolute -bottom-2 -right-2 size-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center shadow-lg">
                         <CheckCircle2 className="size-4 text-white" />
@@ -489,14 +490,14 @@ export default function TrackingPage() {
                  </div>
                  
                  <div className="grid grid-cols-2 gap-4">
-                    <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-4 bg-white rounded-2xl border border-slate-200 hover:border-indigo-500 transition-all group/btn shadow-sm">
-                      <Phone className="size-5 text-slate-400 group-hover/btn:text-indigo-600" />
-                      <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Call Tech</span>
-                    </a>
-                    <div className="flex flex-col items-center justify-center py-2 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-500/20">
-                      <span className="text-[7px] font-bold uppercase tracking-widest opacity-70 mb-0.5">Secure OTP</span>
-                      <span className="text-xl font-black tracking-[0.2em]">{otp}</span>
-                    </div>
+                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-4 bg-white rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group/btn shadow-sm">
+                       <Phone className="size-5 text-slate-400 group-hover/btn:text-slate-900" />
+                       <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Call Tech</span>
+                     </a>
+                     <div className="flex flex-col items-center justify-center py-2 bg-slate-900 text-white rounded-2xl shadow-xl shadow-slate-900/20">
+                       <span className="text-[7px] font-bold uppercase tracking-widest opacity-70 mb-0.5">Secure OTP</span>
+                       <span className="text-xl font-black tracking-[0.2em]">{otp}</span>
+                     </div>
                  </div>
 
                  {/* Cancel Booking Option */}
@@ -533,8 +534,8 @@ export default function TrackingPage() {
         {status === 'Pending' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
              <div className="relative mb-12">
-                <div className="absolute -inset-10 bg-indigo-500/10 rounded-full animate-ping" />
-                <div className="relative size-32 bg-indigo-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-indigo-500/40">
+                <div className="absolute -inset-10 bg-slate-900/5 rounded-full animate-ping" />
+                <div className="relative size-32 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-slate-900/40">
                   <Clock className="size-16 text-white animate-pulse" />
                 </div>
              </div>
@@ -544,7 +545,7 @@ export default function TrackingPage() {
              </p>
              <div className="flex flex-col gap-4 mt-12 w-full max-w-xs">
                 <button onClick={() => router.push('/customer/dashboard')} className="px-8 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-2xl active:scale-95">Return to Dashboard</button>
-                <button onClick={() => setShowCancelModal(true)} className="px-8 py-5 bg-rose-50 text-rose-500 rounded-2xl font-black text-xs uppercase tracking-[0.3em] border border-rose-100 transition-all active:scale-95">Cancel Request</button>
+                <button onClick={() => setShowCancelModal(true)} className="px-8 py-5 bg-slate-50 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-[0.3em] border border-slate-100 transition-all active:scale-95">Cancel Request</button>
              </div>
           </motion.div>
         )}
@@ -555,14 +556,14 @@ export default function TrackingPage() {
         {status === 'In Progress' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
              <div className="relative mb-12">
-                <div className="absolute -inset-10 bg-indigo-500/10 rounded-full animate-ping" />
-                <div className="relative size-32 bg-indigo-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-indigo-500/40">
+                <div className="absolute -inset-10 bg-slate-900/5 rounded-full animate-ping" />
+                <div className="relative size-32 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-slate-900/40">
                   <Zap className="size-16 text-white animate-pulse" />
                 </div>
              </div>
              <h2 className="text-5xl font-black text-slate-900 mb-4 tracking-tighter italic">EXECUTION ACTIVE</h2>
              <p className="text-slate-400 font-bold max-w-sm uppercase tracking-[0.2em] text-[10px] leading-loose">Specialist is currently optimizing your service manifest. Signal link remains encrypted.</p>
-             <button onClick={() => setStatus('Arrived')} className="mt-12 px-12 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-indigo-600 transition-all shadow-2xl">Return to Monitoring</button>
+             <button onClick={() => setStatus('Arrived')} className="mt-12 px-12 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-2xl">Return to Monitoring</button>
           </motion.div>
         )}
       </AnimatePresence>
