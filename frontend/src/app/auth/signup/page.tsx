@@ -211,6 +211,15 @@ export default function SignupPage() {
                   {loading ? 'Processing...' : 'Initialize Node'}
                 </Button>
               </form>
+
+              <div className="mt-10 pt-6 border-t border-slate-950/5 text-center">
+                <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                  Already have access? <br/>
+                  <Link href="/auth/login?role=admin" className="text-amber-600 hover:text-amber-700 transition underline underline-offset-4 mt-2 inline-block">
+                    Return to Terminal
+                  </Link>
+                </p>
+              </div>
             </motion.div>
           ) : (
             /* ─────────────────── STANDARD SIGNUP CARD (DARK THEME) ─────────────────── */

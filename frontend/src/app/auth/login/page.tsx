@@ -202,8 +202,14 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              <div className="mt-12 pt-8 border-t border-slate-950/5 text-center">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
+              <div className="mt-12 pt-8 border-t border-slate-950/5 text-center space-y-6">
+                <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                  Need administrative credentials? <br/>
+                  <Link href="/auth/signup?role=admin" className="text-amber-600 hover:text-amber-700 transition underline underline-offset-4 mt-2 inline-block">
+                    Register Admin Node
+                  </Link>
+                </p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-relaxed opacity-60">
                   Notice: This terminal is monitored. <br/> unauthorized access attempts will be logged.
                 </p>
               </div>
