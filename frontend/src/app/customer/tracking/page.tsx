@@ -394,39 +394,39 @@ export default function TrackingPage() {
            </div>
 
           {/* FLOATING INTELLIGENCE HUD - TOP ON MOBILE, LEFT ON DESKTOP */}
-          <div className="absolute top-4 lg:top-32 left-4 lg:left-6 flex lg:flex-col gap-2 lg:gap-4 pointer-events-none z-20">
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white/80 backdrop-blur-2xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-2xl border border-white/50 flex items-center gap-3 lg:gap-4 pointer-events-auto min-w-[120px]">
-                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100">
+          <div className="absolute top-4 lg:top-32 left-4 lg:left-6 w-[calc(100%-4.5rem)] lg:w-auto flex flex-wrap lg:flex-col gap-2 lg:gap-4 pointer-events-none z-20">
+             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
+                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100 shrink-0">
                    <Clock className={cn("size-4 lg:size-6 text-indigo-600", eta === 'Syncing...' && "animate-spin")} />
                 </div>
-                <div>
-                   <div className="flex items-center gap-1.5">
-                      <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">ETA</p>
-                      <span className="flex size-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                <div className="min-w-0">
+                   <div className="flex items-center gap-1.5 mb-0.5">
+                      <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">ETA</p>
+                      <span className="flex size-1.5 rounded-full bg-indigo-500 animate-pulse shrink-0" />
                    </div>
-                   <p className={cn("text-xs lg:text-lg font-black text-slate-900", eta === 'Syncing...' && "text-slate-400 animate-pulse")}>
+                   <p className={cn("text-xs lg:text-lg font-black text-slate-900 truncate leading-none", eta === 'Syncing...' && "text-slate-400 animate-pulse")}>
                       {eta}
                    </p>
                 </div>
              </motion.div>
 
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-white/80 backdrop-blur-2xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-2xl border border-white/50 flex items-center gap-3 lg:gap-4 pointer-events-auto min-w-[120px]">
-                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100">
+             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
+                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100 shrink-0">
                    <LocateFixed className="size-4 lg:size-6 text-indigo-600" />
                 </div>
-                <div>
-                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">Distance</p>
-                   <p className="text-xs lg:text-lg font-black text-slate-900 tracking-tighter">{localDistance}</p>
+                <div className="min-w-0">
+                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate mb-0.5">Distance</p>
+                   <p className="text-xs lg:text-lg font-black text-slate-900 tracking-tighter truncate leading-none">{localDistance}</p>
                 </div>
              </motion.div>
 
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="bg-white/80 backdrop-blur-2xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-2xl border border-white/50 flex items-center gap-3 lg:gap-4 pointer-events-auto min-w-[120px]">
-                <div className="size-8 lg:size-12 bg-emerald-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-emerald-100">
+             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
+                <div className="size-8 lg:size-12 bg-emerald-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-emerald-100 shrink-0">
                    <Activity className="size-4 lg:size-6 text-emerald-600 animate-pulse" />
                 </div>
-                <div>
-                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">System</p>
-                   <p className="text-xs lg:text-lg font-black text-emerald-600 tracking-tighter">CONNECTED</p>
+                <div className="min-w-0">
+                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate mb-0.5">System</p>
+                   <p className="text-xs lg:text-lg font-black text-emerald-600 tracking-tighter truncate leading-none">CONN.</p>
                 </div>
              </motion.div>
           </div>
@@ -434,7 +434,7 @@ export default function TrackingPage() {
 
         {/* SIDEBAR */}
         <aside className="w-full lg:w-[400px] xl:w-[450px] flex-1 lg:flex-none lg:h-full bg-white flex flex-col border-l border-slate-100 relative z-10 overflow-hidden">
-          <div className="flex-1 min-h-0 overflow-y-scroll p-6 lg:p-10 custom-scrollbar relative">
+          <div className="flex-1 min-h-0 overflow-y-scroll p-6 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
             {/* TACTICAL BACK BUTTON - UPPER RIGHT */}
             <div className="absolute top-6 lg:top-10 right-6 lg:right-10 z-30">
               <button 
@@ -504,7 +504,7 @@ export default function TrackingPage() {
                 <div className="space-y-4">
                   <TimelineItem active={true} completed={true} title="Authentication" desc="Security link verified" />
                   <TimelineItem active={true} completed={status === 'Arrived'} title="Tracking Active" desc={`ETA: ${eta}`} icon={<Navigation className="size-5" />} />
-                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Execution" desc="Specialist working on site" icon={<Zap className="size-5" />} />
+                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Execution" desc="Specialist working on site" icon={<Zap className="size-5" />} isLast={true} />
                 </div>
               </div>
             </div>
@@ -598,11 +598,17 @@ export default function TrackingPage() {
   );
 }
 
-function TimelineItem({ active, completed, title, desc, icon }: any) {
+function TimelineItem({ active, completed, title, desc, icon, isLast }: any) {
   return (
-    <div className="flex gap-8 pb-10 relative">
+    <div className="flex gap-6 lg:gap-8 pb-8 lg:pb-10 relative">
+      {!isLast && (
+        <div className={cn(
+          "absolute top-10 left-5 -ml-px w-0.5 h-[calc(100%-2.5rem)]",
+          completed ? "bg-emerald-500" : "bg-slate-200"
+        )} />
+      )}
       <div className={cn(
-        "size-10 rounded-2xl border-2 flex items-center justify-center z-10 transition-all",
+        "size-10 shrink-0 rounded-2xl border-2 flex items-center justify-center z-10 transition-all bg-white relative",
         completed ? "bg-emerald-500 border-emerald-500 shadow-xl shadow-emerald-500/30" : 
         active ? "bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-500/30" : 
         "bg-white border-slate-200"
@@ -611,9 +617,9 @@ function TimelineItem({ active, completed, title, desc, icon }: any) {
          icon ? React.cloneElement(icon, { className: cn("size-5", active ? "text-white" : "text-slate-300") }) :
          <div className={cn("size-2 rounded-full", active ? "bg-white" : "bg-slate-200")} />}
       </div>
-      <div className="min-w-0">
-        <h4 className={cn("text-xs font-black uppercase tracking-widest mb-1", active || completed ? "text-slate-900" : "text-slate-300")}>{title}</h4>
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{desc}</p>
+      <div className="min-w-0 pt-1">
+        <h4 className={cn("text-xs font-black uppercase tracking-widest mb-1 truncate", active || completed ? "text-slate-900" : "text-slate-300")}>{title}</h4>
+        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter line-clamp-2">{desc}</p>
       </div>
     </div>
   );
