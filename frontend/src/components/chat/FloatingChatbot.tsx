@@ -127,7 +127,7 @@ export default function FloatingChatbot({
       ];
 
   return (
-    <div className="fixed bottom-8 right-8 z-[99999] flex flex-col-reverse items-end gap-4 pointer-events-none">
+    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[99999] flex flex-col-reverse items-end gap-4 pointer-events-none">
       <motion.button
         initial={{ scale: 0, rotate: -45 }}
         animate={{ scale: 1, rotate: 0 }}
@@ -157,8 +157,8 @@ export default function FloatingChatbot({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className={cn(
-              "w-[380px] bg-slate-950/95 backdrop-blur-2xl rounded-[2.5rem] flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden border border-white/20 pointer-events-auto mb-2",
-              isMinimized ? "h-20" : "h-[600px]"
+              "w-[calc(100vw-2rem)] sm:w-[380px] bg-slate-950/95 backdrop-blur-2xl rounded-[2rem] sm:rounded-[2.5rem] flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden border border-white/20 pointer-events-auto mb-2",
+              isMinimized ? "h-16 sm:h-20" : "h-[70vh] sm:h-[600px]"
             )}
           >
             {/* Header */}
