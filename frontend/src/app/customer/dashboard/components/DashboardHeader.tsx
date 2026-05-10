@@ -52,9 +52,9 @@ export default function DashboardHeader({
     <div className="flex flex-wrap justify-between items-center gap-6 sm:gap-8 mb-8 sm:mb-12">
       <div className="flex flex-wrap items-center gap-6 sm:gap-10">
         <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter">Customer Interface</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tighter italic">Customer Interface</h1>
           <div className="flex items-center gap-3 mt-3">
-            <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">AI-Powered Dispatch Network</p>
+            <p className="text-slate-600 font-bold uppercase tracking-[0.3em] text-[10px]">AI-Powered Dispatch Network</p>
           </div>
         </motion.div>
 
@@ -64,9 +64,9 @@ export default function DashboardHeader({
             animate={{ scale: 1, opacity: 1 }}
             className="group relative"
           >
-            <div className="flex items-center gap-4 px-5 py-3.5 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-[1.5rem] shadow-2xl shadow-black/40 hover:border-white/30 transition-all duration-500">
+            <div className="flex items-center gap-4 px-5 py-3.5 bg-white/10 backdrop-blur-xl border border-white/40 rounded-[1.5rem] shadow-2xl shadow-white/5 hover:border-white/60 transition-all duration-500">
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 shadow-lg group-hover:scale-110 transition-transform">
+                <div className="size-10 rounded-xl bg-slate-950 flex items-center justify-center border border-white/10 shadow-lg group-hover:scale-110 transition-transform">
                   <Activity className="size-5 text-white" />
                 </div>
                 <div className="min-w-0">
@@ -92,9 +92,9 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onShowHistory}
-          className="group flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-4 rounded-[1.5rem] bg-white/5 border border-white/10 backdrop-blur-md hover:border-white/30 text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 shadow-xl active:scale-95"
+          className="group flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-4 rounded-[1.5rem] bg-white/10 border border-white/40 backdrop-blur-md hover:border-white/60 text-slate-950 font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 shadow-xl active:scale-95"
         >
-          <Calendar className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+          <Calendar className="w-5 h-5 text-slate-950 group-hover:scale-110 transition-transform" />
           Service Logs
         </button>
 
@@ -102,7 +102,7 @@ export default function DashboardHeader({
           <button
             type="button"
             onClick={() => setShowNotifPanel(!showNotifPanel)}
-            className="relative p-4 rounded-[1.5rem] bg-white/5 border border-white/10 backdrop-blur-md hover:border-white/30 transition-all duration-300 shadow-xl text-slate-400 hover:text-white active:scale-95"
+            className="relative p-4 rounded-[1.5rem] bg-white/10 border border-white/40 backdrop-blur-md hover:border-white/60 transition-all duration-300 shadow-xl text-slate-950 hover:text-cyan-600 active:scale-95"
           >
             <Bell className="w-6 h-6" />
             {unreadCount > 0 && (
@@ -130,7 +130,7 @@ export default function DashboardHeader({
           <button 
             type="button"
             onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-            className="p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/30 transition-all shadow-xl active:scale-95 group overflow-hidden relative"
+            className="p-3.5 rounded-2xl bg-white/10 border border-white/40 hover:border-white/60 transition-all shadow-xl active:scale-95 group overflow-hidden relative"
             title="Identity Hub"
           >
             {uploadingAvatar ? (

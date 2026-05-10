@@ -110,9 +110,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     <nav className={cn(
       "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ease-out",
       "w-[95%] max-w-7xl border backdrop-blur-2xl shadow-2xl",
-      isLanding 
-        ? "bg-white/10 border-white/40 shadow-white/5" 
-        : "bg-slate-950/90 border-white/10 shadow-black/50",
+      "bg-white/10 border-white/40 shadow-white/5",
       visible 
         ? (scrolled ? "top-3 py-3 rounded-[2.5rem] opacity-100" : "top-5 py-5 rounded-[2.5rem] opacity-100") 
         : "-top-32 opacity-0 pointer-events-none"

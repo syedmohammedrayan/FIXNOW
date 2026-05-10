@@ -44,33 +44,33 @@ export default function TechnicianHeader({
     <header className="flex flex-col gap-4 mb-8 lg:mb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tighter italic">
             Technician Dashboard
           </h1>
           <div className="flex items-center gap-3 mt-2">
             {profile.online ? (
-              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
-                  Online / Active
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                  Active Console
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                <span className="w-2 h-2 rounded-full bg-slate-500" />
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  Offline / Inactive
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/40 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-slate-400" />
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  Standby Mode
                 </span>
               </div>
             )}
-            <span className="text-white/60 text-sm font-medium">
-              Hello, {profile.name}
+            <span className="text-slate-600 text-[11px] font-bold uppercase tracking-tight">
+              Liaison: {profile.name}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-          <div className="bg-white/5 border border-white/10 shadow-sm rounded-2xl p-1 flex shrink-0">
+          <div className="bg-white/10 border border-white/40 shadow-xl backdrop-blur-md rounded-2xl p-1.5 flex shrink-0">
             <button
               onClick={async () => {
                 setProfile({ ...profile, online: true });
@@ -84,10 +84,10 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-wider",
+                "px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
                 profile.online
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-white/60 hover:text-white",
+                  ? "bg-slate-950 text-white shadow-2xl"
+                  : "text-slate-500 hover:text-slate-950",
               )}
             >
               Go Online
@@ -109,24 +109,24 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-6 py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-wider",
+                "px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
                 !profile.online
-                  ? "bg-white/10 backdrop-blur-md text-white border border-white/10 shadow-inner"
-                  : "text-white/60 hover:text-white",
+                  ? "bg-white text-slate-950 shadow-inner"
+                  : "text-slate-500 hover:text-slate-950",
               )}
             >
-              Offline
+              Standby
             </button>
           </div>
 
           <div className="relative shrink-0">
             <button 
               onClick={() => setBellMenuOpen(!bellMenuOpen)}
-              className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white/10 transition group shadow-sm shrink-0"
+              className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/10 border border-white/40 rounded-2xl flex items-center justify-center hover:border-white/60 transition group shadow-xl backdrop-blur-md shrink-0"
             >
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover:text-white transition" />
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 group-hover:scale-110 transition" />
               {bellNotifications.filter(n => !n.read).length > 0 && (
-                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-rose-600 rounded-full border-2 border-white animate-pulse shadow-lg" />
               )}
             </button>
             <AnimatePresence>
@@ -168,7 +168,7 @@ export default function TechnicianHeader({
           <div className="relative shrink-0">
             <button
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 transition shadow-sm relative bg-white/5 backdrop-blur-md"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/40 hover:border-white/60 transition shadow-xl relative bg-white/10 backdrop-blur-md"
             >
               {uploadingAvatar && (
                 <div className="absolute inset-0 glass-panel border-white/80 flex items-center justify-center z-10">
