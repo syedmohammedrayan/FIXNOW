@@ -209,9 +209,13 @@ export default function LoginPage() {
                   <div className="relative flex justify-center"><span className="bg-[#0f172a] px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Alternate Channel</span></div>
                 </div>
 
-                <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-14 bg-white/5 border-white/10 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-4">
-                  <img src="https://www.google.com/favicon.ico" className="size-5 grayscale contrast-125" alt="Google" />
-                  Connect with Google Identity
+                <Button 
+                  onClick={handleGoogleLogin} 
+                  variant="outline" 
+                  className="w-full h-14 bg-white border-white/10 text-slate-950 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-4 shadow-xl"
+                >
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="size-5" alt="Google" />
+                  Login with Google
                 </Button>
 
                 <p className="text-center text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-8 leading-relaxed">
