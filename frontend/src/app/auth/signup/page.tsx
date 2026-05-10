@@ -207,56 +207,55 @@ function SignupInner() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[80px] border border-white/50 rounded-[3.5rem] p-12 relative overflow-hidden group/card"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%)',
-                boxShadow: 'inset 0 0 80px rgba(255,255,255,0.5), 0 40px 100px -20px rgba(0,0,0,0.3)'
+                boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
             >
               {/* Back Arrow */}
-              <button onClick={() => setRole(null)} className="absolute top-8 left-8 z-20 text-slate-400 hover:text-slate-950 transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-slate-950/5">
+              <button onClick={() => setRole(null)} className="absolute top-8 left-8 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-white/10">
                 <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
               </button>
 
               {/* Premium Glint Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
               
               <div className="text-center mb-12 relative z-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="justify-center mb-10 group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-5xl font-black text-slate-950 tracking-[-0.06em] uppercase italic leading-[0.85] mb-6">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="justify-center mb-10 group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Registry <br/> 
-                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
+                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Expansion.
                   </span>
                 </h1>
-                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-slate-950/5 border border-slate-950/10 rounded-full w-fit mx-auto backdrop-blur-xl">
-                  <Terminal className="size-4 text-slate-950" />
-                  <p className="text-slate-950 font-black uppercase tracking-[0.3em] text-[9px]">Node Allocation Protocol</p>
+                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-white/5 border border-white/10 rounded-full w-fit mx-auto backdrop-blur-xl">
+                  <Terminal className="size-4 text-white" />
+                  <p className="text-white font-black uppercase tracking-[0.3em] text-[9px]">Node Allocation Protocol</p>
                 </div>
               </div>
 
               <form onSubmit={handleSignup} className="space-y-6 relative z-10">
                 <div className="space-y-2.5">
-                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Operator Name</Label>
-                  <Input required placeholder="System Admin 01" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Operator Name</Label>
+                  <Input required placeholder="System Admin 01" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="space-y-2.5">
-                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Primary Terminal Email</Label>
-                  <Input required type="email" placeholder="root@fixnow.app" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Primary Terminal Email</Label>
+                  <Input required type="email" placeholder="root@fixnow.app" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div className="space-y-2.5">
-                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Master Passkey</Label>
-                  <Input required type="password" placeholder="••••••••" className="bg-white/40 border-slate-950/5 rounded-3xl h-16 px-6 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                  <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Master Passkey</Label>
+                  <Input required type="password" placeholder="••••••••" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-900 mt-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]">
+                <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                   {loading ? 'Initializing...' : 'Authorize Expansion'}
                 </Button>
               </form>
 
-              <div className="mt-10 pt-6 border-t border-slate-950/5 text-center">
-                <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+              <div className="mt-10 pt-6 border-t border-white/10 text-center relative z-10">
+                <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
                   Already have access? <br/>
-                  <Link href="/auth/login?role=admin" className="text-amber-600 hover:text-amber-700 transition underline underline-offset-4 mt-2 inline-block">
+                  <Link href="/auth/login?role=admin" className="text-white hover:text-amber-400 transition-colors underline underline-offset-4 mt-2 inline-block">
                     Return to Terminal
                   </Link>
                 </p>

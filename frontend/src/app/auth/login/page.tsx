@@ -144,45 +144,44 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[80px] border border-white/50 rounded-[3.5rem] p-12 relative overflow-hidden group/card"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%)',
-                boxShadow: 'inset 0 0 80px rgba(255,255,255,0.5), 0 40px 100px -20px rgba(0,0,0,0.3)'
+                boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
             >
               {/* Back Arrow */}
-              <button onClick={() => setRole('customer')} className="absolute top-8 left-8 z-20 text-slate-400 hover:text-slate-950 transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-slate-950/5">
+              <button onClick={() => setRole('customer')} className="absolute top-8 left-8 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-white/10">
                 <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
               </button>
 
               {/* Premium Glint Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
               
-              <div className="absolute top-0 right-0 w-60 h-60 bg-amber-500/10 blur-[100px] -mr-30 -mt-30" />
+              <div className="absolute top-0 right-0 w-60 h-60 bg-white/10 blur-[100px] -mr-30 -mt-30" />
               
               <div className="text-center mb-12 relative z-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-slate-950" className="mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-6xl font-black text-slate-950 tracking-[-0.06em] uppercase italic leading-[0.8] mb-6">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.8] mb-6 drop-shadow-2xl">
                   Admin <br/> 
-                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
+                  <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Terminal
                   </span>
                 </h1>
-                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-slate-950/5 border border-slate-950/10 rounded-full w-fit mx-auto backdrop-blur-xl">
-                  <Terminal className="size-4 text-slate-950" />
-                  <p className="text-slate-950 font-black uppercase tracking-[0.3em] text-[9px]">Node Authorization Required</p>
+                <div className="flex items-center justify-center gap-3 py-2 px-6 bg-white/5 border border-white/10 rounded-full w-fit mx-auto backdrop-blur-xl">
+                  <Terminal className="size-4 text-white" />
+                  <p className="text-white font-black uppercase tracking-[0.3em] text-[9px]">Node Authorization Required</p>
                 </div>
               </div>
 
               <form onSubmit={handleLogin} className="space-y-7 relative z-10">
                 <div className="space-y-2.5">
-                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Security Identifier</Label>
+                  <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Security Identifier</Label>
                   <div className="relative group/input">
-                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-slate-950 transition-colors" />
+                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-white transition-colors" />
                     <Input 
                       type="email" 
                       placeholder="admin.root@fixnow.app" 
-                      className="bg-white/40 border-slate-950/5 rounded-3xl h-16 pl-16 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner"
+                      className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       required
@@ -191,13 +190,13 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-2.5">
-                  <Label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-5">Encrypted Passkey</Label>
+                  <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Encrypted Passkey</Label>
                   <div className="relative group/input">
-                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-slate-950 transition-colors" />
+                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-white transition-colors" />
                     <Input 
                       type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="bg-white/40 border-slate-950/5 rounded-3xl h-16 pl-16 pr-16 text-slate-950 font-black text-sm focus:border-slate-950/20 transition-all placeholder:text-slate-400 shadow-inner"
+                      className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 pr-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
                       required
@@ -205,26 +204,26 @@ export default function LoginPage() {
                     <button 
                       type="button" 
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-950 transition-colors"
+                      className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
                     >
                       {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                     </button>
                   </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-slate-950 text-white font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-900 transition-all active:scale-[0.98] mt-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]">
+                <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                   {loading ? <Loader2 className="size-6 animate-spin" /> : <>Access System <ArrowRight className="size-5 ml-2" /></>}
                 </Button>
               </form>
 
-              <div className="mt-14 pt-10 border-t border-slate-950/10 text-center space-y-8 relative z-10">
-                <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+              <div className="mt-14 pt-10 border-t border-white/10 text-center space-y-8 relative z-10">
+                <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
                   Need administrative credentials? <br/>
-                  <Link href="/auth/signup?role=admin" className="text-amber-600 hover:text-amber-700 transition underline underline-offset-4 mt-2 inline-block">
+                  <Link href="/auth/signup?role=admin" className="text-white hover:text-amber-400 transition-colors underline underline-offset-4 mt-2 inline-block">
                     Register Admin Node
                   </Link>
                 </p>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-relaxed opacity-60">
+                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] leading-relaxed opacity-60">
                   Notice: This terminal is monitored. <br/> unauthorized access attempts will be logged.
                 </p>
               </div>
