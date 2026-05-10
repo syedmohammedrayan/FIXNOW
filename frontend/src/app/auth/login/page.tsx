@@ -373,7 +373,7 @@ export default function LoginPage() {
                 ) : (
                   <motion.div key="reset" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                     <h3 className="text-xl font-black text-white uppercase tracking-tighter italic">Reset Terminal Passkey</h3>
-                    <Input type="email" placeholder="Registry Email" className="bg-white/5 border-white/10 rounded-2xl h-14 px-6 text-white" />
+                    <Input type="text" placeholder="Password Reset Hint (e.g. Favorite Color)" className="bg-white/5 border-white/10 rounded-2xl h-14 px-6 text-white font-bold placeholder:text-slate-600 focus:border-cyan-500/30 transition-all" />
                     <Button onClick={() => setView('login')} className="w-full h-14 bg-white text-slate-950 font-black uppercase rounded-2xl">Return to Terminal</Button>
                   </motion.div>
                 )}
