@@ -35,7 +35,17 @@ export default function SignupPage() {
   
   const [role, setRole] = useState<'customer' | 'technician' | 'admin' | null>(initialRole);
   const [method, setMethod] = useState<'email' | 'google' | null>(null);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', passwordHint: '', skills: '', category: '', govIdUrl: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    address: '',
+    password: '', 
+    passwordHint: '', 
+    skills: '', 
+    category: '', 
+    govIdUrl: '' 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -85,6 +95,7 @@ export default function SignupPage() {
         name: formData.name || user?.displayName || '',
         email: formData.email || user?.email || '',
         phone: formData.phone || '',
+        address: formData.address || '',
         password: formData.password,
         role: role,
         passwordHint: formData.passwordHint || '',
@@ -279,11 +290,78 @@ export default function SignupPage() {
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-4">
-                      <Input required placeholder="Full Name" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                      <Input required type="email" placeholder="Email Address" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                      <Input required type="password" placeholder="Passkey" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
-                      <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black uppercase rounded-2xl mt-4">
-                        {loading ? 'Syncing...' : 'Initialize'}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Input required placeholder="Full Name" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                        <Input required type="email" placeholder="Email Address" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Input required type="tel" placeholder="Phone (e.g. +91 98XXX)" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                        <Input required placeholder="Service Address / City" className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                      </div>
+
+                      <div className="relative">
+                        <Input 
+                          required 
+                          type={showPassword ? "text" : "password"} 
+                          placeholder="Create Passkey" 
+                          className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold pr-14" 
+                          value={formData.password} 
+                          onChange={e => setFormData({...formData, password: e.target.value})} 
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                        </button>
+                      </div>
+
+                      <Input 
+                        placeholder="Password Reset Hint (e.g. Favorite Color)" 
+                        className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 text-white placeholder:text-slate-500 font-bold" 
+                        value={formData.passwordHint} 
+                        onChange={e => setFormData({...formData, passwordHint: e.target.value})} 
+                      />
+
+                      {role === 'technician' && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="space-y-4 pt-2"
+                        >
+                          <div className="relative">
+                            <select 
+                              required
+                              value={formData.category}
+                              onChange={e => setFormData({...formData, category: e.target.value})}
+                              className="w-full bg-white/5 border border-white/10 h-14 rounded-2xl px-6 text-white font-bold appearance-none outline-none focus:border-white/30 transition-all"
+                            >
+                              <option value="" disabled className="bg-slate-900">Select Professional Specialization</option>
+                              {ALL_SERVICES.map(s => (
+                                <option key={s} value={s} className="bg-slate-900">{s}</option>
+                              ))}
+                            </select>
+                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 size-5 text-slate-500 pointer-events-none" />
+                          </div>
+
+                          <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] space-y-4">
+                            <div className="flex items-center gap-3 mb-2">
+                              <Shield className="size-5 text-cyan-500" />
+                              <p className="text-[10px] font-black text-white uppercase tracking-widest">Identify Verification (Aadhar/PAN)</p>
+                            </div>
+                            <IdVerificationBox 
+                              userId={auth.currentUser?.uid || "temp"} 
+                              onSuccess={(url) => setFormData({...formData, govIdUrl: url})}
+                              existingIdUrl={formData.govIdUrl}
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+
+                      <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-widest rounded-2xl mt-4 hover:bg-slate-100 transition-all hover:scale-[1.02] active:scale-95">
+                        {loading ? 'Synchronizing Node...' : 'Initialize Profile'}
                       </Button>
                     </form>
                   </motion.div>
