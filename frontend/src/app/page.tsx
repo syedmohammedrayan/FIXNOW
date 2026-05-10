@@ -95,8 +95,8 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center mb-20"
           >
-            <h2 className="text-4xl md:text-8xl font-black text-slate-950 tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
-            <div className="w-48 h-3 bg-gradient-to-r from-slate-950 via-slate-600 to-slate-950 rounded-full shadow-2xl" />
+            <h2 className="text-4xl md:text-8xl font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
+            <div className="w-48 h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-10">
@@ -125,10 +125,10 @@ export default function LandingPage() {
         <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-10">
-              <h2 className="text-6xl md:text-[8rem] font-black text-slate-950 tracking-[-0.06em] leading-[0.75] uppercase italic">
-                Premium <br/> Logistics <br/> <span className="relative text-white">Infrastructure.</span>
+              <h2 className="text-6xl md:text-[8rem] font-black text-white drop-shadow-2xl [text-shadow:0_0_30px_rgba(255,255,255,0.3)] tracking-[-0.06em] leading-[0.75] uppercase italic">
+                Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_30px_rgba(6,182,212,0.4)]">Infrastructure.</span>
               </h2>
-              <p className="text-xl text-slate-600 font-black uppercase tracking-[0.1em] opacity-70">
+              <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
                 Proprietary Architecture for High-Stake Execution.
               </p>
             </div>
@@ -181,11 +181,11 @@ function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: 
       whileHover={{ y: -10, scale: 1.02 }}
       className="p-10 flex flex-col items-center text-center group cursor-default bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[3rem] shadow-2xl hover:shadow-white/40 hover:bg-white/60 transition-all duration-500 relative overflow-hidden"
     >
-      <div className="w-24 h-24 rounded-[2rem] bg-slate-950 flex items-center justify-center mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white">
+      <div className="w-24 h-24 rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
         {icon}
       </div>
-      <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
-      <p className="text-slate-600 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10">{desc}</p>
+      <h3 className="text-2xl font-black text-white drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
+      <p className="text-slate-200 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10 drop-shadow-sm">{desc}</p>
     </motion.div>
   );
 }
@@ -200,11 +200,11 @@ function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode, titl
       whileHover={{ scale: 1.05 }}
       className="p-8 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[2.5rem] shadow-xl hover:shadow-white/50 transition-all duration-500 cursor-default group"
     >
-      <div className="mb-4 bg-white/60 p-3 rounded-2xl w-fit shadow-inner border border-white/40">
+      <div className="mb-4 bg-white/20 backdrop-blur-xl p-3 rounded-2xl w-fit shadow-inner border border-white/40">
         {icon}
       </div>
-      <h4 className="text-lg font-black text-slate-950 mb-2 uppercase tracking-tighter italic">{title}</h4>
-      <p className="text-slate-500 font-bold text-[11px] leading-relaxed uppercase tracking-widest">{desc}</p>
+      <h4 className="text-lg font-black text-white drop-shadow-md mb-2 uppercase tracking-tighter italic">{title}</h4>
+      <p className="text-slate-200 font-bold text-[11px] leading-relaxed uppercase tracking-widest drop-shadow-sm">{desc}</p>
     </motion.div>
   );
 }
