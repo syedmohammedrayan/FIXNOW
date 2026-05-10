@@ -195,14 +195,19 @@ body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
   /* Global transparent wrapper so the DynamicBackground is visible everywhere */
   .min-h-screen {
     background-color: transparent !important;
+  }
+
+  @keyframes gradient-text {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-gradient-text {
+    animation: gradient-text 4s ease infinite;
   }
 }
 

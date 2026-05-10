@@ -33,18 +33,24 @@ export default function LandingPage() {
               <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
             </motion.div>
             
-            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] text-slate-950">
-              Reliable Home <br className="hidden sm:block"/>
-              <span className="text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)] [text-shadow:0_0_80px_rgba(255,255,255,1)]">Services,</span>
+            <h1 className="text-5xl sm:text-7xl md:text-[10rem] font-black tracking-[-0.06em] leading-[0.8] text-slate-950 uppercase italic">
+              Reliable <br className="hidden sm:block"/>
+              <span className="relative inline-block text-white">
+                Home Services,
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-white to-purple-400 bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-text">
+                  Home Services,
+                </span>
+                <span className="absolute -inset-2 bg-white/20 blur-3xl rounded-full -z-10 animate-pulse" />
+              </span>
               <br/>
-              <span className="text-slate-400 drop-shadow-sm italic">
+              <span className="text-slate-400 opacity-60 font-black tracking-[-0.04em] not-italic">
                 Lucid Execution.
               </span>
             </h1>
             
-            <p className="text-lg md:text-2xl text-slate-600 font-bold max-w-3xl mx-auto leading-relaxed uppercase tracking-tight drop-shadow-sm">
-              Connect with verified experts through a high-precision ecosystem. 
-              Smart routing meets real-time execution for a truly professional experience.
+            <p className="text-lg md:text-xl text-slate-600 font-black max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.1em] drop-shadow-sm opacity-80">
+              High-Precision Service Ecosystem. <br/>
+              Where intelligent routing meets real-time execution.
             </p>
 
             <motion.div 
@@ -72,8 +78,8 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center mb-20"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-slate-950 tracking-tighter mb-4 uppercase">Operational Protocol</h2>
-            <div className="w-24 h-2 bg-slate-950 rounded-full" />
+            <h2 className="text-4xl md:text-8xl font-black text-slate-950 tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
+            <div className="w-48 h-3 bg-gradient-to-r from-slate-950 via-slate-600 to-slate-950 rounded-full shadow-2xl" />
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-10">
@@ -100,13 +106,13 @@ export default function LandingPage() {
 
         {/* Feature Grid */}
         <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div className="space-y-8">
-              <h2 className="text-5xl md:text-7xl font-black text-slate-950 tracking-tighter leading-none uppercase italic">
-                Premium <br/> Logistics <br/> <span className="text-white [text-shadow:0_0_40px_rgba(0,0,0,0.1)]">Infrastructure.</span>
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <h2 className="text-6xl md:text-[8rem] font-black text-slate-950 tracking-[-0.06em] leading-[0.75] uppercase italic">
+                Premium <br/> Logistics <br/> <span className="relative text-white">Infrastructure.</span>
               </h2>
-              <p className="text-xl text-slate-600 font-bold uppercase tracking-tight">
-                Our ecosystem handles the complexity so you can focus on the results. Verified, secure, and professional.
+              <p className="text-xl text-slate-600 font-black uppercase tracking-[0.1em] opacity-70">
+                Proprietary Architecture for High-Stake Execution.
               </p>
             </div>
             
