@@ -109,11 +109,11 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 1000;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 4 + scrollRatio * 8; // 4px -> 12px (Premium frosted glass)
+        const blur = 2 + scrollRatio * 6; // 2px -> 8px (very subtle)
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
-        // Premium dark tinted glass that deepens on scroll
-        overlayRef.current.style.backgroundColor = `rgba(15, 23, 42, ${0.35 + scrollRatio * 0.45})`;
+        // Fully transparent background as requested
+        overlayRef.current.style.backgroundColor = 'transparent';
       }
 
       animFrameId.current = requestAnimationFrame(animate);
@@ -165,11 +165,11 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'rgba(15, 23, 42, 0.35)', 
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+          backgroundColor: 'transparent', 
+          backdropFilter: 'blur(2px)',
+          WebkitBackdropFilter: 'blur(2px)',
           pointerEvents: 'none',
-          willChange: 'backdrop-filter, background-color',
+          willChange: 'backdrop-filter',
           // 3D Glass Depth: Inner glow and subtle vignette
           boxShadow: 'inset 0 0 100px rgba(255, 255, 255, 0.05), inset 0 0 40px rgba(255, 255, 255, 0.02)',
         }}

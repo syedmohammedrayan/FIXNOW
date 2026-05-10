@@ -352,8 +352,8 @@ function SignupInner() {
 
                 {role && (
                   <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-6 max-w-[280px] mx-auto">
-                    <button onClick={() => setRole('customer')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white")}>Customer</button>
-                    <button onClick={() => setRole('technician')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white")}>Technician</button>
+                    <button onClick={() => setRole('customer')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Customer</button>
+                    <button onClick={() => setRole('technician')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Technician</button>
                   </div>
                 )}
 
@@ -380,7 +380,7 @@ function SignupInner() {
                         <div className="size-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mr-4 group-hover:scale-110 transition">{roleConfig[r].icon}</div>
                         <div className="text-left">
                           <p className="font-black text-white uppercase tracking-widest text-sm drop-shadow-md">{roleConfig[r].label}</p>
-                          <p className="text-[10px] text-slate-400 uppercase font-bold">{roleConfig[r].desc}</p>
+                          <p className="text-[10px] text-slate-300 uppercase font-bold">{roleConfig[r].desc}</p>
                         </div>
                       </button>
                     ))}
@@ -436,7 +436,7 @@ function SignupInner() {
                           <button 
                             type="button" 
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                            className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-white transition-colors"
                           >
                             {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                           </button>

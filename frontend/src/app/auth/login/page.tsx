@@ -282,7 +282,7 @@ export default function LoginPage() {
                     onClick={() => setRole('customer')}
                     className={cn(
                       "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                      role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white"
+                      role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white"
                     )}
                   >
                     Customer
@@ -291,7 +291,7 @@ export default function LoginPage() {
                     onClick={() => setRole('technician')}
                     className={cn(
                       "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                      role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white"
+                      role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white"
                     )}
                   >
                     Technician
@@ -350,7 +350,7 @@ export default function LoginPage() {
                           <button 
                             type="button" 
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-white transition-colors"
                           >
                             {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                           </button>
@@ -360,7 +360,7 @@ export default function LoginPage() {
                       <div className="flex items-center justify-between px-2 pt-1">
                         <div className="flex items-center gap-3">
                           <Checkbox id="remember" className="rounded-md border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500" />
-                          <Label htmlFor="remember" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-200 transition">Remember Me</Label>
+                          <Label htmlFor="remember" className="text-[11px] font-bold text-slate-300 uppercase tracking-widest cursor-pointer hover:text-slate-200 transition">Remember Me</Label>
                         </div>
                         <button type="button" onClick={() => setView('reset')} className="text-[11px] font-black text-cyan-400 uppercase tracking-widest hover:text-cyan-300 transition underline underline-offset-4">Forgot Password?</button>
                       </div>

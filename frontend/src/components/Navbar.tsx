@@ -136,7 +136,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             onClick={openAboutModal}
             className={cn(
               "text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 flex items-center gap-2",
-              isLanding ? "text-slate-950/70 hover:text-slate-950" : "text-slate-400 hover:text-white"
+              isLanding ? "text-slate-950/70 hover:text-slate-950" : "text-slate-300 hover:text-white"
             )}
           >
             <Info className="size-3.5" />
@@ -168,7 +168,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                            </p>
                            <p className="text-[9px] text-cyan-600 font-black uppercase tracking-wider mt-0.5">{profile?.role || 'Session'}</p>
                         </div>
-                        <ChevronDown className={cn("size-4 transition", isLanding ? "text-slate-950/50" : "text-slate-400")} />
+                        <ChevronDown className={cn("size-4 transition", isLanding ? "text-slate-950/50" : "text-slate-300")} />
                       </button>
 
                       {/* Dropdown Menu */}
@@ -195,7 +195,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                   href="/auth/login" 
                   className={cn(
                     "text-[10px] font-black uppercase tracking-[0.3em] transition-all",
-                    isLanding ? "text-slate-950/70 hover:text-slate-950" : "text-slate-400 hover:text-white"
+                    isLanding ? "text-slate-950/70 hover:text-slate-950" : "text-slate-300 hover:text-white"
                   )}
                 >
                   Login
@@ -238,10 +238,10 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             )}
           >
             <div className="p-10 space-y-8">
-              <Link href="/services" onClick={() => setIsOpen(false)} className={cn("block text-sm font-black uppercase tracking-widest transition-colors", isLanding ? "text-slate-600 hover:text-slate-950" : "text-slate-400 hover:text-white")}>Services</Link>
+              <Link href="/services" onClick={() => setIsOpen(false)} className={cn("block text-sm font-black uppercase tracking-widest transition-colors", isLanding ? "text-slate-600 hover:text-slate-950" : "text-slate-300 hover:text-white")}>Services</Link>
               <button 
                 onClick={() => { setIsOpen(false); openAboutModal(); }} 
-                className={cn("block text-sm font-black uppercase tracking-widest text-left w-full transition-colors", isLanding ? "text-slate-600 hover:text-slate-950" : "text-slate-400 hover:text-white")}
+                className={cn("block text-sm font-black uppercase tracking-widest text-left w-full transition-colors", isLanding ? "text-slate-600 hover:text-slate-950" : "text-slate-300 hover:text-white")}
               >
                 About Protocol
               </button>
@@ -329,7 +329,7 @@ function NavLink({ href, children, active, isLanding }: { href: string, children
         "text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95",
         active 
           ? (isLanding ? "text-slate-950" : "text-white")
-          : (isLanding ? "text-slate-950/60 hover:text-slate-950" : "text-slate-400 hover:text-white")
+          : (isLanding ? "text-slate-950/60 hover:text-slate-950" : "text-slate-300 hover:text-white")
       )}
     >
       {children}

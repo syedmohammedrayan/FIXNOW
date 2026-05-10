@@ -67,7 +67,7 @@ export default function LanguageSelector() {
         <Globe className="size-4 text-indigo-400" />
         <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">{activeLang.name}</span>
         <span className="text-[10px] font-black uppercase tracking-widest sm:hidden">{activeLang.code}</span>
-        <ChevronDown className={`size-3 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`size-3 text-slate-300 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
