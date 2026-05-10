@@ -124,7 +124,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             className="transition-all duration-500"
             textClassName={cn(
               "transition-colors duration-500",
-              isLanding ? "text-slate-950" : "text-white"
+              isLanding ? "text-slate-900" : "text-white"
             )}
           />
         </Link>
@@ -204,7 +204,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                   href="/auth/signup" 
                   className={cn(
                     "px-10 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-2xl hover:scale-105",
-                    isLanding ? "bg-slate-950 text-white shadow-slate-950/20" : "bg-white text-slate-950 shadow-white/10"
+                    isLanding ? "bg-slate-900 text-white shadow-slate-900/20" : "bg-white text-slate-950 shadow-white/10"
                   )}
                 >
                   Register
@@ -248,8 +248,8 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               
               {!user && !customProfile && (
                 <div className="pt-8 flex flex-col gap-5 border-t border-slate-500/10">
-                  <Link href="/auth/login" onClick={() => setIsOpen(false)} className={cn("w-full py-5 text-center rounded-2xl font-black text-[11px] uppercase tracking-widest border transition-all", isLanding ? "bg-slate-950/5 text-slate-950 border-slate-950/10" : "bg-white/5 text-white border-white/10")}>Login</Link>
-                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className={cn("w-full py-5 text-center rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all", isLanding ? "bg-slate-950 text-white" : "bg-white text-slate-950")}>Register</Link>
+                  <Link href="/auth/login" onClick={() => setIsOpen(false)} className={cn("w-full py-5 text-center rounded-2xl font-black text-[11px] uppercase tracking-widest border transition-all", isLanding ? "bg-slate-900/5 text-slate-900 border-slate-900/10" : "bg-white/5 text-white border-white/10")}>Login</Link>
+                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className={cn("w-full py-5 text-center rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all", isLanding ? "bg-slate-900 text-white" : "bg-white text-slate-950")}>Register</Link>
                 </div>
               )}
               
