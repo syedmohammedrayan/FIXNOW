@@ -44,9 +44,9 @@ export default function LandingPage() {
               </motion.span>
               <div className="relative inline-block mt-[-0.1em]">
                 <span className="relative text-white [text-shadow:0_0_80px_rgba(255,255,255,0.4)]">
-                  Home Services,
+                  Home Services
                   <span className="absolute inset-0 bg-gradient-to-r from-rose-500 via-cyan-400 via-purple-500 to-amber-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text">
-                    Home Services,
+                    Home Services
                   </span>
                   <motion.span 
                     animate={{ 
@@ -59,17 +59,6 @@ export default function LandingPage() {
                   />
                 </span>
               </div>
-              <br/>
-              <motion.span 
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                transition={{ duration: 1, delay: 0.6 }}
-                className="block text-transparent bg-clip-text bg-gradient-to-b from-slate-600 to-slate-900 font-black tracking-[-0.02em] not-italic mt-[-0.1em] relative"
-                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}
-              >
-                Lucid Execution.
-                <span className="absolute left-0 top-0 text-slate-400/10 blur-[2px] -z-10">Lucid Execution.</span>
-              </motion.span>
             </h1>
             
             <p className="text-lg md:text-2xl text-slate-800 font-black max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.2em] drop-shadow-2xl opacity-90">
