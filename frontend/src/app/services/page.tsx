@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { cn } from '@/lib/utils';
 
 /* ─────────────────── SERVICE DATA ─────────────────── */
 
@@ -42,9 +43,9 @@ const CATEGORIES: ServiceCategory[] = [
     title: 'Household & Home',
     subtitle: 'Complete home care, from plumbing to painting.',
     icon: <Home className="size-7" />,
-    gradient: 'from-indigo-500 to-violet-600',
-    border: 'border-indigo-200',
-    glow: 'rgba(99,102,241,0.15)',
+    gradient: 'from-slate-800 to-slate-950',
+    border: 'border-white/20',
+    glow: 'rgba(255,255,255,0.1)',
     services: [
       { icon: <Zap className="size-5" />, name: 'Electrical Repair', desc: 'Wiring, switches, circuit breakers & panel upgrades', popular: true },
       { icon: <Droplets className="size-5" />, name: 'Plumbing', desc: 'Pipe repair, drain cleaning, fixture installation', popular: true },
@@ -63,7 +64,7 @@ const CATEGORIES: ServiceCategory[] = [
     title: 'Appliances & Electronics',
     subtitle: 'Expert repair for all your home appliances.',
     icon: <Tv className="size-7" />,
-    gradient: 'from-cyan-500 to-blue-600',
+    gradient: 'from-cyan-500 to-cyan-600',
     border: 'border-cyan-200',
     glow: 'rgba(6,182,212,0.15)',
     services: [
@@ -82,9 +83,9 @@ const CATEGORIES: ServiceCategory[] = [
     title: 'Automobile Services',
     subtitle: 'Cars, bikes, trucks — roadside & workshop.',
     icon: <Car className="size-7" />,
-    gradient: 'from-emerald-500 to-teal-600',
-    border: 'border-emerald-200',
-    glow: 'rgba(16,185,129,0.15)',
+    gradient: 'from-slate-700 to-slate-900',
+    border: 'border-white/20',
+    glow: 'rgba(255,255,255,0.05)',
     services: [
       { icon: <Car className="size-5" />, name: 'Car Repair & Service', desc: 'Engine diagnostics, oil change, brake service', popular: true },
       { icon: <Bike className="size-5" />, name: 'Two-Wheeler Service', desc: 'Bike servicing, tyre change, chain adjustment' },
@@ -97,47 +98,13 @@ const CATEGORIES: ServiceCategory[] = [
     ],
   },
   {
-    id: 'outdoor',
-    title: 'Outdoor & Landscape',
-    subtitle: 'Garden, exterior & outdoor space services.',
-    icon: <Trees className="size-7" />,
-    gradient: 'from-lime-500 to-green-600',
-    border: 'border-lime-200',
-    glow: 'rgba(132,204,22,0.15)',
-    services: [
-      { icon: <Trees className="size-5" />, name: 'Garden & Lawn Care', desc: 'Mowing, trimming, irrigation system setup' },
-      { icon: <Fence className="size-5" />, name: 'Fencing & Gates', desc: 'Installation, welding, automatic gate motors' },
-      { icon: <Droplets className="size-5" />, name: 'Pool & Water Features', desc: 'Pool cleaning, pump repair, fountain setup' },
-      { icon: <Sun className="size-5" />, name: 'Outdoor Lighting', desc: 'Landscape lighting, pathway lights, floodlights' },
-      { icon: <Home className="size-5" />, name: 'Roofing & Gutters', desc: 'Leak repair, gutter cleaning, waterproofing', popular: true },
-      { icon: <Camera className="size-5" />, name: 'CCTV & Security', desc: 'Camera installation, DVR setup, access control' },
-    ],
-  },
-  {
-    id: 'commercial',
-    title: 'Commercial & Industrial',
-    subtitle: 'Enterprise-grade maintenance & installation.',
-    icon: <Building2 className="size-7" />,
-    gradient: 'from-amber-500 to-orange-600',
-    border: 'border-amber-200',
-    glow: 'rgba(245,158,11,0.15)',
-    services: [
-      { icon: <Building2 className="size-5" />, name: 'Office Maintenance', desc: 'Electrical, plumbing & general office upkeep', popular: true },
-      { icon: <Factory className="size-5" />, name: 'Factory Equipment', desc: 'Industrial machinery repair & installation' },
-      { icon: <Warehouse className="size-5" />, name: 'Warehouse Services', desc: 'Racking systems, dock doors, conveyor belts' },
-      { icon: <CircuitBoard className="size-5" />, name: 'Server & IT Infra', desc: 'Server rack setup, UPS systems, structured cabling' },
-      { icon: <HardHat className="size-5" />, name: 'Construction Support', desc: 'Scaffolding, welding, civil engineering tasks' },
-      { icon: <Plug className="size-5" />, name: 'Power & Generator', desc: 'Generator installation, transformer, HT/LT panels' },
-    ],
-  },
-  {
     id: 'specialty',
     title: 'Specialty & Smart Home',
     subtitle: 'Future-ready tech services for modern living.',
     icon: <Cpu className="size-7" />,
-    gradient: 'from-fuchsia-500 to-pink-600',
-    border: 'border-fuchsia-200',
-    glow: 'rgba(217,70,239,0.15)',
+    gradient: 'from-cyan-600 to-cyan-800',
+    border: 'border-cyan-400/30',
+    glow: 'rgba(6,182,212,0.2)',
     services: [
       { icon: <Cpu className="size-5" />, name: 'Smart Home Setup', desc: 'Alexa, Google Home, automated lighting & curtains', popular: true },
       { icon: <Shield className="size-5" />, name: 'Home Security Systems', desc: 'Alarm systems, motion sensors, smart locks' },
@@ -150,13 +117,11 @@ const CATEGORIES: ServiceCategory[] = [
 ];
 
 const STATS = [
-  { value: '25K+', label: 'Verified Technicians', icon: <Users className="size-5" /> },
-  { value: '150+', label: 'Service Categories', icon: <Wrench className="size-5" /> },
-  { value: '4.9★', label: 'Average Rating', icon: <Star className="size-5" /> },
-  { value: '<15min', label: 'Avg Response Time', icon: <Clock className="size-5" /> },
+  { value: '25K+', label: 'Verified Experts', icon: <Users className="size-5" /> },
+  { value: '150+', label: 'Service Classes', icon: <Wrench className="size-5" /> },
+  { value: '4.9★', label: 'Satisfaction Rate', icon: <Star className="size-5" /> },
+  { value: '<15min', label: 'Dispatch Latency', icon: <Clock className="size-5" /> },
 ];
-
-/* ─────────────────── PAGE COMPONENT ─────────────────── */
 
 export default function ServicesPage() {
   const router = useRouter();
@@ -165,7 +130,6 @@ export default function ServicesPage() {
   const heroRef = useRef(null);
   const heroInView = useInView(heroRef, { once: true });
 
-  // Filter by search
   const filteredCategories = CATEGORIES.map(cat => ({
     ...cat,
     services: cat.services.filter(s =>
@@ -176,55 +140,51 @@ export default function ServicesPage() {
     ),
   })).filter(cat => cat.services.length > 0);
 
-  // Popular services across all categories
   const popularServices = CATEGORIES.flatMap(cat =>
     cat.services.filter(s => s.popular).map(s => ({ ...s, categoryTitle: cat.title, gradient: cat.gradient }))
   );
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen font-sans selection:bg-cyan-500/30">
       <Navbar />
 
-      {/* ─── Hero Section ─── */}
-      <section ref={heroRef} className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Decorative orbs */}
-        <div className="absolute top-20 left-[10%] w-72 h-72 bg-indigo-400/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-40 right-[5%] w-96 h-96 bg-cyan-400/10 rounded-full blur-[120px] pointer-events-none" />
+      <section ref={heroRef} className="relative pt-40 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={heroInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-5xl mx-auto relative z-10"
+        >
+          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/40 backdrop-blur-2xl border border-white/60 text-slate-900 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-xl animate-float">
+            <Globe2 className="size-4 text-cyan-600" />
+            <span>Premium Logistics Grid</span>
+            <Sparkles className="size-4 text-cyan-500 animate-pulse" />
+          </div>
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-panel text-indigo-600 text-sm font-semibold tracking-wide mb-8">
-              <Globe2 className="size-4" />
-              <span>150+ Services Worldwide</span>
-              <Sparkles className="size-4 text-indigo-500 animate-pulse" />
-            </div>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-8 text-slate-950 uppercase italic">
+            Operational <br/> <span className="text-white [text-shadow:0_0_60px_rgba(255,255,255,1)]">Excellence.</span>
+          </h1>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
-              <span className="glow-heading">Every Service,</span>
-              <br />
-              <span className="glow-heading-gradient">One Platform.</span>
-            </h1>
+          <p className="text-xl md:text-2xl text-slate-600 font-bold max-w-3xl mx-auto leading-relaxed uppercase tracking-tight mb-12">
+            A comprehensive terminal for every maintenance requirement. 
+            From smart ecosystems to industrial diagnostics — unified under one professional standard.
+          </p>
 
-            <p className="text-lg md:text-xl glow-subtext max-w-2xl mx-auto leading-relaxed mb-10">
-              From fixing a leaky faucet to setting up smart home systems — we connect you
-              with verified professionals for household, automobile, commercial & specialty services.
-            </p>
-          </motion.div>
-        </div>
+          <div className="relative max-w-2xl mx-auto group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 size-6 text-slate-400 group-focus-within:text-cyan-600 transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Query Service Protocol..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] pl-16 pr-6 py-6 text-slate-950 font-bold text-lg focus:outline-none focus:bg-white/60 focus:border-cyan-500/30 transition-all shadow-2xl"
+            />
+          </div>
+        </motion.div>
       </section>
 
-      {/* ─── Stats Bar ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-        >
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -232,90 +192,49 @@ export default function ServicesPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="glass-panel-strong rounded-2xl p-6 text-center hover:shadow-[0_8px_40px_rgba(99,102,241,0.1)] transition-all"
+              className="bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[2rem] p-8 text-center hover:bg-white/60 transition-all shadow-xl"
             >
-              <div className="flex items-center justify-center gap-2 text-indigo-500 mb-2">
+              <div className="flex items-center justify-center gap-2 text-cyan-600 mb-4 bg-white/50 size-12 mx-auto rounded-2xl border border-white/40 shadow-inner">
                 {stat.icon}
               </div>
-              <h3 className="text-2xl font-extrabold text-slate-200">{stat.value}</h3>
-              <p className="text-xs text-indigo-300 font-bold uppercase tracking-wider mt-1">{stat.label}</p>
+              <h3 className="text-3xl font-black text-slate-950 tracking-tighter">{stat.value}</h3>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-2">{stat.label}</p>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
-      {/* ─── Popular Services ─── */}
-      {!searchQuery && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-          <SectionHeader
-            title="Most Popular"
-            subtitle="Top-requested services by our customers"
-          />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {popularServices.map((service, i) => (
-              <motion.div
-                key={service.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                whileHover={{ y: -6, scale: 1.01 }}
-                onClick={() => router.push('/auth/login?role=customer')}
-                className="glass-panel-strong rounded-3xl p-6 cursor-pointer hover:shadow-[0_12px_48px_rgba(99,102,241,0.12)] transition-all group border border-transparent hover:border-indigo-200"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-2xl bg-gradient-to-br ${service.gradient} text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                    {service.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-200">{service.name}</h3>
-                      <span className="text-[9px] font-black bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-lg uppercase tracking-wider">Popular</span>
-                    </div>
-                    <p className="text-sm text-indigo-300 mt-1 leading-relaxed">{service.desc}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{service.categoryTitle}</p>
-                  </div>
-                  <ArrowRight className="size-4 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all mt-1 shrink-0" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ─── Category Navigation Pills ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="flex flex-wrap gap-3 justify-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-40">
+        <div className="flex flex-wrap gap-4 justify-center mb-20">
           <button
             onClick={() => setActiveCategory(null)}
-            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all ${
-              activeCategory === null
-                ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20'
-                : 'glass-panel text-indigo-200 hover:text-indigo-600 hover:border-indigo-200'
-            }`}
+            className={cn(
+              "px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all",
+              activeCategory === null 
+                ? "bg-slate-950 text-white shadow-2xl scale-105" 
+                : "bg-white/40 border border-white/60 text-slate-600 hover:bg-white/60"
+            )}
           >
             All Services
           </button>
           {CATEGORIES.map(cat => (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${
-                activeCategory === cat.id
-                  ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20'
-                  : 'glass-panel text-indigo-200 hover:text-indigo-600 hover:border-indigo-200'
-              }`}
+              onClick={() => setActiveCategory(cat.id)}
+              className={cn(
+                "px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-3",
+                activeCategory === cat.id 
+                  ? "bg-slate-950 text-white shadow-2xl scale-105" 
+                  : "bg-white/40 border border-white/60 text-slate-600 hover:bg-white/60"
+              )}
             >
               {cat.icon}
-              <span className="hidden sm:inline">{cat.title}</span>
+              {cat.title}
             </button>
           ))}
         </div>
-      </section>
 
-      {/* ─── All Categories Grid ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
-        <div className="space-y-16">
+        <div className="space-y-32">
           <AnimatePresence mode="popLayout">
             {filteredCategories
               .filter(cat => !activeCategory || cat.id === activeCategory)
@@ -323,147 +242,63 @@ export default function ServicesPage() {
                 <CategorySection key={category.id} category={category} index={catIdx} />
               ))}
           </AnimatePresence>
-
-          {filteredCategories.filter(cat => !activeCategory || cat.id === activeCategory).length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-24"
-            >
-              <Search className="size-16 text-slate-200 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-slate-400">No services found</h3>
-              <p className="text-indigo-300 mt-2">Try a different search term or browse all categories.</p>
-              <button
-                onClick={() => { setSearchQuery(''); setActiveCategory(null); }}
-                className="mt-6 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm hover:bg-indigo-500 transition"
-              >
-                Show All Services
-              </button>
-            </motion.div>
-          )}
         </div>
       </section>
-
-      {/* ─── CTA Banner ─── */}
-      <section className="relative overflow-hidden mt-12 rounded-3xl border border-indigo-200/50 mx-4 sm:mx-6 lg:mx-8 shadow-2xl">
-        <div className="absolute inset-0 bg-indigo-600/20 backdrop-blur-md" />
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`
-        }} />
-        <div className="relative max-w-5xl mx-auto px-6 py-24 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
-              Can&apos;t find what you need?
-            </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-              Simply describe your issue and our AI will match you with the right professional.
-              We cover 150+ service types across 50+ cities.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/auth/signup?role=customer"
-                className="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-extrabold text-lg hover:bg-indigo-700 transition-all shadow-xl active:scale-95 flex items-center gap-3"
-              >
-                Book a Service Now
-                <ArrowRight className="size-5" />
-              </Link>
-              <Link
-                href="/auth/signup?role=technician"
-                className="px-10 py-4 bg-slate-900/5 text-white border-2 border-slate-900/10 rounded-2xl font-bold text-lg hover:bg-slate-900/10 transition-all active:scale-95"
-              >
-                Join as Technician
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Footer spacer ─── */}
-      <div className="h-4" />
     </div>
   );
 }
 
-/* ─────────────────── CATEGORY SECTION ─────────────────── */
-
 function CategorySection({ category, index }: { category: ServiceCategory; index: number }) {
   const router = useRouter();
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const inView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <motion.div
       ref={ref}
       layout
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.6, delay: index * 0.08 }}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
     >
-      {/* Category Header */}
-      <div className="flex items-center gap-5 mb-8">
-        <div className={`p-4 rounded-3xl bg-gradient-to-br ${category.gradient} text-white shadow-xl`}>
+      <div className="flex items-center gap-6 mb-12 border-l-8 border-slate-950 pl-8">
+        <div className={cn("p-6 rounded-[2rem] bg-gradient-to-br text-white shadow-2xl", category.gradient)}>
           {category.icon}
         </div>
         <div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-200">{category.title}</h2>
-          <p className="text-indigo-300 text-sm mt-1 font-medium">{category.subtitle}</p>
+          <h2 className="text-4xl md:text-5xl font-black text-slate-950 uppercase tracking-tighter italic">{category.title}</h2>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-sm mt-2">{category.subtitle}</p>
         </div>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {category.services.map((service, i) => (
           <motion.div
             key={service.name}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: i * 0.04 + 0.2 }}
-            whileHover={{ y: -4 }}
+            transition={{ delay: i * 0.05 + 0.3 }}
+            whileHover={{ y: -8, scale: 1.02 }}
             onClick={() => router.push('/auth/login?role=customer')}
-            className={`glass-panel-strong rounded-2xl p-5 cursor-pointer group transition-all hover:shadow-[0_8px_40px_${category.glow}] border border-transparent hover:${category.border}`}
+            className="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] p-8 cursor-pointer hover:bg-white/70 transition-all shadow-xl group"
           >
-            <div className="flex items-start gap-4">
-              <div className={`p-2.5 rounded-xl bg-gradient-to-br ${category.gradient} text-white shadow-md group-hover:scale-110 transition-transform`}>
+            <div className="flex items-start gap-5">
+              <div className={cn("p-4 rounded-2xl bg-gradient-to-br text-white shadow-xl transition-transform group-hover:rotate-6", category.gradient)}>
                 {service.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-200 group-hover:text-indigo-600 transition-colors">{service.name}</h3>
-                  {service.popular && (
-                    <Star className="size-3 text-amber-500 fill-amber-500" />
-                  )}
-                </div>
-                <p className="text-xs text-indigo-300 mt-1 leading-relaxed">{service.desc}</p>
+                <h3 className="text-lg font-black text-slate-950 uppercase tracking-tighter mb-2 italic group-hover:text-cyan-600 transition-colors">{service.name}</h3>
+                <p className="text-xs text-slate-500 font-bold leading-relaxed uppercase tracking-wide">{service.desc}</p>
+                {service.popular && (
+                  <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 text-[9px] font-black uppercase tracking-widest">
+                    <Sparkles className="size-3" /> Popular
+                  </div>
+                )}
               </div>
-              <ChevronRight className="size-4 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all mt-0.5 shrink-0" />
             </div>
           </motion.div>
         ))}
       </div>
-
-      {/* Divider */}
-      <div className="mt-12 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-    </motion.div>
-  );
-}
-
-/* ─────────────────── SECTION HEADER ─────────────────── */
-
-function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      className="mb-10"
-    >
-      <h2 className="text-3xl font-extrabold glow-heading">{title}</h2>
-      <p className="text-indigo-300 mt-2 font-medium">{subtitle}</p>
     </motion.div>
   );
 }
