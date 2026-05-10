@@ -274,13 +274,6 @@ export function useTechnicianData() {
         setProfile((prev: any) => ({ ...prev, ...data }));
       }
     });
-    const unsubUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.avatar && !data.avatar.startsWith('http')) data.avatar = `${API_BASE}${data.avatar}`;
-        setProfile((prev: any) => ({ ...prev, ...data }));
-      }
-    });
     
     const q = query(collection(db, "notifications"), where("userId", "==", user.uid), where("read", "==", false));
     const unsubNotif = onSnapshot(q, (snap) => {
@@ -294,11 +287,10 @@ export function useTechnicianData() {
     // The technician stays online even if they close the tab, 
     // until they explicitly toggle it off in the UI.
     
-    // High-frequency synchronization: Poll every 5 seconds for missed activity
-    const interval = setInterval(() => fetchTechData(user.uid), 5000);
+    // High-frequency synchronization: Reduced to 30 seconds to save Firestore quota
+    const interval = setInterval(() => fetchTechData(user.uid), 30000);
     return () => {
       unsubTech();
-      unsubUser();
       unsubNotif();
       clearInterval(interval);
     };

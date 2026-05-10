@@ -35,11 +35,11 @@ export default function StatusBanners({
           initial={{ y: -50, opacity: 0 }} 
           animate={{ y: 0, opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
-          className="mb-8 w-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-6 shadow-xl shadow-amber-500/20 text-white flex flex-col md:flex-row items-start md:items-center justify-between border-2 border-amber-400 gap-4"
+          className="mb-8 w-full bg-slate-900/90 backdrop-blur-3xl rounded-3xl p-6 shadow-2xl text-white flex flex-col md:flex-row items-start md:items-center justify-between border border-amber-500/20 gap-4"
         >
           <div className="flex items-center gap-5">
-            <div className="p-4 glass-panel border-white/20 rounded-2xl backdrop-blur-md">
-              <BellRing className="w-8 h-8 text-white" />
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl backdrop-blur-md">
+              <BellRing className="w-8 h-8 text-amber-500" />
             </div>
             <div>
               <p className="font-black text-2xl tracking-tight leading-tight">Service Protocol Update</p>
@@ -53,13 +53,13 @@ export default function StatusBanners({
           <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => { setShowHistory(true); onMarkAllRead(); }}
-              className="px-6 py-4 glass-panel border-white/10 text-amber-600 font-extrabold text-sm rounded-2xl hover:bg-amber-50 transition shadow-md active:scale-95"
+              className="px-6 py-4 bg-white text-slate-900 font-extrabold text-sm rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95"
             >
               View Bookings
             </button>
             <button 
               onClick={() => { setDismissedBanner(true); onMarkAllRead(); }}
-              className="p-3 glass-panel border-white/20 rounded-2xl hover:border-white/40 transition"
+              className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition"
             >
               <X className="w-5 h-5 text-white" />
             </button>
@@ -69,21 +69,21 @@ export default function StatusBanners({
 
       {/* Urgent Reminders Banner */}
       {urgentReminders.length > 0 && (
-        <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-8 w-full bg-rose-500 rounded-3xl p-6 shadow-xl shadow-rose-500/20 text-white flex flex-col md:flex-row items-start md:items-center justify-between border-2 border-rose-400 gap-4">
+        <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-8 w-full bg-slate-900/90 backdrop-blur-3xl rounded-3xl p-6 shadow-2xl text-white flex flex-col md:flex-row items-start md:items-center justify-between border border-rose-500/20 gap-4">
           <div className="flex items-center gap-5">
-            <div className="p-3 glass-panel border-white/20 rounded-2xl">
-              <ShieldAlert className="w-8 h-8 text-white" />
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl">
+              <ShieldAlert className="w-8 h-8 text-rose-500" />
             </div>
             <div>
-              <p className="font-display font-extrabold text-2xl leading-tight">Service Required Soon!</p>
-              <p className="text-base font-medium opacity-90 text-rose-50 mt-1 flex items-center gap-1">
-                You have {urgentReminders.length} appliance(s) requiring maintenance: <strong>{urgentReminders.map(r => r.appliance).join(', ')}</strong>.
+              <p className="font-extrabold text-2xl leading-tight">Service Required Soon!</p>
+              <p className="text-base font-medium text-slate-300 mt-1 flex items-center gap-1">
+                You have {urgentReminders.length} appliance(s) requiring maintenance: <strong className="text-white">{urgentReminders.map(r => r.appliance).join(', ')}</strong>.
               </p>
             </div>
           </div>
           <button 
             onClick={() => { setIssueText(`I need a technician for my ${urgentReminders[0].appliance} servicing.`); window.scrollTo(0, 0); }} 
-            className="px-6 py-4 glass-panel border-white/10 text-rose-600 shrink-0 font-extrabold text-sm rounded-2xl hover:bg-rose-50 transition shadow-md active:scale-95"
+            className="px-6 py-4 bg-white text-slate-900 shrink-0 font-extrabold text-sm rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95"
           >
             Book Tech Instantly
           </button>

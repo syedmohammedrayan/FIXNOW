@@ -108,7 +108,7 @@ export default function TechnicianEarnings() {
     new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
   return (
-    <div className="min-h-screen glass-panel border-white/10 text-indigo-200">
+    <div className="min-h-screen bg-slate-950 text-white">
       <TechnicianSidebar />
 
       <main className="pl-0 md:pl-20 lg:pl-64 xl:pl-72 pt-16 md:pt-0 min-h-screen pb-20 transition-all duration-500 overflow-x-auto">
@@ -118,13 +118,13 @@ export default function TechnicianEarnings() {
           <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <div className="size-2 rounded-full bg-indigo-500 animate-pulse" />
-                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Financial Console</span>
+                <div className="size-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em]">Financial Console</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Revenue Console</h1>
-              <p className="text-indigo-300 text-sm font-bold mt-1">{completedJobs.length} completed jobs</p>
+              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase italic">Revenue Console</h1>
+              <p className="text-slate-400 text-sm font-bold mt-1">{completedJobs.length} completed jobs</p>
             </div>
-            <button className="px-6 py-3 glass-panel border-white/10 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-indigo-300 hover:text-white hover:border-slate-400 transition-all flex items-center gap-2 shadow-sm">
+            <button className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 shadow-sm">
               <Download className="size-4" /> Export Ledger
             </button>
           </header>
@@ -132,16 +132,16 @@ export default function TechnicianEarnings() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 mb-8 lg:mb-10">
             {[
-              { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: Banknote, color: 'indigo', sub: `${completedJobs.filter(j => j.paymentStatus === 'Paid').length} paid jobs` },
-              { label: 'Pending Collections', value: `₹${pendingPayout.toLocaleString()}`, icon: Clock, color: 'amber', sub: `${completedJobs.filter(j => j.paymentStatus !== 'Paid').length} unpaid jobs` },
+              { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: Banknote, color: 'white', sub: `${completedJobs.filter(j => j.paymentStatus === 'Paid').length} paid jobs` },
+              { label: 'Pending Collections', value: `₹${pendingPayout.toLocaleString()}`, icon: Clock, color: 'white', sub: `${completedJobs.filter(j => j.paymentStatus !== 'Paid').length} unpaid jobs` },
             ].map(stat => (
-              <div key={stat.label} className="glass-panel border-white/10 border border-slate-200 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
+              <div key={stat.label} className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-xl transition-all">
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-110 transition-all text-white">
                   <stat.icon className="size-24" />
                 </div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{stat.label}</p>
                 <h2 className="text-4xl font-black text-white tracking-tighter mb-1">{stat.value}</h2>
-                <p className="text-xs text-indigo-300 font-bold">{stat.sub}</p>
+                <p className="text-xs text-slate-500 font-bold">{stat.sub}</p>
               </div>
             ))}
           </div>
@@ -157,7 +157,7 @@ export default function TechnicianEarnings() {
                 onClick={() => setActiveTab(t.key as any)}
                 className={cn(
                   "flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all",
-                  activeTab === t.key ? "bg-indigo-600 text-white shadow-lg" : "glass-panel border-white/10 border border-slate-200 text-indigo-300 hover:text-white shadow-sm"
+                  activeTab === t.key ? "bg-white text-slate-900 shadow-xl" : "bg-white/5 border border-white/10 text-slate-400 hover:text-white shadow-sm"
                 )}
               >
                 <t.icon className="size-4" /> <span className="hidden sm:inline">{t.label}</span>
@@ -166,12 +166,12 @@ export default function TechnicianEarnings() {
 
             {/* Search */}
             <div className="relative ml-auto w-full sm:w-auto sm:max-w-xs mt-2 sm:mt-0">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-indigo-300" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-500" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search services..."
-                className="w-full glass-panel border-white/10 border border-slate-200 rounded-2xl pl-12 pr-4 py-3 text-sm text-white focus:border-indigo-500 shadow-sm outline-none transition-all"
+                className="w-full bg-slate-900/40 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-sm text-white focus:border-white/30 shadow-sm outline-none transition-all"
               />
             </div>
           </div>
@@ -191,14 +191,14 @@ export default function TechnicianEarnings() {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="flex flex-col items-center justify-center py-40 glass-neon-card glass-panel border-white/40 border border-slate-100"
+                  className="flex flex-col items-center justify-center py-40 bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[3rem]"
                 >
-                  <div className="w-24 h-24 bg-indigo-50/50 rounded-[2.5rem] flex items-center justify-center mb-8 border border-indigo-100/50 relative group">
-                    <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full animate-pulse group-hover:bg-indigo-500/20 transition-all" />
-                    <History className="size-10 text-indigo-600 relative z-10" />
+                  <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] flex items-center justify-center mb-8 border border-white/10 relative group">
+                    <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full animate-pulse group-hover:bg-white/10 transition-all" />
+                    <History className="size-10 text-white relative z-10" />
                   </div>
-                  <h3 className="text-2xl font-black text-white tracking-tight">No completed services yet</h3>
-                  <p className="text-indigo-300 text-sm mt-3 font-bold max-w-xs text-center leading-relaxed">Your completed service history will be archived here with detailed financial breakdowns.</p>
+                  <h3 className="text-2xl font-black text-white tracking-tight uppercase italic">No completed services yet</h3>
+                  <p className="text-slate-400 text-sm mt-3 font-bold max-w-xs text-center leading-relaxed">Your completed service history will be archived here with detailed financial breakdowns.</p>
                 </motion.div>
               ) : (
                 <div className="space-y-4">
@@ -214,7 +214,7 @@ export default function TechnicianEarnings() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.04 }}
-                        className="glass-panel border-white/10 border border-slate-200 rounded-[2rem] overflow-hidden hover:border-indigo-500/30 transition-all group shadow-sm hover:shadow-xl hover:shadow-indigo-500/5"
+                        className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden hover:border-white/20 transition-all group shadow-xl"
                       >
                         <div className="p-6 lg:p-8">
                           <div className="flex flex-col lg:flex-row gap-6">
@@ -224,8 +224,8 @@ export default function TechnicianEarnings() {
                               {/* Top row */}
                               <div className="flex items-start justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                  <div className="size-12 rounded-2xl glass-panel border-white/10 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 transition-colors">
-                                    <Wrench className="size-6 text-slate-400 group-hover:text-white" />
+                                  <div className="size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
+                                    <Wrench className="size-6 text-slate-400 group-hover:text-slate-900" />
                                   </div>
                                   <div>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">#{job.id.slice(-8).toUpperCase()}</p>
@@ -235,8 +235,8 @@ export default function TechnicianEarnings() {
                                 <div className={cn(
                                   "shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border",
                                   paid
-                                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                    : "bg-amber-50 text-amber-600 border-amber-100"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                    : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                                 )}>
                                   {paid ? <CheckCircle2 className="size-3" /> : <AlertCircle className="size-3" />}
                                   {paid ? 'Paid' : 'Unpaid'}
@@ -246,7 +246,7 @@ export default function TechnicianEarnings() {
                               {/* Details grid */}
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {job.customerName && (
-                                  <div className="flex items-center gap-3 p-3 glass-panel border-white/10 rounded-2xl border border-slate-100">
+                                  <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
                                     <User className="size-4 text-slate-400 shrink-0" />
                                     <div>
                                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Customer</p>
@@ -255,7 +255,7 @@ export default function TechnicianEarnings() {
                                   </div>
                                 )}
                                 {job.contactNumber && (
-                                  <div className="flex items-center gap-3 p-3 glass-panel border-white/10 rounded-2xl border border-slate-100">
+                                  <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
                                     <Phone className="size-4 text-slate-400 shrink-0" />
                                     <div>
                                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact</p>
@@ -263,7 +263,7 @@ export default function TechnicianEarnings() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="flex items-center gap-3 p-3 glass-panel border-white/10 rounded-2xl border border-slate-100">
+                                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
                                   <Calendar className="size-4 text-slate-400 shrink-0" />
                                   <div>
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Completed</p>
@@ -271,7 +271,7 @@ export default function TechnicianEarnings() {
                                   </div>
                                 </div>
                                 {(job as any).serviceStartedAt && job.completedAt && (
-                                  <div className="flex items-center gap-3 p-3 glass-panel border-white/10 rounded-2xl border border-slate-100">
+                                  <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
                                     <Clock className="size-4 text-slate-400 shrink-0" />
                                     <div>
                                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Duration</p>
@@ -282,7 +282,7 @@ export default function TechnicianEarnings() {
                                   </div>
                                 )}
                                 {job.address && (
-                                  <div className="flex items-start gap-3 p-3 glass-panel border-white/10 rounded-2xl border border-slate-100">
+                                  <div className="flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
                                     <MapPin className="size-4 text-slate-400 shrink-0 mt-0.5" />
                                     <div>
                                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Location</p>
@@ -294,23 +294,23 @@ export default function TechnicianEarnings() {
 
                                {/* Work done */}
                               {job.servicesDone && (
-                                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
-                                  <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-2">Service Report</p>
-                                  <p className="text-sm text-indigo-200 font-bold leading-relaxed italic">"{job.servicesDone}"</p>
+                                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Service Report</p>
+                                  <p className="text-sm text-slate-300 font-bold leading-relaxed italic">"{job.servicesDone}"</p>
                                 </div>
                               )}
 
                                {/* Accessories */}
                               {accessories.length > 0 && (
-                                <div className="p-4 glass-panel border-white/10 border border-slate-100 rounded-2xl">
+                                <div className="p-4 bg-slate-900/40 border border-white/10 rounded-2xl">
                                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Inventory Used</p>
                                   <div className="flex flex-wrap gap-2">
                                     {accessories.map((acc, ai) => (
-                                      <span key={ai} className="inline-flex items-center gap-2 px-3 py-1.5 glass-panel border-white/10 border border-slate-100 rounded-xl text-xs font-bold text-indigo-200 group-hover:border-indigo-200 transition-all">
-                                        <Package className="size-3 text-indigo-500" />
+                                      <span key={ai} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 group-hover:border-white/20 transition-all">
+                                        <Package className="size-3 text-slate-500" />
                                         {acc.name}
-                                        <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                        <span className="text-indigo-600">₹{acc.price}</span>
+                                        <span className="w-1 h-1 rounded-full bg-slate-600" />
+                                        <span className="text-white">₹{acc.price}</span>
                                       </span>
                                     ))}
                                   </div>
@@ -322,39 +322,39 @@ export default function TechnicianEarnings() {
                             <div className="flex-1 flex flex-col items-stretch">
                               <div className={cn(
                                 "flex-1 rounded-[1.5rem] p-6 border flex flex-col justify-between",
-                                paid ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"
+                                paid ? "bg-emerald-500/10 border-emerald-500/20" : "bg-amber-500/10 border-amber-500/20"
                               )}>
                                 <div>
-                                  <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: paid ? '#059669' : '#d97706' }}>
+                                  <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: paid ? '#10b981' : '#f59e0b' }}>
                                     {paid ? 'Net Revenue' : 'Awaiting Payment'}
                                   </p>
                                   <p className="text-5xl font-black text-white tracking-tighter mb-4">
                                     ₹{amount.toLocaleString()}
                                   </p>
                                   <div className="space-y-2 text-xs">
-                                    <div className="flex justify-between text-indigo-300 font-medium">
+                                    <div className="flex justify-between text-slate-500 font-medium">
                                       <span>Base Fee</span>
                                       <span className="text-white font-black">₹{(parseFloat(job.estimatedCostRange?.split('-')[0] || '0') || amount).toLocaleString()}</span>
                                     </div>
                                     {accessories.map((acc, ai) => (
-                                      <div key={ai} className="flex justify-between text-indigo-300 font-medium">
+                                      <div key={ai} className="flex justify-between text-slate-500 font-medium">
                                         <span>{acc.name}</span>
                                         <span className="text-white font-black">₹{acc.price}</span>
                                       </div>
                                     ))}
-                                    <div className="flex justify-between text-slate-400 border-t border-slate-200/50 pt-2 mt-2">
+                                    <div className="flex justify-between text-slate-500 border-t border-white/10 pt-2 mt-2">
                                       <span>Payment Mode</span>
-                                      <span className="font-black text-indigo-200 capitalize">
+                                      <span className="font-black text-white capitalize">
                                         {job.paymentMode === 'pay_now' ? 'Online' : job.paymentMode === 'later' ? 'Cash/UPI' : 'Cash'}
                                       </span>
                                     </div>
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-200/50">
+                                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
                                   {paid
-                                    ? <><CheckCircle2 className="size-4 text-emerald-600" /><span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Transaction Settled</span></>
-                                    : <><AlertCircle className="size-4 text-amber-600" /><span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Pending Verification</span></>
+                                    ? <><CheckCircle2 className="size-4 text-emerald-400" /><span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Transaction Settled</span></>
+                                    : <><AlertCircle className="size-4 text-amber-400" /><span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Pending Verification</span></>
                                   }
                                 </div>
                               </div>
@@ -372,22 +372,22 @@ export default function TechnicianEarnings() {
 
           {/* LEDGER TAB */}
           {!loading && activeTab === 'ledger' && (
-            <div className="glass-panel border-white/10 border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm">
+            <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left border-b border-slate-100 glass-panel border-white/50">
+                    <tr className="text-left border-b border-white/5 bg-white/[0.02]">
                       {['Transaction ID', 'Type / Service', 'Date', 'Status', 'Amount'].map((h, i) => (
                         <th key={h} className={cn("px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest", i === 4 && "text-right")}>{h}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/5">
                     <AnimatePresence mode="popLayout">
                       {transactions.length === 0 ? (
                         <tr><td colSpan={5} className="px-8 py-20 text-center">
                           <History className="size-10 text-slate-300 mx-auto mb-4" />
-                          <p className="text-indigo-300 text-sm font-bold">No transactions yet</p>
+                          <p className="text-slate-500 text-sm font-bold">No transactions yet</p>
                         </td></tr>
                       ) : transactions.map((txn, i) => (
                         <motion.tr
@@ -395,14 +395,14 @@ export default function TechnicianEarnings() {
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.03 }}
-                          className="hover:glass-panel border-white/10 transition-colors group"
+                          className="hover:bg-white/[0.02] transition-colors group"
                         >
                           <td className="px-8 py-5">
-                            <span className="text-xs font-mono text-slate-400 group-hover:text-indigo-600 transition-colors">{txn.id.slice(0, 16)}...</span>
+                            <span className="text-xs font-mono text-slate-400 group-hover:text-white transition-colors">{txn.id.slice(0, 16)}...</span>
                           </td>
                           <td className="px-8 py-5">
                             <div className="flex items-center gap-3">
-                              <div className={cn("size-9 rounded-xl flex items-center justify-center", txn.type === 'service_payment' ? "bg-indigo-50 text-indigo-600" : "bg-pink-50 text-pink-600")}>
+                              <div className={cn("size-9 rounded-xl flex items-center justify-center", txn.type === 'service_payment' ? "bg-white/5 text-white" : "bg-white/5 text-rose-400")}>
                                 {txn.type === 'service_payment' ? <Wrench className="size-4" /> : <Package className="size-4" />}
                               </div>
                               <div>
@@ -412,21 +412,21 @@ export default function TechnicianEarnings() {
                             </div>
                           </td>
                           <td className="px-8 py-5">
-                            <div className="flex items-center gap-2 text-xs text-indigo-300 font-medium">
+                            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
                               <Calendar className="size-3" />
                               {new Date(txn.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                           </td>
                           <td className="px-8 py-5">
                             <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                              txn.status === 'Success' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-amber-50 text-amber-600 border-amber-100"
+                              txn.status === 'Success' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                             )}>
                               {txn.status === 'Success' ? <CheckCircle2 className="size-3" /> : <Clock className="size-3" />}
                               {txn.status}
                             </div>
                           </td>
                           <td className="px-8 py-5 text-right">
-                            <span className={cn("text-lg font-black", txn.type === 'service_payment' ? "text-emerald-600" : "text-pink-600")}>
+                            <span className={cn("text-lg font-black", txn.type === 'service_payment' ? "text-emerald-400" : "text-rose-400")}>
                               {txn.type === 'service_payment' ? '+' : '-'} ₹{(txn.amount || 0).toLocaleString()}
                             </span>
                           </td>

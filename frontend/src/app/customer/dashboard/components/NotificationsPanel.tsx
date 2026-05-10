@@ -27,14 +27,14 @@ export default function NotificationsPanel({
       initial={{ opacity: 0, y: 8, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.95 }}
-      className="absolute right-0 mt-3 w-80 sm:w-96 glass-panel border-white/95 backdrop-blur-xl border border-slate-100 rounded-3xl shadow-2xl z-50 overflow-hidden"
+      className="absolute right-0 mt-3 w-80 sm:w-96 bg-slate-900/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden"
     >
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
         <h3 className="font-bold text-white text-sm">Notifications</h3>
         {unreadCount > 0 && (
           <button
             onClick={onMarkAllRead}
-            className="text-[10px] font-bold text-indigo-600 hover:text-indigo-200 uppercase tracking-widest transition"
+            className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-widest transition"
           >
             Mark all read
           </button>
@@ -55,15 +55,15 @@ export default function NotificationsPanel({
                 if (notif.type === 'booking_declined') onShowHistory(); 
                 onClose(); 
               }}
-              className={`px-6 py-4 border-b border-slate-50 cursor-pointer hover:bg-slate-800/50 transition ${
-                !notif.read ? 'bg-indigo-50/30' : ''
+              className={`px-6 py-4 border-b border-white/5 cursor-pointer hover:bg-white/5 transition ${
+                !notif.read ? 'bg-white/5' : ''
               }`}
             >
               <div className="flex items-start gap-3">
                 <div className={`p-2 rounded-xl shrink-0 ${
                   notif.type === 'booking_declined' 
-                    ? 'bg-amber-50 text-amber-600 border border-amber-100' 
-                    : 'glass-panel border-white/10 text-indigo-300 border border-slate-100'
+                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
+                    : 'bg-white/5 text-white border border-white/10'
                 }`}>
                   {notif.type === 'booking_declined' ? (
                     <XCircle className="w-4 h-4" />
@@ -73,7 +73,7 @@ export default function NotificationsPanel({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-bold ${
-                    !notif.read ? 'text-white' : 'text-indigo-300'
+                    !notif.read ? 'text-white' : 'text-slate-400'
                   }`}>
                     {notif.title}
                   </p>
@@ -85,7 +85,7 @@ export default function NotificationsPanel({
                   </p>
                 </div>
                 {!notif.read && (
-                  <span className="w-2 h-2 bg-indigo-500 rounded-full mt-2 shrink-0" />
+                  <span className="w-2 h-2 bg-white rounded-full mt-2 shrink-0 animate-pulse" />
                 )}
               </div>
             </div>

@@ -224,16 +224,16 @@ export default function LoginPage() {
           style={{ 
             background: role === 'admin' 
               ? 'radial-gradient(ellipse, rgba(245,158,11,0.15), transparent 70%)' 
-              : 'radial-gradient(ellipse, rgba(59,130,246,0.2), transparent 70%)' 
+              : 'radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)' 
           }} 
         />
 
         {/* ─── Main Card ─── */}
         <div className="relative w-full rounded-[2rem] overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(59,130,246,0.05) 50%, rgba(255,255,255,0.05) 100%)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255,255,255,0.3)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.01) 100%)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.1)',
             backdropFilter: 'blur(24px) saturate(150%)',
           }}
         >
@@ -242,7 +242,7 @@ export default function LoginPage() {
             style={{ 
               background: role === 'admin' 
                 ? 'linear-gradient(90deg, transparent, rgba(245,158,11,0.7), rgba(251,191,36,0.5), transparent)' 
-                : 'linear-gradient(90deg, transparent, rgba(59,130,246,0.6), rgba(99,102,241,0.5), transparent)' 
+                : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), rgba(255,255,255,0.1), transparent)' 
             }} 
           />
 
@@ -295,9 +295,9 @@ export default function LoginPage() {
                         animate={{ x: role === 'customer' ? 0 : '100%' }}
                         className="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] rounded-lg"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(99,102,241,0.15))',
-                          border: '1px solid rgba(59,130,246,0.2)',
-                          boxShadow: '0 2px 8px rgba(59,130,246,0.1)',
+                          background: 'rgba(255,255,255,0.1)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                         }}
                         transition={{ type: "spring", stiffness: 300, damping: 28 }}
                       />
@@ -327,14 +327,14 @@ export default function LoginPage() {
                         className="space-y-2"
                       >
                         <Label htmlFor={`${id}-email`} className="text-[13px] font-semibold text-slate-300 ml-0.5 flex items-center gap-2">
-                          <Mail className="w-3.5 h-3.5 text-blue-400/70" /> Email Address
+                          <Mail className="w-3.5 h-3.5 text-white/50" /> Email Address
                         </Label>
                         <Input 
                           id={`${id}-email`}
                           required 
                           type="email" 
                           placeholder="you@example.com" 
-                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all duration-300 focus-visible:ring-1 focus-visible:ring-blue-500/30"
+                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all duration-300 focus-visible:ring-1 focus-visible:ring-white/20"
                           style={{
                             background: 'rgba(255,255,255,0.05)',
                             border: '1px solid rgba(255,255,255,0.15)',
@@ -353,7 +353,7 @@ export default function LoginPage() {
                         className="space-y-2"
                       >
                         <Label htmlFor={`${id}-password`} className="text-[13px] font-semibold text-slate-300 ml-0.5 flex items-center gap-2">
-                          <Lock className="w-3.5 h-3.5 text-blue-400/70" /> Password
+                          <Lock className="w-3.5 h-3.5 text-white/50" /> Password
                         </Label>
                         <div className="relative">
                           <Input 
@@ -361,7 +361,7 @@ export default function LoginPage() {
                             required minLength={6}
                             type={showPassword ? "text" : "password"} 
                             placeholder="Enter your password" 
-                            className="h-[52px] px-4 pr-12 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all duration-300 focus-visible:ring-1 focus-visible:ring-blue-500/30"
+                            className="h-[52px] px-4 pr-12 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all duration-300 focus-visible:ring-1 focus-visible:ring-white/20"
                             style={{
                               background: 'rgba(255,255,255,0.05)',
                               border: '1px solid rgba(255,255,255,0.15)',
@@ -384,9 +384,7 @@ export default function LoginPage() {
                     {/* Remember / Forgot */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <Checkbox 
-                          id={`${id}-remember`} 
-                          className="size-[18px] rounded-md border-white/15 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" 
+                          className="size-[18px] rounded-md border-white/15 data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-slate-900" 
                         />
                         <Label htmlFor={`${id}-remember`} className="text-[13px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors font-medium">
                           Remember me
@@ -402,7 +400,7 @@ export default function LoginPage() {
                             setResetError('');
                             setResetSuccessMessage('');
                           }}
-                          className="text-[13px] font-medium text-blue-400/80 hover:text-blue-300 transition-colors"
+                          className="text-[13px] font-medium text-slate-400 hover:text-white transition-colors"
                         >
                           Forgot password?
                         </button>
@@ -444,10 +442,10 @@ export default function LoginPage() {
                         style={{
                           background: role === 'admin'
                             ? 'linear-gradient(135deg, #f59e0b, #d97706)'
-                            : 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                            : 'white',
                           boxShadow: role === 'admin'
                             ? '0 8px 25px -5px rgba(245,158,11,0.3)'
-                            : '0 8px 25px -5px rgba(59,130,246,0.3)',
+                            : '0 8px 25px -5px rgba(0,0,0,0.4)',
                         }}
                       >
                         {/* Shine */}
@@ -455,7 +453,7 @@ export default function LoginPage() {
                         
                         <span className="relative z-10 flex items-center gap-2">
                           {loading ? 'Signing in...' : 'Sign In'} 
-                          {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />}
+                          {!loading && <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${role === 'admin' ? '' : 'text-slate-900'}`} />}
                         </span>
                       </button>
                     </motion.div>
@@ -505,7 +503,7 @@ export default function LoginPage() {
                   <div className="text-center pt-1">
                     <p className="text-[13px] text-slate-500 font-medium">
                       Don't have an account?{' '}
-                      <Link href={`/auth/signup?role=${role}`} className="text-blue-400 hover:text-blue-300 transition-colors font-semibold">
+                      <Link href={`/auth/signup?role=${role}`} className="text-white hover:text-slate-200 transition-colors font-semibold">
                         Sign up
                       </Link>
                     </p>
@@ -522,8 +520,8 @@ export default function LoginPage() {
                 >
                   <div className="text-center space-y-4">
                     <div className="flex justify-center">
-                      <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-                        <Lock className="w-6 h-6 text-white" />
+                      <div className="size-14 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-black/20">
+                        <Lock className="w-6 h-6 text-slate-900" />
                       </div>
                     </div>
                     <div>
@@ -602,11 +600,11 @@ export default function LoginPage() {
                         type="submit" 
                         className="relative w-full h-[52px] rounded-xl font-bold text-[15px] tracking-wide transition-all duration-300 flex items-center justify-center gap-2.5 overflow-hidden group text-white disabled:opacity-60"
                         style={{
-                          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                          boxShadow: '0 8px 25px -5px rgba(99,102,241,0.3)',
+                          background: 'white',
+                          boxShadow: '0 8px 25px -5px rgba(0,0,0,0.4)',
                         }}
                       >
-                        <span className="relative z-10 flex items-center gap-2">
+                        <span className="relative z-10 flex items-center gap-2 text-slate-900">
                           {resetLoading ? 'Processing...' : (resetStep === 'hint' ? 'Verify Hint' : 'Update Password')} 
                           {!resetLoading && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />}
                         </span>
@@ -649,26 +647,7 @@ export default function LoginPage() {
         )}
       </AnimatePresence>
 
-      {/* Footer status */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        whileHover={{ opacity: 0.8 }}
-        className="mt-10 flex flex-wrap justify-center items-center gap-x-8 gap-y-3 px-4 transition-opacity duration-500"
-      >
-        <div className="flex items-center gap-2">
-          <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-          <p className="text-[11px] font-medium text-white/70">All systems operational</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-3 text-blue-400/70" />
-          <p className="text-[11px] font-medium text-white/70">v2.8 Pro</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Lock className="size-3 text-blue-400/70" />
-          <p className="text-[11px] font-medium text-white/70">SSL Encrypted</p>
-        </div>
-      </motion.div>
+
     </div>
   );
 }

@@ -40,7 +40,7 @@ export function DeclinedHistory({
           </span>
         </h2>
         <ChevronDown
-          className={`w-5 h-5 text-slate-400 group-hover:text-indigo-600 transition-all ${showDeclined ? "rotate-180" : ""}`}
+          className={`w-5 h-5 text-slate-400 group-hover:text-white transition-all ${showDeclined ? "rotate-180" : ""}`}
         />
       </button>
       <AnimatePresence>
@@ -72,12 +72,12 @@ export function DeclinedHistory({
                         <h3 className="text-base font-bold text-white">
                           {job.category} Request
                         </h3>
-                        <p className="text-indigo-300 text-sm mt-1">
+                        <p className="text-slate-400 text-sm mt-1">
                           {job.address || "No address provided"}
                         </p>
                         <div className="flex items-center gap-3 mt-2 flex-wrap">
                           {job.estimatedCostRange && (
-                            <span className="text-indigo-300 font-medium text-xs">
+                            <span className="text-slate-400 font-medium text-xs">
                               ₹{job.estimatedCostRange}
                             </span>
                           )}
@@ -154,7 +154,7 @@ export function TransactionLedger({
                     <th className="px-6 py-4 text-right">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-white/5">
                   {transactions.map((txn) => (
                     <tr
                       key={txn.id}
@@ -169,8 +169,8 @@ export function TransactionLedger({
                             className={cn(
                               "text-[10px] font-black uppercase tracking-widest",
                               txn.type === "service_payment"
-                                ? "text-emerald-600"
-                                : "text-rose-600",
+                                ? "text-emerald-400"
+                                : "text-rose-400",
                             )}
                           >
                             {txn.type.replace("_", " ")}
@@ -187,8 +187,8 @@ export function TransactionLedger({
                         className={cn(
                           "px-6 py-4 text-right font-black",
                           txn.type === "service_payment"
-                            ? "text-emerald-600"
-                            : "text-rose-600",
+                            ? "text-emerald-400"
+                            : "text-rose-400",
                         )}
                       >
                         {txn.type === "service_payment" ? "+" : "-"}₹
@@ -208,7 +208,7 @@ export function TransactionLedger({
                     <div className="flex flex-col">
                       <span className={cn(
                         "text-[10px] font-black uppercase tracking-widest",
-                        txn.type === "service_payment" ? "text-emerald-600" : "text-rose-600"
+                        txn.type === "service_payment" ? "text-emerald-400" : "text-rose-400"
                       )}>
                         {txn.type.replace("_", " ")}
                       </span>
@@ -216,7 +216,7 @@ export function TransactionLedger({
                     </div>
                     <span className={cn(
                       "text-sm font-black",
-                      txn.type === "service_payment" ? "text-emerald-600" : "text-rose-600"
+                      txn.type === "service_payment" ? "text-emerald-400" : "text-rose-400"
                     )}>
                       {txn.type === "service_payment" ? "+" : "-"}₹{txn.amount}
                     </span>

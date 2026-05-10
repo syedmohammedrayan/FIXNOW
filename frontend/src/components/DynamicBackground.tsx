@@ -138,11 +138,11 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 800;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 2 + scrollRatio * 4;           // 2px → 6px
-        const opacity = 0.5 + scrollRatio * 0.2;     // 0.5 → 0.7
+        const blur = 12 + scrollRatio * 8;           // 12px → 20px
+        const opacity = 0.85 + scrollRatio * 0.1;     // 0.85 → 0.95
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
-        overlayRef.current.style.backgroundColor = `rgba(15, 23, 42, ${opacity})`;
+        overlayRef.current.style.backgroundColor = `rgba(2, 6, 23, ${opacity})`;
       }
 
       animFrameId.current = requestAnimationFrame(animate);
@@ -175,9 +175,9 @@ export default function DynamicBackground() {
               inset: 0,
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center 10%', // Higher up to show faces on small screens
               opacity: 0,
-              transform: 'scale(1.01)',
+              transform: 'scale(1.02)', // Reduced starting scale to prevent over-zoom on mobile
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`,
               willChange: 'opacity, transform',
             }}
@@ -195,9 +195,9 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'rgba(248, 250, 255, 0.72)',
-          backdropFilter: 'blur(3px)',
-          WebkitBackdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(2, 6, 23, 0.85)', // Deep black/slate-950 overlay
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           pointerEvents: 'none',
           willChange: 'backdrop-filter',
         }}
@@ -216,9 +216,9 @@ export default function DynamicBackground() {
           pointerEvents: 'none',
           background: `radial-gradient(
             circle at center,
-            rgba(79, 70, 229, 0.06) 0%,
-            rgba(79, 70, 229, 0.03) 25%,
-            rgba(79, 70, 229, 0.01) 50%,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.04) 25%,
+            rgba(255, 255, 255, 0.01) 50%,
             transparent 70%
           )`,
           willChange: 'transform',

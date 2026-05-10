@@ -55,7 +55,7 @@ export default function BroadcastWaitingOverlay({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full glass-neon-card p-8 sm:p-10 relative overflow-hidden border-amber-500/30"
+        className="w-full bg-slate-900/90 backdrop-blur-3xl p-8 sm:p-10 relative overflow-hidden border border-white/10 rounded-[2.5rem] shadow-2xl"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-rose-500/5 pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center text-center">
@@ -71,7 +71,7 @@ export default function BroadcastWaitingOverlay({
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={onRetry}
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-indigo-900 rounded-2xl font-black uppercase tracking-[0.15em] text-sm hover:bg-indigo-50 transition-all active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)]"
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-2xl font-black uppercase tracking-[0.15em] text-sm hover:bg-slate-100 transition-all active:scale-[0.98] shadow-2xl shadow-black/40"
             >
               <RotateCcw className="w-4 h-4" />
               Try Again
@@ -92,12 +92,12 @@ export default function BroadcastWaitingOverlay({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full glass-neon-card p-8 sm:p-10 relative overflow-hidden border-indigo-500/30"
+      className="w-full bg-slate-900/90 backdrop-blur-3xl p-8 sm:p-10 relative overflow-hidden border border-white/10 rounded-[2.5rem] shadow-2xl"
     >
       {/* Animated background pulse */}
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-violet-500/5 pointer-events-none" />
       <motion.div
-        className="absolute inset-0 bg-indigo-500/[0.03] pointer-events-none"
+        className="absolute inset-0 bg-white/[0.03] pointer-events-none"
         animate={{ opacity: [0.3, 0.6, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -107,14 +107,14 @@ export default function BroadcastWaitingOverlay({
         <div className="relative mb-8">
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
-              className="w-40 h-40 rounded-full border-2 border-indigo-500/10"
+              className="w-40 h-40 rounded-full border-2 border-white/10"
               animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
             />
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
-              className="w-32 h-32 rounded-full border-2 border-indigo-500/15"
+              className="w-32 h-32 rounded-full border-2 border-white/15"
               animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: 0.5 }}
             />
@@ -127,7 +127,7 @@ export default function BroadcastWaitingOverlay({
               <circle
                 cx="60" cy="60" r={radius}
                 fill="none"
-                stroke="rgba(99,102,241,0.1)"
+                stroke="rgba(255,255,255,0.1)"
                 strokeWidth="4"
               />
               {/* Progress */}
@@ -143,9 +143,9 @@ export default function BroadcastWaitingOverlay({
               />
               <defs>
                 <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6366f1" />
-                  <stop offset="50%" stopColor="#8b5cf6" />
-                  <stop offset="100%" stopColor="#a78bfa" />
+                  <stop offset="0%" stopColor="#ffffff" />
+                  <stop offset="50%" stopColor="#e2e8f0" />
+                  <stop offset="100%" stopColor="#94a3b8" />
                 </linearGradient>
               </defs>
             </svg>
@@ -154,7 +154,7 @@ export default function BroadcastWaitingOverlay({
               <span className="text-3xl font-black text-white tracking-tight tabular-nums">
                 {formatTime(timeLeft)}
               </span>
-              <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-1">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                 remaining
               </span>
             </div>
@@ -167,9 +167,9 @@ export default function BroadcastWaitingOverlay({
             animate={{ rotate: 360 }}
             transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
           >
-            <Radio className="w-5 h-5 text-indigo-400" />
+            <Radio className="w-5 h-5 text-white" />
           </motion.div>
-          <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-widest rounded-full">
+          <span className="px-3 py-1 bg-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
             Broadcasting Live
           </span>
         </div>
@@ -181,7 +181,7 @@ export default function BroadcastWaitingOverlay({
           Your service request has been broadcast to all available {category.toLowerCase()} experts in your area.
           An expert will accept your request shortly.
         </p>
-        <p className="text-[10px] text-indigo-400/70 font-bold uppercase tracking-widest mb-8">
+        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-8">
           Payment will be collected after service completion
         </p>
 
@@ -190,7 +190,7 @@ export default function BroadcastWaitingOverlay({
           {[0, 1, 2, 3, 4].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 rounded-full bg-indigo-500"
+              className="w-2 h-2 rounded-full bg-white"
               animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
             />

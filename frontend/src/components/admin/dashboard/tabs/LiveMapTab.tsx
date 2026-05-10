@@ -74,15 +74,15 @@ export function LiveMapTab() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-black text-white tracking-tight uppercase italic flex items-center gap-2">
-            <Activity className="w-6 h-6 text-indigo-500 animate-pulse" />
+            <Activity className="w-6 h-6 text-white animate-pulse" />
             Live Fleet Operations
           </h2>
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">Command Center • Real-time Tactical Map</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{techs.filter(t => t.online).length} Technicians Online</span>
+          <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{techs.filter(t => t.online).length} Technicians Online</span>
           </div>
           <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -91,7 +91,7 @@ export function LiveMapTab() {
         </div>
       </div>
 
-      <div className="flex-1 rounded-[2.5rem] overflow-hidden border border-white/10 glass-panel relative group shadow-2xl">
+      <div className="flex-1 rounded-[2.5rem] overflow-hidden border border-white/10 bg-slate-900/40 relative group shadow-2xl">
         <Map
           center={mapCenter}
           zoom={12}
@@ -110,15 +110,15 @@ export function LiveMapTab() {
                 <MarkerContent>
                   <div className="relative cursor-pointer group">
                     {tech.online && (
-                      <div className="absolute -inset-4 bg-indigo-500/20 rounded-full animate-ping pointer-events-none" />
+                      <div className="absolute -inset-4 bg-white/10 rounded-full animate-ping pointer-events-none" />
                     )}
                     <div className={cn(
                       "size-10 rounded-2xl border-2 shadow-xl flex items-center justify-center transform rotate-45 transition-all duration-300 group-hover:scale-110",
                       tech.online 
-                        ? "bg-indigo-600 border-white text-white" 
+                        ? "bg-white border-slate-900 text-slate-900" 
                         : "bg-slate-800 border-slate-700 text-slate-400"
                     )}>
-                      <Wrench className={cn("size-5 -rotate-45", tech.online ? "text-white" : "text-slate-500")} />
+                      <Wrench className={cn("size-5 -rotate-45", tech.online ? "text-slate-900" : "text-slate-500")} />
                     </div>
                   </div>
                 </MarkerContent>
@@ -166,7 +166,7 @@ export function LiveMapTab() {
                   <Maximize2 className="size-3" />
                 </button>
                 
-                <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
                   {selectedEntity.type === 'tech' ? 'Field Agent' : 'Active Client'}
                 </p>
                 <h4 className="text-sm font-black text-white mb-2">{selectedEntity.name || 'Anonymous User'}</h4>
@@ -200,8 +200,8 @@ export function LiveMapTab() {
             <h4 className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-3">Live Legend</h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="size-3 rounded bg-indigo-600 rotate-45 border border-white/20 flex items-center justify-center">
-                  <Wrench className="size-2 text-white -rotate-45" />
+                <div className="size-3 rounded bg-white rotate-45 border border-slate-900 flex items-center justify-center">
+                  <Wrench className="size-2 text-slate-900 -rotate-45" />
                 </div>
                 <span className="text-[9px] font-black text-white uppercase tracking-widest">Active Technician (🛠️)</span>
               </div>

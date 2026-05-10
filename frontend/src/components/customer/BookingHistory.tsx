@@ -39,14 +39,14 @@ interface Booking {
 }
 
 const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string; icon: React.ReactNode }> = {
-  'Pending':     { color: 'text-amber-600',   bg: 'bg-amber-50',   border: 'border-amber-200', icon: <Clock className="size-4" /> },
-  'Accepted':    { color: 'text-blue-600',    bg: 'bg-blue-50',    border: 'border-blue-200',  icon: <CheckCircle2 className="size-4" /> },
-  'On the Way':  { color: 'text-indigo-600',  bg: 'bg-indigo-50',  border: 'border-indigo-200',icon: <Navigation className="size-4" /> },
-  'Arrived':     { color: 'text-violet-600',  bg: 'bg-violet-50',  border: 'border-violet-200',icon: <MapPin className="size-4" /> },
-  'In Progress': { color: 'text-cyan-600',    bg: 'bg-cyan-50',    border: 'border-cyan-200',  icon: <Loader2 className="size-4 animate-spin" /> },
-  'Completed':   { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200',icon: <CheckCircle2 className="size-4" /> },
-  'Declined':    { color: 'text-orange-600',  bg: 'bg-orange-50',  border: 'border-orange-200',icon: <AlertCircle className="size-4" /> },
-  'Cancelled':   { color: 'text-rose-600',    bg: 'bg-rose-50',    border: 'border-rose-200',  icon: <XCircle className="size-4" /> },
+  'Pending':     { color: 'text-amber-400',   bg: 'bg-amber-400/10',   border: 'border-amber-400/20', icon: <Clock className="size-4" /> },
+  'Accepted':    { color: 'text-white',       bg: 'bg-white/10',       border: 'border-white/20',  icon: <CheckCircle2 className="size-4" /> },
+  'On the Way':  { color: 'text-white',       bg: 'bg-white/10',       border: 'border-white/20',  icon: <Navigation className="size-4" /> },
+  'Arrived':     { color: 'text-white',       bg: 'bg-white/10',       border: 'border-white/20',  icon: <MapPin className="size-4" /> },
+  'In Progress': { color: 'text-cyan-400',    bg: 'bg-cyan-400/10',    border: 'border-cyan-400/20',  icon: <Loader2 className="size-4 animate-spin" /> },
+  'Completed':   { color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20',icon: <CheckCircle2 className="size-4" /> },
+  'Declined':    { color: 'text-orange-400',  bg: 'bg-orange-400/10',  border: 'border-orange-400/20',icon: <AlertCircle className="size-4" /> },
+  'Cancelled':   { color: 'text-rose-400',    bg: 'bg-rose-400/10',    border: 'border-rose-400/20',  icon: <XCircle className="size-4" /> },
 };
 
 function getStatus(status: string) {
@@ -162,25 +162,25 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
         <div className="flex items-center gap-4">
           <button 
             onClick={onBack}
-            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition text-slate-500 hover:text-slate-800"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition text-slate-400 hover:text-white"
           >
             <ArrowLeft className="size-5" />
           </button>
           <div>
-            <h2 className="font-display text-2xl font-extrabold text-slate-900 tracking-tight">My Bookings</h2>
+            <h2 className="font-display text-2xl font-extrabold text-white tracking-tight">My Bookings</h2>
             <p className="text-slate-400 text-sm font-medium mt-0.5">{bookings.length} total service requests</p>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-8 p-1.5 bg-slate-100 rounded-2xl w-fit">
+      <div className="flex gap-2 mb-8 p-1.5 bg-white/5 border border-white/10 rounded-2xl w-fit">
         <button 
           onClick={() => setTab('active')}
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
             tab === 'active' 
               ? 'bg-white text-slate-900 shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Active ({activeBookings.length})
@@ -190,7 +190,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
             tab === 'past' 
               ? 'bg-white text-slate-900 shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Past ({pastBookings.length})
@@ -200,14 +200,14 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
       {/* Content */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin mb-4" />
+          <div className="w-10 h-10 border-4 border-white/10 border-t-white rounded-full animate-spin mb-4" />
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading bookings...</p>
         </div>
       ) : displayedBookings.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 px-6 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
-          <Package className="size-12 text-slate-300 mb-4" />
-          <p className="text-slate-600 font-bold text-lg">No {tab} bookings</p>
-          <p className="text-slate-400 text-sm mt-1">
+        <div className="flex flex-col items-center justify-center py-20 px-6 border border-dashed border-white/10 rounded-3xl bg-white/5">
+          <Package className="size-12 text-slate-500 mb-4" />
+          <p className="text-white font-bold text-lg">No {tab} bookings</p>
+          <p className="text-slate-500 text-sm mt-1">
             {tab === 'active' ? 'Book a service to get started!' : 'Completed bookings will appear here.'}
           </p>
         </div>
@@ -226,8 +226,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: idx * 0.05 }}
                   className={cn(
-                    "p-8 glass-neon-card hover:shadow-indigo-500/10 transition-all group relative overflow-hidden",
-                    live ? "border-indigo-500/30 ring-1 ring-indigo-500/10" : "border-slate-100"
+                    "p-8 bg-slate-900/90 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-[2.5rem] transition-all group relative overflow-hidden",
+                    live && "border-white/30"
                   )}
                 >
                   {/* Background Accents for Completed */}
@@ -242,13 +242,13 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                         #{booking.id.slice(-6).toUpperCase()}
                       </p>
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-extrabold text-slate-900 capitalize leading-none">
+                        <h3 className="text-lg font-extrabold text-white capitalize leading-none">
                           {booking.category || 'General Service'}
                         </h3>
                         {isCompleted(booking.status) && (
                           <button 
                             onClick={() => setSelectedBooking(booking)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest transition-all hover:bg-slate-800 hover:scale-105 active:scale-95 shadow-md shadow-slate-200"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-white text-slate-900 rounded-full text-[10px] font-black uppercase tracking-widest transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 shadow-md shadow-black/40"
                           >
                             <History className="size-3" />
                             Details
@@ -256,7 +256,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                         )}
                       </div>
                     </div>
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 ${isBroadcastPending(booking) ? 'text-indigo-600 bg-indigo-50 border-indigo-200' : `${sc.color} ${sc.bg} ${sc.border}`}`}>
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 ${isBroadcastPending(booking) ? 'text-white bg-white/10 border-white/20' : `${sc.color} ${sc.bg} ${sc.border}`}`}>
                       {isBroadcastPending(booking) ? (
                         <>
                           <Radio className="size-3.5 animate-pulse" />
@@ -273,8 +273,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
 
                   {/* Technician row */}
                   {booking.technician && (
-                    <div className="flex items-center gap-3 mb-4 p-3 bg-slate-50/50 rounded-2xl border border-slate-100 relative z-10">
-                      <div className="size-10 rounded-xl overflow-hidden bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                    <div className="flex items-center gap-3 mb-4 p-3 bg-white/5 rounded-2xl border border-white/10 relative z-10">
+                      <div className="size-10 rounded-xl overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
                         {booking.technician.avatar ? (
                           <img src={booking.technician.avatar} className="size-full object-cover" />
                         ) : (
@@ -282,7 +282,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-slate-800 text-sm truncate">{booking.technician.name}</p>
+                        <p className="font-bold text-white text-sm truncate">{booking.technician.name}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <Star className="size-3 text-amber-500 fill-amber-500" />
                           <span className="text-xs text-slate-500 font-medium">{booking.technician.rating}</span>
@@ -310,7 +310,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                     </div>
                     {booking.estimatedCostRange && (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-indigo-600">₹{booking.estimatedCostRange}</span>
+                        <span className="text-xs font-bold text-white">₹{booking.estimatedCostRange}</span>
                       </div>
                     )}
                   </div>
@@ -324,14 +324,14 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
 
                   {/* OTP Display for Active Bookings */}
                   {live && booking.otp && (
-                    <div className="mb-4 p-3 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-between">
-                       <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Service OTP</span>
-                       <span className="text-lg font-black text-emerald-700 tracking-[0.2em]">{booking.otp}</span>
+                    <div className="mb-4 p-3 bg-emerald-400/10 rounded-2xl border border-emerald-400/20 flex items-center justify-between">
+                       <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Service OTP</span>
+                       <span className="text-lg font-black text-emerald-400 tracking-[0.2em]">{booking.otp}</span>
                     </div>
                   )}
 
                   {/* Payment + Action Row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Payment Status Badge */}
                       {booking.status === 'Cancelled' || booking.status === 'Declined' ? (
@@ -341,8 +341,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                       ) : (
                         <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg border ${
                           booking.paymentStatus === 'Paid' 
-                            ? 'text-emerald-600 bg-emerald-50 border-emerald-200' 
-                            : 'text-slate-500 bg-slate-50 border-slate-200'
+                            ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' 
+                            : 'text-slate-400 bg-white/5 border-white/10'
                         }`}>
                           {booking.paymentStatus || 'Unpaid'}
                         </span>
@@ -355,7 +355,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                       )}
                       {/* Final Amount for completed */}
                       {isCompleted(booking.status) && (booking.finalAmount || booking.totalAmount) && (
-                        <span className="text-xs font-black text-indigo-600 ml-1">
+                        <span className="text-xs font-black text-white ml-1">
                           • ₹{booking.finalAmount || booking.totalAmount}
                         </span>
                       )}
@@ -366,8 +366,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                       <button 
                         onClick={() => onTrack(booking.id)}
                         className={cn(
-                          "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95",
-                          booking.status === 'In Progress' ? "bg-cyan-600 hover:bg-cyan-500" : "bg-indigo-600 hover:bg-indigo-500"
+                          "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-slate-900 text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95",
+                          booking.status === 'In Progress' ? "bg-cyan-400 hover:bg-cyan-300" : "bg-white hover:bg-slate-100"
                         )}
                       >
                         {booking.status === 'In Progress' ? <Loader2 className="size-3.5 animate-spin" /> : <Navigation className="size-3.5" />}
@@ -378,15 +378,15 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
 
                     {/* Completed + Paid */}
                     {isCompleted(booking.status) && booking.paymentStatus === 'Paid' && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold shadow-sm">
-                        <CheckCircle2 className="size-3.5 text-emerald-600" />
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 text-xs font-bold shadow-sm">
+                        <CheckCircle2 className="size-3.5 text-emerald-400" />
                         Service Completed ✓
                       </div>
                     )}
 
                     {/* Completed but unpaid — waiting for confirmation */}
                     {isCompleted(booking.status) && booking.paymentStatus !== 'Paid' && (
-                      <div className="flex items-center gap-3 text-amber-600 bg-amber-50 px-4 py-2 rounded-xl border border-amber-100">
+                      <div className="flex items-center gap-3 text-amber-400 bg-amber-400/10 px-4 py-2 rounded-xl border border-amber-400/20">
                         <Clock className="size-3.5 animate-spin" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Awaiting Payment</span>
                       </div>
@@ -415,47 +415,47 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-white/90 backdrop-blur-2xl rounded-[3rem] overflow-hidden shadow-2xl border border-white/50"
+              className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-3xl rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
             >
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 via-violet-600 to-emerald-500" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-white to-emerald-500" />
               
               <div className="p-8">
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md">Service Receipt</span>
-                      <span className="text-[10px] text-slate-300">•</span>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">#{selectedBooking.id.slice(-8).toUpperCase()}</span>
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded-md">Service Receipt</span>
+                      <span className="text-[10px] text-slate-500">•</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">#{selectedBooking.id.slice(-8).toUpperCase()}</span>
                     </div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight capitalize">{selectedBooking.category} Insights</h2>
+                    <h2 className="text-3xl font-black text-white tracking-tight capitalize">{selectedBooking.category} Insights</h2>
                   </div>
                   <button 
                     onClick={() => setSelectedBooking(null)}
-                    className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all hover:rotate-90 active:scale-95"
+                    className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-all hover:rotate-90 active:scale-95"
                   >
-                    <XCircle className="size-5 text-slate-500" />
+                    <XCircle className="size-5 text-slate-400" />
                   </button>
                 </div>
 
                 <div className="space-y-6">
                   {/* Service Timeline */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Booked On</p>
-                      <p className="text-sm font-bold text-slate-700">{formatDate(selectedBooking.createdAt)}</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{formatTime(selectedBooking.createdAt)}</p>
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Booked On</p>
+                      <p className="text-sm font-bold text-white">{formatDate(selectedBooking.createdAt)}</p>
+                      <p className="text-[10px] text-slate-500 font-medium">{formatTime(selectedBooking.createdAt)}</p>
                     </div>
-                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Completed On</p>
-                      <p className="text-sm font-bold text-slate-700">{formatDate(selectedBooking.updatedAt || selectedBooking.createdAt)}</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{formatTime(selectedBooking.updatedAt || selectedBooking.createdAt)}</p>
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Completed On</p>
+                      <p className="text-sm font-bold text-white">{formatDate(selectedBooking.updatedAt || selectedBooking.createdAt)}</p>
+                      <p className="text-[10px] text-slate-500 font-medium">{formatTime(selectedBooking.updatedAt || selectedBooking.createdAt)}</p>
                     </div>
                   </div>
 
                   {/* Technician Info */}
                   {selectedBooking.technician && (
-                    <div className="flex items-center gap-3 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-                      <div className="size-10 rounded-xl overflow-hidden bg-white border border-indigo-100 flex items-center justify-center shrink-0">
+                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <div className="size-10 rounded-xl overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
                         {selectedBooking.technician.avatar ? (
                           <img src={selectedBooking.technician.avatar} className="size-full object-cover" />
                         ) : (
@@ -463,8 +463,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                         )}
                       </div>
                       <div>
-                        <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Service Expert</p>
-                        <p className="text-sm font-extrabold text-slate-800">{selectedBooking.technician.name}</p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Service Expert</p>
+                        <p className="text-sm font-extrabold text-white">{selectedBooking.technician.name}</p>
                       </div>
                       {selectedBooking.technician.rating && (
                         <div className="ml-auto flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-slate-100">
@@ -476,77 +476,77 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                   )}
 
                   {/* Work Log — Shows ONLY real technician-entered details */}
-                  <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] text-indigo-900">
+                  <div className="p-6 bg-white/5 rounded-[2rem] border border-white/10 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] text-white">
                        <History className="size-20" />
                     </div>
                     <div className="flex items-center gap-3 mb-4 relative z-10">
-                      <div className="size-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                        <Loader2 className="size-4 text-indigo-600" />
+                      <div className="size-8 rounded-xl bg-white/10 flex items-center justify-center">
+                        <Loader2 className="size-4 text-white" />
                       </div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Work Log</h4>
+                      <h4 className="text-xs font-black text-white uppercase tracking-widest">Work Log</h4>
                       {selectedBooking.servicesDone && (
-                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 ml-auto">By Technician</span>
+                        <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20 ml-auto">By Technician</span>
                       )}
                     </div>
                     {selectedBooking.servicesDone ? (
-                      <p className="text-sm text-slate-700 font-medium leading-relaxed relative z-10 bg-white/60 p-4 rounded-xl border border-white/50 shadow-sm">
+                      <p className="text-sm text-slate-300 font-medium leading-relaxed relative z-10 bg-white/5 p-4 rounded-xl border border-white/10 shadow-sm">
                         {selectedBooking.servicesDone}
                       </p>
                     ) : (
-                      <div className="relative z-10 bg-white/30 p-4 rounded-xl border border-dashed border-slate-200 text-center">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No work log was recorded for this service</p>
-                        <p className="text-[9px] text-slate-300 mt-1">Future services will include detailed technician notes</p>
+                      <div className="relative z-10 bg-white/5 p-4 rounded-xl border border-dashed border-white/10 text-center">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No work log was recorded for this service</p>
+                        <p className="text-[9px] text-slate-500 mt-1">Future services will include detailed technician notes</p>
                       </div>
                     )}
                   </div>
 
                   {/* Accessories Section */}
                   {(selectedBooking.accessories && selectedBooking.accessories.length > 0) ? (
-                    <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
+                    <div className="p-6 bg-white/5 rounded-[2rem] border border-white/10">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="size-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                          <Package className="size-4 text-emerald-600" />
+                        <div className="size-8 rounded-xl bg-emerald-400/10 flex items-center justify-center">
+                          <Package className="size-4 text-emerald-400" />
                         </div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Consumables & Parts</h4>
-                        <span className="text-[9px] font-black text-slate-400 ml-auto">{selectedBooking.accessories.length} item{selectedBooking.accessories.length > 1 ? 's' : ''}</span>
+                        <h4 className="text-xs font-black text-white uppercase tracking-widest">Consumables & Parts</h4>
+                        <span className="text-[9px] font-black text-slate-500 ml-auto">{selectedBooking.accessories.length} item{selectedBooking.accessories.length > 1 ? 's' : ''}</span>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
                         {selectedBooking.accessories.map((acc, i) => (
-                          <div key={i} className="flex justify-between items-center p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-                            <span className="text-sm text-slate-600 font-bold">{acc.name}</span>
-                            <span className="text-sm text-indigo-600 font-black bg-indigo-50 px-2 py-0.5 rounded-lg">₹{acc.price}</span>
+                          <div key={i} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10 shadow-sm">
+                            <span className="text-sm text-slate-300 font-bold">{acc.name}</span>
+                            <span className="text-sm text-white font-black bg-white/10 px-2 py-0.5 rounded-lg">₹{acc.price}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    <div className="p-6 bg-slate-50/50 rounded-[2rem] border border-dashed border-slate-200 text-center flex flex-col items-center justify-center gap-2">
-                      <XCircle className="size-6 text-slate-200" />
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Standard Service (No extra parts)</p>
+                    <div className="p-6 bg-white/5 rounded-[2rem] border border-dashed border-white/10 text-center flex flex-col items-center justify-center gap-2">
+                      <XCircle className="size-6 text-slate-500" />
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Standard Service (No extra parts)</p>
                     </div>
                   )}
 
                   {/* Address */}
                   {selectedBooking.address && (
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                      <MapPin className="size-4 text-slate-400 mt-0.5 shrink-0" />
+                    <div className="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <MapPin className="size-4 text-slate-500 mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Service Location</p>
-                        <p className="text-xs text-slate-600 font-medium leading-relaxed">{selectedBooking.address}</p>
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Service Location</p>
+                        <p className="text-xs text-slate-400 font-medium leading-relaxed">{selectedBooking.address}</p>
                       </div>
                     </div>
                   )}
 
                   {/* Final Calculation */}
-                  <div className="pt-6 border-t border-slate-100">
-                    <div className="bg-slate-950 rounded-[2rem] p-6 text-white shadow-2xl shadow-indigo-200/50 relative overflow-hidden group">
+                  <div className="pt-6 border-t border-white/10">
+                    <div className="bg-slate-950/90 rounded-[2rem] p-6 text-white border border-white/10 shadow-2xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                         <DollarSign className="size-16" />
                       </div>
                       <div className="flex justify-between items-end relative z-10">
                         <div>
-                          <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
                             {(selectedBooking.finalAmount || selectedBooking.totalAmount) ? 'Final Settlement' : 'Estimated Range'}
                           </p>
                           <h3 className="text-4xl font-black text-white tracking-tighter">
@@ -573,7 +573,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
 
                 <button 
                   onClick={() => setSelectedBooking(null)}
-                  className="w-full mt-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 border border-slate-200"
+                  className="w-full mt-6 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 border border-white/10"
                 >
                   Return to History
                 </button>

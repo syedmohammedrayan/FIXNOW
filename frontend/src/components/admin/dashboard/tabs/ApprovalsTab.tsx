@@ -119,9 +119,9 @@ export function ApprovalsTab({
         {techs.length > 0 ? (
           <div className="grid gap-4">
             {techs.map(tech => (
-              <div key={tech.id} className="glass-neon-card p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+              <div key={tech.id} className="bg-slate-900/40 backdrop-blur-xl border border-white/10 p-6 flex flex-col md:flex-row justify-between items-center gap-6 rounded-[2rem] shadow-xl">
                 <div className="flex items-center gap-5 w-full md:w-auto">
-                  <div className="w-16 h-16 rounded-full glass-panel flex items-center justify-center text-2xl font-bold text-slate-400 border border-slate-200 overflow-hidden shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-2xl font-bold text-slate-400 border border-white/10 overflow-hidden shrink-0">
                     {tech.avatar ? (
                       <img src={getValidImageUrl(tech.avatar)} className="w-full h-full object-cover" alt={tech.name} />
                     ) : (
@@ -132,14 +132,14 @@ export function ApprovalsTab({
                     <h3 className="text-xl font-bold text-white">{tech.name}</h3>
                     <p className="text-slate-400">{tech.email} • {tech.phone}</p>
                     <div className="flex gap-2 mt-2">
-                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 rounded-md text-xs font-bold border border-white/10">{tech.category}</span>
+                      <span className="px-2 py-1 bg-white/10 text-white rounded-md text-xs font-bold border border-white/10">{tech.category}</span>
                       {tech.verificationStatus === 'uploaded' && (
-                        <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-md text-xs font-bold border border-blue-500/20 flex items-center gap-1">
+                         <span className="px-2 py-1 bg-cyan-400/10 text-cyan-400 rounded-md text-xs font-bold border border-cyan-400/20 flex items-center gap-1">
                           <FileText className="size-3" /> ID Uploaded
                         </span>
                       )}
                       {tech.skills?.slice(0, 2).map((s: string) => (
-                        <span key={s} className="px-2 py-1 bg-slate-200 rounded-md text-xs text-indigo-200">{s}</span>
+                        <span key={s} className="px-2 py-1 bg-white/5 rounded-md text-xs text-slate-400 border border-white/5">{s}</span>
                       ))}
                     </div>
                   </div>
@@ -151,20 +151,20 @@ export function ApprovalsTab({
                         const url = tech.govIdUrl || tech.gov_id_url;
                         if (url) setSelectedIdUrl(url);
                       }}
-                      className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 font-bold transition border border-blue-500/20 flex items-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                      className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 font-bold transition border border-white/10 flex items-center gap-2 shadow-sm"
                     >
                       <Eye className="size-4" /> View ID
                     </button>
                   )}
-                  <button onClick={() => handleApprove(tech.id)} className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition">Approve</button>
-                  <button onClick={() => handleReject(tech.id)} className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold transition border border-slate-700">Reject</button>
+                  <button onClick={() => handleApprove(tech.id)} className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">Approve</button>
+                  <button onClick={() => handleReject(tech.id)} className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 font-bold transition border border-white/10">Reject</button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 glass-panel border-white/10 rounded-[3rem] border border-slate-100 shadow-sm">
-            <ShieldCheck className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <div className="text-center py-20 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-sm">
+            <ShieldCheck className="w-16 h-16 text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400 font-bold">No pending registrations at the moment.</p>
           </div>
         )}
@@ -187,8 +187,8 @@ export function ApprovalsTab({
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 glass-panel border-white/10 rounded-[3rem] border border-slate-100 shadow-sm">
-            <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <div className="text-center py-20 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-sm">
+            <Package className="w-16 h-16 text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400 font-bold">No pending tool requisition orders at the moment.</p>
           </div>
         )}

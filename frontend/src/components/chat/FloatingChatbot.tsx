@@ -42,7 +42,7 @@ const StreamingText = ({ text, onComplete }: { text: string; onComplete?: () => 
 
 const RoleIcon = ({ role }: { role: string }) => {
   if (role === 'technician') return <Terminal className="w-4 h-4 text-cyan-400" />;
-  return <Sparkles className="w-4 h-4 text-indigo-400" />;
+  return <Sparkles className="w-4 h-4 text-white" />;
 };
 
 export default function FloatingChatbot({ 
@@ -131,12 +131,12 @@ export default function FloatingChatbot({
       <motion.button
         initial={{ scale: 0, rotate: -45 }}
         animate={{ scale: 1, rotate: 0 }}
-        whileHover={{ scale: 1.1, boxShadow: "0 0 25px rgba(79, 70, 229, 0.6)" }}
+        whileHover={{ scale: 1.1, boxShadow: "0 0 25px rgba(255, 255, 255, 0.2)" }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)] cursor-pointer transition-all border-2 border-white/30 backdrop-blur-2xl pointer-events-auto",
-          role === 'customer' ? "bg-indigo-600/90" : "bg-teal-600/90"
+          "w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl cursor-pointer transition-all border border-white/10 backdrop-blur-2xl pointer-events-auto",
+          "bg-slate-900/95"
         )}
       >
         {isOpen ? (
@@ -157,21 +157,20 @@ export default function FloatingChatbot({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className={cn(
-              "w-[calc(100vw-2rem)] sm:w-[380px] bg-slate-950/95 backdrop-blur-2xl rounded-[2rem] sm:rounded-[2.5rem] flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden border border-white/20 pointer-events-auto mb-2",
-              isMinimized ? "h-16 sm:h-20" : "h-[70vh] sm:h-[600px]"
+              "w-[calc(100vw-2rem)] sm:w-[420px] bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden border border-white/10 pointer-events-auto mb-2",
+              isMinimized ? "h-16 sm:h-20" : "h-[70vh] sm:h-[650px]"
             )}
           >
             {/* Header */}
             <div 
               className={cn(
-                "p-5 flex justify-between items-center cursor-pointer border-b border-white/5",
-                role === 'customer' ? "bg-indigo-600/20" : "bg-teal-600/20"
+                "p-5 flex justify-between items-center cursor-pointer border-b border-white/5 bg-white/5"
               )}
               onClick={() => setIsMinimized(!isMinimized)}
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/10 rounded-xl">
-                  <Bot className={cn("w-5 h-5", role === 'customer' ? "text-indigo-400" : "text-teal-400")} />
+                <div className="p-2 bg-white/5 rounded-xl border border-white/10">
+                  <Bot className={cn("w-5 h-5", role === 'customer' ? "text-white" : "text-cyan-400")} />
                 </div>
                 <div>
                   <h3 className="font-black text-white text-[10px] uppercase tracking-[0.2em]">FIXNOW AI CORE</h3>
@@ -205,7 +204,7 @@ export default function FloatingChatbot({
                       <div className={cn(
                         "max-w-[90%] p-4 rounded-3xl text-xs font-medium leading-relaxed shadow-lg",
                         msg.sender === 'user' 
-                          ? "bg-indigo-600 text-white rounded-tr-none border border-white/10" 
+                          ? "bg-white text-slate-900 rounded-tr-none border border-white/10" 
                           : "bg-white/5 text-slate-200 rounded-tl-none border border-white/5 backdrop-blur-sm"
                       )}>
                         {msg.sender === 'bot' && i === messages.length - 1 ? (
@@ -229,9 +228,9 @@ export default function FloatingChatbot({
                   {isTyping && (
                     <div className="flex items-center gap-2 px-2">
                       <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                        <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                        <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" />
+                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
+                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]" />
+                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
                       </div>
                       <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em]">Processing...</span>
                     </div>
@@ -264,11 +263,11 @@ export default function FloatingChatbot({
                       value={input} 
                       onChange={(e) => setInput(e.target.value)} 
                       placeholder={role === 'customer' ? "Report an issue..." : "Diagnostic query..."}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all font-medium"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all font-medium"
                     />
                     <button 
                       type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-indigo-400 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-white transition-colors"
                     >
                       <Mic className="w-4 h-4" />
                     </button>
@@ -278,8 +277,7 @@ export default function FloatingChatbot({
                     whileTap={{ scale: 0.95 }}
                     type="submit" 
                     className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all",
-                      role === 'customer' ? "bg-indigo-600 shadow-indigo-600/20" : "bg-teal-600 shadow-teal-600/20"
+                      "w-12 h-12 rounded-2xl flex items-center justify-center bg-white text-slate-900 shadow-lg transition-all"
                     )}
                   >
                     <Send className="w-5 h-5" />

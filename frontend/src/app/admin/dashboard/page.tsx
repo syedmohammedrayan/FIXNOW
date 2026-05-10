@@ -229,7 +229,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen glass-panel border-white/10 text-white flex relative">
+    <div className="min-h-screen bg-slate-950 text-white flex relative">
       <Sidebar 
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -313,16 +313,16 @@ export default function AdminDashboard() {
       <AnimatePresence>
         {showAddModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="glass-panel border-white/10 border border-slate-200 rounded-[2rem] p-10 max-w-md w-full shadow-2xl relative">
-              <button onClick={() => setShowAddModal(false)} className="absolute top-6 right-6 p-2 hover:glass-panel border-white/10 rounded-full text-slate-400 transition"><X className="w-5 h-5" /></button>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-slate-900 border-white/10 border rounded-[2rem] p-10 max-w-md w-full shadow-2xl relative">
+              <button onClick={() => setShowAddModal(false)} className="absolute top-6 right-6 p-2 bg-white/5 border border-white/10 rounded-full text-slate-400 hover:text-white transition"><X className="w-5 h-5" /></button>
               <h2 className="text-2xl font-black text-white mb-8 tracking-tight">NEW TECHNICIAN</h2>
               <form onSubmit={handleAddTech} className="space-y-6">
                 <InputField label="Full Name" value={newTech.name} onChange={v => setNewTech({ ...newTech, name: v })} />
                 <InputField label="Email Address" type="email" value={newTech.email} onChange={v => setNewTech({ ...newTech, email: v })} />
                 <InputField label="Phone Number" value={newTech.phone} onChange={v => setNewTech({ ...newTech, phone: v })} />
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-indigo-300 ml-1">Specialization</label>
-                  <select value={newTech.category} onChange={e => setNewTech({ ...newTech, category: e.target.value })} className="w-full bg-slate-900 border border-white/20 rounded-2xl px-5 py-4 text-white focus:border-indigo-500 transition outline-none">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Specialization</label>
+                  <select value={newTech.category} onChange={e => setNewTech({ ...newTech, category: e.target.value })} className="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-white transition outline-none">
                     {[
                       'HVAC / AC Technician', 'Electrician', 'Washing Machine Technician', 
                       'Water Systems Technician', 'Refrigerator Technician', 'Kitchen Services Technician', 
@@ -335,7 +335,7 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <InputField label="Core Skills" placeholder="e.g. Pipe Leak, Wiring" value={newTech.skills} onChange={v => setNewTech({ ...newTech, skills: v })} />
-                <button type="submit" className="w-full py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition shadow-[0_10px_30px_rgba(79,70,229,0.3)] mt-4">CREATE ACCOUNT</button>
+                <button type="submit" className="w-full py-5 bg-white text-slate-900 font-black rounded-2xl transition shadow-2xl mt-4 hover:bg-slate-100 active:scale-95">CREATE ACCOUNT</button>
               </form>
             </motion.div>
           </motion.div>

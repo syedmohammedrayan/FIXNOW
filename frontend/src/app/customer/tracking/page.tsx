@@ -88,6 +88,7 @@ export default function TrackingPage() {
   });
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
+  const hasInitiallyCentered = useRef(false);
   const directionsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<any>(null);
   const [hasFitBounds, setHasFitBounds] = useState(false);
@@ -240,14 +241,14 @@ export default function TrackingPage() {
   }, [bookingId]);
 
   useEffect(() => {
-    if (map && techLocation && userLocation && window.google?.maps && !hasFitBounds) {
+    if (map && techLocation && userLocation && window.google?.maps && !hasInitiallyCentered.current) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(userLocation);
       map.fitBounds(bounds, { top: 150, right: 100, bottom: 250, left: 100 });
-      setHasFitBounds(true);
+      hasInitiallyCentered.current = true;
     }
-  }, [map, techLocation, userLocation, hasFitBounds]);
+  }, [map, techLocation, userLocation]);
 
   useEffect(() => {
     // We now rely on instant localDistance for the UI and ETA
@@ -288,9 +289,9 @@ export default function TrackingPage() {
     // Create polyline if it doesn't exist
     if (!polylineRef.current) {
       polylineRef.current = new window.google.maps.Polyline({
-        strokeColor: "#4f46e5",
-        strokeWeight: 3,
-        strokeOpacity: 0.8,
+        strokeColor: "#ffffff",
+        strokeWeight: 4,
+        strokeOpacity: 0.6,
         zIndex: 5,
         map: map
       });
@@ -314,25 +315,25 @@ export default function TrackingPage() {
   }, [map, techLocation, userLocation]);
 
   return (
-    <div className="h-screen w-full bg-slate-50 overflow-hidden flex flex-col">
+    <div className="h-screen w-full bg-slate-950 overflow-hidden flex flex-col font-sans">
       <main className="flex-1 min-h-0 flex flex-col lg:flex-row relative overflow-hidden">
         
         {/* MAP SECTION */}
         <section className={cn(
-          "relative overflow-hidden bg-slate-100 transition-all duration-500",
+          "relative overflow-hidden bg-slate-900 transition-all duration-500",
           isMapFullscreen 
             ? "fixed inset-0 z-[150] h-full w-full" 
-            : "h-[40vh] md:h-[50vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-slate-200"
+            : "h-[45vh] md:h-[55vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-white/10"
         )}>
           {!isLoaded && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm z-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-xl z-10">
               <div className="relative">
-                <div className="size-20 rounded-full bg-indigo-50 flex items-center justify-center animate-pulse">
-                  <Navigation className="size-8 text-indigo-400" />
+                <div className="size-20 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
+                  <Navigation className="size-8 text-white/40" />
                 </div>
-                <div className="absolute inset-0 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+                <div className="absolute inset-0 border-4 border-white/10 border-t-white rounded-full animate-spin" />
               </div>
-              <p className="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">Initializing Tactical Overlay...</p>
+              <p className="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">Synchronizing Tactical Overlay...</p>
             </div>
           )}
 
@@ -352,19 +353,19 @@ export default function TrackingPage() {
                 <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
                     <div className="relative group">
-                      <div className="absolute -inset-4 bg-indigo-500/20 rounded-full blur-xl animate-pulse" />
-                      <div className="size-14 bg-white rounded-full p-1 shadow-2xl border border-indigo-100 relative">
-                        <div className="w-full h-full bg-indigo-600 rounded-full flex items-center justify-center animate-pulse">
-                          <Wrench className="size-6 text-white" />
+                      <div className="absolute -inset-4 bg-white/10 rounded-full blur-xl animate-pulse" />
+                      <div className="size-14 bg-slate-900 rounded-full p-1 shadow-2xl border border-white/20 relative">
+                        <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                          <Wrench className="size-6 text-slate-900" />
                         </div>
                       </div>
                       
-                      <div className="absolute top-0 left-full ml-3 px-3 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-xl uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20 flex items-center gap-2">
+                      <div className="absolute top-0 left-full ml-3 px-3 py-1.5 bg-white text-slate-900 text-[9px] font-black rounded-xl uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20 flex items-center gap-2">
                         <Clock className="size-3" />
                         {eta}
                       </div>
 
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-indigo-950 text-white text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20">
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20">
                         {techDetails.name} • LIVE
                       </div>
                     </div>
@@ -375,11 +376,11 @@ export default function TrackingPage() {
               {userLocation && (
                 <OverlayView position={userLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
-                    <div className="size-10 bg-emerald-500 rounded-full border-4 border-white shadow-2xl relative flex items-center justify-center">
+                    <div className="size-10 bg-emerald-500 rounded-full border-4 border-slate-900 shadow-2xl relative flex items-center justify-center">
                        <MapPin className="size-5 text-white" />
                        <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-25" />
                     </div>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-white text-emerald-900 text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-xl border border-slate-100">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-emerald-400 text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-xl border border-white/10">
                       DESTINATION
                     </div>
                   </div>
@@ -393,54 +394,48 @@ export default function TrackingPage() {
             <div className="absolute top-6 right-6 z-50 flex flex-col gap-3 pointer-events-auto">
               <button
                 onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                className={cn(
-                  "p-3 rounded-full shadow-2xl backdrop-blur-md transition-all border flex items-center justify-center",
-                  isDarkMode ? "bg-slate-800/80 border-slate-700 text-indigo-400 hover:bg-slate-700" : "bg-white/80 border-slate-200 text-indigo-600 hover:bg-slate-50"
-                )}
+                className="p-4 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
                 title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
               >
                 {isMapFullscreen ? (
-                  <Minimize2 className="size-5" />
+                  <Minimize2 className="size-6" />
                 ) : (
-                  <Maximize2 className="size-5" />
+                  <Maximize2 className="size-6" />
                 )}
               </button>
 
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={cn(
-                  "p-3 rounded-full shadow-2xl backdrop-blur-md transition-all border flex items-center justify-center",
-                  isDarkMode ? "bg-slate-800/80 border-slate-700 text-amber-400 hover:bg-slate-700" : "bg-white/80 border-slate-200 text-indigo-600 hover:bg-slate-50"
-                )}
+                className="p-4 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
               >
-                {isDarkMode ? <Sun className="size-5" /> : <Moon className="size-5" />}
+                {isDarkMode ? <Sun className="size-6 text-amber-400" /> : <Moon className="size-6" />}
               </button>
             </div>
 
           {/* FLOATING INTELLIGENCE HUD - TOP ON MOBILE, LEFT ON DESKTOP */}
-          <div className="absolute top-4 lg:top-32 left-4 lg:left-6 w-[calc(100%-4.5rem)] lg:w-auto flex flex-wrap lg:flex-col gap-2 lg:gap-4 pointer-events-none z-20">
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
-                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100 shrink-0">
-                   <Clock className={cn("size-4 lg:size-6 text-indigo-600", eta === 'Syncing...' && "animate-spin")} />
+          <div className="absolute top-4 lg:top-32 left-4 lg:left-8 w-[calc(100%-8rem)] lg:w-auto flex flex-wrap lg:flex-col gap-3 lg:gap-5 pointer-events-none z-20">
+             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="bg-slate-900/90 backdrop-blur-2xl p-3 lg:p-5 rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-[140px]">
+                <div className="size-10 lg:size-14 bg-white/5 rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
+                   <Clock className={cn("size-5 lg:size-7 text-white", eta === 'Syncing...' && "animate-spin")} />
                 </div>
                 <div className="min-w-0">
-                   <div className="flex items-center gap-1.5 mb-0.5">
-                      <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">ETA</p>
-                      <span className="flex size-1.5 rounded-full bg-indigo-500 animate-pulse shrink-0" />
+                   <div className="flex items-center gap-1.5 mb-1">
+                      <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] truncate">Live ETA</p>
+                      <span className="flex size-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
                    </div>
-                   <p className={cn("text-xs lg:text-lg font-black text-slate-900 truncate leading-none", eta === 'Syncing...' && "text-slate-400 animate-pulse")}>
+                   <p className={cn("text-sm lg:text-2xl font-black text-white truncate leading-none tracking-tight", eta === 'Syncing...' && "text-slate-500 animate-pulse")}>
                       {eta}
                    </p>
                 </div>
              </motion.div>
 
-             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-white/90 backdrop-blur-xl p-2 lg:p-4 rounded-2xl lg:rounded-3xl shadow-lg border border-white/50 flex items-center gap-2 lg:gap-4 pointer-events-auto flex-1 min-w-[105px]">
-                <div className="size-8 lg:size-12 bg-indigo-600/10 rounded-xl lg:rounded-2xl flex items-center justify-center border border-indigo-100 shrink-0">
-                   <LocateFixed className="size-4 lg:size-6 text-indigo-600" />
+             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-slate-900/90 backdrop-blur-2xl p-3 lg:p-5 rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-[140px]">
+                <div className="size-10 lg:size-14 bg-white/5 rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
+                   <LocateFixed className="size-5 lg:size-7 text-white" />
                 </div>
                 <div className="min-w-0">
-                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate mb-0.5">Distance</p>
-                   <p className="text-xs lg:text-lg font-black text-slate-900 tracking-tighter truncate leading-none">{localDistance}</p>
+                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] truncate mb-1">Grid Distance</p>
+                   <p className="text-sm lg:text-2xl font-black text-white tracking-tight truncate leading-none">{localDistance}</p>
                 </div>
              </motion.div>
 
@@ -448,55 +443,62 @@ export default function TrackingPage() {
         </section>
 
         {/* SIDEBAR */}
-        <aside className="w-full lg:w-[400px] xl:w-[450px] flex-1 lg:flex-none lg:h-full bg-white flex flex-col border-l border-slate-100 relative z-10 overflow-hidden">
-          <div className="flex-1 min-h-0 overflow-y-scroll p-6 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
+        <aside className="w-full lg:w-[450px] xl:w-[500px] flex-1 lg:flex-none lg:h-full bg-slate-950 flex flex-col border-l border-white/10 relative z-10 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-y-scroll p-6 lg:p-12 pb-24 lg:pb-12 custom-scrollbar relative">
             {/* TACTICAL BACK BUTTON - UPPER RIGHT */}
-            <div className="absolute top-6 lg:top-10 right-6 lg:right-10 z-30">
+            <div className="absolute top-6 lg:top-12 right-6 lg:right-12 z-30">
               <button 
                 onClick={() => router.push('/customer/dashboard')}
-                className="size-10 lg:size-12 rounded-xl lg:rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/50 hover:bg-slate-900 transition-all shadow-sm group"
+                className="size-12 lg:size-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-2xl group"
               >
-                <ArrowLeft className="size-5 lg:size-6 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="size-6 group-hover:-translate-x-1 transition-transform" />
               </button>
             </div>
 
-            <div className="mb-8 lg:mb-12 pt-10 lg:pt-0">
-              <h1 className="text-2xl lg:text-4xl font-black text-slate-900 leading-none tracking-tighter mb-2 pr-14">{techDetails.service}</h1>
-              <p className="text-slate-400 text-[10px] lg:text-xs font-bold uppercase tracking-[0.3em]">Deployment ID: {bookingId?.slice(-6).toUpperCase()}</p>
+            <div className="mb-10 lg:mb-16 pt-12 lg:pt-0">
+              <h1 className="text-3xl lg:text-5xl font-black text-white leading-none tracking-tighter mb-4 pr-16 italic">{techDetails.service}</h1>
+              <p className="text-slate-500 text-[10px] lg:text-xs font-black uppercase tracking-[0.4em]">DEPLOYMENT ID: {bookingId?.slice(-6).toUpperCase()}</p>
             </div>
 
             <div className="space-y-10">
               {/* Tech Profile Card */}
-              <div className="bg-slate-50 rounded-[3rem] p-8 border border-slate-100 relative overflow-hidden group">
-                 <div className="flex items-center gap-6 mb-8">
+              <div className="bg-white/5 rounded-[3rem] p-10 border border-white/10 relative overflow-hidden group shadow-2xl">
+                 <div className="flex items-center gap-8 mb-10">
                     <div className="relative">
-                      <div className="size-20 rounded-[2rem] bg-white border border-slate-200 overflow-hidden shadow-xl relative">
-                        {techDetails.avatar ? <img src={techDetails.avatar} className="w-full h-full object-contain bg-slate-50 p-1" /> : <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-900 font-black text-2xl">{techDetails.name.charAt(0)}</div>}
-                        <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] pointer-events-none" />
+                      <div className="size-24 rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
+                        {techDetails.avatar ? (
+                          <div className="relative size-full">
+                            <img src={techDetails.avatar} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-slate-900 text-white font-black text-3xl">{techDetails.name.charAt(0)}</div>
+                        )}
+                        <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
                       </div>
-                      <div className="absolute -bottom-2 -right-2 size-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center shadow-lg">
-                        <CheckCircle2 className="size-4 text-white" />
+                      <div className="absolute -bottom-2 -right-2 size-10 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center shadow-2xl">
+                        <CheckCircle2 className="size-5 text-white" />
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">{techDetails.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
+                      <h3 className="text-3xl font-black text-white tracking-tighter italic">{techDetails.name}</h3>
+                      <div className="flex items-center gap-2.5 mt-2">
                         <div className="flex text-amber-400">
-                          {[...Array(5)].map((_, i) => <Star key={i} className="size-3 fill-current" />)}
+                          {[...Array(5)].map((_, i) => <Star key={i} className="size-4 fill-current" />)}
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{techDetails.rating}</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">{techDetails.rating}</span>
                       </div>
                     </div>
                  </div>
                  
-                 <div className="grid grid-cols-2 gap-4">
-                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-4 bg-white rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group/btn shadow-sm">
-                       <Phone className="size-5 text-slate-400 group-hover/btn:text-slate-900" />
-                       <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Call Tech</span>
+                 <div className="grid grid-cols-2 gap-5">
+                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-5 bg-white rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-2xl">
+                       <Phone className="size-6 text-slate-900" />
+                       <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Voice Link</span>
                      </a>
-                     <div className="flex flex-col items-center justify-center py-2 bg-slate-900 text-white rounded-2xl shadow-xl shadow-slate-900/20">
-                       <span className="text-[7px] font-bold uppercase tracking-widest opacity-70 mb-0.5">Secure OTP</span>
-                       <span className="text-xl font-black tracking-[0.2em]">{otp}</span>
+                     <div className="flex flex-col items-center justify-center py-3 bg-slate-900/50 backdrop-blur-md text-white rounded-3xl border border-white/10 shadow-inner">
+                       <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-500 mb-1">Access OTP</span>
+                       <span className="text-2xl font-black tracking-[0.3em]">{otp}</span>
                      </div>
                  </div>
 
@@ -513,14 +515,14 @@ export default function TrackingPage() {
               </div>
 
               {/* Timeline */}
-              <div className="space-y-8 pb-10">
+              <div className="space-y-12 pb-12">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em]">Protocol Status</span>
+                  <span className="text-[12px] font-black text-slate-500 uppercase tracking-[0.5em]">Protocol Status</span>
                 </div>
-                <div className="space-y-4">
-                  <TimelineItem active={true} completed={true} title="Authentication" desc="Security link verified" />
-                  <TimelineItem active={true} completed={status === 'Arrived'} title="Tracking Active" desc={`ETA: ${eta}`} icon={<Navigation className="size-5" />} />
-                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Execution" desc="Specialist working on site" icon={<Zap className="size-5" />} isLast={true} />
+                <div className="space-y-6">
+                  <TimelineItem active={true} completed={true} title="Authentication" desc="Satellite link encrypted" />
+                  <TimelineItem active={true} completed={status === 'Arrived'} title="Tactical Tracking" desc={`ETA: ${eta}`} icon={<Navigation className="size-6" />} />
+                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Service Execution" desc="Specialist working on site" icon={<Zap className="size-6" />} isLast={true} />
                 </div>
               </div>
             </div>
@@ -532,20 +534,20 @@ export default function TrackingPage() {
       {/* PENDING / WAITING FOR ACCEPTANCE OVERLAY */}
       <AnimatePresence>
         {status === 'Pending' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
-             <div className="relative mb-12">
-                <div className="absolute -inset-10 bg-slate-900/5 rounded-full animate-ping" />
-                <div className="relative size-32 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-slate-900/40">
-                  <Clock className="size-16 text-white animate-pulse" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-slate-950/98 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
+             <div className="relative mb-16">
+                <div className="absolute -inset-16 bg-white/5 rounded-full animate-ping" />
+                <div className="relative size-40 bg-white rounded-[3rem] flex items-center justify-center shadow-2xl">
+                  <Clock className="size-20 text-slate-950 animate-pulse" />
                 </div>
              </div>
-             <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter italic uppercase">Waiting for Acceptance</h2>
-             <p className="text-slate-400 font-bold max-w-sm uppercase tracking-[0.2em] text-[10px] leading-loose">
-               Your request has been dispatched. Live tracking will activate once the technician accepts the protocol.
+             <h2 className="text-5xl lg:text-7xl font-black text-white mb-6 tracking-tighter italic uppercase">Synchronizing...</h2>
+             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.3em] text-[10px] lg:text-xs leading-loose">
+               Your request has been broadcasted to the elite network. Grid tracking will activate once the specialist accepts the protocol.
              </p>
-             <div className="flex flex-col gap-4 mt-12 w-full max-w-xs">
-                <button onClick={() => router.push('/customer/dashboard')} className="px-8 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-2xl active:scale-95">Return to Dashboard</button>
-                <button onClick={() => setShowCancelModal(true)} className="px-8 py-5 bg-slate-50 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-[0.3em] border border-slate-100 transition-all active:scale-95">Cancel Request</button>
+             <div className="flex flex-col sm:flex-row gap-5 mt-16 w-full max-w-md">
+                <button onClick={() => router.push('/customer/dashboard')} className="flex-1 px-10 py-6 bg-white text-slate-900 rounded-3xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Base</button>
+                <button onClick={() => setShowCancelModal(true)} className="flex-1 px-10 py-6 bg-white/5 text-slate-400 rounded-3xl font-black text-xs uppercase tracking-[0.3em] border border-white/10 transition-all hover:bg-white/10 active:scale-95">Cancel Manifest</button>
              </div>
           </motion.div>
         )}
@@ -554,16 +556,16 @@ export default function TrackingPage() {
       {/* IN PROGRESS FULLSCREEN HUD */}
       <AnimatePresence>
         {status === 'In Progress' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
-             <div className="relative mb-12">
-                <div className="absolute -inset-10 bg-slate-900/5 rounded-full animate-ping" />
-                <div className="relative size-32 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-slate-900/40">
-                  <Zap className="size-16 text-white animate-pulse" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-slate-950/98 backdrop-blur-3xl flex flex-col items-center justify-center p-12 text-center">
+             <div className="relative mb-16">
+                <div className="absolute -inset-16 bg-white/5 rounded-full animate-ping" />
+                <div className="relative size-40 bg-white rounded-[3rem] flex items-center justify-center shadow-2xl">
+                  <Zap className="size-20 text-slate-950 animate-pulse" />
                 </div>
              </div>
-             <h2 className="text-5xl font-black text-slate-900 mb-4 tracking-tighter italic">EXECUTION ACTIVE</h2>
-             <p className="text-slate-400 font-bold max-w-sm uppercase tracking-[0.2em] text-[10px] leading-loose">Specialist is currently optimizing your service manifest. Signal link remains encrypted.</p>
-             <button onClick={() => setStatus('Arrived')} className="mt-12 px-12 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-2xl">Return to Monitoring</button>
+             <h2 className="text-5xl lg:text-8xl font-black text-white mb-6 tracking-tighter italic">EXECUTION ACTIVE</h2>
+             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.3em] text-[10px] lg:text-xs leading-loose">Specialist is currently optimizing your service manifest. Tactical link remains fully encrypted.</p>
+             <button onClick={() => setStatus('Arrived')} className="mt-16 px-16 py-6 bg-white text-slate-900 rounded-3xl font-black text-xs uppercase tracking-[0.4em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Monitoring</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -571,39 +573,39 @@ export default function TrackingPage() {
       {/* CANCEL CONFIRMATION MODAL */}
       <AnimatePresence>
         {showCancelModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
-             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-md w-full shadow-2xl relative overflow-hidden border border-slate-200">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rose-500 to-rose-600" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="bg-slate-900/95 backdrop-blur-3xl rounded-[3rem] p-10 md:p-12 max-w-md w-full shadow-2xl relative overflow-hidden border border-white/10">
+                <div className="absolute top-0 left-0 w-full h-2 bg-rose-600" />
                 
-                <div className="flex justify-between items-start mb-6">
-                  <div className="size-16 bg-rose-50 rounded-[1.5rem] flex items-center justify-center border border-rose-100">
-                    <AlertTriangle className="size-8 text-rose-500" />
+                <div className="flex justify-between items-start mb-8">
+                  <div className="size-20 bg-rose-500/10 rounded-[2rem] flex items-center justify-center border border-rose-500/20">
+                    <AlertTriangle className="size-10 text-rose-500" />
                   </div>
-                  <button onClick={() => !cancelling && setShowCancelModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition">
-                    <X className="size-5 text-slate-400" />
+                  <button onClick={() => !cancelling && setShowCancelModal(false)} className="p-3 hover:bg-white/5 rounded-2xl transition border border-transparent hover:border-white/10">
+                    <X className="size-6 text-slate-400" />
                   </button>
                 </div>
 
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Cancel Booking?</h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
-                  Are you sure you want to cancel this service? The technician will be notified and the booking will be terminated.
+                <h3 className="text-3xl font-black text-white tracking-tighter mb-4 italic">Abort Mission?</h3>
+                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-10 uppercase tracking-tight">
+                  Are you sure you want to terminate this service protocol? The specialist will be notified and the deployment will be purged.
                 </p>
 
                 <div className="space-y-4">
                   <button 
                     onClick={handleCancelBooking} 
                     disabled={cancelling} 
-                    className="w-full py-4 rounded-2xl text-xs font-black text-white bg-rose-600 hover:bg-rose-700 transition-all shadow-xl shadow-rose-200 flex items-center justify-center gap-2 active:scale-95 uppercase tracking-widest disabled:opacity-50"
+                    className="w-full py-5 rounded-3xl text-xs font-black text-white bg-rose-600 hover:bg-rose-700 transition-all shadow-2xl flex items-center justify-center gap-3 active:scale-95 uppercase tracking-[0.2em] disabled:opacity-50"
                   >
-                    {cancelling ? <Loader2 className="size-4 animate-spin" /> : <XCircle className="size-4" />} 
-                    Confirm Cancellation
+                    {cancelling ? <Loader2 className="size-5 animate-spin" /> : <XCircle className="size-5" />} 
+                    Confirm Purge
                   </button>
                   <button 
                     onClick={() => setShowCancelModal(false)} 
                     disabled={cancelling} 
-                    className="w-full py-4 rounded-2xl text-xs font-black text-slate-500 bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 uppercase tracking-widest border border-slate-200 disabled:opacity-50"
+                    className="w-full py-5 rounded-3xl text-xs font-black text-slate-400 bg-white/5 hover:bg-white/10 transition-all active:scale-95 uppercase tracking-[0.2em] border border-white/10 disabled:opacity-50"
                   >
-                    Keep Booking
+                    Maintain Protocol
                   </button>
                 </div>
              </motion.div>
@@ -616,26 +618,26 @@ export default function TrackingPage() {
 
 function TimelineItem({ active, completed, title, desc, icon, isLast }: any) {
   return (
-    <div className="flex gap-6 lg:gap-8 pb-8 lg:pb-10 relative">
+    <div className="flex gap-8 lg:gap-10 pb-10 lg:pb-12 relative">
       {!isLast && (
         <div className={cn(
-          "absolute top-10 left-5 -ml-px w-0.5 h-[calc(100%-2.5rem)]",
-          completed ? "bg-emerald-500" : "bg-slate-200"
+          "absolute top-12 left-6 -ml-px w-0.5 h-[calc(100%-2.5rem)]",
+          completed ? "bg-emerald-500" : "bg-white/10"
         )} />
       )}
       <div className={cn(
-        "size-10 shrink-0 rounded-2xl border-2 flex items-center justify-center z-10 transition-all bg-white relative",
-        completed ? "bg-emerald-500 border-emerald-500 shadow-xl shadow-emerald-500/30" : 
-        active ? "bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-500/30" : 
-        "bg-white border-slate-200"
+        "size-12 shrink-0 rounded-2xl border-2 flex items-center justify-center z-10 transition-all relative",
+        completed ? "bg-emerald-500 border-emerald-500 shadow-2xl shadow-emerald-500/40" : 
+        active ? "bg-white border-white shadow-2xl shadow-white/20" : 
+        "bg-slate-900 border-white/10"
       )}>
-        {completed ? <CheckCircle2 className="size-5 text-white" /> : 
-         icon ? React.cloneElement(icon, { className: cn("size-5", active ? "text-white" : "text-slate-300") }) :
-         <div className={cn("size-2 rounded-full", active ? "bg-white" : "bg-slate-200")} />}
+        {completed ? <CheckCircle2 className="size-6 text-white" /> : 
+         icon ? React.cloneElement(icon, { className: cn("size-6", active ? "text-slate-950" : "text-slate-600") }) :
+         <div className={cn("size-2.5 rounded-full", active ? "bg-slate-950" : "bg-slate-700")} />}
       </div>
-      <div className="min-w-0 pt-1">
-        <h4 className={cn("text-xs font-black uppercase tracking-widest mb-1 truncate", active || completed ? "text-slate-900" : "text-slate-300")}>{title}</h4>
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter line-clamp-2">{desc}</p>
+      <div className="min-w-0 pt-1.5">
+        <h4 className={cn("text-[11px] font-black uppercase tracking-[0.2em] mb-1.5 truncate", active || completed ? "text-white" : "text-slate-600")}>{title}</h4>
+        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight line-clamp-2">{desc}</p>
       </div>
     </div>
   );

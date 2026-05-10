@@ -200,23 +200,23 @@ export default function TechnicianDashboard() {
     const isRejected = profile.verificationStatus === 'rejected';
 
     return (
-      <div className="min-h-screen bg-[#0f172a] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
         {/* Animated Background Orbs */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-400/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl w-full glass-panel border-white/10 p-10 sm:p-16 rounded-[3rem] shadow-2xl relative z-10"
+          className="max-w-2xl w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-10 sm:p-16 rounded-[3rem] shadow-2xl relative z-10"
         >
-          <div className="size-24 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-8">
+          <div className="size-24 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
             {isRejected ? (
-              <XCircle className="size-12 text-rose-500 animate-pulse" />
+              <XCircle className="size-12 text-rose-400 animate-pulse" />
             ) : isUploaded ? (
-              <Activity className="size-12 text-blue-500 animate-pulse" />
+              <Activity className="size-12 text-white animate-pulse" />
             ) : (
-              <ShieldAlert className="size-12 text-amber-500 animate-bounce" />
+              <ShieldAlert className="size-12 text-amber-400 animate-bounce" />
             )}
           </div>
           
@@ -437,7 +437,7 @@ export default function TechnicianDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-slate-950">
       <TechnicianSidebar />
       
       <AnimatePresence>
@@ -448,16 +448,16 @@ export default function TechnicianDashboard() {
             exit={{ opacity: 0, y: -100, x: '-50%' }}
             className={cn(
               "fixed top-0 left-1/2 z-[9999] px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border-2 font-black text-xs sm:text-sm uppercase tracking-wider w-[calc(100%-2rem)] sm:w-auto sm:min-w-[450px] max-w-[95vw] backdrop-blur-xl",
-              notification.type === 'success' ? "bg-emerald-600/90 text-white border-emerald-400 shadow-emerald-500/40" :
-              notification.type === 'error' ? "bg-rose-600/90 text-white border-rose-400 shadow-rose-500/40" :
-              "bg-indigo-600/90 text-white border-indigo-400 shadow-indigo-500/40"
+              notification.type === 'success' ? "bg-emerald-600/90 text-white border-emerald-400" :
+              notification.type === 'error' ? "bg-rose-600/90 text-white border-rose-400" :
+              "bg-slate-900/90 text-white border-white/10"
             )}
           >
             <div className="w-12 h-12 rounded-2xl glass-panel border-white/20 flex items-center justify-center shadow-inner">
               {notification.type === 'success' ? <CheckCircle2 className="w-7 h-7" /> : <Activity className="w-7 h-7" />}
             </div>
             <div className="flex-1">
-              <p className="opacity-70 text-[10px] mb-1 font-bold">System Broadcast</p>
+              <p className="opacity-70 text-[10px] mb-1 font-bold text-slate-400 uppercase tracking-widest">System Broadcast</p>
               <p className="leading-tight">{notification.message}</p>
             </div>
             <button onClick={() => setNotification(null)} className="p-2 hover:glass-panel border-white/10 rounded-full transition-colors">
@@ -491,9 +491,9 @@ export default function TechnicianDashboard() {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard icon={<DollarSign className="w-5 h-5" />} label="Gross Earnings" value={`₹${profile.earnings.toLocaleString()}`} trend="+12% from last week" color="indigo" />
+                <StatCard icon={<DollarSign className="w-5 h-5" />} label="Gross Earnings" value={`₹${profile.earnings.toLocaleString()}`} trend="+12% from last week" color="cyan" />
                 <StatCard icon={<Star className="w-5 h-5" />} label="Service Rating" value={`${profile.rating.toFixed(1)}`} trend="Highly Rated" color="emerald" />
-                <StatCard icon={<Briefcase className="w-5 h-5" />} label="Total Tasks" value={profile.totalJobs.toString()} trend="+3 completed today" color="sky" />
+                <StatCard icon={<Briefcase className="w-5 h-5" />} label="Total Tasks" value={profile.totalJobs.toString()} trend="+3 completed today" color="slate" />
                 <StatCard icon={<Clock className="w-5 h-5" />} label="Current Availability" value={profile.online ? "ONLINE" : "OFFLINE"} trend={profile.online ? "Ready for assignments" : "Not accepting jobs"} color={profile.online ? "emerald" : "slate"} />
               </div>
 
@@ -537,15 +537,15 @@ export default function TechnicianDashboard() {
                         liveAddress={liveAddress}
                        />
                     ) : (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-[300px] glass-panel border-white/40 backdrop-blur-md border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-10 relative overflow-hidden group/empty">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-emerald-500/5 pointer-events-none" />
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-[300px] bg-slate-900/50 backdrop-blur-3xl border-2 border-dashed border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-10 relative overflow-hidden group/empty">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 pointer-events-none" />
                         <div className="relative z-10">
-                          <div className="w-24 h-24 glass-panel border-white/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/10 border border-slate-100 relative group">
-                            <div className="absolute inset-0 bg-indigo-500/20 rounded-[2rem] animate-ping opacity-20" />
-                            <Activity className="w-12 h-12 text-indigo-600 transition-transform duration-500 group-hover:scale-110" />
+                          <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl border border-white/10 relative group">
+                            <div className="absolute inset-0 bg-white/10 rounded-[2rem] animate-ping opacity-20" />
+                            <Activity className="w-12 h-12 text-white transition-transform duration-500 group-hover:scale-110" />
                           </div>
                           <h3 className="text-2xl font-black text-white tracking-tight">No Active Assignments</h3>
-                          <p className="text-indigo-300 mt-2 max-w-xs mx-auto text-[11px] font-bold uppercase tracking-widest leading-relaxed opacity-80">Your console is synchronized. Incoming requests will appear here in real-time.</p>
+                          <p className="text-slate-500 mt-2 max-w-xs mx-auto text-[11px] font-bold uppercase tracking-widest leading-relaxed opacity-80">Your console is synchronized. Incoming requests will appear here in real-time.</p>
                         </div>
                       </motion.div>
                     )}
@@ -563,14 +563,14 @@ export default function TechnicianDashboard() {
                           initial={{ opacity: 0, y: 20, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.95 }}
-                          className="glass-neon-card p-6 sm:p-8 mb-6 border-indigo-500/50 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)] relative overflow-hidden"
+                          className="bg-slate-900/90 backdrop-blur-3xl p-6 sm:p-8 mb-6 border border-white/10 rounded-[2.5rem] shadow-2xl relative overflow-hidden"
                         >
-                          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-transparent animate-pulse" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent animate-pulse" />
                           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                  <Radio className="w-3 h-3 animate-pulse" />
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                                  <Radio className="w-3 h-3 animate-pulse text-cyan-400" />
                                   Live Broadcast
                                 </span>
                                 <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{elapsedStr}</span>
@@ -588,7 +588,7 @@ export default function TechnicianDashboard() {
                                 <p className="text-slate-400 text-xs font-medium italic mb-3 line-clamp-2">"{broadcast.issueDescription}"</p>
                               )}
                               <div className="flex gap-3 flex-wrap">
-                                <span className="text-indigo-400 text-[11px] font-bold uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-lg">Est: {broadcast.estimatedCostRange || 'Standard'}</span>
+                                <span className="text-cyan-400 text-[11px] font-bold uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-lg">Est: {broadcast.estimatedCostRange || 'Standard'}</span>
                                 <span className={cn(
                                   "text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg",
                                   broadcast.urgency === 'High' ? 'text-rose-400 bg-rose-500/10' : 'text-emerald-400 bg-emerald-500/10'

@@ -332,7 +332,7 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto glass-panel border-white/10 font-sans">
+    <div className="min-h-screen bg-slate-950 text-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto font-sans">
       <StatusBanners 
         dismissedBanner={dismissedBanner}
         setDismissedBanner={setDismissedBanner}

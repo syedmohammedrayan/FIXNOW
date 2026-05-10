@@ -48,16 +48,21 @@ export function Sidebar({
         initial={false}
         animate={{ width: sidebarOpen ? 280 : 80 }}
         className={cn(
-          "glass-panel border-white/10 border-r border-slate-200 flex flex-col z-40 transition-all duration-300 ease-in-out shadow-xl shadow-slate-200/50",
+          "bg-slate-900/90 backdrop-blur-3xl border-r border-white/10 flex flex-col z-40 transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] shadow-2xl",
           "fixed lg:relative inset-y-0 left-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)] shrink-0">
-            <ShieldCheck className="text-white w-6 h-6" />
+        <div className="p-8 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-2xl shrink-0">
+            <ShieldCheck className="text-slate-900 w-7 h-7" />
           </div>
-          {sidebarOpen && <span className="font-black text-xl tracking-tight text-white italic">ADMIN PANEL</span>}
+          {sidebarOpen && (
+            <div className="flex flex-col">
+              <span className="font-black text-xl tracking-tighter text-white italic leading-none">FIXNOW</span>
+              <span className="font-black text-[9px] uppercase tracking-[0.3em] text-slate-500 mt-1">Command Center</span>
+            </div>
+          )}
         </div>
 
         <nav className="flex-grow px-4 space-y-2 mt-4 overflow-y-auto">
@@ -71,7 +76,7 @@ export function Sidebar({
           <SidebarLink icon={<Bell />} label="Notifications" active={activeTab === 'notifications'} onClick={() => handleTabClick('notifications')} open={sidebarOpen} />
         </nav>
 
-        <div className="p-4 border-t border-slate-100">
+        <div className="p-4 border-t border-white/5">
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition group"

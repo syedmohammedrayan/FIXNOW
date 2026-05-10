@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   CheckCircle2, 
@@ -11,8 +11,10 @@ import {
   Loader2, 
   Activity,
   ShieldCheck,
-  AlertTriangle,
-  Wrench
+  AlertTriangle, 
+  Wrench,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -88,6 +90,7 @@ export default function ActiveJobCard({
   customerLocation,
   liveAddress,
 }: ActiveJobCardProps) {
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   if (!currentJob) return null;
 
   return (
@@ -108,7 +111,7 @@ export default function ActiveJobCard({
         </div>
       )}
 
-      <div className="glass-neon-card p-0 shadow-2xl overflow-hidden flex border-none glass-panel border-white/80 backdrop-blur-2xl">
+      <div className="glass-neon-card p-0 shadow-2xl overflow-hidden flex border-none glass-panel border-white/5 backdrop-blur-2xl bg-slate-900/40">
         <div className="flex flex-col lg:flex-row w-full">
           <div className="p-6 lg:p-10 flex-1">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
@@ -122,11 +125,11 @@ export default function ActiveJobCard({
                 <h2 className="text-3xl font-extrabold text-white tracking-tight">
                   {currentJob.category} Service
                 </h2>
-                <p className="text-indigo-300 mt-1 font-medium text-sm">
+                <p className="text-slate-400 mt-1 font-medium text-sm">
                   Booking ID: {currentJob.id.toUpperCase()}
                 </p>
               </div>
-              <div className="px-5 py-2.5 rounded-2xl bg-indigo-50 border border-slate-800 text-indigo-300 text-sm font-bold uppercase tracking-wider">
+              <div className="px-5 py-2.5 rounded-2xl bg-white/10 border border-white/20 text-white text-sm font-bold uppercase tracking-wider">
                 {jobStatus}
               </div>
             </div>
@@ -134,13 +137,13 @@ export default function ActiveJobCard({
             {jobStatus !== "In Progress" ? (
               <>
                 <div className="grid sm:grid-cols-2 gap-6 mb-10">
-                  <div className="glass-panel border-white/40 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/60 shadow-sm flex flex-col justify-center">
+                  <div className="glass-panel border-white/5 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/10 shadow-sm flex flex-col justify-center">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] lg:tracking-[0.2em] mb-4">
                       Service Protocol Location
                     </p>
                     <div className="flex items-center gap-3 lg:gap-4">
-                      <div className="size-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                        <MapPin className="size-5 text-indigo-600" />
+                      <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                        <MapPin className="size-5 text-white/60" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white font-bold text-xs lg:text-sm leading-relaxed line-clamp-2">
@@ -151,14 +154,14 @@ export default function ActiveJobCard({
                   </div>
                   <a 
                     href={`tel:${currentJob.contactNumber}`}
-                    className="glass-panel border-white/40 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/60 shadow-sm hover:border-emerald-500/50 transition-all active:scale-[0.98] group/call flex flex-col justify-center"
+                    className="glass-panel border-white/5 backdrop-blur-md p-5 lg:p-6 rounded-[2rem] border border-white/10 shadow-sm hover:border-emerald-500/50 transition-all active:scale-[0.98] group/call flex flex-col justify-center"
                   >
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] lg:tracking-[0.2em] mb-4">
                       Secure Client Line
                     </p>
                     <div className="flex items-center gap-3 lg:gap-4">
-                      <div className="size-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover/call:bg-emerald-500 group-hover/call:text-white transition-colors">
-                        <Phone className="size-5 text-emerald-600 group-hover/call:text-white" />
+                      <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 group-hover/call:bg-emerald-500 group-hover/call:text-white transition-colors">
+                        <Phone className="size-5 text-emerald-500 group-hover/call:text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white font-bold text-xs lg:text-sm tracking-wider truncate">
@@ -180,8 +183,8 @@ export default function ActiveJobCard({
                       className={cn(
                         "flex-1 min-w-[140px] py-5 rounded-[1.5rem] text-[10px] font-black transition-all uppercase tracking-[0.2em] border-2",
                         jobStatus === s
-                          ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-900/20"
-                          : "glass-panel border-white/50 text-indigo-300 border-slate-200/60 hover:border-indigo-400 hover:text-indigo-600",
+                          ? "bg-white text-slate-900 border-white shadow-xl shadow-white/10"
+                          : "bg-white/5 border border-white/10 text-white/40 hover:border-white/20 hover:text-white",
                       )}
                     >
                       {s}
@@ -196,13 +199,13 @@ export default function ActiveJobCard({
                     className="mt-8 p-10 bg-slate-900/50 border border-slate-700/50 rounded-[3rem] backdrop-blur-2xl relative overflow-hidden group/otp shadow-2xl"
                   >
                     <div className="absolute top-0 right-0 p-8 opacity-10">
-                      <ShieldCheck className="size-24 text-indigo-500" />
+                      <ShieldCheck className="size-24 text-white" />
                     </div>
                     
                     <div className="relative z-10 text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Secure Authorization</span>
+                        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Secure Authorization</span>
                       </div>
                       <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Enter Client Passcode</h3>
                       <p className="text-slate-400 text-xs font-bold mb-8 opacity-70">Verify the 4-digit security code from the client to start the session.</p>
@@ -220,12 +223,12 @@ export default function ActiveJobCard({
                               value={digit}
                               onChange={(e) => handleOtpChange(i, e.target.value)}
                               className={cn(
-                                "w-16 h-20 text-center text-4xl font-black rounded-2xl bg-slate-800/40 border-2 transition-all duration-300 focus:outline-none focus:scale-105",
-                                digit ? "border-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]" : "border-slate-700 text-slate-500 focus:border-indigo-400"
+                                "w-16 h-20 text-center text-4xl font-black rounded-2xl bg-white/5 border-2 transition-all duration-300 focus:outline-none focus:scale-105",
+                                digit ? "border-white text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "border-white/10 text-slate-500 focus:border-white/30"
                               )}
                             />
                             {digit && (
-                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-indigo-500 rounded-full" />
+                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-white rounded-full" />
                             )}
                           </div>
                         ))}
@@ -241,7 +244,7 @@ export default function ActiveJobCard({
                       <button
                         onClick={handleVerifyOtp}
                         disabled={otpPhase === "verifying"}
-                        className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl transition-all shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-4 active:scale-[0.98] disabled:opacity-50"
+                        className="w-full py-5 bg-white text-slate-900 font-black uppercase tracking-[0.2em] text-sm rounded-2xl transition-all shadow-xl shadow-white/10 flex items-center justify-center gap-4 active:scale-[0.98] disabled:opacity-50"
                       >
                         {otpPhase === "verifying" ? (
                           <>
@@ -263,7 +266,7 @@ export default function ActiveJobCard({
                   <div className="mt-8">
                     <Link
                       href={`/technician/service/${currentJob.id}`}
-                      className="w-full py-5 glass-panel border-white/10 border-2 border-slate-200 hover:border-indigo-600 hover:text-indigo-600 text-slate-300 font-bold rounded-2xl transition-all shadow-sm flex items-center justify-center gap-3 active:scale-[0.98] text-base"
+                      className="w-full py-5 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold rounded-2xl transition-all shadow-sm flex items-center justify-center gap-3 active:scale-[0.98] text-base"
                     >
                       <Navigation className="size-5" />
                       Launch Service Map
@@ -299,18 +302,31 @@ export default function ActiveJobCard({
           </div>
 
           {jobStatus !== "In Progress" && (
-            <div className="w-full xl:w-[400px] h-[350px] xl:h-auto bg-slate-800/40 backdrop-blur-md border-l border-slate-200 relative group/map flex items-center justify-center">
+            <div className={cn(
+              "bg-slate-900/40 backdrop-blur-md relative group/map flex items-center justify-center transition-all duration-500",
+              isMapFullscreen 
+                ? "fixed inset-0 z-[200] w-full h-full bg-slate-950" 
+                : "w-full xl:w-[400px] h-[350px] xl:h-auto border-l border-white/10"
+            )}>
+              {/* Fullscreen Toggle */}
+              <button
+                onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                className="absolute top-4 right-4 z-[110] p-3 bg-slate-900/80 border border-white/20 rounded-xl text-white hover:bg-slate-800 transition-all shadow-2xl backdrop-blur-xl active:scale-95"
+              >
+                {isMapFullscreen ? <Minimize2 className="size-5" /> : <Maximize2 className="size-5" />}
+              </button>
+
               {!techLocation ? (
                 <div className="text-center">
-                  <div className="w-8 h-8 border-2 border-slate-800 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">
+                  <div className="w-8 h-8 border-2 border-slate-800 border-t-white rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-[10px] font-black text-white uppercase tracking-widest">
                     Locating Expert...
                   </p>
                 </div>
               ) : (
                 <>
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1.5 glass-panel border-white/80 backdrop-blur-md rounded-xl border border-slate-200 flex items-center gap-2">
-                    <Activity className="w-3 h-3 text-indigo-600" />
+                  <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-slate-900/90 backdrop-blur-md rounded-xl border border-white/10 flex items-center gap-2">
+                    <Activity className="w-3 h-3 text-white" />
                     <span className="text-[10px] font-black text-white uppercase tracking-widest">
                       Live Telemetry
                     </span>
@@ -318,6 +334,7 @@ export default function ActiveJobCard({
                   <Map
                     center={[techLocation.lng, techLocation.lat]}
                     zoom={14}
+                    className="w-full h-full"
                     styles={{
                       light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
                     }}
@@ -326,9 +343,9 @@ export default function ActiveJobCard({
                     <MapMarker longitude={techLocation.lng} latitude={techLocation.lat}>
                       <MarkerContent>
                         <div className="relative">
-                          <div className="absolute -inset-4 bg-indigo-500/20 rounded-full animate-ping pointer-events-none" />
-                          <div className="size-10 rounded-2xl bg-indigo-600 border-2 border-white shadow-xl flex items-center justify-center transform rotate-45 group-hover/map:scale-110 transition duration-300">
-                            <Wrench className="w-5 h-5 text-white -rotate-45" />
+                          <div className="absolute -inset-4 bg-white/20 rounded-full animate-ping pointer-events-none" />
+                          <div className="size-10 rounded-2xl bg-white border-2 border-slate-900 shadow-xl flex items-center justify-center transform rotate-45 group-hover/map:scale-110 transition duration-300">
+                            <Wrench className="w-5 h-5 text-slate-900 -rotate-45" />
                           </div>
                         </div>
                       </MarkerContent>

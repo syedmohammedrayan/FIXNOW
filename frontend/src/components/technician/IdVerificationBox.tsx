@@ -120,7 +120,7 @@ export default function IdVerificationBox({ userId, onSuccess, onUploadComplete,
               relative cursor-pointer group
               border-2 border-dashed rounded-[2.5rem] p-16 text-center transition-all duration-500
               ${isDragging 
-                ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_50px_rgba(59,130,246,0.3)]' 
+                ? 'border-white/40 bg-white/10 shadow-[0_0_50px_rgba(255,255,255,0.1)]' 
                 : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/[0.08] shadow-xl'}
             `}
           >
@@ -132,26 +132,26 @@ export default function IdVerificationBox({ userId, onSuccess, onUploadComplete,
             />
             
             <div className="relative z-10">
-              <div className="size-24 rounded-[2rem] bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl">
-                <Upload className="size-10 text-blue-400 group-hover:animate-bounce" />
+              <div className="size-24 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl">
+                <Upload className="size-10 text-white group-hover:animate-bounce" />
               </div>
               
               <h3 className="text-2xl font-black text-white mb-3 uppercase italic tracking-tight">Deploy Identity Document</h3>
               <p className="text-slate-400 text-sm max-w-sm mx-auto leading-relaxed font-medium">
-                Drag and drop your <span className="text-white font-bold">Aadhar</span> or <span className="text-white font-bold">PAN</span> card here, or <span className="text-blue-400 font-black underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-500 transition-all">browse files</span>
+                Drag and drop your <span className="text-white font-bold">Aadhar</span> or <span className="text-white font-bold">PAN</span> card here, or <span className="text-white font-black underline underline-offset-4 decoration-white/30 hover:decoration-white transition-all">browse files</span>
               </p>
               
               <div className="mt-10 flex justify-center items-center gap-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                <span className="flex items-center gap-2"><div className="size-1 bg-blue-500 rounded-full" /> JPG</span>
-                <span className="flex items-center gap-2"><div className="size-1 bg-blue-500 rounded-full" /> PNG</span>
-                <span className="flex items-center gap-2"><div className="size-1 bg-blue-500 rounded-full" /> PDF</span>
+                <span className="flex items-center gap-2"><div className="size-1 bg-white/40 rounded-full" /> JPG</span>
+                <span className="flex items-center gap-2"><div className="size-1 bg-white/40 rounded-full" /> PNG</span>
+                <span className="flex items-center gap-2"><div className="size-1 bg-white/40 rounded-full" /> PDF</span>
                 <span className="text-slate-700">|</span>
                 <span>MAX 5MB</span>
               </div>
             </div>
 
             {/* Subtle background glow */}
-            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2.5rem]" />
+            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2.5rem]" />
           </motion.div>
         ) : (
           <motion.div

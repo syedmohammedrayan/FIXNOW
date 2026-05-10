@@ -63,10 +63,10 @@ export default function BroadcastAcceptedPopup({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 40 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/50 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-indigo-500/20 border border-indigo-500/20"
+            className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl"
           >
             {/* Top gradient accent */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-indigo-500 to-violet-500" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-white to-emerald-500" />
 
             {/* Close button */}
             <button
@@ -132,8 +132,8 @@ export default function BroadcastAcceptedPopup({
                 transition={{ delay: 0.4 }}
                 className="flex items-center gap-2 mb-6"
               >
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span className="text-indigo-300 text-sm font-bold">Expert is on the way</span>
+                <Sparkles className="w-4 h-4 text-white" />
+                <span className="text-white text-sm font-bold">Expert is on the way</span>
               </motion.div>
 
               {/* Technician Card */}
@@ -143,9 +143,12 @@ export default function BroadcastAcceptedPopup({
                 transition={{ delay: 0.5 }}
                 className="w-full p-5 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center gap-4 mb-8"
               >
-                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center overflow-hidden shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                   {hasRealAvatar ? (
-                    <img src={avatarUrl!} className="w-full h-full object-cover" alt={technician.name} />
+                    <div className="relative size-full">
+                      <img src={avatarUrl!} className="w-full h-full object-cover" alt={technician.name} />
+                      <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
+                    </div>
                   ) : (
                     <span className="text-3xl">👷</span>
                   )}
@@ -179,7 +182,7 @@ export default function BroadcastAcceptedPopup({
               >
                 <button
                   onClick={() => bookingId && onTrackLive(bookingId)}
-                  className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-white text-indigo-900 rounded-2xl font-black uppercase tracking-[0.15em] text-sm hover:bg-indigo-50 transition-all active:scale-[0.98] shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]"
+                  className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-2xl font-black uppercase tracking-[0.15em] text-sm hover:bg-slate-100 transition-all active:scale-[0.98] shadow-2xl shadow-black/40"
                 >
                   <Navigation className="w-4 h-4" />
                   Track Live Location

@@ -72,7 +72,7 @@ export function useDashboardData() {
       }
     };
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(fetchNotifications, 120000); // 2 minutes
     return () => clearInterval(interval);
   }, [userId]);
 
@@ -103,7 +103,7 @@ export function useDashboardData() {
       }
     };
     fetchActiveJob();
-    const interval = setInterval(fetchActiveJob, 60000);
+    const interval = setInterval(fetchActiveJob, 180000); // 3 minutes
     return () => clearInterval(interval);
   }, [userId, activeJob]);
 

@@ -144,10 +144,10 @@ export default function TechnicianSidebar() {
       <div className="fixed top-4 left-4 z-[60] md:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-3 bg-white/80 border border-slate-100 rounded-2xl backdrop-blur-md hover:bg-slate-50 shadow-lg text-slate-900 active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
+          className="p-3 bg-slate-900 border border-white/10 rounded-2xl backdrop-blur-md hover:bg-slate-800 shadow-2xl text-white active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
         >
           {isMobileMenuOpen ? (
-            <ChevronLeft className="size-5 text-indigo-600" />
+            <ChevronLeft className="size-5" />
           ) : (
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -177,27 +177,27 @@ export default function TechnicianSidebar() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
         style={{
-          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 250, 252, 0.7) 50%, rgba(255, 255, 255, 0.6) 100%)',
-          borderRight: '1px solid rgba(15, 23, 42, 0.15)',
-          backdropFilter: 'blur(40px) saturate(180%)',
+          background: 'rgba(15, 23, 42, 0.8)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px) saturate(180%)',
         }}
       >
       {/* Ambient glow effects */}
-      <div className="absolute top-0 left-0 w-full h-40 pointer-events-none opacity-70"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.25) 0%, transparent 70%)' }}
+      <div className="absolute top-0 left-0 w-full h-40 pointer-events-none opacity-30"
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 70%)' }}
       />
-      <div className="absolute bottom-0 left-0 w-full h-32 pointer-events-none opacity-60"
-        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(139,92,246,0.2) 0%, transparent 70%)' }}
+      <div className="absolute bottom-0 left-0 w-full h-32 pointer-events-none opacity-20"
+        style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.05) 0%, transparent 70%)' }}
       />
 
       {/* Top gradient line */}
-      <div className="absolute top-0 left-0 w-full h-[2px] z-10"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), rgba(139,92,246,0.6), transparent)' }}
+      <div className="absolute top-0 left-0 w-full h-[1px] z-10"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)' }}
       />
 
       {/* ─── Brand Section ─── */}
       <div className={cn(
-        "relative flex items-center border-b border-slate-200/50 transition-all duration-500",
+        "relative flex items-center border-b border-white/10 transition-all duration-500",
         collapsed ? "h-[78px] justify-center px-0" : "h-[88px] px-6"
       )}>
         {collapsed ? (
@@ -206,7 +206,7 @@ export default function TechnicianSidebar() {
             animate={{ scale: 1, opacity: 1 }}
             className="relative group cursor-pointer"
           >
-            <div className="absolute -inset-2 rounded-2xl bg-indigo-500/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+            <div className="absolute -inset-2 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
             <Logo showText={false} />
           </motion.div>
         ) : (
@@ -217,10 +217,10 @@ export default function TechnicianSidebar() {
           >
             <Logo showText={false} />
             <div className="flex flex-col min-w-0">
-              <span className="text-[15px] font-black tracking-tight text-slate-800 uppercase leading-none">
+              <span className="text-[15px] font-black tracking-tight text-white uppercase leading-none">
                 FixNow
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.35em] text-slate-900/80 mt-0.5 flex items-center gap-1">
+              <span className="text-[9px] font-bold uppercase tracking-[0.35em] text-white/60 mt-0.5 flex items-center gap-1">
                 <Crown className="size-2.5" />
                 Pro Technician
               </span>
@@ -235,16 +235,16 @@ export default function TechnicianSidebar() {
         className={cn(
           "absolute z-20 flex items-center justify-center transition-all duration-300 group",
           "w-6 h-6 rounded-full",
-          "bg-white border border-indigo-200 hover:border-indigo-400",
-          "hover:bg-indigo-50 active:scale-90",
-          "shadow-lg shadow-indigo-500/10",
+          "bg-slate-900 border border-white/10 hover:border-white/20",
+          "hover:bg-slate-800 active:scale-90",
+          "shadow-lg shadow-black/20",
           collapsed ? "top-[31px] -right-3" : "top-[31px] -right-3"
         )}
       >
         {collapsed ? (
-          <ChevronRight className="size-3 text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+          <ChevronRight className="size-3 text-white group-hover:text-white transition-colors" />
         ) : (
-          <ChevronLeft className="size-3 text-indigo-500 group-hover:text-indigo-600 transition-colors" />
+          <ChevronLeft className="size-3 text-white group-hover:text-white transition-colors" />
         )}
       </button>
 
@@ -260,24 +260,24 @@ export default function TechnicianSidebar() {
           >
             <div className="mx-4 mt-5 p-3.5 rounded-2xl relative overflow-hidden group cursor-default"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.5) 100%)',
-                border: '1px solid rgba(99,102,241,0.2)',
-                boxShadow: '0 4px 20px -2px rgba(99,102,241,0.05)',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.2)',
               }}
             >
               <div className="absolute top-0 right-0 w-20 h-20 pointer-events-none opacity-20"
-                style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.3), transparent)' }}
+                style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.1), transparent)' }}
               />
               <div className="flex items-center gap-3">
                 <div className="relative shrink-0">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
                     <Zap className="size-4 text-white" />
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white shadow-sm" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950 shadow-sm" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-bold text-slate-800 truncate">Active & Ready</p>
-                  <p className="text-[10px] text-slate-900/70 font-medium">{currentTime || 'Loading...'}</p>
+                  <p className="text-[11px] font-bold text-white truncate">Active & Ready</p>
+                  <p className="text-[10px] text-white/50 font-medium">{currentTime || 'Loading...'}</p>
                 </div>
                 <div className="shrink-0">
                   <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/15">
@@ -338,9 +338,9 @@ export default function TechnicianSidebar() {
                     layoutId="techSidebarActive"
                     className="absolute inset-0 rounded-[14px]"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.02) 100%)',
-                      border: '1px solid rgba(15,23,42,0.1)',
-                      boxShadow: '0 4px 15px -3px rgba(15,23,42,0.05), inset 0 1px 0 rgba(255,255,255,0.5)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
@@ -354,8 +354,8 @@ export default function TechnicianSidebar() {
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 rounded-[14px]"
                     style={{
-                      background: 'rgba(255,255,255,0.5)',
-                      border: '1px solid rgba(99,102,241,0.1)',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
                     }}
                   />
                 )}
@@ -366,8 +366,8 @@ export default function TechnicianSidebar() {
                     layoutId="techSidebarIndicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
                     style={{
-                      background: 'linear-gradient(180deg, #1e293b, #0f172a)',
-                      boxShadow: '0 0 12px 2px rgba(15,23,42,0.2)',
+                      background: 'linear-gradient(180deg, #ffffff, #94a3b8)',
+                      boxShadow: '0 0 12px 2px rgba(255,255,255,0.2)',
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
@@ -385,8 +385,8 @@ export default function TechnicianSidebar() {
                     "transition-all duration-300",
                     collapsed ? "size-[18px]" : "size-[17px]",
                     isActive
-                      ? "text-indigo-600 drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]"
-                      : "text-slate-400 group-hover:text-indigo-500"
+                      ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                      : "text-slate-400 group-hover:text-white"
                   )} />
                   
                   {/* Icon glow for active */}
@@ -404,13 +404,13 @@ export default function TechnicianSidebar() {
                   >
                     <span className={cn(
                       "text-[13px] font-semibold tracking-wide transition-colors duration-300 truncate",
-                      isActive ? "text-indigo-900" : "text-slate-600 group-hover:text-indigo-700"
+                      isActive ? "text-white" : "text-white/60 group-hover:text-white"
                     )}>
                       {item.label}
                     </span>
                     <span className={cn(
                       "text-[10px] font-medium transition-colors duration-300 truncate mt-0.5",
-                      isActive ? "text-indigo-600/70" : "text-slate-400 group-hover:text-slate-500"
+                      isActive ? "text-white/40" : "text-white/30 group-hover:text-white/40"
                     )}>
                       {item.description}
                     </span>
@@ -437,13 +437,13 @@ export default function TechnicianSidebar() {
                       className="px-3 py-2 rounded-xl whitespace-nowrap"
                       style={{
                         background: 'rgba(255,255,255,0.95)',
-                        border: '1px solid rgba(99,102,241,0.2)',
+                        border: '1px solid rgba(255,255,255,0.2)',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                         backdropFilter: 'blur(20px)',
                       }}
                     >
                       <p className="text-xs font-semibold text-slate-800">{item.label}</p>
-                      <p className="text-[9px] text-indigo-500/70 mt-0.5">{item.description}</p>
+                      <p className="text-[9px] text-slate-500 mt-0.5">{item.description}</p>
                     </motion.div>
                   </div>
                 )}
@@ -454,7 +454,7 @@ export default function TechnicianSidebar() {
 
         {/* ─── Separator ─── */}
         <div className={cn("my-5", collapsed ? "mx-2" : "mx-3")}>
-          <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.2), transparent)' }} />
+          <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
         </div>
 
         {/* ─── Quick Actions Section ─── */}
@@ -487,7 +487,7 @@ export default function TechnicianSidebar() {
           className={cn(
             "relative flex items-center gap-3.5 rounded-[14px] transition-all duration-300 group",
             collapsed ? "justify-center p-3 mx-auto" : "px-4 py-3",
-            "text-slate-500 hover:text-indigo-600"
+            "text-slate-500 hover:text-white"
           )}
         >
           {hoveredItem === 'profile' && (
@@ -496,8 +496,8 @@ export default function TechnicianSidebar() {
               animate={{ opacity: 1 }}
               className="absolute inset-0 rounded-[14px]"
               style={{
-                background: 'rgba(255,255,255,0.5)',
-                border: '1px solid rgba(99,102,241,0.1)',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
               }}
             />
           )}
@@ -506,16 +506,16 @@ export default function TechnicianSidebar() {
             <User className={cn(
               "transition-all duration-300",
               collapsed ? "size-[18px]" : "size-[17px]",
-              "text-slate-400 group-hover:text-indigo-500"
+              "text-slate-400 group-hover:text-white"
             )} />
           </div>
 
           {!collapsed && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 flex-1 min-w-0">
-              <span className="text-[13px] font-semibold tracking-wide text-slate-600 group-hover:text-indigo-700 transition-colors truncate block">
+              <span className="text-[13px] font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors truncate block">
                 System Profile
               </span>
-              <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-500 transition-colors truncate block mt-0.5">
+              <span className="text-[10px] font-medium text-white/30 group-hover:text-white/40 transition-colors truncate block mt-0.5">
                 Account settings
               </span>
             </motion.div>
@@ -536,7 +536,7 @@ export default function TechnicianSidebar() {
                 }}
               >
                 <p className="text-xs font-semibold text-slate-800">System Profile</p>
-                <p className="text-[9px] text-indigo-500/70 mt-0.5">Account settings</p>
+                <p className="text-[9px] text-slate-500 mt-0.5">Account settings</p>
               </motion.div>
             </div>
           )}
@@ -556,24 +556,24 @@ export default function TechnicianSidebar() {
               exit={{ opacity: 0, y: 10 }}
               className="mb-3 p-3 rounded-2xl transition-all duration-300 group cursor-default"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.4) 100%)',
-                border: '1px solid rgba(99,102,241,0.15)',
-                boxShadow: '0 4px 15px -3px rgba(99,102,241,0.05)',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.2)',
               }}
             >
               <div className="flex items-center gap-3">
                 <div className="relative shrink-0">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/10 flex items-center justify-center overflow-hidden">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
                     {userAvatar ? (
                       <img src={userAvatar} className="w-full h-full object-cover" alt="Profile" />
                     ) : (
-                      <User className="size-4 text-indigo-600/70" />
+                      <User className="size-4 text-white/40" />
                     )}
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-semibold text-slate-800 truncate">{userName}</p>
-                  <p className="text-[10px] text-slate-500 truncate">{userEmail || 'technician@fixnow.app'}</p>
+                  <p className="text-[12px] font-semibold text-white truncate">{userName}</p>
+                  <p className="text-[10px] text-white/40 truncate">{userEmail || 'technician@fixnow.app'}</p>
                 </div>
               </div>
             </motion.div>
@@ -597,8 +597,8 @@ export default function TechnicianSidebar() {
               animate={{ opacity: 1 }}
               className="absolute inset-0 rounded-[14px]"
               style={{
-                background: 'rgba(244,63,94,0.08)',
-                border: '1px solid rgba(244,63,94,0.15)',
+                background: 'rgba(244,63,94,0.05)',
+                border: '1px solid rgba(244,63,94,0.1)',
               }}
             />
           )}
@@ -629,9 +629,9 @@ export default function TechnicianSidebar() {
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 className="px-3 py-2 rounded-xl whitespace-nowrap"
                 style={{
-                  background: 'rgba(255,255,255,0.95)',
+                  background: 'rgba(15, 23, 42, 0.95)',
                   border: '1px solid rgba(244,63,94,0.2)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                 }}
               >
                 <p className="text-xs font-semibold text-rose-400">Logout</p>
@@ -643,7 +643,7 @@ export default function TechnicianSidebar() {
 
       {/* Bottom gradient line */}
       <div className="absolute bottom-0 left-0 w-full h-[1px]"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.2), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }}
       />
     </motion.aside>
     </React.Fragment>

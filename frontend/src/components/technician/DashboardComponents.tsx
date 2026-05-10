@@ -16,16 +16,14 @@ export function StatCard({
   color: string;
 }) {
   const colors: Record<string, string> = {
-    indigo:
-      "text-slate-900 bg-slate-50 border-slate-200 shadow-slate-200/50",
-    emerald:
-      "text-emerald-600 bg-emerald-50 border-emerald-100 shadow-emerald-200/50",
-    sky: "text-sky-600 bg-sky-50 border-sky-100 shadow-sky-200/50",
-    slate: "text-slate-400 glass-panel border-white/10 border-slate-100 shadow-slate-200/50",
+    cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 shadow-cyan-500/10",
+    emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10",
+    white: "text-white bg-white/10 border-white/20 shadow-white/5",
+    slate: "text-slate-400 bg-white/5 border-white/10 shadow-black/20",
   };
 
   return (
-    <div className="glass-neon-card p-4 sm:p-6 lg:p-7 flex items-center justify-between group hover:border-slate-900/30 overflow-hidden">
+    <div className="bg-slate-900/40 backdrop-blur-3xl p-4 sm:p-6 lg:p-7 border border-white/10 rounded-[2.5rem] flex items-center justify-between group hover:border-white/20 overflow-hidden shadow-xl">
       <div className="flex items-center gap-3 sm:gap-5 min-w-0">
         <div
           className={cn(
@@ -49,8 +47,8 @@ export function StatCard({
           className={cn(
             "text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full border shadow-sm",
             trend.includes("+") || trend.includes("High")
-              ? "text-emerald-600 bg-emerald-50 border-emerald-100"
-              : "text-rose-600 bg-rose-50 border-rose-100",
+              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+              : "text-rose-400 bg-rose-500/10 border-rose-500/20",
           )}
         >
           {trend}
@@ -78,17 +76,17 @@ export function MetricRow({
   return (
     <div className="group">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-900 transition-colors">
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">
           {label}
         </span>
         <span className="text-xs font-black text-white">{value}</span>
       </div>
-      <div className="h-2 bg-slate-800/40 backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-slate-200/50">
+      <div className="h-2 bg-white/5 backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-white/10">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="h-full bg-slate-900 rounded-full shadow-[0_0_10px_rgba(15,23,42,0.3)]"
+          className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.3)]"
         />
       </div>
     </div>
@@ -100,20 +98,20 @@ import Link from "next/link";
 
 export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }) {
   return (
-    <div className="glass-neon-card p-8 relative overflow-hidden group min-h-[340px] flex flex-col justify-between border-none glass-panel border-white/80 shadow-[0_20px_50px_rgba(79,70,229,0.08)]">
+    <div className="glass-neon-card p-8 relative overflow-hidden group min-h-[340px] flex flex-col justify-between border-none glass-panel border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-slate-900/40">
       {/* Dynamic Background Accents */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.03] blur-[80px] -mr-32 -mt-32 group-hover:bg-indigo-500/[0.08] transition-all duration-700" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.03] blur-[80px] -mr-32 -mt-32 group-hover:bg-white/[0.08] transition-all duration-700" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/[0.02] blur-[60px] -ml-24 -mb-24 group-hover:bg-emerald-500/[0.05] transition-all duration-700" />
 
       <div className="relative z-10">
         <div className="flex justify-between items-start mb-8">
-          <div className="size-14 rounded-2xl glass-panel border-white/10 shadow-sm border border-slate-100 flex items-center justify-center text-indigo-600 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+          <div className="size-14 rounded-2xl glass-panel border-white/10 shadow-sm border border-white/5 flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
             <Briefcase className="w-7 h-7" />
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full">
+            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">
+              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
                 Protocol Active
               </span>
             </div>
@@ -131,7 +129,7 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
         </p>
 
         {/* Micro-stats for richness */}
-        <div className="flex items-center gap-6 pb-6 border-b border-slate-50">
+        <div className="flex items-center gap-6 pb-6 border-b border-white/5">
           <div className="space-y-1">
             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
               Active Jobs
@@ -159,7 +157,7 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
 
       <Link
         href="/technician/bookings"
-        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-slate-900 text-white pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/10 hover:shadow-slate-900/30 group/btn"
+        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-white text-slate-900 pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95 shadow-xl shadow-white/10 group/btn"
       >
         <span>Initialize Console</span>
         <div className="size-8 rounded-xl glass-panel border-white/10 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">

@@ -164,8 +164,8 @@ export default function SignupPage() {
   };
 
   const roleConfig = {
-    customer: { icon: <User className="w-5 h-5" />, label: 'Customer', desc: 'Book home services instantly', accent: 'from-blue-500 to-indigo-600' },
-    technician: { icon: <Wrench className="w-5 h-5" />, label: 'Technician', desc: 'Join our professional network', accent: 'from-cyan-500 to-blue-600' },
+    customer: { icon: <User className="w-5 h-5" />, label: 'Customer', desc: 'Book home services instantly', accent: 'from-slate-700 to-slate-900' },
+    technician: { icon: <Wrench className="w-5 h-5" />, label: 'Technician', desc: 'Join our professional network', accent: 'from-slate-800 to-slate-950' },
     admin: { icon: <Shield className="w-5 h-5" />, label: 'Administrator', desc: 'System management & control', accent: 'from-amber-500 to-orange-600' },
   };
 
@@ -195,17 +195,17 @@ export default function SignupPage() {
             background: role === 'admin' 
               ? 'radial-gradient(ellipse, rgba(245,158,11,0.15), transparent 70%)'
               : role === 'technician' 
-                ? 'radial-gradient(ellipse, rgba(6,182,212,0.15), transparent 70%)' 
-                : 'radial-gradient(ellipse, rgba(59,130,246,0.2), transparent 70%)' 
+                ? 'radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)' 
+                : 'radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)' 
           }} 
         />
 
         {/* ─── Main Card ─── */}
         <div className="relative w-full rounded-[2rem] overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(59,130,246,0.05) 50%, rgba(255,255,255,0.05) 100%)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255,255,255,0.3)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.01) 100%)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.1)',
             backdropFilter: 'blur(24px) saturate(150%)',
           }}
         >
@@ -215,8 +215,8 @@ export default function SignupPage() {
               background: role === 'admin' 
                 ? 'linear-gradient(90deg, transparent, rgba(245,158,11,0.7), rgba(251,191,36,0.5), transparent)' 
                 : role === 'technician'
-                  ? 'linear-gradient(90deg, transparent, rgba(6,182,212,0.6), rgba(59,130,246,0.5), transparent)'
-                  : 'linear-gradient(90deg, transparent, rgba(59,130,246,0.6), rgba(99,102,241,0.5), transparent)' 
+                  ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), rgba(255,255,255,0.1), transparent)'
+                  : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), rgba(255,255,255,0.1), transparent)' 
             }} 
           />
 
@@ -283,10 +283,10 @@ export default function SignupPage() {
                         {roleConfig[r].icon}
                       </div>
                       <div className="ml-4 text-left flex-1">
-                        <p className="font-bold text-white text-[15px] group-hover:text-blue-300 transition-colors">{roleConfig[r].label}</p>
+                        <p className="font-bold text-white text-[15px] group-hover:text-white transition-colors">{roleConfig[r].label}</p>
                         <p className="text-[12px] text-slate-500 font-medium mt-0.5">{roleConfig[r].desc}</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-white group-hover:translate-x-1 transition-all shrink-0" />
                     </motion.button>
                   ))}
                 </motion.div>
@@ -301,7 +301,7 @@ export default function SignupPage() {
                   transition={{ duration: 0.25 }}
                   className="space-y-5"
                 >
-                  <button onClick={() => setRole(null)} className="flex items-center gap-2 text-[13px] font-semibold text-blue-400 hover:text-blue-300 transition-colors group mb-2">
+                  <button onClick={() => setRole(null)} className="flex items-center gap-2 text-[13px] font-semibold text-slate-400 hover:text-white transition-colors group mb-2">
                     <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" /> Back
                   </button>
                   
@@ -356,7 +356,7 @@ export default function SignupPage() {
                           : 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.1))',
                         border: role === 'admin'
                           ? '1px solid rgba(245,158,11,0.3)'
-                          : '1px solid rgba(59,130,246,0.2)',
+                          : '1px solid rgba(255,255,255,0.2)',
                         boxShadow: role === 'admin'
                           ? '0 4px 15px -3px rgba(245,158,11,0.2)'
                           : 'none',
@@ -378,7 +378,7 @@ export default function SignupPage() {
                   transition={{ duration: 0.25 }}
                 >
                   <form onSubmit={handleSignup} className="space-y-5">
-                    <button type="button" onClick={() => { setMethod(null); setIsGoogleLinked(false); }} className="flex items-center gap-2 text-[13px] font-semibold text-blue-400 hover:text-blue-300 transition-colors group mb-3">
+                    <button type="button" onClick={() => { setMethod(null); setIsGoogleLinked(false); }} className="flex items-center gap-2 text-[13px] font-semibold text-slate-400 hover:text-white transition-colors group mb-3">
                       <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" /> Back
                     </button>
                     
@@ -387,8 +387,8 @@ export default function SignupPage() {
                       <div className="space-y-2">
                         <Label className="text-[13px] font-semibold text-slate-300 ml-0.5">Full Name</Label>
                         <Input required placeholder="John Doe" 
-                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30" 
-                          style={inputStyle}
+                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-white/20" 
+                        style={inputStyle}
                           value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} 
                         />
                       </div>
@@ -398,7 +398,7 @@ export default function SignupPage() {
                         <Label className="text-[13px] font-semibold text-slate-300 ml-0.5">Email Address</Label>
                         <Input required type="email" placeholder="you@example.com" 
                           readOnly={isGoogleLinked}
-                          className={`h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30 ${isGoogleLinked ? 'opacity-60 cursor-not-allowed' : ''}`} 
+                          className={`h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-white/20 ${isGoogleLinked ? 'opacity-60 cursor-not-allowed' : ''}`} 
                           style={inputStyle}
                           value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} 
                         />
@@ -408,8 +408,8 @@ export default function SignupPage() {
                       <div className="space-y-2">
                         <Label className="text-[13px] font-semibold text-slate-300 ml-0.5">Phone Number</Label>
                         <Input required type="tel" placeholder="+91 98765 43210" 
-                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30" 
-                          style={inputStyle}
+                          className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-white/20" 
+                        style={inputStyle}
                           value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} 
                         />
                       </div>
@@ -420,7 +420,7 @@ export default function SignupPage() {
                           <Label className="text-[13px] font-semibold text-slate-300 ml-0.5">Password</Label>
                           <div className="relative">
                             <Input required minLength={6} type={showPassword ? "text" : "password"} placeholder="Create a secure password" 
-                              className="h-[52px] px-4 pr-12 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30" 
+                              className="h-[52px] px-4 pr-12 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-white/20" 
                               style={inputStyle}
                               value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} 
                             />
@@ -440,7 +440,7 @@ export default function SignupPage() {
                         <div className="space-y-2">
                           <Label className="text-[13px] font-semibold text-slate-300 ml-0.5">Password Reset Hint (Optional)</Label>
                           <Input type="text" placeholder="e.g., Name of my first pet" 
-                            className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30" 
+                            className="h-[52px] px-4 rounded-xl text-[15px] font-medium text-white placeholder:text-slate-500 shadow-none transition-all focus-visible:ring-1 focus-visible:ring-white/20" 
                             style={inputStyle}
                             value={formData.passwordHint} onChange={e => setFormData({...formData, passwordHint: e.target.value})} 
                           />
@@ -456,7 +456,7 @@ export default function SignupPage() {
                               <Wrench className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 z-10" />
                               <select 
                                 required
-                                className="w-full h-[52px] pl-11 pr-10 rounded-xl text-[15px] font-medium text-white appearance-none transition-all focus-visible:ring-1 focus-visible:ring-blue-500/30"
+                                className="w-full h-[52px] pl-11 pr-10 rounded-xl text-[15px] font-medium text-white appearance-none transition-all focus-visible:ring-1 focus-visible:ring-white/20"
                                 style={inputStyle}
                                 value={formData.category} 
                                 onChange={e => setFormData({...formData, category: e.target.value})}
@@ -478,7 +478,7 @@ export default function SignupPage() {
                                   <label key={item} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
                                     <input 
                                       type="checkbox"
-                                      className="size-4 rounded border-white/20 bg-transparent text-blue-600 focus:ring-blue-500/30"
+                                      className="size-4 rounded border-white/20 bg-transparent text-white focus:ring-white/20"
                                       checked={formData.skills.split(', ').includes(item)}
                                       onChange={e => {
                                         const current = formData.skills ? formData.skills.split(', ') : [];
@@ -540,10 +540,10 @@ export default function SignupPage() {
                         style={{
                           background: role === 'admin'
                             ? 'linear-gradient(135deg, #f59e0b, #d97706)'
-                            : 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                            : 'white',
                           boxShadow: role === 'admin'
                             ? '0 8px 25px -5px rgba(245,158,11,0.3)'
-                            : '0 8px 25px -5px rgba(59,130,246,0.3)',
+                            : '0 8px 25px -5px rgba(0,0,0,0.4)',
                         }}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
@@ -562,7 +562,7 @@ export default function SignupPage() {
             <div className="text-center pt-1">
               <p className="text-[13px] text-slate-500 font-medium">
                 Already have an account?{' '}
-                <Link href={`/auth/login?role=${role || 'customer'}`} className="text-blue-400 hover:text-blue-300 transition-colors font-semibold">
+                <Link href={`/auth/login?role=${role || 'customer'}`} className="text-white hover:text-slate-200 transition-colors font-semibold">
                   Sign in
                 </Link>
               </p>
@@ -571,22 +571,7 @@ export default function SignupPage() {
         </div>
       </motion.div>
 
-      {/* Footer status */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        whileHover={{ opacity: 0.8 }}
-        className="mt-10 flex flex-wrap justify-center items-center gap-x-8 gap-y-3 px-4 transition-opacity duration-500"
-      >
-        <div className="flex items-center gap-2">
-          <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-          <p className="text-[11px] font-medium text-white/70">All systems operational</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Shield className="size-3 text-blue-400/70" />
-          <p className="text-[11px] font-medium text-white/70">Secure registration</p>
-        </div>
-      </motion.div>
+
     </div>
   );
 }
