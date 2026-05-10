@@ -37,7 +37,7 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
                   {tech.avatar && (tech.avatar.startsWith('data:image') || tech.avatar.startsWith('http') || tech.avatar.startsWith('/')) ? (
                     <img 
                       src={tech.avatar} 
-                      className="w-full h-full object-cover transition-all duration-500" 
+                      className="w-full h-full object-contain bg-slate-50 p-1 transition-all duration-500" 
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                         e.currentTarget.parentElement!.innerHTML = '<span class="text-4xl drop-shadow-sm transition-all duration-500">👷</span>';

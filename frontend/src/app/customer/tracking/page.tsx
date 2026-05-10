@@ -471,7 +471,7 @@ export default function TrackingPage() {
                  <div className="flex items-center gap-6 mb-8">
                     <div className="relative">
                       <div className="size-20 rounded-[2rem] bg-white border border-slate-200 overflow-hidden shadow-xl">
-                        {techDetails.avatar ? <img src={techDetails.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-600 font-black text-2xl">{techDetails.name.charAt(0)}</div>}
+                        {techDetails.avatar ? <img src={techDetails.avatar} className="w-full h-full object-contain bg-slate-50 p-1" /> : <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-600 font-black text-2xl">{techDetails.name.charAt(0)}</div>}
                       </div>
                       <div className="absolute -bottom-2 -right-2 size-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center shadow-lg">
                         <CheckCircle2 className="size-4 text-white" />
