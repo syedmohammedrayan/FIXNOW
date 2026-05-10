@@ -20,8 +20,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl space-y-10"
+            className="max-w-5xl w-full flex flex-col items-center gap-8"
           >
+            {/* Badge */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -33,50 +34,53 @@ export default function LandingPage() {
               <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
             </motion.div>
             
-            <h1 className="text-[5.5rem] sm:text-[8rem] md:text-[12rem] font-black tracking-[-0.07em] leading-[0.75] text-slate-950 uppercase italic relative group">
-              <motion.span 
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="block hover:skew-x-2 transition-transform duration-500 cursor-default"
+            {/* Hero Heading — clean stacked lines, zero overlap */}
+            <div className="flex flex-col items-center gap-0 leading-none w-full">
+              {/* Line 1: RELIABLE — dark, grounded */}
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className="block font-black uppercase italic tracking-[-0.05em] text-slate-950 text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
               >
                 Reliable
               </motion.span>
-              <div className="relative inline-block mt-[-0.1em]">
-                <span className="relative text-white [text-shadow:0_0_80px_rgba(255,255,255,0.4)]">
-                  Home Services
-                  <span className="absolute inset-0 bg-gradient-to-r from-rose-500 via-cyan-400 via-purple-500 to-amber-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text">
-                    Home Services
-                  </span>
-                  <motion.span 
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      rotate: [0, 5, -5, 0],
-                      opacity: [0.2, 0.5, 0.2]
-                    }}
-                    transition={{ duration: 5, repeat: Infinity }}
-                    className="absolute -inset-10 bg-cyan-400/20 blur-[100px] rounded-full -z-10" 
-                  />
-                </span>
-              </div>
-            </h1>
-            
-            <p className="text-lg md:text-2xl text-slate-800 font-black max-w-2xl mx-auto leading-relaxed uppercase tracking-[0.2em] drop-shadow-2xl opacity-90">
-              <span className="bg-slate-950 text-white px-4 py-1 rounded-lg mr-2">High-Precision</span> 
-              Service Ecosystem.
-            </p>
 
+              {/* Line 2: HOME SERVICES — animated gradient, clearly below line 1 */}
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.45 }}
+                className="block font-black uppercase italic tracking-[-0.05em] leading-none text-[4rem] sm:text-[6rem] md:text-[9rem] select-none
+                  bg-gradient-to-r from-rose-500 via-violet-500 to-cyan-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text
+                  drop-shadow-[0_4px_40px_rgba(139,92,246,0.35)]"
+              >
+                Home Services
+              </motion.span>
+            </div>
+
+            {/* Subtext */}
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="text-base md:text-lg text-slate-700 font-bold max-w-xl mx-auto leading-relaxed uppercase tracking-[0.18em]"
+            >
+              High-Precision Service Ecosystem.
+            </motion.p>
+
+            {/* CTA Buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8"
+              transition={{ delay: 0.7, duration: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-5"
             >
-              <Link href="/auth/signup?role=customer" className="group w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-slate-950 text-white font-black text-xl transition-all shadow-2xl shadow-slate-950/20 hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4">
+              <Link href="/auth/signup?role=customer" className="group w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-slate-950 text-white font-black text-lg transition-all shadow-2xl shadow-slate-950/30 hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4">
                 Book Service
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
               </Link>
-              <Link href="/auth/signup?role=technician" className="w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-white/40 backdrop-blur-3xl border border-white/60 text-slate-900 font-black text-xl hover:shadow-2xl hover:bg-white/60 transition-all hover:scale-[1.05] active:scale-95 text-center flex items-center justify-center border-t-white shadow-xl shadow-white/10">
+              <Link href="/auth/signup?role=technician" className="w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-white/40 backdrop-blur-3xl border border-white/70 text-slate-900 font-black text-lg hover:bg-white/60 transition-all hover:scale-[1.05] active:scale-95 text-center flex items-center justify-center shadow-xl shadow-white/10">
                 Join Network
               </Link>
             </motion.div>
