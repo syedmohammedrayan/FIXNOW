@@ -151,7 +151,7 @@ export default function LoginPage() {
               }}
             >
               {/* Back Arrow */}
-              <button onClick={() => router.back()} className="absolute top-8 left-8 z-20 text-slate-400 hover:text-slate-950 transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-slate-950/5">
+              <button onClick={() => setRole('customer')} className="absolute top-8 left-8 z-20 text-slate-400 hover:text-slate-950 transition-colors group/back flex items-center justify-center p-2 rounded-full hover:bg-slate-950/5">
                 <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
               </button>
 
