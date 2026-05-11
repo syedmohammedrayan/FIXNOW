@@ -168,7 +168,7 @@ export default function TechnicianSidebar() {
 
       <motion.aside
         className={cn(
-          "fixed left-0 top-0 h-screen z-50 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+          "fixed left-0 top-0 h-[100dvh] z-50 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
           sidebarWidth,
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
@@ -351,7 +351,7 @@ export default function TechnicianSidebar() {
 
       {/* ─── Bottom Section ─── */}
       <div className={cn(
-        "border-t border-white/10 p-4",
+        "border-t border-white/10 p-4 pb-8 sm:pb-4 bg-slate-900/50",
         effectiveCollapsed ? "flex flex-col items-center gap-3" : ""
       )}>
         <AnimatePresence>

@@ -42,7 +42,7 @@ export default function TechnicianHeader({
   const [bellMenuOpen, setBellMenuOpen] = React.useState(false);
 
   return (
-    <header className="flex flex-col gap-4 mb-8 lg:mb-12">
+    <header className="flex flex-col gap-4 mb-8 lg:mb-12 relative z-[100]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter">
