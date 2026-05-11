@@ -11,7 +11,7 @@ interface NavbarProps {
 
 export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, fetchData, setShowAddModal }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-30 px-4 sm:px-8 py-4 flex justify-between items-center bg-white/10 backdrop-blur-2xl border-b border-white/40 shadow-2xl shadow-white/5">
+    <header className="sticky top-0 z-30 px-6 min-h-[96px] flex justify-between items-center bg-white/10 backdrop-blur-2xl border-b border-white/40 shadow-2xl shadow-white/5">
       <div className="flex items-center gap-3 sm:gap-4">
         <button 
           onClick={() => setSidebarOpen(!sidebarOpen)} 
