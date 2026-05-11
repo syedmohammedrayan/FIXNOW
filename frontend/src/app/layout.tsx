@@ -20,6 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="https://ik.imagekit.io/smr2007/fixnow-logo.png" />
+      </head>
       <body className={`${inter.className} bg-slate-950`}>
         <DynamicBackground />
         <ThemeProvider

@@ -125,11 +125,11 @@ export default function LoginPage() {
       <FloatingOrbs />
 
       {/* Admin Quick Access */}
-      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
+      <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-50">
         <button 
           onClick={() => setRole(role === 'admin' ? 'customer' : 'admin')}
           className={cn(
-            "flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
+            "flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
             role === 'admin' 
               ? "bg-slate-950/5 border-slate-950/10 text-slate-950 hover:bg-slate-950/10" 
               : "bg-white/5 border-white/10 text-white hover:bg-white/10"
@@ -155,7 +155,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{
                 boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
@@ -170,9 +170,9 @@ export default function LoginPage() {
               
               <div className="absolute top-0 right-0 w-60 h-60 bg-white/10 blur-[100px] -mr-30 -mt-30" />
               
-              <div className="text-center mb-12 relative z-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+              <div className="text-center mb-8 sm:mb-12 relative z-10">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="mb-6 sm:mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-3xl sm:text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Admin <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Terminal
@@ -184,7 +184,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-7 relative z-10">
+              <form onSubmit={handleLogin} className="space-y-5 sm:space-y-7 relative z-10">
                 <div className="space-y-2.5">
                   <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Security Identifier</Label>
                   <div className="relative group/input">
@@ -192,7 +192,7 @@ export default function LoginPage() {
                     <Input 
                       type="email" 
                       placeholder="admin.root@fixnow.app" 
-                      className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
+                      className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       required
@@ -207,7 +207,7 @@ export default function LoginPage() {
                     <Input 
                       type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 pr-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
+                      className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
                       required
@@ -222,12 +222,12 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-2xl sm:rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-4 sm:mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                   {loading ? <Loader2 className="size-6 animate-spin" /> : <>Access System <ArrowRight className="size-5 ml-2" /></>}
                 </Button>
               </form>
 
-              <div className="mt-14 pt-10 border-t border-white/10 text-center space-y-8 relative z-10">
+              <div className="mt-10 sm:mt-14 pt-8 sm:pt-10 border-t border-white/10 text-center space-y-8 relative z-10">
                 <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
                   Need administrative credentials? <br/>
                   <Link href="/auth/signup?role=admin" className="text-white hover:text-amber-400 transition-colors underline underline-offset-4 mt-2 inline-block">
@@ -246,7 +246,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{ boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)' }}
             >
               {/* Back Arrow */}
@@ -265,11 +265,11 @@ export default function LoginPage() {
               <div className="absolute top-0 right-0 w-60 h-60 bg-cyan-500/10 blur-[100px] -mr-20 -mt-20 pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-60 h-60 bg-violet-500/10 blur-[100px] -ml-20 -mb-20 pointer-events-none" />
 
-              <div className="text-center mb-10 relative z-10">
-                <Link href="/" className="inline-block mb-8 hover:scale-105 transition-transform">
+              <div className="text-center mb-6 sm:mb-10 relative z-10">
+                <Link href="/" className="inline-block mb-6 sm:mb-8 hover:scale-105 transition-transform">
                   <Logo isAdmin={false} showText />
                 </Link>
-                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+                <h1 className="text-3xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Welcome <br/>
                   <span className="text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Back.
@@ -277,7 +277,7 @@ export default function LoginPage() {
                 </h1>
 
                 {/* Role Switcher */}
-                <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-6 max-w-[280px] mx-auto">
+                <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-4 sm:mb-6 max-w-[280px] mx-auto">
                   <button
                     onClick={() => setRole('customer')}
                     className={cn(
@@ -311,7 +311,7 @@ export default function LoginPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className="space-y-6"
+                    className="space-y-4 sm:space-y-6"
                   >
                     {error && (
                       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3 text-rose-400 text-sm font-bold">
@@ -327,7 +327,7 @@ export default function LoginPage() {
                           <Input 
                             type="email" 
                             placeholder="your@email.com" 
-                            className="bg-white/10 border-white/20 rounded-3xl h-14 sm:h-16 pl-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
+                            className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             required
@@ -342,7 +342,7 @@ export default function LoginPage() {
                           <Input 
                             type={showPassword ? "text" : "password"} 
                             placeholder="••••••••" 
-                            className="bg-white/10 border-white/20 rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
+                            className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.password}
                             onChange={(e) => setFormData({...formData, password: e.target.value})}
                             required
@@ -365,7 +365,7 @@ export default function LoginPage() {
                         <button type="button" onClick={() => setView('reset')} className="text-[11px] font-black text-cyan-400 uppercase tracking-widest hover:text-cyan-300 transition underline underline-offset-4">Forgot Password?</button>
                       </div>
 
-                      <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-6 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                      <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-2xl sm:rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-4 sm:mt-6 shadow-[0_0_30_rgba(255,255,255,0.2)]">
                         {loading ? <Loader2 className="size-6 animate-spin" /> : <>Login <ArrowRight className="size-5 ml-2" /></>}
                       </Button>
                     </form>

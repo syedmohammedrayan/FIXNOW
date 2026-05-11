@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/ui/Logo';
 
 export default function DynamicLoginPage() {
   const router = useRouter();
@@ -117,20 +118,12 @@ export default function DynamicLoginPage() {
         <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 sm:p-12">
           <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
             <header className="text-center mb-10">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: "spring" }}
-                className={cn(
-                  "inline-flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 shadow-xl",
-                  config.accent === 'amber' ? "text-amber-500" : "text-cyan-400"
-                )}
-              >
-                {config.icon}
-              </motion.div>
-              <h2 className="text-3xl font-black tracking-tighter text-white mb-2 uppercase italic">
-                {config.label} Portal
-              </h2>
+              <Logo 
+                isAdmin={roleParam === 'admin'} 
+                showText 
+                className="justify-center mb-8"
+                textClassName="text-3xl"
+              />
               <div className="flex items-center justify-center gap-2 mt-2">
                 <Activity className="size-3 text-cyan-400 animate-pulse" />
                 <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">

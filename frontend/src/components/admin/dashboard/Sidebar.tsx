@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, LayoutDashboard, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut, Activity } from 'lucide-react';
 import { SidebarLink } from './shared/SidebarLink';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/ui/Logo';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -53,16 +54,8 @@ export function Sidebar({
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="p-8 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-2xl shrink-0">
-            <ShieldCheck className="text-slate-900 w-7 h-7" />
-          </div>
-          {sidebarOpen && (
-            <div className="flex flex-col">
-              <span className="font-black text-xl tracking-tighter text-white italic leading-none">FIXNOW</span>
-              <span className="font-black text-[9px] uppercase tracking-[0.3em] text-slate-500 mt-1">Command Center</span>
-            </div>
-          )}
+        <div className="p-8">
+          <Logo isAdmin={true} showText={sidebarOpen} />
         </div>
 
         <nav className="flex-grow px-4 space-y-2 mt-4 overflow-y-auto">

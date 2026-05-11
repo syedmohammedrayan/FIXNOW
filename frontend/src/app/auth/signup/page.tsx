@@ -230,18 +230,18 @@ function SignupInner() {
 
   return (
     <div className={cn(
-      "min-h-screen flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden transition-colors duration-700",
+      "min-h-screen flex flex-col items-center justify-center py-6 sm:py-12 px-4 relative overflow-hidden transition-colors duration-700",
       role === 'admin' ? "bg-white" : "bg-slate-950"
     )}>
       <BackgroundParticles />
       <FloatingOrbs />
 
       {/* Admin Quick Access */}
-      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
+      <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-50">
         <button 
           onClick={() => setRole(role === 'admin' ? null : 'admin')}
           className={cn(
-            "flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
+            "flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
             role === 'admin' 
               ? "bg-slate-950/5 border-slate-950/10 text-slate-950 hover:bg-slate-950/10" 
               : "bg-white/5 border-white/10 text-white hover:bg-white/10"
@@ -271,7 +271,7 @@ function SignupInner() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{
                 boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
@@ -284,9 +284,9 @@ function SignupInner() {
               {/* Premium Glint Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
               
-              <div className="text-center mb-12 relative z-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="justify-center mb-10 group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+              <div className="text-center mb-8 sm:mb-12 relative z-10">
+                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="justify-center mb-6 sm:mb-10 group-hover/card:scale-105 transition-transform duration-700" />
+                <h1 className="text-3xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Registry <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Expansion.
@@ -298,20 +298,20 @@ function SignupInner() {
                 </div>
               </div>
 
-              <form onSubmit={handleSignup} className="space-y-6 relative z-10">
+              <form onSubmit={handleSignup} className="space-y-4 sm:space-y-6 relative z-10">
                 <div className="space-y-2.5">
                   <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Operator Name</Label>
-                  <Input required placeholder="System Admin 01" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  <Input required placeholder="System Admin 01" className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="space-y-2.5">
                   <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Primary Terminal Email</Label>
-                  <Input required type="email" placeholder="root@fixnow.app" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  <Input required type="email" placeholder="root@fixnow.app" className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div className="space-y-2.5">
                   <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Master Passkey</Label>
-                  <Input required type="password" placeholder="••••••••" className="bg-white/10 border-white/20 rounded-3xl h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                  <Input required type="password" placeholder="••••••••" className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-2xl sm:rounded-3xl hover:bg-slate-100 mt-4 sm:mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                   {loading ? 'Initializing...' : 'Authorize Expansion'}
                 </Button>
               </form>
@@ -329,7 +329,7 @@ function SignupInner() {
             /* ─────────────────── STANDARD SIGNUP CARD (GLASS THEME) ─────────────────── */
             <motion.div
               key="standard-signup"
-              className="relative w-full rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden backdrop-blur-[60px] border border-white/30 p-8 sm:p-12 bg-white/5"
+              className="relative w-full rounded-[2rem] sm:rounded-[3.5rem] overflow-hidden backdrop-blur-[60px] border border-white/30 p-6 sm:p-12 bg-white/5"
               style={{ boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)' }}
             >
               {/* Back Arrow */}
@@ -357,7 +357,7 @@ function SignupInner() {
                   </div>
                 )}
 
-                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-4 drop-shadow-2xl">
+                <h1 className="text-3xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-4 drop-shadow-2xl">
                   {role ? 'Create' : 'Get'} <br/>
                   <span className="text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     {role ? 'Account.' : 'Started.'}
@@ -374,10 +374,10 @@ function SignupInner() {
 
               <AnimatePresence mode="wait">
                 {!role ? (
-                  <motion.div key="roles" className="space-y-4 relative z-10">
+                  <motion.div key="roles" className="space-y-3 sm:space-y-4 relative z-10">
                     {(['customer', 'technician'] as const).map(r => (
-                      <button key={r} onClick={() => setRole(r)} className="w-full flex items-center p-6 bg-white/10 border border-white/20 rounded-[2rem] hover:bg-white/15 transition group">
-                        <div className="size-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mr-4 group-hover:scale-110 transition">{roleConfig[r].icon}</div>
+                      <button key={r} onClick={() => setRole(r)} className="w-full flex items-center p-4 sm:p-6 bg-white/10 border border-white/20 rounded-[1.5rem] sm:rounded-[2rem] hover:bg-white/15 transition group">
+                        <div className="size-10 sm:size-12 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mr-4 group-hover:scale-110 transition">{roleConfig[r].icon}</div>
                         <div className="text-left">
                           <p className="font-black text-white uppercase tracking-widest text-sm drop-shadow-md">{roleConfig[r].label}</p>
                           <p className="text-[10px] text-slate-300 uppercase font-bold">{roleConfig[r].desc}</p>
@@ -386,9 +386,9 @@ function SignupInner() {
                     ))}
                   </motion.div>
                 ) : (
-                  <motion.div key="form" className="space-y-5 relative z-10">
+                  <motion.div key="form" className="space-y-4 sm:space-y-5 relative z-10">
                     {!isGoogleLinked && (
-                      <button onClick={handleGoogleClick} className="w-full h-14 bg-white rounded-2xl flex items-center justify-center gap-4 text-slate-950 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition shadow-xl">
+                      <button onClick={handleGoogleClick} className="w-full h-12 sm:h-14 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 text-slate-950 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition shadow-xl">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="size-5" />
                         Sign up with Google
                       </button>
@@ -399,26 +399,26 @@ function SignupInner() {
                       <div className="relative flex justify-center"><span className="bg-transparent backdrop-blur-xl px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Or fill in details</span></div>
                     </div>
 
-                    <form onSubmit={handleSignup} className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <form onSubmit={handleSignup} className="space-y-3 sm:space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Full Name</Label>
-                          <Input required placeholder="Full Name" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                          <Input required placeholder="Full Name" className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Email Address</Label>
-                          <Input required type="email" placeholder="your@email.com" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                          <Input required type="email" placeholder="your@email.com" className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Phone Number</Label>
-                          <Input required type="tel" placeholder="+91 98XXX XXXXX" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                          <Input required type="tel" placeholder="+91 98XXX XXXXX" className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">City / Address</Label>
-                          <Input required placeholder="City or Full Address" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                          <Input required placeholder="City or Full Address" className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                         </div>
                       </div>
 
@@ -429,7 +429,7 @@ function SignupInner() {
                             required 
                             type={showPassword ? "text" : "password"} 
                             placeholder="Create a strong password" 
-                            className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold pr-14 focus:border-white/40 transition-all" 
+                            className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold pr-14 focus:border-white/40 transition-all" 
                             value={formData.password} 
                             onChange={e => setFormData({...formData, password: e.target.value})} 
                           />
@@ -447,7 +447,7 @@ function SignupInner() {
                         <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Password Hint</Label>
                         <Input 
                           placeholder="e.g. Favorite Color" 
-                          className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" 
+                          className="bg-white/10 border-white/20 h-12 sm:h-16 rounded-xl sm:rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" 
                           value={formData.passwordHint} 
                           onChange={e => setFormData({...formData, passwordHint: e.target.value})} 
                         />
@@ -488,7 +488,7 @@ function SignupInner() {
                         </motion.div>
                       )}
 
-                      <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-3xl mt-4 hover:bg-slate-100 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                      <Button type="submit" disabled={loading} className="w-full h-12 sm:h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-xl sm:rounded-3xl mt-2 sm:mt-4 hover:bg-slate-100 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                         {loading ? 'Creating Account...' : 'Create Account'}
                       </Button>
                     </form>
