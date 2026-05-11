@@ -127,14 +127,11 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     <>
       {/* ── Pill Navbar (unchanged shape/theme) ── */}
       <nav className={cn(
-        "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ease-out",
-        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-8 min-h-[72px] sm:min-h-[84px]",
-        scrolled 
-          ? "bg-slate-950/40 border-white/[0.08] top-3 rounded-[1.5rem] sm:rounded-[2.5rem]" 
-          : "bg-white/[0.04] border-white/[0.08] top-5 rounded-[1.5rem] sm:rounded-[2.5rem]",
+        "fixed top-0 left-0 w-full z-[100] transition-all duration-700 ease-out",
+        "bg-slate-950/40 border-b border-white/[0.08] backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-8 min-h-[84px] sm:min-h-[96px]",
         !visible && "-top-32 opacity-0 pointer-events-none"
       )} style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.3)' }}>
-        <div className="w-full flex items-center justify-between relative z-10 px-4">
+        <div className="w-full flex items-center justify-between relative z-10">
           <Link href="/" className="group flex-shrink-0 flex items-center">
             <Logo 
               isAdmin={profile?.role === 'admin'} 
