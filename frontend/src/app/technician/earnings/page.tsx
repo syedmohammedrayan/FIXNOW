@@ -135,12 +135,12 @@ export default function TechnicianEarnings() {
               { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: Banknote, color: 'white', sub: `${completedJobs.filter(j => j.paymentStatus === 'Paid').length} paid jobs` },
               { label: 'Pending Collections', value: `₹${pendingPayout.toLocaleString()}`, icon: Clock, color: 'white', sub: `${completedJobs.filter(j => j.paymentStatus !== 'Paid').length} unpaid jobs` },
             ].map(stat => (
-              <div key={stat.label} className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-xl transition-all">
+              <div key={stat.label} className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 relative overflow-hidden group shadow-xl transition-all">
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-110 transition-all text-white">
                   <stat.icon className="size-24" />
                 </div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{stat.label}</p>
-                <h2 className="text-4xl font-black text-white tracking-tighter mb-1">{stat.value}</h2>
+                <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-1">{stat.value}</h2>
                 <p className="text-xs text-slate-500 font-bold">{stat.sub}</p>
               </div>
             ))}

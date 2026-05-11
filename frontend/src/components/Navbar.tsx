@@ -127,15 +127,13 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     <>
       {/* ── Floating Glass Pill Navbar ── */}
       <nav className={cn(
-        "fixed top-0 left-0 right-0 z-[100] px-2 sm:px-4 pt-2 sm:pt-4 pb-2 transition-all duration-700 ease-out",
+        "fixed top-0 left-0 right-0 z-[100] px-3 sm:px-5 md:px-8 pt-3 sm:pt-4 pb-2 transition-all duration-700 ease-out",
         !visible && "-top-32 opacity-0 pointer-events-none"
       )}>
         <div className={cn(
-          "w-full max-w-7xl mx-auto rounded-[1.5rem] sm:rounded-[2rem] border backdrop-blur-3xl transition-all duration-700",
-          "pl-2 pr-3 sm:pl-3 sm:pr-6 py-1 flex items-center justify-between gap-2 sm:gap-4",
-          scrolled
-            ? "bg-slate-950/70 border-white/[0.12] shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)]"
-            : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2),0_0_0_1px_rgba(0,0,0,0.4)]"
+          "w-full max-w-7xl mx-auto rounded-[1.75rem] sm:rounded-[2.25rem] transition-all duration-700",
+          "pl-3 pr-3 sm:pl-4 sm:pr-6 py-1.5 flex items-center justify-between gap-2 sm:gap-4",
+          scrolled ? "navbar-glass-scrolled" : "navbar-glass-top"
         )}>
 
           {/* ── LEFT: Logo + Brand Text ── */}
@@ -161,13 +159,13 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
 
 
           {/* ── CENTER: Desktop Nav Links ── */}
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-8">
             <NavLink href="/services" active={pathname === '/services'}>Services</NavLink>
             <button
               onClick={openAboutModal}
-              className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-white transition-all active:scale-95 flex items-center gap-2"
+              className="group flex items-center gap-2 text-sm font-bold tracking-wide text-slate-300 hover:text-white transition-all duration-300 active:scale-95 px-3 py-1.5 rounded-xl hover:bg-white/[0.06]"
             >
-              <Info className="size-3.5" />
+              <Info className="size-4 text-cyan-400/70 group-hover:text-cyan-400 transition-colors duration-300" />
               About
             </button>
           </div>
@@ -483,14 +481,17 @@ function NavLink({ href, children, active }: { href: string, children: React.Rea
     <Link 
       href={href} 
       className={cn(
-        "text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 relative group",
-        active ? "text-white" : "text-slate-400 hover:text-white"
+        "relative group flex items-center gap-1.5 text-sm font-bold tracking-wide transition-all duration-300 active:scale-95 px-3 py-1.5 rounded-xl",
+        active
+          ? "text-white bg-white/[0.08]"
+          : "text-slate-300 hover:text-white hover:bg-white/[0.06]"
       )}
     >
+      <Sparkles className={cn("size-3.5 transition-colors duration-300", active ? "text-cyan-400" : "text-cyan-400/50 group-hover:text-cyan-400")} />
       {children}
       <span className={cn(
-        "absolute -bottom-2 left-0 h-0.5 bg-cyan-500 transition-all duration-500",
-        active ? "w-full" : "w-0 group-hover:w-1/2"
+        "absolute bottom-0.5 left-3 right-3 h-px bg-cyan-500/60 transition-all duration-500",
+        active ? "opacity-100" : "opacity-0 group-hover:opacity-60"
       )} />
     </Link>
   );

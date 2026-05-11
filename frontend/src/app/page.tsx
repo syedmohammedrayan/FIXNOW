@@ -3,116 +3,154 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Search, MapPin, Zap, ArrowRight, Activity, Shield, Sparkles } from 'lucide-react';
+import { Search, MapPin, Zap, ArrowRight, Activity, Shield, Sparkles, Star, CheckCircle, Clock, Users } from 'lucide-react';
 import Testimonials from '@/components/Testimonials';
 import Navbar from '@/components/Navbar';
-import { cn } from '@/lib/utils';
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-cyan-500/30">
       <Navbar />
-      
-      {/* Hero Section */}
-      <main className="flex-grow pt-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col items-center">
-        <section className="w-full py-20 flex flex-col items-center justify-center text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl w-full flex flex-col items-center gap-8"
+
+      {/* ─── Hero Section ─── */}
+      <main className="relative flex-grow">
+        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+
+          {/* Soft radial glow behind hero text */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
-            {/* Badge */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
+            <div className="hero-radial-glow" />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 max-w-5xl w-full flex flex-col items-center gap-7 text-center"
+          >
+
+            {/* ── Premium Badge ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/40 backdrop-blur-2xl border border-white/60 text-slate-900 text-[11px] font-black uppercase tracking-[0.25em] shadow-xl shadow-white/20 animate-float"
+              transition={{ delay: 0.15, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full hero-badge animate-float"
             >
-              <span className="size-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-              <span>Premium Service Logistics</span>
-              <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
+              <span className="relative flex size-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full size-2 bg-cyan-500" />
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.28em] text-white/90">
+                Premium Service Logistics
+              </span>
+              <Sparkles className="w-3 h-3 text-cyan-400 opacity-80" />
             </motion.div>
-            
-            {/* Hero Heading — clean stacked lines, zero overlap */}
-            <div className="flex flex-col items-center gap-0 leading-none w-full">
-              {/* Line 1: RELIABLE — light, glowing */}
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
+
+            {/* ── Hero Heading ── */}
+            <div className="flex flex-col items-center gap-1 w-full">
+              {/* "HOME SERVICES" — PRIMARY focal point */}
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.3 }}
-                className="block font-black uppercase italic tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[9rem] leading-[0.9] select-none"
+                transition={{ duration: 0.75, delay: 0.28 }}
+                className="hero-heading-primary select-none"
+              >
+                Home Services
+              </motion.h1>
+
+              {/* "RELIABLE" — Secondary, slightly smaller */}
+              <motion.span
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.75, delay: 0.42 }}
+                className="hero-heading-secondary select-none"
               >
                 Reliable
               </motion.span>
-
-              {/* Line 2: HOME SERVICES — animated gradient, clearly below line 1 */}
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.45 }}
-                className="block font-black uppercase italic tracking-[-0.05em] leading-[0.9] text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[9rem] select-none
-                  bg-gradient-to-r from-rose-500 via-violet-500 to-cyan-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text
-                  drop-shadow-[0_4px_20px_rgba(139,92,246,0.2)]"
-              >
-                Home Services
-              </motion.span>
             </div>
 
-            {/* Subtext */}
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
+            {/* ── Sub-headline ── */}
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-base md:text-lg text-white/70 font-bold max-w-xl mx-auto leading-relaxed uppercase tracking-[0.18em] drop-shadow-lg"
+              transition={{ delay: 0.58, duration: 0.6 }}
+              className="text-sm sm:text-base text-white/55 font-semibold max-w-md mx-auto leading-relaxed tracking-[0.12em] uppercase"
             >
-              High-Precision Service Ecosystem.
+              High-Precision Home Service Ecosystem
             </motion.p>
 
-            {/* CTA Buttons */}
-            <motion.div 
+            {/* ── CTA Buttons ── */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-5"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md sm:max-w-none"
             >
-              <Link href="/auth/signup?role=customer" className="group w-full sm:w-auto px-10 py-5 rounded-[2.5rem] bg-white text-slate-950 font-black text-lg uppercase tracking-widest transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] hover:bg-slate-50 hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4">
-                Book Service
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+              {/* Primary CTA */}
+              <Link
+                href="/auth/signup?role=customer"
+                className="hero-btn-primary group w-full sm:w-auto"
+              >
+                Book a Service
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
               </Link>
-              <Link href="/auth/signup?role=technician" className="w-full sm:w-auto px-10 py-5 rounded-[2.5rem] bg-white/10 backdrop-blur-2xl border border-white/40 text-white font-black text-lg uppercase tracking-widest hover:bg-white/20 transition-all hover:scale-[1.05] active:scale-95 text-center flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                Join Network
+
+              {/* Secondary CTA */}
+              <Link
+                href="/auth/signup?role=technician"
+                className="hero-btn-secondary w-full sm:w-auto"
+              >
+                Join as Technician
               </Link>
             </motion.div>
+
+            {/* ── Trust Indicators ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.88, duration: 0.6 }}
+              className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-1"
+            >
+              <TrustBadge icon={<Star className="w-3 h-3 text-amber-400" />} label="100% Rated Services" />
+              <span className="hidden sm:block w-px h-4 bg-white/10" aria-hidden />
+              <TrustBadge icon={<Shield className="w-3 h-3 text-cyan-400" />} label="Verified Technicians" />
+              <span className="hidden sm:block w-px h-4 bg-white/10" aria-hidden />
+              <TrustBadge icon={<Clock className="w-3 h-3 text-emerald-400" />} label="24/7 Support" />
+            </motion.div>
+
           </motion.div>
         </section>
 
-        {/* Steps Section */}
-        <section className="mt-20 sm:mt-40 w-full max-w-6xl mx-auto">
+        {/* ─── Steps Section ─── */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full mt-0 sm:mt-10 pb-20 sm:pb-32">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="flex flex-col items-center mb-20"
+            className="flex flex-col items-center mb-16 sm:mb-20"
           >
-            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic text-center">Operational Protocol</h2>
-            <div className="w-32 sm:w-48 h-2 sm:h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic text-center">
+              Operational Protocol
+            </h2>
+            <div className="w-24 sm:w-40 h-1.5 sm:h-2 bg-gradient-to-r from-transparent via-white/60 to-transparent rounded-full" />
           </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
-            <StepCard 
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
+            <StepCard
               icon={<Search className="w-10 h-10" />}
               title="Issue Detection"
               desc="Pinpoint your service requirements via our AI-assisted terminal. Verification happens in real-time."
               delay={0}
             />
-            <StepCard 
+            <StepCard
               icon={<Zap className="w-10 h-10" />}
               title="Expert Dispatch"
               desc="Proprietary logistics assign the top-tier local specialist to your exact geolocation instantly."
               delay={0.15}
             />
-            <StepCard 
+            <StepCard
               icon={<MapPin className="w-10 h-10" />}
               title="Live Execution"
               desc="Monitor your technician with sub-meter accuracy and verify completion with secure OTP authentication."
@@ -121,20 +159,23 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Feature Section */}
-        <section className="mt-32 sm:mt-60 mb-32 sm:mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center px-4">
-          <div className="space-y-10 max-w-4xl">
-            <h2 className="text-[3.5rem] sm:text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.06em] leading-[0.95] sm:leading-[0.85] uppercase italic">
-              Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_20px_rgba(6,182,212,0.3)]">Infrastructure.</span>
+        {/* ─── Feature Section ─── */}
+        <section className="mt-16 sm:mt-32 mb-24 sm:mb-36 w-full max-w-6xl mx-auto flex flex-col items-center text-center px-4">
+          <div className="space-y-8 max-w-4xl">
+            <h2 className="text-[3rem] sm:text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40 drop-shadow-2xl tracking-[-0.06em] leading-[0.92] uppercase italic">
+              Premium <br /> Logistics <br />{' '}
+              <span className="relative text-cyan-400 [text-shadow:0_0_24px_rgba(6,182,212,0.4)]">
+                Infrastructure.
+              </span>
             </h2>
-            <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
+            <p className="text-lg text-slate-300 font-bold uppercase tracking-[0.1em] opacity-80">
               Proprietary Architecture for High-Stake Execution.
             </p>
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <div className="w-full pb-20">
+        {/* ─── Testimonials ─── */}
+        <div className="w-full pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <Testimonials />
         </div>
       </main>
@@ -142,39 +183,37 @@ export default function LandingPage() {
   );
 }
 
-function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: string, desc: string, delay: number }) {
+// ── Trust Badge ──
+function TrustBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <motion.div 
+    <div className="flex items-center gap-1.5">
+      {icon}
+      <span className="text-[10px] sm:text-[11px] font-bold text-white/50 uppercase tracking-[0.18em]">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+// ── Step Card ──
+function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode; title: string; desc: string; delay: number }) {
+  return (
+    <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.6 }}
-      className="p-8 sm:p-10 flex flex-col items-center text-center group cursor-default bg-slate-900/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl hover:shadow-white/10 hover:bg-slate-900/80 transition-all duration-500 relative overflow-hidden"
+      className="p-8 sm:p-10 flex flex-col items-center text-center group cursor-default bg-slate-900/50 backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl hover:shadow-white/5 hover:bg-slate-900/70 transition-all duration-500 relative overflow-hidden"
     >
-      <div className="size-20 sm:size-24 rounded-[1.5rem] sm:rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-6 sm:mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
+      <div className="size-20 sm:size-24 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.08] border border-white/[0.15] flex items-center justify-center mb-6 sm:mb-8 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
         {icon}
       </div>
-      <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
-      <p className="text-white/80 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10">{desc}</p>
-    </motion.div>
-  );
-}
-
-function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: string, desc: string, delay: number }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.5 }}
-      whileHover={{ scale: 1.05 }}
-      className="p-8 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-xl hover:shadow-white/20 transition-all duration-500 cursor-default group"
-    >
-      <div className="mb-4 bg-white/20 backdrop-blur-xl p-3 rounded-2xl w-fit shadow-inner border border-white/40">
-        {icon}
-      </div>
-      <h4 className="text-lg font-black text-white drop-shadow-md mb-2 uppercase tracking-tighter italic">{title}</h4>
-      <p className="text-slate-300 font-bold text-[11px] leading-relaxed uppercase tracking-widest drop-shadow-sm">{desc}</p>
+      <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-md mb-3 uppercase tracking-tight relative z-10 italic">
+        {title}
+      </h3>
+      <p className="text-white/60 font-medium text-[13px] leading-relaxed tracking-wide relative z-10">
+        {desc}
+      </p>
     </motion.div>
   );
 }

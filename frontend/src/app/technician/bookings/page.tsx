@@ -100,7 +100,7 @@ function StatMini({ label, value, color }: { label: string; value: number; color
     rose: 'border-rose-500/20 text-rose-500',
   };
   return (
-    <div className={cn("bg-slate-900/40 backdrop-blur-3xl p-6 rounded-[2.5rem] border relative overflow-hidden group hover:scale-[1.02] transition-all duration-500", colorMap[color])}>
+    <div className={cn("bg-slate-900/40 backdrop-blur-3xl p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border relative overflow-hidden group hover:scale-[1.02] transition-all duration-500", colorMap[color])}>
       <div className="relative z-10">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1.5">{label}</p>
         <h3 className="text-3xl font-black text-white tracking-tighter">{value}</h3>
@@ -247,14 +247,14 @@ export default function TechnicianBookings() {
             </div>
           </header>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
             <StatMini label="Pending" value={counts.pending} color="amber" />
             <StatMini label="In Progress" value={counts.active} color="cyan" />
             <StatMini label="Completed" value={counts.completed} color="emerald" />
             <StatMini label="Declined" value={counts.declined} color="rose" />
           </div>
 
-          <div className="flex gap-2 mb-8 p-1.5 bg-white/5 rounded-2xl w-fit border border-white/10 overflow-x-auto max-w-full">
+          <div className="flex gap-2 mb-8 p-1.5 bg-white/5 rounded-2xl w-fit border border-white/10 overflow-x-auto max-w-full scrollbar-none">
             {(Object.keys(TAB_CONFIG) as TabType[]).map(key => (
               <button
                 key={key}
@@ -315,8 +315,8 @@ export default function TechnicianBookings() {
 
       <AnimatePresence>
         {declineModal.open && declineModal.booking && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-900 border border-white/10 rounded-[2rem] p-8 max-w-md w-full">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 40 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-slate-900 border border-white/10 rounded-t-[2rem] sm:rounded-[2rem] p-6 sm:p-8 max-w-md w-full overflow-y-auto max-h-[90vh]">
               <h3 className="text-xl font-black text-white mb-2">Decline Booking?</h3>
               <p className="text-sm text-slate-400 mb-6">Are you sure you want to decline this request?</p>
               <textarea value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder="Reason (optional)" className="w-full h-24 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm mb-6 resize-none" />

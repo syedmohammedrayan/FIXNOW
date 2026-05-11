@@ -107,13 +107,11 @@ export default function DynamicBackground() {
       }
 
       if (overlayRef.current) {
-        const maxScroll = 1000;
+        const maxScroll = 1200;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 3 + scrollRatio * 5; // 3px -> 8px (refined range)
+        const blur = 1.5 + scrollRatio * 3.5; // 1.5px -> 5px (refined cinematic range)
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
-        // Subtle white tint for glassmorphism
-        overlayRef.current.style.backgroundColor = `rgba(255, 255, 255, ${0.02 + scrollRatio * 0.03})`;
       }
 
       animFrameId.current = requestAnimationFrame(animate);
@@ -146,10 +144,10 @@ export default function DynamicBackground() {
               inset: 0,
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center center',
+              backgroundPosition: 'center right',
               opacity: 0,
-              transform: 'scale(1.1)',
-              filter: 'blur(1px)', // Sharper images under the glass
+              transform: 'scale(1.06)',
+              filter: 'brightness(0.92) saturate(1.1)',
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity, transform',
             }}
@@ -157,7 +155,7 @@ export default function DynamicBackground() {
         ))}
       </div>
 
-      {/* ─── Layer 2: 3D Glassmorphic Overlay (z-index: -1) ─── */}
+      {/* ─── Layer 2: Cinematic Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
         className="dynamic-bg-overlay"
@@ -165,17 +163,23 @@ export default function DynamicBackground() {
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          backgroundColor: 'transparent',
-          backdropFilter: 'blur(3px)',
-          WebkitBackdropFilter: 'blur(3px)',
-          pointerEvents: 'none',
-          willChange: 'backdrop-filter',
-          // 3D Glass Depth: Enhanced inner glow and vignette
-          boxShadow: `
-            inset 0 0 150px rgba(255, 255, 255, 0.05),
-            inset 0 0 50px rgba(255, 255, 255, 0.02),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.05)
+          // Directional cinematic overlay:
+          // dark on left (behind text), lighter on right (reveals technician)
+          background: `
+            linear-gradient(
+              105deg,
+              rgba(5, 8, 22, 0.82) 0%,
+              rgba(5, 8, 22, 0.55) 40%,
+              rgba(5, 8, 22, 0.25) 65%,
+              rgba(5, 8, 22, 0.10) 100%
+            )
           `,
+          backdropFilter: 'blur(1.5px)',
+          WebkitBackdropFilter: 'blur(1.5px)',
+          pointerEvents: 'none',
+          willChange: 'backdrop-filter, background',
+          // Subtle top-bottom vignette for cinematic feel
+          boxShadow: 'inset 0 0 120px rgba(0, 0, 0, 0.25)',
         }}
       />
 
