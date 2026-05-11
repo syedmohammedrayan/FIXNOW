@@ -132,16 +132,28 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       )}>
         <div className={cn(
           "w-full max-w-7xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] border backdrop-blur-3xl transition-all duration-700",
-          "px-5 sm:px-8 py-3 flex items-center justify-between gap-4",
+          "px-5 sm:px-8 py-1.5 flex items-center justify-between gap-4",
           scrolled
             ? "bg-slate-950/60 border-white/[0.1] shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
             : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2)]"
         )}>
 
-          {/* ── LEFT: Logo ── */}
-          <div className="flex items-center shrink-0">
-            <Link href="/" className="group">
+          {/* ── LEFT: Logo + Brand Text ── */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="group flex items-center gap-3">
               <Logo isAdmin={profile?.role === 'admin'} />
+              {/* FIXNOW Brand Text */}
+              <div className="flex flex-col -space-y-0.5 hidden sm:flex">
+                <span className="text-xl sm:text-2xl font-black text-white uppercase italic tracking-tighter leading-none drop-shadow-[0_0_20px_rgba(255,255,255,0.25)] group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all duration-500 select-none">
+                  FIXNOW
+                </span>
+                <span className={cn(
+                  "text-[8px] font-black uppercase tracking-[0.35em] opacity-60 group-hover:opacity-100 transition-opacity duration-500",
+                  profile?.role === 'admin' ? "text-amber-400" : "text-cyan-400"
+                )}>
+                  {profile?.role === 'admin' ? 'Command Terminal' : 'Service Ecosystem'}
+                </span>
+              </div>
             </Link>
           </div>
 
