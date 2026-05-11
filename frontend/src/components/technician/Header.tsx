@@ -70,7 +70,7 @@ export default function TechnicianHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 sm:gap-4">
           <div className="bg-white/5 border border-white/10 shadow-xl backdrop-blur-md rounded-2xl p-1.5 flex shrink-0">
             <button
               onClick={async () => {
@@ -120,7 +120,8 @@ export default function TechnicianHeader({
             </button>
           </div>
 
-          <div className="relative shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="relative shrink-0">
             <button 
               onClick={() => setBellMenuOpen(!bellMenuOpen)}
               className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition group shadow-xl backdrop-blur-md shrink-0"
@@ -133,34 +134,56 @@ export default function TechnicianHeader({
             <AnimatePresence>
               {bellMenuOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 mt-3 w-64 sm:w-80 bg-slate-900/95 backdrop-blur-3xl border-white/10 border rounded-2xl p-2 shadow-2xl z-50 max-h-[400px] overflow-y-auto"
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                  className="absolute right-0 sm:right-0 mt-4 w-[320px] sm:w-[380px] bg-[#0B0F17]/95 backdrop-blur-[40px] border border-white/[0.08] rounded-[1.5rem] p-3 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] z-[100] max-h-[400px] overflow-y-auto"
                 >
-                  <h3 className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Notifications</h3>
-                  {bellNotifications.length === 0 ? (
-                    <div className="px-4 py-4 text-sm text-slate-500 text-center">No new notifications</div>
-                  ) : (
-                    bellNotifications.map(notif => (
-                      <div 
-                        key={notif.id} 
-                        onClick={() => {
-                          if (!notif.read) markNotificationRead(notif.id);
-                        }}
-                        className={cn("p-3 sm:p-4 rounded-xl mb-1 transition-colors cursor-pointer", !notif.read ? "bg-white/10 border border-white/10" : "hover:bg-white/5")}
-                      >
-                        <div className="flex justify-between items-start mb-1">
-                          <div className="text-sm font-bold text-slate-200">{notif.title}</div>
-                          {!notif.read && <div className="w-2 h-2 rounded-full bg-white mt-1 shrink-0" />}
+                  <div className="px-4 pt-2 pb-4 mb-2 border-b border-white/[0.05] flex items-center justify-between">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System Alerts</h3>
+                    <div className="px-2 py-0.5 bg-white/[0.05] rounded-full">
+                      <span className="text-[9px] font-bold text-white/50">{bellNotifications.filter(n => !n.read).length} New</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    {bellNotifications.length === 0 ? (
+                      <div className="px-4 py-8 text-sm text-slate-500 font-medium text-center flex flex-col items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                          <Bell className="w-4 h-4 text-slate-600" />
                         </div>
-                        <div className="text-xs text-slate-400 leading-relaxed">{notif.message}</div>
-                        <div className="text-[10px] text-slate-500 mt-2 text-right font-medium">
-                          {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
+                        All clear. No active alerts.
                       </div>
-                    ))
-                  )}
+                    ) : (
+                      bellNotifications.map(notif => (
+                        <div 
+                          key={notif.id} 
+                          onClick={() => {
+                            if (!notif.read) markNotificationRead(notif.id);
+                          }}
+                          className={cn(
+                            "p-4 rounded-2xl transition-all cursor-pointer group/notif relative overflow-hidden", 
+                            !notif.read 
+                              ? "bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.06]" 
+                              : "hover:bg-white/[0.02] border border-transparent"
+                          )}
+                        >
+                          {!notif.read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />}
+                          <div className="flex justify-between items-start mb-2">
+                            <div className={cn("text-xs font-black uppercase tracking-wider", !notif.read ? "text-white" : "text-slate-300")}>
+                              {notif.title}
+                            </div>
+                            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
+                              {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                          <div className="text-xs text-slate-400 leading-relaxed font-medium group-hover/notif:text-slate-300 transition-colors">
+                            {notif.message}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -219,6 +242,7 @@ export default function TechnicianHeader({
               accept="image/*"
               onChange={handleAvatarUpload}
             />
+          </div>
           </div>
         </div>
       </div>
