@@ -120,9 +120,7 @@ export default function DynamicLoginPage() {
             <header className="text-center mb-8 sm:mb-10">
               <Logo 
                 isAdmin={roleParam === 'admin'} 
-                showText 
                 className="justify-center mb-6 sm:mb-8"
-                textClassName="text-2xl sm:text-3xl"
               />
               <div className="flex items-center justify-center gap-2 mt-2">
                 <Activity className="size-3 text-cyan-400 animate-pulse" />

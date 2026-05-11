@@ -285,7 +285,7 @@ function SignupInner() {
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
               
               <div className="text-center mb-8 sm:mb-12 relative z-10">
-                <Logo isAdmin={true} showText textClassName="text-white" className="justify-center mb-6 sm:mb-10 group-hover/card:scale-105 transition-transform duration-700" />
+                <Logo isAdmin={true} className="justify-center mb-6 sm:mb-10 group-hover/card:scale-105 transition-transform duration-700" />
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Registry <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
@@ -348,7 +348,7 @@ function SignupInner() {
               <div className="absolute top-0 right-0 w-60 h-60 bg-cyan-500/10 blur-[100px] -mr-20 -mt-20 pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-60 h-60 bg-violet-500/10 blur-[100px] -ml-20 -mb-20 pointer-events-none" />
               <div className="text-center mb-8 relative z-10">
-                <Logo isAdmin={false} showText className="justify-center mb-8" />
+                <Logo isAdmin={false} className="justify-center mb-8" />
 
                 {role && (
                   <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-6 max-w-[280px] mx-auto">

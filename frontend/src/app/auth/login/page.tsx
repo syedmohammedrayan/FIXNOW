@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useId, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -171,7 +171,7 @@ export default function LoginPage() {
               <div className="absolute top-0 right-0 w-60 h-60 bg-white/10 blur-[100px] -mr-30 -mt-30" />
               
               <div className="text-center mb-8 sm:mb-12 relative z-10">
-                <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="mb-6 sm:mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
+                <Logo isAdmin={true} className="mb-6 sm:mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
                 <h1 className="text-3xl sm:text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Admin <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
@@ -267,7 +267,7 @@ export default function LoginPage() {
 
               <div className="text-center mb-6 sm:mb-10 relative z-10">
                 <Link href="/" className="inline-block mb-6 sm:mb-8 hover:scale-105 transition-transform">
-                  <Logo isAdmin={false} showText />
+                  <Logo isAdmin={false} />
                 </Link>
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Welcome <br/>

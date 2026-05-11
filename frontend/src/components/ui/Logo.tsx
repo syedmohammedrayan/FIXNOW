@@ -7,59 +7,51 @@ interface LogoProps {
   className?: string;
   iconClassName?: string;
   isAdmin?: boolean;
-  showText?: boolean;
-  textClassName?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  className, 
-  iconClassName, 
-  isAdmin = false, 
-  showText = false,
-  textClassName
+export const Logo: React.FC<LogoProps> = ({
+  className,
+  iconClassName,
+  isAdmin = false,
 }) => {
   return (
-    <div className={cn("flex items-center gap-2 sm:gap-4 group", className)}>
+    <div
+      className={cn(
+        "flex items-center group",
+        className
+      )}
+    >
       <div className="relative">
-        {/* Premium Glows */}
-        <div className={cn(
-          "absolute -inset-10 rounded-full blur-[80px] opacity-0 group-hover:opacity-60 transition-opacity duration-1000",
-          isAdmin ? "bg-amber-500/30" : "bg-cyan-500/30"
-        )} />
-        <div className={cn(
-          "absolute -inset-5 rounded-full blur-2xl opacity-20 group-hover:opacity-80 transition-opacity duration-700",
-          isAdmin ? "bg-amber-400/10" : "bg-cyan-400/10"
-        )} />
-        
-        <div className={cn(
-          "relative flex items-center justify-center size-12 sm:size-16 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1",
-          iconClassName
-        )}>
-          <img 
-            src="https://ik.imagekit.io/smr2007/fixnow-logo.png" 
-            alt="FIXNOW" 
-            className="size-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-700 group-hover:drop-shadow-[0_0_40px_rgba(255,255,255,0.6)]"
-            style={{ filter: 'contrast(1.1) brightness(1.1)' }}
+        {/* Premium Glow Effects */}
+        <div
+          className={cn(
+            "absolute -inset-8 rounded-full blur-[70px] opacity-0 group-hover:opacity-60 transition-all duration-700",
+            isAdmin ? "bg-amber-500/30" : "bg-cyan-500/30"
+          )}
+        />
+
+        <div
+          className={cn(
+            "absolute -inset-4 rounded-full blur-2xl opacity-20 group-hover:opacity-70 transition-all duration-700",
+            isAdmin ? "bg-amber-400/20" : "bg-cyan-400/20"
+          )}
+        />
+
+        {/* Logo */}
+        <div
+          className={cn(
+            "relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 transition-all duration-700 group-hover:scale-105",
+            iconClassName
+          )}
+        >
+          <img
+            src="https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg"
+            alt="FIXNOW"
+            className="w-full h-full object-contain select-none"
+            draggable={false}
           />
         </div>
       </div>
-
-      {showText && (
-        <div className="flex flex-col -ml-1 sm:-ml-2">
-          <span className={cn(
-            "text-2xl sm:text-4xl font-black tracking-[-0.06em] text-white uppercase italic leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] notranslate",
-            textClassName
-          )}>
-            FixNow
-          </span>
-          <span className={cn(
-            "text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] mt-1 sm:mt-1.5 opacity-90",
-            isAdmin ? "text-amber-500" : "text-cyan-400"
-          )}>
-            {isAdmin ? 'Command Terminal' : 'Service Ecosystem'}
-          </span>
-        </div>
-      )}
     </div>
   );
 };

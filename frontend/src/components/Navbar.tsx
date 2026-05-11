@@ -128,19 +128,17 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       {/* ── Pill Navbar (unchanged shape/theme) ── */}
       <nav className={cn(
         "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ease-out",
-        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl flex items-center justify-between px-6 min-h-[96px]",
+        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-6 min-h-[80px] sm:min-h-[96px]",
         scrolled 
           ? "bg-slate-950/40 border-white/[0.08] top-3 rounded-[1.5rem] sm:rounded-[2.5rem]" 
           : "bg-white/[0.04] border-white/[0.08] top-5 rounded-[1.5rem] sm:rounded-[2.5rem]",
         !visible && "-top-32 opacity-0 pointer-events-none"
       )} style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.3)' }}>
-        <div className="w-full flex items-center justify-between relative z-10">
-          <Link href="/" className="group flex-shrink-0 relative h-12 sm:h-16 w-32 sm:w-48 flex items-center">
+        <div className="w-full flex items-center justify-between relative z-10 px-4">
+          <Link href="/" className="group flex-shrink-0 flex items-center">
             <Logo 
               isAdmin={profile?.role === 'admin'} 
-              showText 
-              className="absolute left-0 transition-all duration-500 scale-100 sm:scale-110 origin-left"
-              textClassName="text-white"
+              className="origin-left transition-all duration-500"
             />
           </Link>
 
@@ -267,9 +265,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                 <Link href="/" onClick={() => setIsOpen(false)}>
                     <Logo 
                       isAdmin={profile?.role === 'admin'} 
-                      showText 
-                      className="scale-90 origin-left"
-                      textClassName="text-white"
+                      className="origin-left"
                     />
                 </Link>
                 <button
