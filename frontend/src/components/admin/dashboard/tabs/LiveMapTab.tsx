@@ -12,7 +12,9 @@ import {
   Filter,
   Search,
   Wrench,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
@@ -25,6 +27,7 @@ const MarkerContent = dynamic(() => import('@/components/ui/map').then(mod => mo
 const MapPopup     = dynamic(() => import('@/components/ui/map').then(mod => mod.MapPopup),     { ssr: false });
 
 export function LiveMapTab() {
+  const [mapTheme,       setMapTheme]       = useState<'dark' | 'light'>('dark');
   const [techs,          setTechs]          = useState<any[]>([]);
   const [bookings,       setBookings]       = useState<any[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
@@ -95,7 +98,15 @@ export function LiveMapTab() {
             <p className="text-white font-bold text-xs uppercase tracking-widest animate-pulse">Initializing Map...</p>
           </div>
         ) : (
-          <Map center={mapCenter} zoom={12} className="w-full h-full">
+          <Map 
+            center={mapCenter} 
+            zoom={12} 
+            className="w-full h-full"
+            styles={{
+              light: mapTheme === 'dark' ? "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json" : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
+              dark: mapTheme === 'dark' ? "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json" : "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+            }}
+          >
             {/* Technician Markers */}
             {techs.map(tech => {
               const loc = getEntityLocation(tech);
@@ -199,12 +210,21 @@ export function LiveMapTab() {
         </div>
 
         {/* Map controls overlay */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
-          <button className="size-10 rounded-xl bg-slate-900/80 border border-white/[0.1] backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95">
-            <Search className="size-4" />
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-col sm:flex-row gap-2">
+          {/* Theme Switcher */}
+          <button 
+            onClick={() => setMapTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+            className="size-8 sm:size-10 rounded-xl bg-slate-900/80 border border-white/[0.1] backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95 shadow-xl"
+            title="Toggle Map Theme"
+          >
+            {mapTheme === 'dark' ? <Sun className="size-3.5 sm:size-4" /> : <Moon className="size-3.5 sm:size-4" />}
           </button>
-          <button className="size-10 rounded-xl bg-slate-900/80 border border-white/[0.1] backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95">
-            <Filter className="size-4" />
+
+          <button className="size-8 sm:size-10 rounded-xl bg-slate-900/80 border border-white/[0.1] backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95 shadow-xl">
+            <Search className="size-3.5 sm:size-4" />
+          </button>
+          <button className="size-8 sm:size-10 rounded-xl bg-slate-900/80 border border-white/[0.1] backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95 shadow-xl">
+            <Filter className="size-3.5 sm:size-4" />
           </button>
         </div>
       </div>
