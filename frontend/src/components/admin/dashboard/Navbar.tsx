@@ -60,30 +60,29 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
         </div>
 
         {/* ── DESKTOP: Icon Navigation (Left Side) ── */}
-        <div className="hidden lg:flex items-center gap-1.5 shrink-0 relative z-10">
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0 relative z-10 overflow-x-auto scrollbar-none max-w-[70%]">
           {navLinks.map((link) => {
             const isActive = activeTab === link.tab;
             return (
               <button
                 key={link.tab}
                 onClick={() => setActiveTab(link.tab)}
-                className={`relative p-2.5 rounded-xl transition-all duration-300 group ${
+                className={`relative flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 group shrink-0 ${
                   isActive 
                     ? 'bg-white/10 text-cyan-400 shadow-[inset_0_0_12px_rgba(255,255,255,0.05)] border border-white/[0.08]' 
                     : 'text-slate-400 hover:bg-white/[0.05] hover:text-white border border-transparent'
                 }`}
               >
-                {link.icon}
+                {React.cloneElement(link.icon as React.ReactElement, { className: "w-4 h-4 shrink-0" })}
+                <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
+                  {link.label}
+                </span>
+
                 {link.count !== undefined && link.count > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-[8px] font-black text-white shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-[8px] font-black text-white shadow-[0_0_8px_rgba(244,63,94,0.6)] z-10">
                     {link.count}
                   </span>
                 )}
-                
-                {/* Tooltip */}
-                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
-                  {link.label}
-                </div>
               </button>
             );
           })}
