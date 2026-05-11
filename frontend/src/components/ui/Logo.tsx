@@ -9,7 +9,6 @@ interface LogoProps {
   isAdmin?: boolean;
   showText?: boolean;
   textClassName?: string;
-  isLanding?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({ 

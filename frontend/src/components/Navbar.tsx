@@ -139,7 +139,6 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             <Logo 
               isAdmin={profile?.role === 'admin'} 
               showText 
-              isLanding={false}
               className="absolute left-0 transition-all duration-500 scale-100 sm:scale-110 origin-left"
               textClassName="text-white"
             />
@@ -266,13 +265,12 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               {/* ── Drawer Header ── */}
               <div className="flex items-center justify-between px-6 pt-14 pb-6 border-b border-white/[0.06]">
                 <Link href="/" onClick={() => setIsOpen(false)}>
-                  <Logo 
-                    isAdmin={profile?.role === 'admin'} 
-                    showText 
-                    isLanding={false}
-                    className="scale-90 origin-left"
-                    textClassName="text-white"
-                  />
+                    <Logo 
+                      isAdmin={profile?.role === 'admin'} 
+                      showText 
+                      className="scale-90 origin-left"
+                      textClassName="text-white"
+                    />
                 </Link>
                 <button
                   onClick={() => setIsOpen(false)}
