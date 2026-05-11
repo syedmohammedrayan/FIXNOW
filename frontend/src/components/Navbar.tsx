@@ -128,7 +128,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       {/* ── Pill Navbar (unchanged shape/theme) ── */}
       <nav className={cn(
         "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ease-out",
-        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-6 min-h-[80px] sm:min-h-[96px]",
+        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-8 min-h-[72px] sm:min-h-[84px]",
         scrolled 
           ? "bg-slate-950/40 border-white/[0.08] top-3 rounded-[1.5rem] sm:rounded-[2.5rem]" 
           : "bg-white/[0.04] border-white/[0.08] top-5 rounded-[1.5rem] sm:rounded-[2.5rem]",

@@ -7,21 +7,23 @@ interface LogoProps {
   className?: string;
   iconClassName?: string;
   isAdmin?: boolean;
+  showText?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   className,
   iconClassName,
   isAdmin = false,
+  showText = true, // Default to true now as requested
 }) => {
   return (
     <div
       className={cn(
-        "flex items-center group",
+        "flex items-center gap-4 group",
         className
       )}
     >
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         {/* Premium Glow Effects */}
         <div
           className={cn(
@@ -37,21 +39,38 @@ export const Logo: React.FC<LogoProps> = ({
           )}
         />
 
-        {/* Logo */}
+        {/* Logo Icon */}
         <div
           className={cn(
-            "relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 transition-all duration-700 group-hover:scale-105",
+            "relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 transition-all duration-700 group-hover:scale-110 group-hover:rotate-3",
             iconClassName
           )}
         >
           <img
             src="https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg"
             alt="FIXNOW"
-            className="w-full h-full object-contain select-none"
+            className="w-full h-full object-contain select-none filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
             draggable={false}
           />
         </div>
       </div>
+
+      {showText && (
+        <div className="flex flex-col -space-y-1 sm:-space-y-2">
+          <span className="text-2xl sm:text-4xl font-black text-white uppercase italic tracking-tighter leading-none transition-all duration-500 group-hover:tracking-normal drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
+            FixNow
+          </span>
+          <div className="flex items-center gap-1.5 opacity-60">
+            <span className={cn(
+              "size-1 rounded-full animate-pulse",
+              isAdmin ? "bg-amber-500" : "bg-cyan-500"
+            )} />
+            <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-white transition-colors duration-500">
+              {isAdmin ? 'System Terminal' : 'Service Ecosystem'}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
