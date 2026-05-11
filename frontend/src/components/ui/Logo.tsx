@@ -22,40 +22,41 @@ export const Logo: React.FC<LogoProps> = ({
   isLanding = false
 }) => {
   return (
-    <div className={cn("flex items-center gap-5 group", className)}>
+    <div className={cn("flex items-center gap-3 sm:gap-6 group", className)}>
       <div className="relative">
-        {/* Multi-layered Glow */}
+        {/* Massive Premium Glows */}
         <div className={cn(
-          "absolute -inset-8 rounded-full blur-3xl opacity-0 group-hover:opacity-50 transition-opacity duration-1000",
-          isAdmin ? "bg-amber-500" : "bg-cyan-500"
+          "absolute -inset-12 rounded-full blur-[100px] opacity-0 group-hover:opacity-60 transition-opacity duration-1000",
+          isAdmin ? "bg-amber-500/40" : "bg-cyan-500/40"
         )} />
         <div className={cn(
-          "absolute -inset-4 rounded-full blur-2xl opacity-20 group-hover:opacity-70 transition-opacity duration-700",
-          isAdmin ? "bg-amber-400/30" : "bg-cyan-400/30"
+          "absolute -inset-6 rounded-full blur-3xl opacity-30 group-hover:opacity-80 transition-opacity duration-700",
+          isAdmin ? "bg-amber-400/20" : "bg-cyan-400/20"
         )} />
         
         <div className={cn(
-          "relative flex items-center justify-center size-16 transition-all duration-700 group-hover:scale-110 group-hover:rotate-2",
+          "relative flex items-center justify-center size-16 sm:size-28 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1",
           iconClassName
         )}>
           <img 
             src="https://ik.imagekit.io/smr2007/fixnow-logo.png" 
             alt="FIXNOW" 
-            className="size-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-transform duration-700 group-hover:scale-105"
+            className="size-full object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all duration-700 group-hover:drop-shadow-[0_0_50px_rgba(255,255,255,0.6)]"
+            style={{ filter: 'contrast(1.1) brightness(1.1)' }}
           />
         </div>
       </div>
 
       {showText && (
-        <div className="flex flex-col">
+        <div className="flex flex-col -ml-1 sm:-ml-4">
           <span className={cn(
-            "text-3xl font-black tracking-tighter text-white uppercase italic leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] notranslate",
+            "text-2xl sm:text-5xl font-black tracking-[-0.06em] text-white uppercase italic leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] notranslate",
             textClassName
           )}>
             FixNow
           </span>
           <span className={cn(
-            "text-[10px] font-black uppercase tracking-[0.4em] mt-2 opacity-90",
+            "text-[9px] sm:text-xs font-black uppercase tracking-[0.4em] sm:tracking-[0.5em] mt-2 sm:mt-3 opacity-90",
             isAdmin ? "text-amber-500" : "text-cyan-400"
           )}>
             {isAdmin ? 'Command Terminal' : 'Service Ecosystem'}
