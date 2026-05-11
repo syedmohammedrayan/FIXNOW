@@ -123,6 +123,7 @@ export default function TechnicianBookings() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabType>('pending');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const [declineModal, setDeclineModal] = useState<{ open: boolean; booking: Booking | null }>({ open: false, booking: null });
   const [declineReason, setDeclineReason] = useState('');
@@ -225,8 +226,11 @@ export default function TechnicianBookings() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-400">
-      <TechnicianSidebar />
-      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen">
+      <TechnicianSidebar onOpenChange={setIsSidebarOpen} />
+      <main className={cn(
+        "pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen",
+        isSidebarOpen ? "hidden md:block" : "block"
+      )}>
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1600px] mx-auto">
           <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
             <div>

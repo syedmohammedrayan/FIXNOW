@@ -37,6 +37,7 @@ export default function TechnicianStore() {
   const [cart, setCart] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [customToolName, setCustomToolName] = useState('');
   const [customToolDesc, setCustomToolDesc] = useState('');
@@ -185,7 +186,7 @@ export default function TechnicianStore() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-400">
-      <TechnicianSidebar />
+      <TechnicianSidebar onOpenChange={setIsSidebarOpen} />
       
       <AnimatePresence>
         {notification && (
@@ -211,7 +212,10 @@ export default function TechnicianStore() {
         )}
       </AnimatePresence>
 
-      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen flex flex-col xl:flex-row transition-all duration-500">
+      <main className={cn(
+        "pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen flex flex-col xl:flex-row transition-all duration-500",
+        isSidebarOpen ? "hidden md:block" : "block"
+      )}>
         <div className="flex-1 p-4 sm:p-6 lg:p-10">
           <header className="mb-8 lg:mb-12">
             <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3 sm:gap-4">

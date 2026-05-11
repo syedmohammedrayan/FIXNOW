@@ -245,25 +245,28 @@ router.get('/techs/:id/stats', async (req, res) => {
     const bSnap = await db.collection('bookings').where('technician_id', '==', id).get(); const bookings = bSnap.docs.map(d=>d.data());
     
     const allBookings = bookings || [];
-    const completed = allBookings.filter(b => b.status === 'Completed').length;
+    const completed = allBookings.filter(b => b.status === 'Completed');
     const cancelled = allBookings.filter(b => b.status === 'Cancelled' || b.status === 'Refused').length;
     
-    const totalEarnings = allBookings
-      .filter(b => b.status === 'Completed')
-      .reduce((sum, b) => {
-        const costStr = b.estimated_cost_range || "500";
-        const cost = parseInt(costStr.split('-').pop().trim()) || 500;
-        return sum + cost;
-      }, 0);
+    const totalEarnings = completed.reduce((sum, b) => {
+      // Prioritize actual paid amount, fallback to estimated range upper bound
+      const actualAmount = parseFloat(b.total_amount || b.totalAmount || b.finalAmount || 0);
+      if (actualAmount > 0) return sum + actualAmount;
+
+      const costStr = b.estimated_cost_range || b.estimatedCostRange || "500";
+      const cost = parseInt(costStr.split('-').pop().trim()) || 500;
+      return sum + cost;
+    }, 0);
 
     res.json({
       success: true,
       stats: {
         ...techData,
         id,
-        ordersCompleted: completed,
+        ordersCompleted: completed.length,
         ordersCancelled: cancelled,
         totalEarnings,
+        earnings: totalEarnings, // Ensure both field names are present
         totalJobs: allBookings.length
       }
     });

@@ -75,7 +75,7 @@ const mainMenuItems: MenuItem[] = [
 /*  Sidebar Component                            */
 /* ───────────────────────────────────────────── */
 
-export default function TechnicianSidebar() {
+export default function TechnicianSidebar({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -125,6 +125,10 @@ export default function TechnicianSidebar() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    onOpenChange?.(isMobileMenuOpen);
+  }, [isMobileMenuOpen, onOpenChange]);
 
   const handleLogout = async () => {
     const user = auth.currentUser;
@@ -346,6 +350,24 @@ export default function TechnicianSidebar() {
               </Link>
             );
           })}
+
+          {/* Mobile Logout Option */}
+          <div className="md:hidden pt-4 mt-4 border-t border-white/10">
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="flex items-center w-full px-4 py-3.5 mx-3 rounded-2xl hover:bg-rose-500/10 text-white/50 hover:text-rose-400 transition-all duration-300 group/logout"
+            >
+              <div className="size-5 shrink-0 flex items-center justify-center">
+                <LogOut className="size-full group-hover/logout:text-rose-400" />
+              </div>
+              <span className="ml-3.5 text-[13px] font-semibold tracking-wide">
+                Logout
+              </span>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -368,7 +390,7 @@ export default function TechnicianSidebar() {
               }}
             >
               <Link 
-                href="#profile" 
+                href="/technician/dashboard#profile" 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center gap-3 flex-1 min-w-0 group cursor-pointer"
               >
@@ -392,7 +414,7 @@ export default function TechnicianSidebar() {
 
               <button
                 onClick={handleLogout}
-                className="shrink-0 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
+                className="hidden md:flex shrink-0 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
                 title="Logout"
               >
                 <LogOut className="size-4" />
@@ -405,7 +427,7 @@ export default function TechnicianSidebar() {
               className="flex flex-col items-center gap-3 w-full"
             >
               <Link 
-                href="#profile" 
+                href="/technician/dashboard#profile" 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group"
                 title="Profile Settings"
@@ -422,7 +444,7 @@ export default function TechnicianSidebar() {
 
               <button
                 onClick={handleLogout}
-                className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
+                className="hidden md:flex w-10 h-10 rounded-xl items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
                 title="Logout"
               >
                 <LogOut className="size-[18px]" />

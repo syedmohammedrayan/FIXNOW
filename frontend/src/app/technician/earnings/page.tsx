@@ -53,6 +53,7 @@ export default function TechnicianEarnings() {
   const [pendingPayout, setPendingPayout] = useState(0);
   const [activeTab, setActiveTab] = useState<'services' | 'ledger'>('services');
   const [search, setSearch] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -109,9 +110,11 @@ export default function TechnicianEarnings() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <TechnicianSidebar />
-
-      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen pb-20 transition-all duration-500">
+      <TechnicianSidebar onOpenChange={setIsSidebarOpen} />
+      <main className={cn(
+        "pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen pb-20 transition-all duration-500",
+        isSidebarOpen ? "hidden md:block" : "block"
+      )}>
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1500px] mx-auto">
 
           {/* Header */}

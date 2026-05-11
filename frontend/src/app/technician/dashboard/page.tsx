@@ -99,6 +99,7 @@ export default function TechnicianDashboard() {
   } = useTechnicianData();
 
   const [currentView, setCurrentView] = useState("dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showDeclined, setShowDeclined] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
@@ -296,8 +297,15 @@ export default function TechnicianDashboard() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !user) return;
     const file = e.target.files[0];
+    
+    // 1. Optimistic Update with local preview
+    const previewUrl = URL.createObjectURL(file);
+    const previousAvatar = profile.avatar;
+    setProfile((prev: any) => ({ ...prev, avatar: previewUrl }));
+    
     setUploadingAvatar(true);
     setAvatarMenuOpen(false);
+    
     try {
       const formData = new FormData();
       formData.append("avatar", file);
@@ -305,11 +313,18 @@ export default function TechnicianDashboard() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.data.success) {
-        setProfile((prev: any) => ({ ...prev, avatar: getAvatarUrl(res.data.avatar) || res.data.avatar }));
+        // 2. Final Update with server URL
+        const finalUrl = getAvatarUrl(res.data.avatar) || res.data.avatar;
+        setProfile((prev: any) => ({ ...prev, avatar: finalUrl }));
+        // Clean up the local preview URL
+        URL.revokeObjectURL(previewUrl);
       }
     } catch (err) {
       console.error("Failed to upload avatar", err);
-      alert("Failed to upload avatar");
+      // Rollback on failure
+      setProfile((prev: any) => ({ ...prev, avatar: previousAvatar }));
+      URL.revokeObjectURL(previewUrl);
+      alert("Failed to upload avatar. Protocol interrupted.");
     } finally {
       setUploadingAvatar(false);
     }
@@ -451,7 +466,7 @@ export default function TechnicianDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <TechnicianSidebar />
+      <TechnicianSidebar onOpenChange={setIsSidebarOpen} />
       
       <AnimatePresence>
         {notification && (
@@ -480,7 +495,10 @@ export default function TechnicianDashboard() {
         )}
       </AnimatePresence>
 
-      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-500">
+      <main className={cn(
+        "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-500",
+        isSidebarOpen ? "hidden md:block" : "block"
+      )}>
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1600px] mx-auto overflow-x-hidden">
           <TechnicianHeader 
             profile={profile}
