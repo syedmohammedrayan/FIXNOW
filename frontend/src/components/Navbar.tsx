@@ -256,11 +256,11 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col"
+              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col backdrop-blur-[30px]"
               style={{
-                background: 'linear-gradient(160deg, rgba(2,8,23,0.98) 0%, rgba(7,15,35,0.98) 100%)',
-                borderLeft: '1px solid rgba(255,255,255,0.07)',
-                boxShadow: '-20px 0 80px rgba(0,0,0,0.6)',
+                background: 'linear-gradient(165deg, rgba(2, 8, 23, 0.94) 0%, rgba(7, 15, 35, 0.96) 100%)',
+                borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '-20px 0 80px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.05)',
               }}
             >
               {/* ── Drawer Header ── */}
@@ -367,7 +367,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/25 px-1 mb-3">Language</p>
                   <div className="px-1">
-                    <LanguageSelector />
+                    <LanguageSelector inline />
                   </div>
                 </div>
               </div>
@@ -497,8 +497,8 @@ function DrawerNavItem({
   const accentStyles = accent === 'cyan'
     ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
     : active
-      ? 'bg-white/[0.07] border-white/[0.1] text-white'
-      : 'bg-white/[0.03] border-white/[0.06] text-white/70';
+      ? 'bg-white/[0.08] border-white/[0.15] text-white shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+      : 'bg-white/[0.03] border-white/[0.08] text-white/70 hover:bg-white/[0.05] hover:border-white/[0.12]';
 
   return (
     <Link
