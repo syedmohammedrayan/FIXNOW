@@ -29,8 +29,8 @@
 
 @media (max-width: 768px) {
   :root {
-    --bg-scale-start: 1.01;
-    --bg-scale-end: 1.04;
+    --bg-scale-start: 1.0;
+    --bg-scale-end: 1.02;
     --bg-position: center;
   }
 }
