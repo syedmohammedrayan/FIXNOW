@@ -112,12 +112,16 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
             </button>
           </div>
 
-          <div className="flex items-center">
+          <button 
+            onClick={() => window.location.reload()} 
+            className="flex items-center cursor-pointer focus:outline-none hover:scale-105 transition-transform"
+            title="Refresh Page"
+          >
             <Logo 
               isAdmin 
               iconClassName="w-[100px] sm:w-[120px] opacity-90 hover:opacity-100 transition-opacity" 
             />
-          </div>
+          </button>
         </div>
       </header>
     </div>
