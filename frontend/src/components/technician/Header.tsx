@@ -40,6 +40,29 @@ export default function TechnicianHeader({
   currentJob,
 }: TechnicianHeaderProps) {
   const [bellMenuOpen, setBellMenuOpen] = React.useState(false);
+  const bellRef = React.useRef<HTMLDivElement>(null);
+  const avatarRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      // Close bell menu if click is outside
+      if (bellRef.current && !bellRef.current.contains(event.target as Node)) {
+        setBellMenuOpen(false);
+      }
+      // Close avatar menu if click is outside
+      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
+        setAvatarMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [setAvatarMenuOpen]);
 
   return (
     <header className="flex flex-col gap-4 mb-8 lg:mb-12 relative z-[100]">
@@ -121,7 +144,7 @@ export default function TechnicianHeader({
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="relative shrink-0">
+            <div className="relative shrink-0" ref={bellRef}>
             <button 
               onClick={() => setBellMenuOpen(!bellMenuOpen)}
               className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition group shadow-xl backdrop-blur-md shrink-0"
@@ -189,7 +212,7 @@ export default function TechnicianHeader({
             </AnimatePresence>
           </div>
 
-          <div className="relative shrink-0">
+          <div className="relative shrink-0" ref={avatarRef}>
             <button
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/40 hover:border-white/60 transition shadow-xl relative bg-white/10 backdrop-blur-md"
@@ -246,22 +269,6 @@ export default function TechnicianHeader({
           </div>
         </div>
       </div>
-
-      {/* Tap-away overlay */}
-      <AnimatePresence>
-        {(bellMenuOpen || avatarMenuOpen) && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => {
-              setBellMenuOpen(false);
-              setAvatarMenuOpen(false);
-            }}
-            className="fixed inset-0 z-[30] bg-black/5"
-          />
-        )}
-      </AnimatePresence>
     </header>
   );
 }
