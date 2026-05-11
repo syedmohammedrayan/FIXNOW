@@ -111,7 +111,7 @@ export default function TechnicianEarnings() {
     <div className="min-h-screen bg-slate-950 text-white">
       <TechnicianSidebar />
 
-      <main className="pl-0 md:pl-20 lg:pl-64 xl:pl-72 pt-16 md:pt-0 min-h-screen pb-20 transition-all duration-500 overflow-x-auto">
+      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen pb-20 transition-all duration-500">
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1500px] mx-auto">
 
           {/* Header */}

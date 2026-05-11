@@ -211,7 +211,7 @@ export default function TechnicianStore() {
         )}
       </AnimatePresence>
 
-      <main className="pl-0 md:pl-20 lg:pl-64 xl:pl-72 pt-16 md:pt-0 min-h-screen flex flex-col xl:flex-row transition-all duration-500">
+      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen flex flex-col xl:flex-row transition-all duration-500">
         <div className="flex-1 p-4 sm:p-6 lg:p-10">
           <header className="mb-8 lg:mb-12">
             <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3 sm:gap-4">

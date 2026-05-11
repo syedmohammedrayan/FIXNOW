@@ -13,11 +13,8 @@ import {
   DollarSign,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
   Zap,
-  TrendingUp,
   Crown,
-  ArrowUpRight,
   Circle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -130,13 +127,12 @@ export default function TechnicianSidebar() {
 
   const handleLogout = async () => {
     const user = auth.currentUser;
-    // Removed automatic offline on logout.
-    // Technician remains online until explicitly toggled off.
     await signOut(auth);
     window.location.href = '/auth/login';
   };
 
-  const sidebarWidth = collapsed ? 'w-[78px]' : 'w-full md:w-[280px]';
+  const effectiveCollapsed = isMobileMenuOpen ? false : collapsed;
+  const sidebarWidth = effectiveCollapsed ? 'w-[78px]' : 'w-full md:w-[280px]';
 
   return (
     <React.Fragment>
@@ -170,7 +166,6 @@ export default function TechnicianSidebar() {
       </AnimatePresence>
 
       <motion.aside
-        layout
         className={cn(
           "fixed left-0 top-0 h-screen z-50 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
           sidebarWidth,
@@ -198,9 +193,9 @@ export default function TechnicianSidebar() {
       {/* ─── Brand Section ─── */}
       <div className={cn(
         "relative flex items-center border-b border-white/10 transition-all duration-500",
-        collapsed ? "h-[78px] justify-center px-0" : "h-[88px] px-6"
+        effectiveCollapsed ? "h-[78px] justify-center px-0" : "h-[88px] px-6"
       )}>
-        {collapsed ? (
+        {effectiveCollapsed ? (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -233,12 +228,12 @@ export default function TechnicianSidebar() {
       <button
         onClick={() => setCollapsed(!collapsed)}
         className={cn(
-          "absolute z-20 flex items-center justify-center transition-all duration-300 group",
+          "hidden md:flex absolute z-20 items-center justify-center transition-all duration-300 group",
           "w-6 h-6 rounded-full",
           "bg-slate-900 border border-white/10 hover:border-white/20",
           "hover:bg-slate-800 active:scale-90",
           "shadow-lg shadow-black/20",
-          collapsed ? "top-[31px] -right-3" : "top-[31px] -right-3"
+          effectiveCollapsed ? "top-[31px] -right-3" : "top-[31px] -right-3"
         )}
       >
         {collapsed ? (
@@ -250,7 +245,7 @@ export default function TechnicianSidebar() {
 
       {/* ─── Quick Status Card ─── */}
       <AnimatePresence>
-        {!collapsed && (
+        {!effectiveCollapsed && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -293,7 +288,7 @@ export default function TechnicianSidebar() {
 
       {/* ─── Section Label ─── */}
       <AnimatePresence>
-        {!collapsed && (
+        {!effectiveCollapsed && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -315,241 +310,51 @@ export default function TechnicianSidebar() {
         <div className="space-y-1">
           {mainMenuItems.map((item) => {
             const isActive = pathname === item.href;
-            const isHovered = hoveredItem === item.href;
-
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={item.onClick}
-                onMouseEnter={() => setHoveredItem(item.href)}
-                onMouseLeave={() => setHoveredItem(null)}
-                className={cn(
-                  "relative flex items-center gap-3.5 rounded-[14px] transition-all duration-300 group",
-                  collapsed ? "justify-center p-3 mx-auto" : "px-4 py-3",
-                  isActive
-                    ? "text-slate-900"
-                    : "text-slate-500 hover:text-slate-900"
-                )}
-              >
-                {/* Active background */}
-                {isActive && (
-                  <motion.div
-                    layoutId="techSidebarActive"
-                    className="absolute inset-0 rounded-[14px]"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-                    }}
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
+              <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="relative group/nav">
+                  <div className={cn(
+                    "relative flex items-center rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden",
+                    effectiveCollapsed ? "p-3 mx-auto w-fit" : "px-4 py-3.5 mx-3",
+                    isActive ? "bg-white/10 shadow-inner border border-white/10" : "hover:bg-white/5"
+                  )}>
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-white rounded-r-full shadow-[0_0_12px_2px_rgba(255,255,255,0.2)]" />
+                    )}
 
-                {/* Hover background */}
-                {!isActive && isHovered && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 rounded-[14px]"
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                    }}
-                  />
-                )}
-
-                {/* Active indicator bar */}
-                {isActive && (
-                  <motion.div
-                    layoutId="techSidebarIndicator"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-                    style={{
-                      background: 'linear-gradient(180deg, #ffffff, #94a3b8)',
-                      boxShadow: '0 0 12px 2px rgba(255,255,255,0.2)',
-                    }}
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
-
-                {/* Icon */}
-                <div className={cn(
-                  "relative z-10 flex items-center justify-center shrink-0 transition-all duration-300",
-                  collapsed ? "w-9 h-9" : "w-8 h-8",
-                  isActive 
-                    ? "" 
-                    : "group-hover:scale-105"
-                )}>
-                  <item.icon className={cn(
-                    "transition-all duration-300",
-                    collapsed ? "size-[18px]" : "size-[17px]",
-                    isActive
-                      ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-                      : "text-slate-400 group-hover:text-white"
-                  )} />
-                  
-                  {/* Icon glow for active */}
-                  {isActive && (
-                    <div className="absolute inset-0 rounded-lg bg-slate-900/10 blur-md animate-pulse" />
-                  )}
-                </div>
-
-                {/* Label + Description */}
-                {!collapsed && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="relative z-10 flex flex-col min-w-0 flex-1"
-                  >
-                    <span className={cn(
-                      "text-[13px] font-semibold tracking-wide transition-colors duration-300 truncate",
-                      isActive ? "text-white" : "text-white/60 group-hover:text-white"
+                    {/* Icon */}
+                    <div className={cn(
+                      "relative shrink-0 flex items-center justify-center transition-all duration-300 z-10",
+                      effectiveCollapsed ? "size-6" : "size-5"
                     )}>
-                      {item.label}
-                    </span>
-                    <span className={cn(
-                      "text-[10px] font-medium transition-colors duration-300 truncate mt-0.5",
-                      isActive ? "text-white/40" : "text-white/30 group-hover:text-white/40"
-                    )}>
-                      {item.description}
-                    </span>
-                  </motion.div>
-                )}
+                      <item.icon className={cn("size-full transition-colors duration-300", isActive ? "text-white" : "text-white/50 group-hover/nav:text-white/80")} />
+                    </div>
 
-                {/* Active arrow indicator */}
-                {!collapsed && isActive && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="relative z-10"
-                  >
-                    <ArrowUpRight className="size-3.5 text-slate-900/50" />
-                  </motion.div>
-                )}
-
-                {/* Tooltip for collapsed state */}
-                {collapsed && isHovered && (
-                  <div className="absolute left-full ml-3 z-[100] pointer-events-none">
-                    <motion.div
-                      initial={{ opacity: 0, x: -5, scale: 0.95 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      className="px-3 py-2 rounded-xl whitespace-nowrap"
-                      style={{
-                        background: 'rgba(255,255,255,0.95)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                        backdropFilter: 'blur(20px)',
-                      }}
-                    >
-                      <p className="text-xs font-semibold text-slate-800">{item.label}</p>
-                      <p className="text-[9px] text-slate-500 mt-0.5">{item.description}</p>
-                    </motion.div>
+                    {/* Label */}
+                    {!effectiveCollapsed && (
+                      <span className={cn(
+                        "ml-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-300",
+                        isActive ? "text-white" : "text-white/50 group-hover/nav:text-white/80"
+                      )}>
+                        {item.label}
+                      </span>
+                    )}
                   </div>
-                )}
+                </div>
               </Link>
             );
           })}
         </div>
-
-        {/* ─── Separator ─── */}
-        <div className={cn("my-5", collapsed ? "mx-2" : "mx-3")}>
-          <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
-        </div>
-
-        {/* ─── Quick Actions Section ─── */}
-        <AnimatePresence>
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="px-2.5 mb-2"
-            >
-              <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400/70">
-                Quick Actions
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Profile Link */}
-        <Link
-          href="/technician/dashboard#profile"
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              window.location.hash = '#profile';
-              window.dispatchEvent(new HashChangeEvent('hashchange'));
-            }
-          }}
-          onMouseEnter={() => setHoveredItem('profile')}
-          onMouseLeave={() => setHoveredItem(null)}
-          className={cn(
-            "relative flex items-center gap-3.5 rounded-[14px] transition-all duration-300 group",
-            collapsed ? "justify-center p-3 mx-auto" : "px-4 py-3",
-            "text-slate-500 hover:text-white"
-          )}
-        >
-          {hoveredItem === 'profile' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 rounded-[14px]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            />
-          )}
-
-          <div className="relative z-10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-            <User className={cn(
-              "transition-all duration-300",
-              collapsed ? "size-[18px]" : "size-[17px]",
-              "text-slate-400 group-hover:text-white"
-            )} />
-          </div>
-
-          {!collapsed && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 flex-1 min-w-0">
-              <span className="text-[13px] font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors truncate block">
-                System Profile
-              </span>
-              <span className="text-[10px] font-medium text-white/30 group-hover:text-white/40 transition-colors truncate block mt-0.5">
-                Account settings
-              </span>
-            </motion.div>
-          )}
-
-          {/* Tooltip for collapsed */}
-          {collapsed && hoveredItem === 'profile' && (
-            <div className="absolute left-full ml-3 z-[100] pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, x: -5, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                className="px-3 py-2 rounded-xl whitespace-nowrap"
-                style={{
-                  background: 'rgba(255,255,255,0.95)',
-                  border: '1px solid rgba(99,102,241,0.2)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  backdropFilter: 'blur(20px)',
-                }}
-              >
-                <p className="text-xs font-semibold text-slate-800">System Profile</p>
-                <p className="text-[9px] text-slate-500 mt-0.5">Account settings</p>
-              </motion.div>
-            </div>
-          )}
-        </Link>
       </nav>
 
-      {/* ─── User Profile Card ─── */}
+      {/* ─── Bottom Section ─── */}
       <div className={cn(
-        "border-t border-slate-200/50 transition-all duration-500",
-        collapsed ? "p-2.5" : "p-4"
+        "border-t border-white/10 p-4",
+        effectiveCollapsed ? "flex flex-col items-center gap-2" : ""
       )}>
         <AnimatePresence>
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -587,7 +392,7 @@ export default function TechnicianSidebar() {
           onMouseLeave={() => setHoveredItem(null)}
           className={cn(
             "relative w-full flex items-center gap-3 rounded-[14px] transition-all duration-300 group",
-            collapsed ? "justify-center p-3" : "px-4 py-3",
+            effectiveCollapsed ? "justify-center p-3" : "px-4 py-3",
             "text-slate-500/70 hover:text-rose-400"
           )}
         >
@@ -606,12 +411,12 @@ export default function TechnicianSidebar() {
           <div className="relative z-10 shrink-0 group-hover:scale-105 transition-transform duration-300">
             <LogOut className={cn(
               "transition-all duration-300",
-              collapsed ? "size-[18px]" : "size-[17px]",
+              effectiveCollapsed ? "size-[18px]" : "size-[17px]",
               "group-hover:text-rose-400 group-hover:drop-shadow-[0_0_6px_rgba(244,63,94,0.3)]"
             )} />
           </div>
 
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -622,7 +427,7 @@ export default function TechnicianSidebar() {
           )}
 
           {/* Tooltip for collapsed */}
-          {collapsed && hoveredItem === 'logout' && (
+          {effectiveCollapsed && hoveredItem === 'logout' && (
             <div className="absolute left-full ml-3 z-[100] pointer-events-none">
               <motion.div
                 initial={{ opacity: 0, x: -5, scale: 0.95 }}

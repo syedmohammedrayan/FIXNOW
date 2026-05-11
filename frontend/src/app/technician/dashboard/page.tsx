@@ -467,7 +467,7 @@ export default function TechnicianDashboard() {
         )}
       </AnimatePresence>
 
-      <main className="pl-0 md:pl-20 lg:pl-64 xl:pl-72 pt-20 md:pt-0 min-h-screen transition-all duration-500">
+      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-500">
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1600px] mx-auto overflow-x-hidden">
           <TechnicianHeader 
             profile={profile}

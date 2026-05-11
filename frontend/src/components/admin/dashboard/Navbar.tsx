@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Activity, Plus } from 'lucide-react';
+import { Menu, Activity, Plus, RefreshCw } from 'lucide-react';
 
 interface NavbarProps {
   sidebarOpen: boolean;
@@ -9,40 +9,68 @@ interface NavbarProps {
   setShowAddModal: (show: boolean) => void;
 }
 
+const TAB_LABELS: Record<string, string> = {
+  'overview':       'Overview',
+  'live-map':       'Live Map',
+  'approvals':      'Approvals',
+  'techs':          'Technicians',
+  'bookings':       'Bookings',
+  'tools':          'Store & Logistics',
+  'transactions':   'Transactions',
+  'notifications':  'Notifications',
+};
+
 export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, fetchData, setShowAddModal }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-30 px-4 sm:px-8 min-h-[84px] sm:min-h-[96px] flex justify-between items-center bg-white/10 backdrop-blur-2xl border-b border-white/40 shadow-2xl shadow-white/5">
-      <div className="flex items-center gap-3 sm:gap-4">
-        <button 
-          onClick={() => setSidebarOpen(!sidebarOpen)} 
-          className="p-2 hover:bg-slate-950/10 rounded-lg text-slate-950 transition"
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 h-[64px] sm:h-[72px] bg-slate-950/80 backdrop-blur-2xl border-b border-white/[0.07] shadow-[0_4px_24px_rgba(0,0,0,0.4)] shrink-0">
+      {/* Left — hamburger + page title */}
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 shrink-0"
+          aria-label="Toggle sidebar"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-5 h-5" />
         </button>
-        <h2 className="text-lg sm:text-xl font-black text-slate-950 uppercase tracking-tighter italic">{activeTab}</h2>
+
+        <div className="min-w-0">
+          <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
+            {TAB_LABELS[activeTab] || activeTab}
+          </h2>
+          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.25em] hidden sm:block">Admin Console</p>
+        </div>
       </div>
-      <div className="flex items-center gap-2 sm:gap-4">
+
+      {/* Right — actions */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Refresh */}
         <button
           onClick={fetchData}
-          className="p-2 sm:p-2.5 bg-white/10 border border-white/40 text-slate-950 hover:text-cyan-600 rounded-xl transition-all shadow-xl"
+          className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95"
           title="Refresh Data"
         >
-          <Activity className="w-5 h-5" />
+          <RefreshCw className="w-4 h-4" />
         </button>
-        <button 
-          onClick={() => setShowAddModal(true)} 
-          className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-slate-950 text-white hover:scale-105 active:scale-95 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all shadow-2xl"
+
+        {/* Add Technician — full button on md+, icon-only on mobile */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white text-slate-900 hover:bg-slate-100 active:scale-95 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all shadow-lg shadow-black/20"
         >
-          <Plus className="w-4 h-4" /> Add Technician
+          <Plus className="w-4 h-4" />
+          Add Technician
         </button>
-        <button 
-          onClick={() => setShowAddModal(true)} 
-          className="md:hidden p-2 bg-slate-950 text-white rounded-xl transition shadow-xl"
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="sm:hidden p-2.5 bg-white text-slate-900 rounded-xl transition active:scale-95 shadow-lg"
+          title="Add Technician"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
         </button>
-        <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white font-black text-xs">
-          ADMIN
+
+        {/* Admin badge */}
+        <div className="hidden xs:flex w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] items-center justify-center text-white font-black text-[8px] uppercase tracking-widest shrink-0">
+          ADM
         </div>
       </div>
     </header>

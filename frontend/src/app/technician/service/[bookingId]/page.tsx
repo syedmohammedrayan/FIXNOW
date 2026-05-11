@@ -392,7 +392,7 @@ export default function TechnicianServicePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-cyan-500/30">
       <TechnicianSidebar />
-      <main className="pl-0 md:pl-20 lg:pl-64 pt-16 md:pt-0 min-h-screen relative">
+      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen relative">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/5 blur-[120px] rounded-full -mr-64 -mt-64" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-500/5 blur-[100px] rounded-full -ml-48 -mb-48" />
 
