@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Navigation, X, Star, Phone, Sparkles } from 'lucide-react';
 import { BroadcastAcceptedTech } from '../hooks/useBooking';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface BroadcastAcceptedPopupProps {
   show: boolean;
@@ -146,7 +147,7 @@ export default function BroadcastAcceptedPopup({
                 <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0">
                   {hasRealAvatar ? (
                     <div className="relative size-full">
-                      <img src={avatarUrl!} className="w-full h-full object-cover" alt={technician.name} />
+                      <img src={getAvatarUrl(avatarUrl)!} className="w-full h-full object-cover" alt={technician.name} />
                       <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
                     </div>
                   ) : (

@@ -6,6 +6,7 @@ import { CheckCircle2 } from 'lucide-react';
 import Script from 'next/script';
 
 import { Technician } from '../types';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface SuccessStateProps {
   bookingConfirmation: any;
@@ -52,9 +53,9 @@ export default function SuccessState({
           </p>
           {selectedTech?.avatar && (
              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shadow-md shadow-emerald-500/20">
-                {selectedTech.avatar.startsWith('data:image') || selectedTech.avatar.startsWith('http') || selectedTech.avatar.startsWith('/') ? (
-                  <img src={selectedTech.avatar} className="w-full h-full object-cover" alt={selectedTech.name} />
-                ) : (
+                 {selectedTech.avatar.startsWith('data:image') || selectedTech.avatar.startsWith('http') || selectedTech.avatar.startsWith('/') || selectedTech.avatar.length > 5 ? (
+                   <img src={getAvatarUrl(selectedTech.avatar)!} className="w-full h-full object-cover" alt={selectedTech.name} />
+                 ) : (
                   <div className="w-full h-full bg-slate-100 flex items-center justify-center text-xl">{selectedTech.avatar}</div>
                 )}
              </div>

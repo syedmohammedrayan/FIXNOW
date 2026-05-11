@@ -4,6 +4,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Package, FileText, ExternalLink, Eye, X } from 'lucide-react';
 import { ToolOrderCard } from '../shared/ToolOrderCard';
+import { getAvatarUrl } from '@/lib/image-utils';
+import { API_BASE } from '@/lib/config';
 
 interface ApprovalsTabProps {
   techs: any[];
@@ -30,10 +32,9 @@ export function ApprovalsTab({
   const getValidImageUrl = (url: string) => {
     if (!url) return '';
     if (url.includes('/ids/') || url.includes('gov_id')) {
-      return `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000'}/api/users/view-id?url=${encodeURIComponent(url)}`;
+      return `${API_BASE}/api/users/view-id?url=${encodeURIComponent(url)}`;
     }
-    if (url.startsWith('http')) return url;
-    return `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000'}${url.startsWith('/') ? '' : '/'}${url}`;
+    return getAvatarUrl(url) || '';
   };
 
   return (

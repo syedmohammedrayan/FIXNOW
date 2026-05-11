@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Smartphone, Clock, X, User } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Technician, AnalysisResult } from '../types';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface BookingFormProps {
   selectedTech: Technician;
@@ -60,9 +61,9 @@ export default function BookingForm({
         
         <div className="bg-white/[0.04] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/[0.06] mb-6 sm:mb-8 flex items-center gap-3 sm:gap-5" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
           <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-500">
-            {selectedTech.avatar && (selectedTech.avatar.startsWith('data:image') || selectedTech.avatar.startsWith('http') || selectedTech.avatar.startsWith('/')) ? (
+            {selectedTech.avatar && (selectedTech.avatar.startsWith('data:image') || selectedTech.avatar.startsWith('http') || selectedTech.avatar.startsWith('/') || selectedTech.avatar.length > 5) ? (
             <div className="relative size-full">
-              <img src={selectedTech.avatar} className="w-full h-full object-cover transition-all duration-500" />
+              <img src={getAvatarUrl(selectedTech.avatar)!} className="w-full h-full object-cover transition-all duration-500" />
               <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
             </div>
             ) : (

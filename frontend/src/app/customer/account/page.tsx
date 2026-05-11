@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils";
 import axios from 'axios';
 import { API_BASE } from '@/lib/config';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 export default function CustomerAccount() {
   const { currentKey, rotateKey } = useGoogleMapsKey();
@@ -200,7 +201,7 @@ export default function CustomerAccount() {
               <div className="relative group">
                 <div className="size-28 sm:size-36 rounded-[2rem] sm:rounded-[2.5rem] bg-slate-900 border-4 border-slate-950 overflow-hidden shadow-2xl flex items-center justify-center text-white text-4xl sm:text-5xl font-black group-hover:scale-105 transition-all duration-500">
                   {formData.avatar ? (
-                    <img src={formData.avatar} className="size-full object-cover" />
+                    <img src={getAvatarUrl(formData.avatar)!} className="size-full object-cover" />
                   ) : (
                     formData.name.charAt(0) || user?.email?.charAt(0).toUpperCase()
                   )}

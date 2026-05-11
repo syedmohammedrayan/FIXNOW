@@ -27,6 +27,7 @@ import { doc, getDoc, collection, query, where, limit, getDocs } from 'firebase/
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { Logo } from '@/components/ui/Logo';
 import LanguageSelector from './LanguageSelector';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 export default function Navbar({ customProfile }: { customProfile?: any }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -152,7 +153,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                       <button className="flex items-center gap-3 group">
                         <div className="size-10 sm:size-11 rounded-xl sm:rounded-2xl overflow-hidden border border-white/[0.1] group-hover:border-cyan-500/50 transition-all duration-500 shadow-xl">
                            {profile?.avatar && profile.avatar.length > 5 ? (
-                             <img src={profile.avatar} className="size-full object-cover" />
+                             <img src={getAvatarUrl(profile.avatar)!} className="size-full object-cover" />
                            ) : (
                              <div className="size-full bg-slate-900 flex items-center justify-center text-lg text-white font-black italic">
                                {profile?.name ? profile.name.charAt(0).toUpperCase() : '👤'}

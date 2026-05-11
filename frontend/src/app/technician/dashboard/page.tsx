@@ -19,6 +19,7 @@ import {
   Lock,
   Upload
 } from "lucide-react";
+import { getAvatarUrl } from "@/lib/image-utils";
 import dynamic from "next/dynamic";
 import { API_BASE } from "@/lib/config";
 import { cn } from "@/lib/utils";
@@ -291,8 +292,7 @@ export default function TechnicianDashboard() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.data.success) {
-        const finalUrl = res.data.avatar.startsWith('/') ? `${API_BASE}${res.data.avatar}` : res.data.avatar;
-        setProfile((prev: any) => ({ ...prev, avatar: finalUrl }));
+        setProfile((prev: any) => ({ ...prev, avatar: getAvatarUrl(res.data.avatar) || res.data.avatar }));
       }
     } catch (err) {
       console.error("Failed to upload avatar", err);

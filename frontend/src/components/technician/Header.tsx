@@ -4,6 +4,7 @@ import React from "react";
 import { Bell, BellRing } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { getAvatarUrl } from "@/lib/image-utils";
 
 interface TechnicianHeaderProps {
   profile: any;
@@ -177,7 +178,7 @@ export default function TechnicianHeader({
               )}
               {profile.avatar && profile.avatar.length > 2 ? (
                 <img
-                  src={profile.avatar}
+                  src={getAvatarUrl(profile.avatar)!}
                   alt="Avatar"
                   className="w-full h-full object-cover"
                 />

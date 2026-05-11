@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Bell, User, Camera, Trash2, Settings, LogOut, ShieldAlert, Activity } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getAvatarUrl } from '@/lib/image-utils';
 import NotificationsPanel from './NotificationsPanel';
 import { Notification } from '../types';
 
@@ -141,7 +142,7 @@ export default function DashboardHeader({
             {uploadingAvatar ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : userProfile.avatar ? (
-              <img src={userProfile.avatar} className="w-5 sm:w-6 h-5 sm:h-6 object-cover rounded-full" alt="User Avatar" />
+              <img src={getAvatarUrl(userProfile.avatar)!} className="w-5 sm:w-6 h-5 sm:h-6 object-cover rounded-full" alt="User Avatar" />
             ) : (
               <User className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
             )}

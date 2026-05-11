@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { UserPlus, Eye, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface TechniciansTabProps {
   allTechs: any[];
@@ -12,11 +13,6 @@ interface TechniciansTabProps {
 }
 
 export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: TechniciansTabProps) {
-  const getValidImageUrl = (url: string) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    return `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000'}${url.startsWith('/') ? '' : '/'}${url}`;
-  };
 
   return (
     <motion.div 
@@ -52,7 +48,7 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                 <td className="px-8 py-5 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center font-bold text-slate-500 uppercase overflow-hidden shrink-0">
                     {t.avatar ? (
-                      <img src={getValidImageUrl(t.avatar)} className="w-full h-full object-cover" alt={t.name} />
+                      <img src={getAvatarUrl(t.avatar)!} className="w-full h-full object-cover" alt={t.name} />
                     ) : (
                       t.name?.charAt(0)
                     )}

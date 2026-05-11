@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { MapPin, Sparkles } from 'lucide-react';
 import { Technician } from '../types';
 
+import { getAvatarUrl } from '@/lib/image-utils';
+
 interface TechnicianListProps {
   technicians: Technician[];
   onSelect: (tech: Technician) => void;
@@ -35,10 +37,10 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
               
               <div className="flex items-center gap-3 sm:gap-5 relative z-10">
                 <div className="size-12 sm:size-16 rounded-xl sm:rounded-[1.25rem] bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
-                  {tech.avatar && (tech.avatar.startsWith('data:image') || tech.avatar.startsWith('http') || tech.avatar.startsWith('/')) ? (
+                  {tech.avatar && (tech.avatar.startsWith('data:image') || tech.avatar.startsWith('http') || tech.avatar.startsWith('/') || tech.avatar.length > 5) ? (
                     <div className="relative size-full">
                       <img 
-                        src={tech.avatar} 
+                        src={getAvatarUrl(tech.avatar)!} 
                         className="w-full h-full object-cover transition-all duration-500" 
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';

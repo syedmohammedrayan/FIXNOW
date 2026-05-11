@@ -32,6 +32,7 @@ import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { ALL_SERVICES } from '@/lib/services';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface ProfileProps {
   user: any;
@@ -265,7 +266,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
               )}
               {profile.avatar && profile.avatar.length > 5 ? (
                 <div className="relative size-full">
-                  <img src={profile.avatar} className="size-full object-contain bg-slate-50 p-2" />
+                  <img src={getAvatarUrl(profile.avatar)!} className="size-full object-contain bg-slate-50 p-2" />
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] pointer-events-none" />
                 </div>
               ) : (
