@@ -128,6 +128,13 @@ export function Map({
     }
   }, [map, currentStyle]);
 
+  // Update center dynamically
+  useEffect(() => {
+    if (map && center) {
+      map.flyTo({ center, speed: 1.2 });
+    }
+  }, [map, center[0], center[1]]);
+
   if (!isMounted) {
     return <div className={`bg-slate-900 animate-pulse ${className}`} />;
   }

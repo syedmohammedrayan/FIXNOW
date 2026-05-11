@@ -36,7 +36,27 @@ export function LiveMapTab() {
 
   useEffect(() => {
     const unsubTechs = onSnapshot(collection(db, 'technicians'), snap => {
-      setTechs(snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any)).filter(t => t.location?.lat || t.lat));
+      const techData = snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any)).filter(t => t.location?.lat || t.lat);
+      setTechs(techData);
+      
+      // Dynamically center map on the fleet
+      if (techData.length > 0) {
+        let sumLat = 0;
+        let sumLng = 0;
+        let count = 0;
+        techData.forEach(t => {
+          const loc = t.location || { lat: t.lat, lng: t.lng };
+          if (loc && typeof loc.lat === 'number' && typeof loc.lng === 'number') {
+            sumLat += loc.lat;
+            sumLng += loc.lng;
+            count++;
+          }
+        });
+        if (count > 0) {
+          setMapCenter([sumLng / count, sumLat / count]);
+        }
+      }
+
       setLoading(false);
     });
 
