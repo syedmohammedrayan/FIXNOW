@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Phone, MapPin, Save, LogOut, ShieldCheck, ChevronRight, ArrowLeft, Camera, Trash2, ShieldAlert, Lock } from 'lucide-react';
+import { User, Phone, MapPin, Save, LogOut, ShieldCheck, ChevronRight, ArrowLeft, Camera, Trash2, ShieldAlert, Lock, Activity, Smartphone } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
@@ -35,17 +35,21 @@ export default function CustomerAccount() {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       if (u) {
         setUser(u);
-        const userDoc = await getDoc(doc(db, 'users', u.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setFormData({
-            name: data.name || '',
-            phone: data.phone || '',
-            address: data.address || '',
-            emergencyContact: data.emergencyContact || '',
-            avatar: data.avatar || '',
-            passwordHint: data.passwordHint || ''
-          });
+        try {
+          const userDoc = await getDoc(doc(db, 'users', u.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setFormData({
+              name: data.name || '',
+              phone: data.phone || '',
+              address: data.address || '',
+              emergencyContact: data.emergencyContact || '',
+              avatar: data.avatar || '',
+              passwordHint: data.passwordHint || ''
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching profile:", error);
         }
         setLoading(false);
         initGoogleMaps();
@@ -92,10 +96,10 @@ export default function CustomerAccount() {
     if (!user) return;
     setSaving(true);
     try {
-      // Call the backend endpoint directly instead of client-side updateDoc
       await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, {
         ...formData
       });
+      // Optionally show a custom toast instead of alert
       alert('Profile protocol updated successfully!');
     } catch (err: any) {
       console.error(err);
@@ -117,7 +121,6 @@ export default function CustomerAccount() {
       });
       if (res.data && res.data.avatar) {
         const url = res.data.avatar;
-        // Backend already updates both users and technicians collections
         setFormData(prev => ({ ...prev, avatar: url }));
       } else {
         throw new Error('Upload failed');
@@ -135,7 +138,6 @@ export default function CustomerAccount() {
     setUploadingAvatar(true);
     setFormData(prev => ({ ...prev, avatar: '' }));
     try {
-      // Use backend API to clear avatar
       await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { avatar: null });
     } catch (err) {
       console.error(err);
@@ -152,128 +154,135 @@ export default function CustomerAccount() {
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans pb-20">
-      {/* Premium Header */}
-      <div className="bg-slate-900/90 backdrop-blur-3xl px-6 pt-24 pb-12 border-b border-white/10 sticky top-0 z-50 shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
+      {/* Premium Sticky Header */}
+      <div className="sticky top-0 z-[60] px-4 py-4 sm:py-6 bg-slate-950/60 backdrop-blur-3xl border-b border-white/[0.08]">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 sm:gap-6">
             <button 
               onClick={() => router.back()}
-              className="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all shadow-sm active:scale-95 group"
+              className="p-3 sm:p-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] transition-all shadow-lg active:scale-95 group"
             >
               <ArrowLeft className="w-5 h-5 text-white group-hover:-translate-x-1 transition-all" />
             </button>
             <div>
-              <h1 className="text-4xl font-black text-white tracking-tighter">Security & Profile</h1>
-              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-1">Authorized User Hub</p>
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-black text-white tracking-tighter italic">Identity Hub</h1>
+              <p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[8px] sm:text-[10px] mt-1">Authorized Protocol Management</p>
             </div>
           </div>
           <button 
             onClick={() => signOut(auth)} 
-            className="flex items-center gap-3 px-6 py-3.5 bg-rose-500/10 text-rose-500 rounded-2xl hover:bg-rose-500/20 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm border border-rose-500/20 active:scale-95"
+            className="hidden sm:flex items-center gap-3 px-6 py-4 bg-rose-500/10 text-rose-500 rounded-2xl hover:bg-rose-500/20 transition-all font-black text-[10px] uppercase tracking-widest border border-rose-500/15 active:scale-95"
           >
             <LogOut className="w-4 h-4" />
-            Terminate Session
+            Terminate
+          </button>
+          <button 
+            onClick={() => signOut(auth)} 
+            className="sm:hidden p-3.5 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/15"
+          >
+            <LogOut className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 mt-12 grid lg:grid-cols-12 gap-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-8 sm:mt-12 grid lg:grid-cols-12 gap-6 sm:gap-10">
         {/* Left Column: Profile Card */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 sm:space-y-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
-            className="bg-slate-900/90 backdrop-blur-3xl p-6 sm:p-10 border border-white/10 rounded-[3rem] shadow-2xl relative overflow-hidden"
+            className="bg-white/[0.04] backdrop-blur-2xl p-6 sm:p-10 border border-white/[0.08] rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl relative overflow-hidden"
+            style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 60px rgba(0,0,0,0.3)' }}
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.03] blur-[80px] -mr-32 -mt-32" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.02] blur-[80px] -mr-32 -mt-32 pointer-events-none" />
             
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-12 relative z-10">
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 mb-10 sm:mb-12 relative z-10">
               <div className="relative group">
-                <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-4 border-slate-900 shadow-2xl flex items-center justify-center text-white text-5xl font-black transition-transform duration-500 group-hover:scale-105">
+                <div className="size-28 sm:size-36 rounded-[2rem] sm:rounded-[2.5rem] bg-slate-900 border-4 border-slate-950 overflow-hidden shadow-2xl flex items-center justify-center text-white text-4xl sm:text-5xl font-black group-hover:scale-105 transition-all duration-500">
                   {formData.avatar ? (
-                    <img src={formData.avatar} className="w-full h-full object-cover" />
+                    <img src={formData.avatar} className="size-full object-cover" />
                   ) : (
                     formData.name.charAt(0) || user?.email?.charAt(0).toUpperCase()
                   )}
                   {uploadingAvatar && (
-                    <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center">
                       <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                     </div>
                   )}
                 </div>
                 <div className="absolute -bottom-2 -right-2 flex gap-2">
-                  <input type="file" className="hidden" id="avatar-up" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleAvatarUpload} />
-                  <label htmlFor="avatar-up" className="p-3 bg-white text-slate-900 rounded-2xl shadow-xl cursor-pointer transition-all active:scale-90 flex items-center justify-center">
-                    <Camera className="w-5 h-5" />
+                  <input type="file" className="hidden" id="avatar-up" accept="image/*" onChange={handleAvatarUpload} />
+                  <label htmlFor="avatar-up" className="p-3 bg-white text-slate-950 rounded-2xl shadow-2xl cursor-pointer hover:bg-slate-100 transition active:scale-90 flex items-center justify-center">
+                    <Camera className="size-5 sm:size-6" />
                   </label>
                   {formData.avatar && (
-                    <button onClick={deleteAvatar} className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-2xl shadow-xl transition-all active:scale-90 flex items-center justify-center">
-                      <Trash2 className="w-5 h-5" />
+                    <button onClick={deleteAvatar} className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-2xl shadow-2xl hover:bg-rose-500/20 transition active:scale-90 flex items-center justify-center">
+                      <Trash2 className="size-5 sm:size-6" />
                     </button>
                   )}
                 </div>
               </div>
               
-              <div className="text-center md:text-left">
-                <h3 className="text-2xl font-black text-white tracking-tight">{formData.name || 'Set Your Name'}</h3>
-                <p className="text-slate-400 font-medium mb-4">{user?.email}</p>
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Identity Verified
+              <div className="text-center sm:text-left">
+                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight italic">{formData.name || 'Micro-User'}</h3>
+                <p className="text-slate-500 font-bold text-xs sm:text-sm mt-1">{user?.email}</p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/15 mt-5">
+                  <ShieldCheck className="size-3.5" />
+                  Grid Verified
                 </div>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
+              <div className="space-y-3">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 block">Identity Handle</label>
+                <div className="relative group">
+                  <User className="absolute left-5 top-1/2 -translate-y-1/2 size-4 sm:size-5 text-white/20 group-focus-within:text-white/60 transition" />
                   <input 
                     value={formData.name} 
                     onChange={e => setFormData({...formData, name: e.target.value})} 
-                    placeholder="Enter full name"
-                    className="w-full rounded-[1.25rem] border border-white/10 bg-slate-950/50 px-12 py-5 text-white focus:outline-none focus:border-white transition font-bold shadow-inner" 
+                    placeholder="Full Name"
+                    className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 sm:px-14 py-4 sm:py-5 text-white placeholder:text-white/10 focus:outline-none focus:border-white/20 transition text-sm sm:text-base font-bold shadow-inner" 
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block">Authorized Phone</label>
-                <div className="relative">
-                  <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="space-y-3">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 block">Secure Line</label>
+                <div className="relative group">
+                  <Smartphone className="absolute left-5 top-1/2 -translate-y-1/2 size-4 sm:size-5 text-white/20 group-focus-within:text-white/60 transition" />
                   <input 
                     value={formData.phone} 
                     onChange={e => setFormData({...formData, phone: e.target.value})} 
                     placeholder="+91 XXXXX XXXXX"
-                    className="w-full rounded-[1.25rem] border border-white/10 bg-slate-950/50 px-12 py-5 text-white focus:outline-none focus:border-white transition font-bold shadow-inner" 
+                    className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 sm:px-14 py-4 sm:py-5 text-white placeholder:text-white/10 focus:outline-none focus:border-white/20 transition text-sm sm:text-base font-bold shadow-inner" 
                   />
                 </div>
               </div>
 
-              <div className="md:col-span-2 space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block">Primary Service Location</label>
-                <div className="relative">
-                  <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="sm:col-span-2 space-y-3">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 block">Primary Base Coordinates</label>
+                <div className="relative group">
+                  <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 size-4 sm:size-5 text-white/20 group-focus-within:text-white/60 transition" />
                   <input 
                     ref={addressInputRef}
                     value={formData.address} 
                     onChange={e => setFormData({...formData, address: e.target.value})} 
-                    placeholder="Search for service address..."
-                    className="w-full rounded-[1.25rem] border border-white/10 bg-slate-950/50 px-12 py-5 text-white focus:outline-none focus:border-white transition font-bold shadow-inner" 
+                    placeholder="Search for grid location..."
+                    className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 sm:px-14 py-4 sm:py-5 text-white placeholder:text-white/10 focus:outline-none focus:border-white/20 transition text-sm sm:text-base font-bold shadow-inner" 
                   />
                 </div>
               </div>
 
-              <div className="md:col-span-2 space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block">Password Reset Hint</label>
-                <div className="relative">
-                  <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="sm:col-span-2 space-y-3">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 block">Encryption Hint</label>
+                <div className="relative group">
+                  <Lock className="absolute left-5 top-1/2 -translate-y-1/2 size-4 sm:size-5 text-white/20 group-focus-within:text-white/60 transition" />
                   <input 
                     value={formData.passwordHint} 
                     onChange={e => setFormData({...formData, passwordHint: e.target.value})} 
-                    placeholder="Set a secret hint for password resets..."
-                    className="w-full rounded-[1.25rem] border border-white/10 bg-slate-950/50 px-12 py-5 text-white focus:outline-none focus:border-white transition font-bold shadow-inner" 
+                    placeholder="Password recovery hint..."
+                    className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 sm:px-14 py-4 sm:py-5 text-white placeholder:text-white/10 focus:outline-none focus:border-white/20 transition text-sm sm:text-base font-bold shadow-inner" 
                   />
                 </div>
               </div>
@@ -282,52 +291,60 @@ export default function CustomerAccount() {
             <button 
               onClick={handleSave} 
               disabled={saving} 
-              className="w-full mt-12 py-5 bg-white text-slate-900 font-black text-xs uppercase tracking-[0.25em] rounded-[1.5rem] shadow-2xl hover:bg-slate-100 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+              className="w-full mt-10 sm:mt-12 py-5 sm:py-6 bg-white text-slate-900 font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl hover:bg-slate-100 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
             >
-              {saving ? <div className="w-5 h-5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
-              {saving ? 'Syncing Profile...' : 'Update Authorized Details'}
+              {saving ? <div className="size-5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : <Save className="size-5" />}
+              {saving ? 'Synchronizing Base...' : 'Execute Profile Update'}
             </button>
           </motion.div>
         </div>
 
         {/* Right Column: Security & Misc */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="glass-neon-card p-8">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Security Hub</h4>
+        <div className="lg:col-span-4 space-y-6 sm:space-y-8">
+          <div className="bg-white/[0.04] backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-white/[0.08] shadow-2xl relative overflow-hidden" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)' }}>
+            <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-6">Security Protocol</h4>
             <div className="space-y-4">
-              <div className="p-5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 flex items-center justify-between group cursor-pointer hover:bg-emerald-500/20 transition-all">
+              <div className="p-4 sm:p-5 bg-emerald-500/10 rounded-2xl border border-emerald-500/15 flex items-center justify-between group cursor-pointer hover:bg-emerald-500/15 transition-all">
                 <div className="flex items-center gap-4">
-                  <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                  <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/15">
+                    <ShieldCheck className="size-5 text-emerald-400" />
+                  </div>
                   <div>
-                    <p className="text-sm font-black text-white uppercase tracking-tight">Security Protocol</p>
-                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Secured</p>
+                    <p className="text-xs font-black text-white uppercase tracking-tight">2FA Active</p>
+                    <p className="text-[9px] text-emerald-400/60 font-black uppercase tracking-widest mt-0.5">Encrypted</p>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="size-4 text-white/20 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
 
-              <div className="p-5 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all">
+              <div className="p-4 sm:p-5 bg-white/[0.03] rounded-2xl border border-white/[0.06] flex items-center justify-between group cursor-pointer hover:bg-white/[0.06] transition-all">
                 <div className="flex items-center gap-4">
-                  <User className="w-6 h-6 text-slate-400" />
+                  <div className="size-10 rounded-xl bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
+                    <Activity className="size-5 text-white/40" />
+                  </div>
                   <div>
-                    <p className="text-sm font-black text-white uppercase tracking-tight">Emergency</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Protocol Contacts</p>
+                    <p className="text-xs font-black text-white uppercase tracking-tight">Logs</p>
+                    <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-0.5">Session History</p>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="size-4 text-white/20 group-hover:text-white group-hover:translate-x-1 transition-all" />
               </div>
             </div>
           </div>
 
-          <div className="bg-rose-500/5 backdrop-blur-3xl p-8 rounded-[2rem] border border-rose-500/20">
-            <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-4">Danger Zone</h4>
-            <p className="text-xs text-slate-400 mb-6 font-medium">Permanently delete your profile and all associated service history from FIXNOW servers.</p>
+          <div className="bg-rose-500/[0.04] backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-rose-500/15 relative overflow-hidden shadow-2xl">
+            <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-4">Danger Protocol</h4>
+            <p className="text-[11px] text-slate-500 mb-6 font-bold leading-relaxed uppercase tracking-wide">Decommission your profile and purge all grid data forever.</p>
             <button 
-              onClick={() => router.push('/customer/dashboard')} // Or show a modal
-              className="w-full py-4 rounded-2xl border-2 border-rose-500/20 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all active:scale-95"
+              onClick={() => {
+                // We should ideally show the AccountDeletionModal here
+                // For now, redirect to dashboard as a placeholder or trigger modal via state
+                router.push('/customer/dashboard');
+              }}
+              className="w-full py-4 rounded-xl sm:rounded-2xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-rose-500 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-3"
             >
-              <ShieldAlert className="w-4 h-4 inline mr-2" />
-              Decommission Account
+              <ShieldAlert className="size-4" />
+              Purge Profile
             </button>
           </div>
         </div>

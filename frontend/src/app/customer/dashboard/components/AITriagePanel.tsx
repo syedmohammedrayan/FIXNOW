@@ -134,16 +134,16 @@ export default function AITriagePanel({
             className={cn(
               "p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border transition-all duration-300 flex items-center gap-4 sm:gap-6 text-left group shadow-sm backdrop-blur-md w-full h-full min-h-[100px] sm:min-h-[128px]",
               isListening 
-                ? "bg-rose-500/15 border-rose-500/30 text-rose-300 animate-pulse shadow-lg shadow-rose-500/10" 
-                : "bg-white/[0.03] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.06] shadow-inner"
+                ? "bg-rose-500/20 border-rose-500/40 text-rose-100 animate-pulse shadow-lg shadow-rose-500/20" 
+                : "bg-slate-900/60 border-white/[0.1] hover:border-white/30 hover:bg-slate-900/80 shadow-2xl"
             )}
-            style={{ boxShadow: isListening ? undefined : 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}
+            style={{ boxShadow: isListening ? undefined : 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.4)' }}
           >
             <div className={cn(
               "p-3 sm:p-5 rounded-xl sm:rounded-2xl border transition-all flex-shrink-0 duration-300",
               isListening 
-                ? "bg-rose-500/20 border-rose-400/30 text-rose-300" 
-                : "bg-white/[0.04] border-white/[0.06] text-white/30 group-hover:scale-110 group-hover:bg-white/[0.06] group-hover:border-white/20 group-hover:text-white"
+                ? "bg-rose-500/30 border-rose-400/40 text-rose-100" 
+                : "bg-slate-800/60 border-white/[0.1] text-white/50 group-hover:scale-110 group-hover:bg-slate-700/60 group-hover:border-white/30 group-hover:text-white"
             )}>
               <Mic className="size-6 sm:size-8" />
             </div>
@@ -180,17 +180,17 @@ export default function AITriagePanel({
             className={cn(
               "p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border transition-all duration-300 flex items-center gap-4 sm:gap-6 text-left group shadow-sm backdrop-blur-md w-full h-full min-h-[100px] sm:min-h-[128px]",
               imageFile 
-                ? "bg-white/[0.06] border-white/20 text-white shadow-lg" 
-                : "bg-white/[0.03] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.06] shadow-inner",
+                ? "bg-slate-900/80 border-white/30 text-white shadow-2xl" 
+                : "bg-slate-900/60 border-white/[0.1] hover:border-white/30 hover:bg-slate-900/80 shadow-2xl",
               analyzing && "opacity-50 cursor-not-allowed"
             )}
-            style={{ boxShadow: imageFile ? undefined : 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}
+            style={{ boxShadow: imageFile ? undefined : 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.4)' }}
           >
             <div className={cn(
               "p-3 sm:p-5 rounded-xl sm:rounded-2xl border transition-all flex-shrink-0 duration-300",
               imageFile 
-                ? "bg-white/10 border-white/20 text-white" 
-                : "bg-white/[0.04] border-white/[0.06] text-white/30 group-hover:scale-110 group-hover:bg-white/[0.06] group-hover:border-white/20 group-hover:text-white"
+                ? "bg-slate-800/80 border-white/30 text-white" 
+                : "bg-slate-800/60 border-white/[0.1] text-white/50 group-hover:scale-110 group-hover:bg-slate-700/60 group-hover:border-white/30 group-hover:text-white"
             )}>
               <Camera className="size-6 sm:size-8" />
             </div>
@@ -215,7 +215,7 @@ export default function AITriagePanel({
                   </motion.div>
                 )}
               </div>
-              <p className="text-[10px] sm:text-xs text-white/30 font-medium mt-0.5 leading-relaxed group-hover:text-white/50">
+              <p className="text-[10px] sm:text-xs text-white/50 font-bold mt-0.5 leading-relaxed group-hover:text-white/80">
                 {imageFile ? 'Click to change or replace visual sample' : 'Take or upload photo of the broken item'}
               </p>
             </div>
