@@ -256,11 +256,11 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col backdrop-blur-[30px]"
+              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col backdrop-blur-[40px]"
               style={{
-                background: 'linear-gradient(165deg, rgba(2, 8, 23, 0.94) 0%, rgba(7, 15, 35, 0.96) 100%)',
-                borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '-20px 0 80px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.05)',
+                background: 'linear-gradient(170deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.92) 100%)',
+                borderLeft: '1px solid rgba(255, 255, 255, 0.12)',
+                boxShadow: '-10px 0 50px rgba(0, 0, 0, 0.4), inset 1px 0 0 rgba(255, 255, 255, 0.08)',
               }}
             >
               {/* ── Drawer Header ── */}
@@ -285,7 +285,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
 
               {/* ── User Profile Card (when logged in) ── */}
               {(user || customProfile) && (
-                <div className="mx-5 mt-5 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.07] flex items-center gap-4">
+                <div className="mx-5 mt-5 p-4 rounded-2xl bg-white/[0.06] border border-white/[0.1] flex items-center gap-4 shadow-lg backdrop-blur-md">
                   <div className="size-12 rounded-2xl overflow-hidden border border-white/[0.12] flex-shrink-0 shadow-xl">
                     {profile?.avatar && profile.avatar.length > 5 ? (
                       <img src={getAvatarUrl(profile.avatar)!} className="size-full object-cover" />
@@ -497,8 +497,8 @@ function DrawerNavItem({
   const accentStyles = accent === 'cyan'
     ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
     : active
-      ? 'bg-white/[0.08] border-white/[0.15] text-white shadow-[0_0_20px_rgba(255,255,255,0.05)]'
-      : 'bg-white/[0.03] border-white/[0.08] text-white/70 hover:bg-white/[0.05] hover:border-white/[0.12]';
+      ? 'bg-white/[0.12] border-white/[0.2] text-white shadow-[0_4px_15px_rgba(255,255,255,0.05)]'
+      : 'bg-white/[0.05] border-white/[0.1] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.15]';
 
   return (
     <Link
