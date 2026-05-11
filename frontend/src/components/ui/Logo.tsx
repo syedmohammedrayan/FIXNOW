@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Wrench, Sparkles, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
@@ -18,8 +17,7 @@ export const Logo: React.FC<LogoProps> = ({
   iconClassName, 
   isAdmin = false, 
   showText = false,
-  textClassName,
-  isLanding = false
+  textClassName
 }) => {
   return (
     <div className={cn("flex items-center gap-3 sm:gap-4 group", className)}>

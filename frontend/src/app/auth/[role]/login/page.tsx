@@ -91,10 +91,10 @@ export default function DynamicLoginPage() {
   const roleConfig = {
     customer: { icon: <User className="w-6 h-6" />, label: 'Customer', accent: 'cyan' },
     technician: { icon: <Wrench className="w-6 h-6" />, label: 'Technician', accent: 'cyan' },
-    admin: { icon: <Shield className="w-6 h-6" />, label: 'Administrator', accent: 'amber' },
+    admin: { icon: <Shield className="w-6 h-6" />, label: 'Administrator', accent: 'amber' } as const,
   };
 
-  const config = roleConfig[roleParam] || roleConfig.customer;
+  // Removed unused config
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-950 text-slate-200 font-sans relative overflow-hidden selection:bg-cyan-500/30">

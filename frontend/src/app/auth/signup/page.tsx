@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useId, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -83,7 +83,7 @@ function SignupInner() {
         if (profileRes.ok) {
           const profileData = await profileRes.json();
           if (profileData.success && profileData.user) {
-            // Existing user — redirect straight to their dashboard
+            // Existing user â€” redirect straight to their dashboard
             const dbRole = profileData.user.role;
             if (dbRole === 'technician') {
               if (!profileData.user.approved) {
@@ -101,7 +101,7 @@ function SignupInner() {
         }
       } catch {}
 
-      // New Google user — if role is 'customer', auto-register immediately
+      // New Google user â€” if role is 'customer', auto-register immediately
       if (role === 'customer') {
         try {
           setLoading(true);
@@ -131,7 +131,7 @@ function SignupInner() {
           setLoading(false);
         }
       }
-      // For technicians or when role is not yet set — stay on form to collect extra info
+      // For technicians or when role is not yet set â€” stay on form to collect extra info
     });
     return () => { unsubscribe(); };
   }, [isGoogleLinked, role, router]);
@@ -265,7 +265,7 @@ function SignupInner() {
       >
         <AnimatePresence mode="wait">
           {role === 'admin' ? (
-            /* ─────────────────── ADMIN SIGNUP CARD (LIGHT THEME) ─────────────────── */
+            /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ADMIN SIGNUP CARD (LIGHT THEME) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
             <motion.div
               key="admin-signup"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -309,7 +309,7 @@ function SignupInner() {
                 </div>
                 <div className="space-y-2.5">
                   <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-5">Master Passkey</Label>
-                  <Input required type="password" placeholder="••••••••" className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                  <Input required type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 px-6 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
                 <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-2xl sm:rounded-3xl hover:bg-slate-100 mt-4 sm:mt-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                   {loading ? 'Initializing...' : 'Authorize Expansion'}
@@ -326,7 +326,7 @@ function SignupInner() {
               </div>
             </motion.div>
           ) : (
-            /* ─────────────────── STANDARD SIGNUP CARD (GLASS THEME) ─────────────────── */
+            /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ STANDARD SIGNUP CARD (GLASS THEME) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
             <motion.div
               key="standard-signup"
               className="relative w-full rounded-[2rem] sm:rounded-[3.5rem] overflow-hidden backdrop-blur-[60px] border border-white/30 p-6 sm:p-12 bg-white/5"
@@ -508,5 +508,3 @@ function SignupInner() {
     </div>
   );
 }
-/ /   F o r c e   u p d a t e   f o r   r e s p o n s i v e n e s s  
- 

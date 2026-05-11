@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useId, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -67,7 +67,7 @@ export default function LoginPage() {
             return;
           }
         }
-        // User is authenticated but has no DB profile — redirect to signup
+        // User is authenticated but has no DB profile â€” redirect to signup
         router.replace(`/auth/signup?role=${role}`);
       } catch (err: any) {
         setError(err.message || 'Error processing authentication.');
@@ -149,7 +149,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-lg">
         <AnimatePresence mode="wait">
           {role === 'admin' ? (
-            /* ─────────────────── ADMIN LOGIN CARD (LIGHT THEME) ─────────────────── */
+            /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ADMIN LOGIN CARD (LIGHT THEME) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
             <motion.div
               key="admin-card"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -206,7 +206,7 @@ export default function LoginPage() {
                     <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-white transition-colors" />
                     <Input 
                       type={showPassword ? "text" : "password"} 
-                      placeholder="••••••••" 
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
                       className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-black text-sm focus:border-white/40 transition-all placeholder:text-slate-500 shadow-inner"
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -240,7 +240,7 @@ export default function LoginPage() {
               </div>
             </motion.div>
           ) : (
-            /* ─────────────────── STANDARD LOGIN CARD (GLASS THEME) ─────────────────── */
+            /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ STANDARD LOGIN CARD (GLASS THEME) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
             <motion.div
               key="standard-card"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -341,7 +341,7 @@ export default function LoginPage() {
                           <Lock className="absolute left-6 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within/input:text-cyan-400 transition-colors" />
                           <Input 
                             type={showPassword ? "text" : "password"} 
-                            placeholder="••••••••" 
+                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
                             className="bg-white/10 border-white/20 rounded-2xl sm:rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.password}
                             onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -403,5 +403,3 @@ export default function LoginPage() {
     </div>
   );
 }
-/ /   F o r c e   u p d a t e   f o r   r e s p o n s i v e n e s s  
- 
