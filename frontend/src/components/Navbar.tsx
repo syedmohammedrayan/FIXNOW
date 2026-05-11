@@ -135,12 +135,12 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
         !visible && "-top-32 opacity-0 pointer-events-none"
       )} style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.3)' }}>
         <div className="max-w-7xl mx-auto px-5 sm:px-10 flex items-center justify-between relative z-10">
-          <Link href="/" className="group flex-shrink-0">
+          <Link href="/" className="group flex-shrink-0 relative h-12 sm:h-16 w-32 sm:w-48 flex items-center">
             <Logo 
               isAdmin={profile?.role === 'admin'} 
               showText 
               isLanding={false}
-              className="transition-all duration-500 scale-90 sm:scale-100 origin-left"
+              className="absolute left-0 transition-all duration-500 scale-100 sm:scale-110 origin-left"
               textClassName="text-white"
             />
           </Link>
