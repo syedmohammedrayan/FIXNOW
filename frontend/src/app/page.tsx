@@ -102,7 +102,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             <StepCard 
               icon={<Search className="w-10 h-10" />}
-              title="Identity Request"
+              title="Issue Detection"
               desc="Pinpoint your service requirements via our AI-assisted terminal. Verification happens in real-time."
               delay={0}
             />

@@ -226,7 +226,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: idx * 0.05 }}
                   className={cn(
-                    "p-8 bg-slate-900/90 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-[2.5rem] transition-all group relative overflow-hidden",
+                    "p-6 sm:p-8 bg-slate-900/90 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-[2rem] sm:rounded-[2.5rem] transition-all group relative overflow-hidden",
                     live && "border-white/30"
                   )}
                 >
@@ -236,8 +236,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                   )}
 
                   {/* Top row: Category + Status badge */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div className="flex-1 min-w-[150px]">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                         #{booking.id.slice(-6).toUpperCase()}
                       </p>
@@ -331,7 +331,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                   )}
 
                   {/* Payment + Action Row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Payment Status Badge */}
                       {booking.status === 'Cancelled' || booking.status === 'Declined' ? (
@@ -366,7 +366,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                       <button 
                         onClick={() => onTrack(booking.id)}
                         className={cn(
-                          "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-slate-900 text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95",
+                          "w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl text-slate-900 text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95",
                           booking.status === 'In Progress' ? "bg-cyan-400 hover:bg-cyan-300" : "bg-white hover:bg-slate-100"
                         )}
                       >
@@ -415,12 +415,12 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-3xl rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
+              className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-white to-emerald-500" />
               
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-8">
+              <div className="p-6 sm:p-8">
+                <div className="flex justify-between items-start mb-6 sm:mb-8">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-[10px] font-black text-white uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded-md">Service Receipt</span>
