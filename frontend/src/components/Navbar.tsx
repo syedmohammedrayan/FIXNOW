@@ -125,24 +125,30 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
 
   return (
     <>
-      {/* ── Pill Navbar (unchanged shape/theme) ── */}
+      {/* ── Floating Glass Pill Navbar ── */}
       <nav className={cn(
-        "fixed top-0 left-0 w-full z-[100] transition-all duration-700 ease-out",
-        "bg-slate-950/40 border-b border-white/[0.08] backdrop-blur-3xl shadow-2xl flex items-center justify-between px-4 sm:px-8 min-h-[84px] sm:min-h-[96px]",
+        "fixed top-0 left-0 right-0 z-[100] px-4 sm:px-6 pt-4 pb-3 transition-all duration-700 ease-out",
         !visible && "-top-32 opacity-0 pointer-events-none"
-      )} style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.3)' }}>
-        <div className="w-full flex items-center justify-between relative z-10">
-          <Link href="/" className="group flex-shrink-0 flex items-center">
-            <Logo 
-              isAdmin={profile?.role === 'admin'} 
-              className="origin-left transition-all duration-500"
-            />
-          </Link>
+      )}>
+        <div className={cn(
+          "w-full max-w-7xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] border backdrop-blur-3xl transition-all duration-700",
+          "px-5 sm:px-8 py-3 flex items-center justify-between gap-4",
+          scrolled
+            ? "bg-slate-950/60 border-white/[0.1] shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
+            : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2)]"
+        )}>
 
-          {/* Desktop Navigation */}
+          {/* ── LEFT: Logo ── */}
+          <div className="flex items-center shrink-0">
+            <Link href="/" className="group">
+              <Logo isAdmin={profile?.role === 'admin'} />
+            </Link>
+          </div>
+
+          {/* ── CENTER: Desktop Nav Links ── */}
           <div className="hidden lg:flex items-center gap-10">
             <NavLink href="/services" active={pathname === '/services'}>Services</NavLink>
-            <button 
+            <button
               onClick={openAboutModal}
               className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-white transition-all active:scale-95 flex items-center gap-2"
             >
@@ -151,64 +157,63 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-6">
+          {/* ── RIGHT: Actions ── */}
+          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
             <div className="hidden sm:block">
               <LanguageSelector />
             </div>
 
             <AnimatePresence mode="wait">
               {(user || customProfile) ? (
-                <div className="flex items-center">
-                  <div className="hidden lg:flex items-center pl-6 border-l border-white/[0.08] ml-4">
-                     <div className="relative group/profile">
-                        <button className="flex items-center gap-3 group">
-                          <div className="size-10 sm:size-11 rounded-xl sm:rounded-2xl overflow-hidden border border-white/[0.1] group-hover:border-cyan-500/50 transition-all duration-500 shadow-xl">
-                             {profile?.avatar && profile.avatar.length > 5 ? (
-                               <img src={getAvatarUrl(profile.avatar)!} className="size-full object-cover" />
-                             ) : (
-                               <div className="size-full bg-slate-900 flex items-center justify-center text-lg text-white font-black italic">
-                                 {profile?.name ? profile.name.charAt(0).toUpperCase() : '👤'}
-                               </div>
-                             )}
+                <div className="hidden lg:flex items-center pl-5 border-l border-white/[0.08]">
+                  <div className="relative group/profile">
+                    <button className="flex items-center gap-3 group">
+                      <div className="size-10 sm:size-11 rounded-xl sm:rounded-2xl overflow-hidden border border-white/[0.1] group-hover:border-cyan-500/50 transition-all duration-500 shadow-xl">
+                        {profile?.avatar && profile.avatar.length > 5 ? (
+                          <img src={getAvatarUrl(profile.avatar)!} className="size-full object-cover" />
+                        ) : (
+                          <div className="size-full bg-slate-900 flex items-center justify-center text-lg text-white font-black italic">
+                            {profile?.name ? profile.name.charAt(0).toUpperCase() : '👤'}
                           </div>
-                          <div className="hidden xl:block text-left">
-                             <p className="text-[10px] font-black uppercase tracking-widest text-white leading-tight">
-                               {profile?.name || 'Authorized'}
-                             </p>
-                             <p className="text-[9px] text-cyan-500 font-black uppercase tracking-wider mt-0.5 opacity-60">{profile?.role || 'Session'}</p>
-                          </div>
-                          <ChevronDown className="size-3.5 text-white/40 group-hover:text-white transition duration-500" />
-                        </button>
+                        )}
+                      </div>
+                      <div className="hidden xl:block text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white leading-tight">
+                          {profile?.name || 'Authorized'}
+                        </p>
+                        <p className="text-[9px] text-cyan-500 font-black uppercase tracking-wider mt-0.5 opacity-60">{profile?.role || 'Session'}</p>
+                      </div>
+                      <ChevronDown className="size-3.5 text-white/40 group-hover:text-white transition duration-500" />
+                    </button>
 
-                        {/* Desktop Dropdown */}
-                        <div className="absolute top-full right-0 mt-4 w-60 bg-slate-950/95 backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover/profile:opacity-100 group-hover/profile:translate-y-0 group-hover/profile:pointer-events-auto transition-all duration-500 z-50 overflow-hidden p-2.5">
-                          <div className="space-y-1">
-                            <Link href={`/${profile?.role}/dashboard`} className="flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-all duration-300">
-                              <LayoutDashboard className="size-4 text-cyan-500" /> Control Hub
-                            </Link>
-                            <Link href={`/customer/account`} className="flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-all duration-300">
-                              <User className="size-4 text-cyan-500" /> My Identity
-                            </Link>
-                            <div className="h-px bg-white/[0.05] my-2 mx-3" />
-                            <button onClick={handleLogout} className="w-full flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500/70 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all duration-300">
-                              <LogOut className="size-4" /> Terminate
-                            </button>
-                          </div>
-                        </div>
-                     </div>
+                    {/* Desktop Dropdown */}
+                    <div className="absolute top-full right-0 mt-4 w-60 bg-slate-950/95 backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover/profile:opacity-100 group-hover/profile:translate-y-0 group-hover/profile:pointer-events-auto transition-all duration-500 z-50 overflow-hidden p-2.5">
+                      <div className="space-y-1">
+                        <Link href={`/${profile?.role}/dashboard`} className="flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-all duration-300">
+                          <LayoutDashboard className="size-4 text-cyan-500" /> Control Hub
+                        </Link>
+                        <Link href={`/customer/account`} className="flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-all duration-300">
+                          <User className="size-4 text-cyan-500" /> My Identity
+                        </Link>
+                        <div className="h-px bg-white/[0.05] my-2 mx-3" />
+                        <button onClick={handleLogout} className="w-full flex items-center gap-3.5 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500/70 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all duration-300">
+                          <LogOut className="size-4" /> Terminate
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="hidden lg:flex items-center gap-6">
-                  <Link 
-                    href="/auth/login" 
+                <div className="hidden lg:flex items-center gap-5">
+                  <Link
+                    href="/auth/login"
                     className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-all"
                   >
                     Access
                   </Link>
-                  <Link 
-                    href="/auth/signup" 
-                    className="px-8 py-3.5 bg-white text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl hover:scale-105"
+                  <Link
+                    href="/auth/signup"
+                    className="px-7 py-3 bg-white text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl hover:scale-105"
                   >
                     Join Protocol
                   </Link>
@@ -216,17 +221,19 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               )}
             </AnimatePresence>
 
-            {/* Hamburger — mobile only */}
-            <button 
-              onClick={() => setIsOpen(!isOpen)} 
+            {/* Hamburger — mobile/tablet only */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden size-10 sm:size-11 flex items-center justify-center rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/[0.08] text-white transition-all active:scale-90"
               aria-label="Open menu"
             >
               <Menu className="size-5" />
             </button>
           </div>
+
         </div>
       </nav>
+
 
       {/* ── Mobile Full-Screen Side Drawer (outside nav so it's not clipped) ── */}
       <AnimatePresence>
@@ -261,8 +268,8 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               <div className="flex items-center justify-between px-6 pt-14 pb-6 border-b border-white/[0.06]">
                 <Link href="/" onClick={() => setIsOpen(false)}>
                     <Logo 
-                      isAdmin={profile?.role === 'admin'} 
-                      className="origin-left"
+                      isAdmin={profile?.role === 'admin'}
+                      iconClassName="w-[120px]"
                     />
                 </Link>
                 <button

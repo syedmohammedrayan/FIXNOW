@@ -5,11 +5,13 @@ import { cn } from '@/lib/utils';
 
 interface LogoProps {
   className?: string;
+  iconClassName?: string;
   isAdmin?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   className,
+  iconClassName,
   isAdmin = false,
 }) => {
   return (
@@ -27,23 +29,14 @@ export const Logo: React.FC<LogoProps> = ({
         )}
       />
 
-      {/* Logo Image */}
       <img
         src="https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg"
         alt="FIXNOW"
         draggable={false}
-        className="
-          relative
-          w-[170px]
-          sm:w-[210px]
-          md:w-[240px]
-          lg:w-[280px]
-          h-auto
-          object-contain
-          transition-transform duration-500
-          hover:scale-[1.03]
-          select-none
-        "
+        className={cn(
+          "relative h-auto object-contain transition-transform duration-500 hover:scale-[1.03] select-none",
+          iconClassName || "w-[170px] sm:w-[210px] md:w-[240px] lg:w-[280px]"
+        )}
       />
     </div>
   );

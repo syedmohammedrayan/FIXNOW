@@ -207,7 +207,7 @@ export default function TechnicianSidebar() {
             className="relative group cursor-pointer"
           >
             <div className="absolute -inset-2 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-            <Logo showText={false} />
+            <Logo iconClassName="w-10" />
           </motion.div>
         ) : (
           <motion.div 
@@ -215,7 +215,7 @@ export default function TechnicianSidebar() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-4 group"
           >
-            <Logo showText={false} />
+            <Logo iconClassName="w-24" />
             <div className="flex flex-col min-w-0">
               <span className="text-[15px] font-black tracking-tight text-white uppercase leading-none">
                 FixNow
