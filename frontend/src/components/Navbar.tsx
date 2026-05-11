@@ -127,12 +127,12 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     <>
       {/* ── Floating Glass Pill Navbar ── */}
       <nav className={cn(
-        "fixed top-0 left-0 right-0 z-[100] px-3 sm:px-5 md:px-8 pt-3 sm:pt-4 pb-2 transition-all duration-700 ease-out",
+        "fixed top-0 left-0 right-0 z-[100] px-3 sm:px-5 md:px-8 pt-2 sm:pt-2.5 pb-2 transition-all duration-700 ease-out",
         !visible && "-top-32 opacity-0 pointer-events-none"
       )}>
         <div className={cn(
           "w-full max-w-7xl mx-auto rounded-[1.75rem] sm:rounded-[2.25rem] transition-all duration-700",
-          "pl-3 pr-3 sm:pl-4 sm:pr-6 py-1.5 flex items-center justify-between gap-2 sm:gap-4",
+          "pl-3 pr-3 sm:pl-4 sm:pr-6 py-1 flex items-center justify-between gap-2 sm:gap-4",
           scrolled ? "navbar-glass-scrolled" : "navbar-glass-top"
         )}>
 
@@ -141,7 +141,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             {/* Logo — constrained on mobile, large on desktop */}
             <Logo
               isAdmin={profile?.role === 'admin'}
-              iconClassName="w-[90px] sm:w-[140px] md:w-[180px] lg:w-[220px]"
+              iconClassName="w-[90px] sm:w-[130px] md:w-[170px] lg:w-[200px]"
             />
             {/* FIXNOW Brand Text — visible on ALL screens */}
             <div className="flex flex-col -space-y-0.5">
