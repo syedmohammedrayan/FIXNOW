@@ -184,6 +184,11 @@ export function useTechnicianData() {
         setOrderHistory(completed);
         setDeclinedJobs(declined.sort((a: any, b: any) => new Date(b.declinedAt || b.updatedAt || b.createdAt || 0).getTime() - new Date(a.declinedAt || a.updatedAt || a.createdAt || 0).getTime()));
 
+        // Fetch Exact Stats from Backend "Oracle" Logic
+        const statsRes = await fetch(`${API_BASE}/api/users/techs/${uid}/stats`);
+        const statsData = await statsRes.json();
+        const dbEarnings = statsData.success ? (parseFloat(statsData.stats.totalEarnings) || 0) : 0;
+
         const transRes = await fetch(`${API_BASE}/api/bookings/transactions/technician/${uid}`);
         const transData = await transRes.json();
         if (transData.success) {
@@ -200,26 +205,25 @@ export function useTechnicianData() {
             return acc;
           }, 0);
           
-          // Use functional state update to ensure we always have latest profile
           setProfile((prev: any) => {
-            // Priority: Total Earnings from DB if available, otherwise calculated from transactions
-            const finalEarnings = grossEarnings > (prev.earnings || 0) ? grossEarnings : (prev.earnings || 0);
+            // Priority: Stats API (Exact) > Manual Transactions > Profile Field
+            const finalEarnings = Math.max(grossEarnings, dbEarnings, prev.earnings || 0);
             const updatedProfile = { 
               ...prev, 
               earnings: finalEarnings, 
               netEarnings,
-              totalJobs: prev.completed_jobs || prev.completedJobs || completed.length 
+              totalJobs: statsData.success ? statsData.stats.ordersCompleted : (prev.completed_jobs || prev.completedJobs || completed.length) 
             };
             
-            // Now that we have updated profile, fetch active broadcasts
             fetchActiveBroadcasts(updatedProfile);
             return updatedProfile;
           });
         } else {
-          // Fallback if transaction fetch fails
           setProfile((prev: any) => {
-            fetchActiveBroadcasts(prev);
-            return prev;
+            const finalEarnings = Math.max(dbEarnings, prev.earnings || 0);
+            const updatedProfile = { ...prev, earnings: finalEarnings };
+            fetchActiveBroadcasts(updatedProfile);
+            return updatedProfile;
           });
         }
       }

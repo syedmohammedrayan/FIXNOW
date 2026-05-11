@@ -189,6 +189,12 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !user) return;
     const file = e.target.files[0];
+
+    // 1. Optimistic Update with local preview
+    const previewUrl = URL.createObjectURL(file);
+    const previousAvatar = profile.avatar;
+    setProfile((prev: any) => ({ ...prev, avatar: previewUrl }));
+
     setUploadingAvatar(true);
     try {
       const uploadData = new FormData();
@@ -197,14 +203,20 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (res.data && res.data.avatar) {
-        const url = res.data.avatar;
-        // Backend already updates both users and technicians collections
-        setProfile((prev: any) => ({ ...prev, avatar: url }));
+        // 2. Final Update with server URL
+        const finalUrl = getAvatarUrl(res.data.avatar) || res.data.avatar;
+        setProfile((prev: any) => ({ ...prev, avatar: finalUrl }));
+        // Clean up the local preview URL
+        URL.revokeObjectURL(previewUrl);
       } else {
         throw new Error('Upload failed');
       }
     } catch (err) {
       console.error('Failed to upload avatar', err);
+      // Rollback on failure
+      setProfile((prev: any) => ({ ...prev, avatar: previousAvatar }));
+      URL.revokeObjectURL(previewUrl);
+      alert('Failed to upload avatar. Protocol interrupted.');
     } finally {
       setUploadingAvatar(false);
     }
