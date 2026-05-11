@@ -189,6 +189,11 @@ export function useTechnicianData() {
         if (transData.success) {
           const myTrans = transData.transactions;
           setTransactions(myTrans);
+          const grossEarnings = myTrans.reduce((acc: number, t: any) => {
+            if (t.type === "service_payment" && t.status === "Success") return acc + (parseFloat(t.amount) || 0);
+            return acc;
+          }, 0);
+          
           const netEarnings = myTrans.reduce((acc: number, t: any) => {
             if (t.type === "service_payment" && t.status === "Success") return acc + (parseFloat(t.amount) || 0);
             if (t.type === "tool_purchase" && t.paymentMethod === "deduct_from_earnings" && t.status === "Success") return acc - (parseFloat(t.amount) || 0);
@@ -197,7 +202,14 @@ export function useTechnicianData() {
           
           // Use functional state update to ensure we always have latest profile
           setProfile((prev: any) => {
-            const updatedProfile = { ...prev, earnings: netEarnings, totalJobs: prev.completedJobs || completed.length };
+            // Priority: Total Earnings from DB if available, otherwise calculated from transactions
+            const finalEarnings = grossEarnings > (prev.earnings || 0) ? grossEarnings : (prev.earnings || 0);
+            const updatedProfile = { 
+              ...prev, 
+              earnings: finalEarnings, 
+              netEarnings,
+              totalJobs: prev.completed_jobs || prev.completedJobs || completed.length 
+            };
             
             // Now that we have updated profile, fetch active broadcasts
             fetchActiveBroadcasts(updatedProfile);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = require('express').Router();
-const { db } = require('../config/firebaseAdmin');
+const { db, admin } = require('../config/firebaseAdmin');
 const { notifyUser } = require('../services/notifications');
 const { getRealETA, getBatchETA } = require('../services/etaService');
 
@@ -416,6 +416,48 @@ router.post('/update-status', async (req, res) => {
     }
     
     await db.collection('bookings').doc(bookingId).update(update);
+    
+    // ── TRANSACTION & STATS LOGIC ──
+    if (status === 'Completed') {
+      const dRef = await db.collection('bookings').doc(bookingId).get();
+      const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
+      
+      if (booking && (isPaid || booking.payment_status === 'Paid')) {
+        const finalAmount = parseFloat(totalAmount || booking.total_amount || 0);
+        const techId = technicianId || booking.technician_id;
+        
+        if (techId && finalAmount > 0) {
+          // 1. Create Transaction
+          const txnId = 'TXN_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+          const transaction = {
+            id: txnId,
+            booking_id: bookingId,
+            technician_id: techId,
+            amount: finalAmount,
+            type: 'service_payment',
+            status: 'Success',
+            description: `Payment for ${booking.category || 'Service'} #${bookingId.slice(-6)}`,
+            created_at: new Date().toISOString()
+          };
+          await db.collection('transactions').doc(txnId).set(transaction);
+          
+          // 2. Update Technician Aggregate Stats (Exact Till Date)
+          if (admin && admin.firestore) {
+            try {
+              await db.collection('technicians').doc(techId).update({
+                earnings: admin.firestore.FieldValue.increment(finalAmount),
+                completed_jobs: admin.firestore.FieldValue.increment(1),
+                total_jobs: admin.firestore.FieldValue.increment(1),
+                updated_at: new Date().toISOString()
+              });
+              console.log(`💰 Updated earnings for tech ${techId}: +₹${finalAmount}`);
+            } catch (err) {
+              console.error("Failed to update tech aggregate stats:", err.message);
+            }
+          }
+        }
+      }
+    }
     
     const dRef = await db.collection('bookings').doc(bookingId).get();
     const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
