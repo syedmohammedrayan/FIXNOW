@@ -52,6 +52,14 @@ export default function LoginPage() {
           const profileData = await profileRes.json();
           if (profileData.success && profileData.user) {
             const dbRole = profileData.user.role;
+            
+            if (dbRole !== role) {
+              await auth.signOut();
+              setError(`These login credentials are not for the ${role} panel.`);
+              setLoading(false);
+              return;
+            }
+
             if (dbRole === 'technician') {
               if (!profileData.user.approved) {
                 setError('Your account is pending admin approval. Please wait.');

@@ -30,12 +30,25 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
         const t = setTimeout(() => {
           if (!auth.currentUser) router.push('/auth/login?role=admin');
         }, 2000);
         return () => clearTimeout(t);
+      } else {
+        try {
+          const res = await fetch(`${API_BASE}/api/users/${u.uid}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.user && data.user.role !== 'admin') {
+              await auth.signOut();
+              router.replace('/auth/login?role=admin');
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }
     });
     return () => unsub();

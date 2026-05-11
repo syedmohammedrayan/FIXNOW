@@ -50,13 +50,26 @@ export default function TechnicianDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
         // Only redirect if truly no user after a small grace period
         const t = setTimeout(() => {
           if (!auth.currentUser) router.push('/auth/login?role=technician');
         }, 2000);
         return () => clearTimeout(t);
+      } else {
+        try {
+          const res = await fetch(`${API_BASE}/api/users/${u.uid}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.user && data.user.role !== 'technician') {
+              await auth.signOut();
+              router.replace('/auth/login?role=technician');
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }
     });
     return () => unsub();

@@ -45,9 +45,22 @@ export function useDashboardData() {
       }
     };
 
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       setUserId(u?.uid || null);
       if (u?.uid) {
+        try {
+          const res = await fetch(`${API_BASE}/api/users/${u.uid}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.user && data.user.role !== 'customer') {
+              await auth.signOut();
+              window.location.href = '/auth/login?role=customer';
+              return;
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
         fetchReminders(u.uid);
         fetchUserProfile(u.uid);
       } else {
