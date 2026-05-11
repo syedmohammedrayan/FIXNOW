@@ -53,7 +53,9 @@ export default function DashboardHeader({
     <div className="flex flex-col sm:flex-row sm:flex-wrap justify-between items-start sm:items-center gap-5 sm:gap-8 mb-6 sm:mb-12">
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 sm:gap-10 w-full sm:w-auto">
         <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black text-slate-950 tracking-tighter italic">Customer Interface</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-300 to-slate-600 tracking-tighter italic drop-shadow-[0_10px_25px_rgba(255,255,255,0.08)]">
+            Customer Interface
+          </h1>
           <div className="flex items-center gap-3 mt-2 sm:mt-3">
             <p className="text-slate-600 font-bold uppercase tracking-[0.3em] text-[9px] sm:text-[10px]">AI-Powered Dispatch Network</p>
           </div>
