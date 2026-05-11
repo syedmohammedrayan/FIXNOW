@@ -168,7 +168,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-white transition-all active:scale-95 flex items-center gap-2"
             >
               <Info className="size-3.5" />
-              Protocol
+              About
             </button>
           </div>
 
@@ -219,18 +219,18 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                   </div>
                 </div>
               ) : (
-                <div className="hidden lg:flex items-center gap-5">
+                <div className="hidden lg:flex items-center gap-3">
                   <Link
                     href="/auth/login"
-                    className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-all"
+                    className="px-5 py-2.5 rounded-[1.25rem] border border-white/20 bg-white/5 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:bg-white/10 hover:border-white/30 active:scale-95"
                   >
-                    Access
+                    Log In
                   </Link>
                   <Link
                     href="/auth/signup"
                     className="px-7 py-3 bg-white text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl hover:scale-105"
                   >
-                    Join Protocol
+                    Sign Up
                   </Link>
                 </div>
               )}
@@ -345,7 +345,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                       active={false}
                       onClick={() => { openAboutModal(); }}
                     >
-                      Protocol Intel
+                      About Us
                     </DrawerNavItem>
                   </div>
                 </div>
@@ -393,16 +393,16 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
                     <Link
                       href="/auth/login"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-center py-3.5 rounded-2xl bg-white/[0.05] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                      className="flex items-center justify-center py-3.5 rounded-2xl bg-white/[0.05] border border-white/[0.08] text-white text-[10px] font-black uppercase tracking-widest transition-all hover:bg-white/[0.08] active:scale-95"
                     >
-                      Sign In
+                      Log In
                     </Link>
                     <Link
                       href="/auth/signup"
                       onClick={() => setIsOpen(false)}
                       className="flex items-center justify-center py-3.5 rounded-2xl bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest shadow-2xl transition-all active:scale-95"
                     >
-                      Join Now
+                      Sign Up
                     </Link>
                   </div>
                 )}
