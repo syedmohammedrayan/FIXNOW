@@ -196,7 +196,7 @@ export default function ActiveJobCard({
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="mt-8 p-10 bg-slate-900/60 border border-white/10 rounded-[3rem] backdrop-blur-2xl relative overflow-hidden group/otp shadow-2xl"
+                    className="mt-8 p-6 sm:p-10 bg-slate-900/60 border border-white/10 rounded-[2rem] sm:rounded-[3rem] backdrop-blur-2xl relative overflow-hidden group/otp shadow-2xl"
                   >
                     <div className="absolute top-0 right-0 p-8 opacity-5">
                       <ShieldCheck className="size-24 text-white" />
@@ -210,7 +210,7 @@ export default function ActiveJobCard({
                       <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Enter Client Passcode</h3>
                       <p className="text-slate-500 text-xs font-bold mb-8 opacity-70">Verify the 4-digit security code from the client to start the session.</p>
                       
-                      <div className="flex gap-4 justify-center mb-10">
+                      <div className="flex gap-2 sm:gap-4 justify-center mb-8 sm:mb-10">
                         {otpInput.map((digit, i) => (
                           <div key={i} className="relative">
                             <input

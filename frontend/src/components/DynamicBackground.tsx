@@ -64,13 +64,15 @@ export default function DynamicBackground() {
     const currentEl = slides[current];
     if (currentEl) {
       currentEl.style.opacity = '0';
-      currentEl.style.transform = 'scale(1.05) rotate(0.02deg)';
+      // Animate toward a slightly larger scale for a subtle "zoom in" effect
+      currentEl.style.transform = 'scale(var(--bg-scale-end))';
     }
 
     const nextEl = slides[next];
     if (nextEl) {
       nextEl.style.opacity = '1';
-      nextEl.style.transform = 'scale(1) rotate(0deg)';
+      // Start at the base "zoomed out" scale
+      nextEl.style.transform = 'scale(var(--bg-scale-start))';
     }
 
     currentSlide.current = next;
@@ -82,7 +84,7 @@ export default function DynamicBackground() {
       const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
       if (slides[0]) {
         slides[0].style.opacity = '1';
-        slides[0].style.transform = 'scale(1)';
+        slides[0].style.transform = 'scale(var(--bg-scale-start))';
       }
     }
     slideTimer.current = setInterval(advanceSlide, SLIDE_DURATION);
@@ -144,9 +146,9 @@ export default function DynamicBackground() {
               inset: 0,
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center right',
+              backgroundPosition: 'var(--bg-position)',
               opacity: 0,
-              transform: 'scale(1.06)',
+              transform: 'scale(var(--bg-scale-start))',
               filter: 'brightness(0.92) saturate(1.1)',
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity, transform',

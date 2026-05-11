@@ -412,10 +412,10 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
             />
             
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
+              exit={{ scale: 0.95, opacity: 0, y: 40 }}
+              className="relative w-full sm:max-w-lg bg-slate-900/95 backdrop-blur-3xl rounded-t-[2.5rem] sm:rounded-[3rem] overflow-y-auto max-h-[92vh] sm:max-h-[85vh] shadow-2xl border border-white/10"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-white to-emerald-500" />
               
