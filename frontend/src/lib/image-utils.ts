@@ -2,7 +2,7 @@ import { API_BASE } from './config';
 
 export const getAvatarUrl = (path: string | null | undefined): string | null => {
   if (!path || path === '') return null;
-  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) return path;
   
   // Ensure we don't double slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;

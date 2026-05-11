@@ -294,7 +294,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
               >
                 <Camera className="size-5" />
               </label>
-              <input id="avatar-upload" type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleAvatarUpload} />
+              <input id="avatar-upload" type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} />
               {profile.avatar && (
                 <button 
                   onClick={handleAvatarDelete}

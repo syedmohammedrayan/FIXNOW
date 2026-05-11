@@ -466,7 +466,7 @@ export default function TechnicianDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <TechnicianSidebar onOpenChange={setIsSidebarOpen} />
+      <TechnicianSidebar profile={profile} onOpenChange={setIsSidebarOpen} />
       
       <AnimatePresence>
         {notification && (

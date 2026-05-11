@@ -23,6 +23,7 @@ import { auth, db } from '@/lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { Logo } from '@/components/ui/Logo';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 /* ───────────────────────────────────────────── */
 /*  Menu Items Config                            */
@@ -75,7 +76,7 @@ const mainMenuItems: MenuItem[] = [
 /*  Sidebar Component                            */
 /* ───────────────────────────────────────────── */
 
-export default function TechnicianSidebar({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
+export default function TechnicianSidebar({ profile, onOpenChange }: { profile?: any, onOpenChange?: (open: boolean) => void }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -396,11 +397,11 @@ export default function TechnicianSidebar({ onOpenChange }: { onOpenChange?: (op
               >
                 <div className="relative shrink-0">
                   <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-cyan-500/50 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                    {userAvatar ? (
-                      <img src={userAvatar} className="w-full h-full object-cover" alt="Profile" />
-                    ) : (
-                      <User className="size-4 text-white/40 group-hover:text-cyan-400 transition-colors" />
-                    )}
+                      {(profile?.avatar || userAvatar) ? (
+                        <img src={getAvatarUrl(profile?.avatar || userAvatar)!} className="w-full h-full object-cover" alt="Profile" />
+                      ) : (
+                        <User className="size-4 text-white/40 group-hover:text-cyan-400 transition-colors" />
+                      )}
                   </div>
                   <div className="absolute -bottom-1 -right-1 size-3.5 bg-slate-900 rounded-full flex items-center justify-center">
                     <Settings className="size-2.5 text-cyan-400" />
@@ -426,21 +427,21 @@ export default function TechnicianSidebar({ onOpenChange }: { onOpenChange?: (op
               animate={{ opacity: 1 }} 
               className="flex flex-col items-center gap-3 w-full"
             >
-              <Link 
-                href="/technician/dashboard#profile" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group"
-                title="Profile Settings"
-              >
-                {userAvatar ? (
-                  <img src={userAvatar} className="w-full h-full object-cover" alt="Profile" />
-                ) : (
-                  <User className="size-5 text-white/40 group-hover:text-cyan-400 transition-colors" />
-                )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                  <Settings className="size-4 text-white" />
-                </div>
-              </Link>
+                <Link 
+                  href="/technician/dashboard#profile" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group"
+                  title="Profile Settings"
+                >
+                  {(profile?.avatar || userAvatar) ? (
+                    <img src={getAvatarUrl(profile?.avatar || userAvatar)!} className="w-full h-full object-cover" alt="Profile" />
+                  ) : (
+                    <User className="size-5 text-white/40 group-hover:text-cyan-400 transition-colors" />
+                  )}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                    <Settings className="size-4 text-white" />
+                  </div>
+                </Link>
 
               <button
                 onClick={handleLogout}
