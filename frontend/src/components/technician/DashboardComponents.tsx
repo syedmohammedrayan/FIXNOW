@@ -19,45 +19,55 @@ export function StatCard({
     cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 shadow-cyan-500/10",
     emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10",
     white: "text-white bg-white/10 border-white/20 shadow-white/5",
-    slate: "text-slate-400 bg-white/5 border-white/10 shadow-black/20",
+    slate: "text-slate-400 bg-slate-500/10 border-slate-500/20 shadow-slate-500/10",
+  };
+
+  const dotColors: Record<string, string> = {
+    cyan: "bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]",
+    emerald: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
+    white: "bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]",
+    slate: "bg-slate-400",
   };
 
   return (
-    <div className="bg-slate-900/40 backdrop-blur-3xl p-4 sm:p-6 lg:p-7 border border-white/10 rounded-[2.5rem] flex items-center justify-between group hover:border-white/20 overflow-hidden shadow-xl">
-      <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+    <div className="bg-[#0B0F17]/90 backdrop-blur-[40px] p-4 sm:p-6 lg:p-7 border border-white/[0.08] rounded-[1.5rem] sm:rounded-[2rem] flex flex-col justify-between group hover:border-white/[0.15] hover:bg-[#0F141E]/90 overflow-hidden shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)] transition-all duration-500 aspect-[4/3] sm:aspect-auto sm:min-h-[180px] relative">
+      {/* Subtle Background Glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] blur-[40px] -mr-16 -mt-16 group-hover:bg-white/[0.04] transition-colors duration-500 pointer-events-none" />
+
+      <div className="flex justify-between items-start relative z-10">
         <div
           className={cn(
-            "p-3 sm:p-5 rounded-xl sm:rounded-2xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shrink-0",
+            "p-2.5 sm:p-4 rounded-xl border transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg",
             colors[color] || colors.slate,
           )}
         >
           {icon}
         </div>
-        <div className="min-w-0">
-          <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 truncate">
-            {label}
-          </p>
-          <p className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter truncate">
-            {value}
-          </p>
+        
+        {/* Live Indicator */}
+        <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.05] px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full backdrop-blur-md">
+           <span className={cn("size-1.5 sm:size-2 rounded-full animate-pulse", dotColors[color] || dotColors.slate)} />
+           <span className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Sync</span>
         </div>
       </div>
-      <div className="hidden sm:flex flex-col items-end gap-2 shrink-0 ml-2">
-        <span
+
+      <div className="relative z-10 mt-auto pt-4 sm:pt-6">
+        <p className="text-xl sm:text-2xl lg:text-4xl font-black text-white tracking-tighter truncate leading-none mb-1 sm:mb-1.5">
+          {value}
+        </p>
+        <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mb-2 sm:mb-3">
+          {label}
+        </p>
+        
+        <div
           className={cn(
-            "text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full border shadow-sm",
-            trend.includes("+") || trend.includes("High")
-              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
-              : "text-rose-400 bg-rose-500/10 border-rose-500/20",
+            "inline-block text-[8px] sm:text-[9px] font-black px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border shadow-sm truncate max-w-full transition-colors",
+            trend.includes("+") || trend.includes("High") || trend.includes("Ready")
+              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 group-hover:bg-emerald-500/20"
+              : "text-slate-400 bg-slate-500/10 border-slate-500/20 group-hover:bg-slate-500/20",
           )}
         >
           {trend}
-        </span>
-        <div className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-            Live
-          </span>
         </div>
       </div>
     </div>

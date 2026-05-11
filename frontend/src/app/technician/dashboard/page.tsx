@@ -503,7 +503,7 @@ export default function TechnicianDashboard() {
             <ProfileSettings user={user} profile={profile} setProfile={setProfile} />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
                 <StatCard icon={<DollarSign className="w-5 h-5" />} label="Gross Earnings" value={`₹${profile.earnings.toLocaleString()}`} trend="+12% from last week" color="cyan" />
                 <StatCard icon={<Star className="w-5 h-5" />} label="Service Rating" value={`${profile.rating.toFixed(1)}`} trend="Highly Rated" color="emerald" />
                 <StatCard icon={<Briefcase className="w-5 h-5" />} label="Total Tasks" value={profile.totalJobs.toString()} trend="+3 completed today" color="slate" />
