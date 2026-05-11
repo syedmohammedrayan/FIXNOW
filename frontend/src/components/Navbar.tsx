@@ -127,12 +127,12 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
     <>
       {/* ── Floating Glass Pill Navbar ── */}
       <nav className={cn(
-        "fixed top-0 left-0 right-0 z-[100] px-3 sm:px-5 pt-3 pb-2 transition-all duration-700 ease-out",
+        "fixed top-0 left-0 right-0 z-[100] px-2 sm:px-4 pt-2 sm:pt-4 pb-2 transition-all duration-700 ease-out",
         !visible && "-top-32 opacity-0 pointer-events-none"
       )}>
         <div className={cn(
           "w-full max-w-7xl mx-auto rounded-[1.5rem] sm:rounded-[2rem] border backdrop-blur-3xl transition-all duration-700",
-          "px-3 sm:px-6 py-1 flex items-center justify-between gap-2 sm:gap-4",
+          "pl-2 pr-3 sm:pl-3 sm:pr-6 py-1 flex items-center justify-between gap-2 sm:gap-4",
           scrolled
             ? "bg-slate-950/70 border-white/[0.12] shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
             : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2)]"
@@ -147,14 +147,14 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             />
             {/* FIXNOW Brand Text — visible on ALL screens */}
             <div className="flex flex-col -space-y-0.5">
-              <span className="text-base sm:text-xl md:text-2xl font-black text-white uppercase italic tracking-tighter leading-none drop-shadow-[0_0_16px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_28px_rgba(255,255,255,0.5)] transition-all duration-500 select-none whitespace-nowrap">
+              <span className="text-xl sm:text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter leading-none drop-shadow-[0_0_16px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_28px_rgba(255,255,255,0.5)] transition-all duration-500 select-none whitespace-nowrap">
                 FIXNOW
               </span>
               <span className={cn(
-                "text-[7px] sm:text-[8px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] opacity-50 group-hover:opacity-90 transition-opacity duration-500 whitespace-nowrap",
+                "text-[7px] sm:text-[9px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] opacity-50 group-hover:opacity-90 transition-opacity duration-500 whitespace-nowrap",
                 profile?.role === 'admin' ? "text-amber-400" : "text-cyan-400"
               )}>
-                {profile?.role === 'admin' ? 'Command' : 'Services'}
+                {profile?.role === 'admin' ? 'Command Matrix' : 'Elite Network'}
               </span>
             </div>
           </Link>
