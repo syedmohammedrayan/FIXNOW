@@ -128,7 +128,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       {/* ── Pill Navbar (unchanged shape/theme) ── */}
       <nav className={cn(
         "fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ease-out",
-        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl overflow-hidden",
+        "w-[94%] sm:w-[90%] max-w-7xl border backdrop-blur-3xl shadow-2xl",
         scrolled 
           ? "bg-slate-950/40 border-white/[0.08] top-3 py-2.5 sm:py-3 rounded-[1.5rem] sm:rounded-[2.5rem]" 
           : "bg-white/[0.04] border-white/[0.08] top-5 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2.5rem]",
