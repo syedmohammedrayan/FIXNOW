@@ -60,7 +60,7 @@ export default function TechnicianHeader({
               <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/40 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-slate-400" />
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                  Standby Mode
+                  Offline
                 </span>
               </div>
             )}
@@ -116,7 +116,7 @@ export default function TechnicianHeader({
                   : "text-slate-500 hover:text-slate-950",
               )}
             >
-              Standby
+              Go Offline
             </button>
           </div>
 
