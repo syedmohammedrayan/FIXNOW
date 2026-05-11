@@ -340,7 +340,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                             className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
                           >
                             <History className="size-3.5" />
-                            Operations Intel
+                            Details
                           </button>
                         )}
                         
