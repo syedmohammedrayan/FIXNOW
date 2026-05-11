@@ -618,7 +618,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-3xl p-12 border border-white/10 rounded-[3rem] shadow-2xl overflow-hidden"
+              className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-3xl p-6 sm:p-12 border border-white/10 rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-y-auto max-h-[90vh]"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rose-600 to-orange-600" />
               
