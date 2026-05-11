@@ -229,7 +229,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex relative">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col relative">
       <Sidebar 
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -240,13 +240,17 @@ export default function AdminDashboard() {
         handleSignOut={handleSignOut}
       />
 
-      <main className="flex-grow overflow-y-auto overflow-x-hidden relative custom-scrollbar w-full min-w-0">
+      <main className="flex-grow flex flex-col relative w-full min-w-0">
         <Navbar 
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           fetchData={fetchData}
           setShowAddModal={setShowAddModal}
+          techsCount={techs.length}
+          toolOrdersCount={toolOrders.filter(o => o.status === 'Pending').length}
+          handleSignOut={handleSignOut}
         />
 
         <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">

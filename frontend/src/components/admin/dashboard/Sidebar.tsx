@@ -46,8 +46,8 @@ export function Sidebar({
     { icon: <Bell />,            label: 'Notifications', tab: 'notifications' },
   ];
 
-  // Sidebar is "expanded" on desktop when open; on mobile it's a full drawer
-  const desktopWidth = sidebarOpen ? 'lg:w-[260px]' : 'lg:w-[72px]';
+  // Sidebar is now a mobile-only right drawer
+  const desktopWidth = 'lg:hidden';
 
   return (
     <>
@@ -69,17 +69,16 @@ export function Sidebar({
         initial={false}
         className={cn(
           // Base
-          'fixed top-0 left-0 h-screen z-50 flex flex-col',
+          'fixed top-0 right-0 h-screen z-50 flex flex-col',
           // Background / glass - Midnight Glass Theme
-          'bg-slate-950/40 backdrop-blur-[40px] border-r border-white/[0.08]',
-          'shadow-[10px_0_50px_rgba(0,0,0,0.3),inset_1px_0_0_rgba(255,255,255,0.05)]',
-          // Mobile: full-width drawer; Desktop: collapsible column
-          'w-[280px] lg:relative lg:z-auto',
+          'bg-slate-950/80 backdrop-blur-[40px] border-l border-white/[0.08]',
+          'shadow-[-10px_0_50px_rgba(0,0,0,0.5),inset_1px_0_0_rgba(255,255,255,0.05)]',
+          // Mobile: full-width drawer; Desktop: hidden
+          'w-[280px]',
           desktopWidth,
-          'transition-[width] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]',
+          'transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]',
           // Translate
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          'transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]'
+          sidebarOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* Dynamic mesh glow effects */}
@@ -115,20 +114,9 @@ export function Sidebar({
           {/* Close button on mobile */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto size-9 flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/60 hover:text-white transition-all active:scale-90 lg:hidden"
+            className="ml-auto size-9 flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/60 hover:text-white transition-all active:scale-90"
           >
             <X className="size-4" />
-          </button>
-
-          {/* Collapse toggle on desktop */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-slate-900 border border-white/[0.1] hover:border-cyan-500/50 items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all active:scale-90 group"
-          >
-            {sidebarOpen
-              ? <ChevronLeft className="size-3.5 text-white/40 group-hover:text-cyan-400" />
-              : <ChevronRight className="size-3.5 text-white/40 group-hover:text-cyan-400" />
-            }
           </button>
         </div>
 
@@ -178,7 +166,7 @@ export function Sidebar({
             className={cn(
               'flex items-center gap-4 rounded-2xl transition-all duration-300 group',
               'bg-rose-500/5 border border-rose-500/10 text-rose-400/70 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20',
-              sidebarOpen ? 'w-full px-5 py-3.5' : 'lg:p-3.5 lg:justify-center w-full px-5 py-3.5'
+              'w-full px-5 py-3.5'
             )}
           >
             <LogOut className="size-[18px] shrink-0 transition-transform group-hover:-translate-x-0.5" />

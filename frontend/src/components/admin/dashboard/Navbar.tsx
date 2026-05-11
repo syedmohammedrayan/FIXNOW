@@ -1,13 +1,17 @@
 import React from 'react';
-import { Menu, RefreshCw } from 'lucide-react';
+import { Menu, RefreshCw, LayoutDashboard, Activity, ShieldCheck, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 
 interface NavbarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   activeTab: string;
+  setActiveTab: (tab: any) => void;
   fetchData: () => void;
   setShowAddModal: (show: boolean) => void;
+  techsCount: number;
+  toolOrdersCount: number;
+  handleSignOut: () => void;
 }
 
 const TAB_LABELS: Record<string, string> = {
@@ -21,51 +25,102 @@ const TAB_LABELS: Record<string, string> = {
   'notifications':  'Notifications',
 };
 
-export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, fetchData, setShowAddModal }: NavbarProps) {
+export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, fetchData, setShowAddModal, techsCount, toolOrdersCount, handleSignOut }: NavbarProps) {
+  const navLinks = [
+    { icon: <LayoutDashboard className="w-5 h-5" />, label: 'Overview',      tab: 'overview' },
+    { icon: <Activity className="w-5 h-5" />,        label: 'Live Map',      tab: 'live-map' },
+    { icon: <ShieldCheck className="w-5 h-5" />,     label: 'Approvals',     tab: 'approvals',     count: techsCount },
+    { icon: <Users className="w-5 h-5" />,           label: 'Technicians',   tab: 'techs' },
+    { icon: <ClipboardList className="w-5 h-5" />,   label: 'Bookings',      tab: 'bookings' },
+    { icon: <ShoppingCart className="w-5 h-5" />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
+    { icon: <DollarSign className="w-5 h-5" />,      label: 'Transactions',  tab: 'transactions' },
+    { icon: <Bell className="w-5 h-5" />,            label: 'Notifications', tab: 'notifications' },
+  ];
+
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 h-[64px] sm:h-[72px] bg-slate-950/80 backdrop-blur-2xl border-b border-white/[0.07] shadow-[0_4px_24px_rgba(0,0,0,0.4)] shrink-0">
-      {/* Left — hamburger + page title */}
-      <div className="flex items-center gap-3 min-w-0">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 shrink-0"
-          aria-label="Toggle sidebar"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+    <div className="px-4 sm:px-6 pt-4 shrink-0 sticky top-0 z-30">
+      <header className="flex items-center justify-between gap-3 px-4 sm:px-6 h-[64px] sm:h-[72px] bg-slate-900/40 backdrop-blur-3xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl relative overflow-hidden">
+        {/* Cinematic subtle glow inside navbar */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
-        <div className="min-w-0">
-          <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
-            {TAB_LABELS[activeTab] || activeTab}
-          </h2>
-          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.25em] hidden sm:block">Admin Console</p>
-        </div>
-      </div>
-
-      {/* Right — actions */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Refresh */}
-        <button
-          onClick={fetchData}
-          className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95"
-          title="Refresh Data"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </button>
-
-        {/* Brand Logo — Replaces Add Technician Button */}
-        <div className="flex items-center">
-          <Logo 
-            isAdmin 
-            iconClassName="w-[110px] sm:w-[130px] opacity-90 hover:opacity-100 transition-opacity" 
-          />
+        {/* ── MOBILE: Hamburger + Title ── */}
+        <div className="flex items-center gap-3 min-w-0 lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all active:scale-95 shrink-0"
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="min-w-0">
+            <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
+              {TAB_LABELS[activeTab] || activeTab}
+            </h2>
+          </div>
         </div>
 
-        {/* Admin badge — Hidden on mobile for better logo spacing */}
-        <div className="hidden sm:flex w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] items-center justify-center text-white font-black text-[8px] uppercase tracking-widest shrink-0">
-          ADM
+        {/* ── DESKTOP: Icon Navigation (Left Side) ── */}
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0 relative z-10">
+          {navLinks.map((link) => {
+            const isActive = activeTab === link.tab;
+            return (
+              <button
+                key={link.tab}
+                onClick={() => setActiveTab(link.tab)}
+                className={`relative p-2.5 rounded-xl transition-all duration-300 group ${
+                  isActive 
+                    ? 'bg-white/10 text-cyan-400 shadow-[inset_0_0_12px_rgba(255,255,255,0.05)] border border-white/[0.08]' 
+                    : 'text-slate-400 hover:bg-white/[0.05] hover:text-white border border-transparent'
+                }`}
+              >
+                {link.icon}
+                {link.count !== undefined && link.count > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-[8px] font-black text-white shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+                    {link.count}
+                  </span>
+                )}
+                
+                {/* Tooltip */}
+                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+                  {link.label}
+                </div>
+              </button>
+            );
+          })}
         </div>
-      </div>
-    </header>
+
+        {/* Right — Actions & Logo */}
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0 relative z-10">
+          <div className="hidden lg:flex items-center gap-2 border-r border-white/10 pr-4 mr-2">
+            <button
+              onClick={fetchData}
+              className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.05] transition-all group relative"
+            >
+              <RefreshCw className="w-5 h-5" />
+              <div className="absolute -bottom-10 right-0 px-2.5 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+                Refresh
+              </div>
+            </button>
+            
+            <button
+              onClick={handleSignOut}
+              className="p-2.5 rounded-xl text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all border border-transparent group relative"
+            >
+              <LogOut className="w-5 h-5" />
+              <div className="absolute -bottom-10 right-0 px-2.5 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+                Logout
+              </div>
+            </button>
+          </div>
+
+          <div className="flex items-center">
+            <Logo 
+              isAdmin 
+              iconClassName="w-[100px] sm:w-[120px] opacity-90 hover:opacity-100 transition-opacity" 
+            />
+          </div>
+        </div>
+      </header>
+    </div>
   );
 }
