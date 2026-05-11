@@ -115,24 +115,24 @@ export default function DynamicLoginPage() {
       >
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-slate-500/10 blur-3xl -z-10 rounded-[2.5rem]" />
         
-        <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 sm:p-12">
+        <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden p-6 sm:p-12">
           <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
-            <header className="text-center mb-10">
+            <header className="text-center mb-8 sm:mb-10">
               <Logo 
                 isAdmin={roleParam === 'admin'} 
                 showText 
-                className="justify-center mb-8"
-                textClassName="text-3xl"
+                className="justify-center mb-6 sm:mb-8"
+                textClassName="text-2xl sm:text-3xl"
               />
               <div className="flex items-center justify-center gap-2 mt-2">
                 <Activity className="size-3 text-cyan-400 animate-pulse" />
-                <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                <p className="text-slate-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em]">
                   Secure Authentication Node
                 </p>
               </div>
             </header>
 
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
               {error && (
                 <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-widest text-center">
                   {error}
@@ -147,7 +147,7 @@ export default function DynamicLoginPage() {
                     required 
                     type="email" 
                     placeholder="ENTER EMAIL ADDRESS" 
-                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold uppercase text-xs" 
+                    className="pl-12 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold uppercase text-xs" 
                     value={formData.email} 
                     onChange={e => setFormData({...formData, email: e.target.value})} 
                   />
@@ -162,7 +162,7 @@ export default function DynamicLoginPage() {
                     required 
                     type={showPassword ? "text" : "password"} 
                     placeholder="••••••••" 
-                    className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold text-xs" 
+                    className="pl-12 pr-12 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-700 focus-visible:ring-white/10 focus-visible:border-white font-bold text-xs" 
                     value={formData.password} 
                     onChange={e => setFormData({...formData, password: e.target.value})} 
                   />
@@ -179,7 +179,7 @@ export default function DynamicLoginPage() {
               <Button 
                 disabled={loading} 
                 type="submit" 
-                className="w-full h-16 rounded-2xl font-black text-xs tracking-[0.4em] uppercase mt-4 transition-all duration-500 shadow-xl bg-white text-slate-950 hover:bg-slate-200 shadow-white/10 active:scale-[0.98]"
+                className="w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl font-black text-xs tracking-[0.4em] uppercase mt-4 transition-all duration-500 shadow-xl bg-white text-slate-950 hover:bg-slate-200 shadow-white/10 active:scale-[0.98]"
               >
                 {loading ? 'Verifying Cipher...' : 'Initialize Session'}
               </Button>

@@ -35,19 +35,13 @@ export const Logo: React.FC<LogoProps> = ({
         )} />
         
         <div className={cn(
-          "relative flex items-center justify-center size-16 rounded-[1.5rem] shadow-2xl border transition-all duration-700 group-hover:scale-110 group-hover:rotate-2 overflow-hidden",
-          isLanding 
-            ? "bg-white/90 backdrop-blur-md border-white/40" 
-            : "bg-slate-900/40 backdrop-blur-md border-white/10",
+          "relative flex items-center justify-center size-16 transition-all duration-700 group-hover:scale-110 group-hover:rotate-2",
           iconClassName
         )}>
-          {/* Inner Gloss Effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-60" />
-          
           <img 
             src="https://ik.imagekit.io/smr2007/fixnow-logo.png" 
             alt="FIXNOW" 
-            className="w-14 h-14 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-transform duration-700 group-hover:scale-110"
+            className="size-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-transform duration-700 group-hover:scale-105"
           />
         </div>
       </div>
