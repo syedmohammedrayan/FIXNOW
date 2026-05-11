@@ -352,8 +352,8 @@ function SignupInner() {
 
                 {role && (
                   <div className="flex p-1 bg-white/10 border border-white/20 rounded-2xl mb-6 max-w-[280px] mx-auto">
-                    <button onClick={() => setRole('customer')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Customer</button>
-                    <button onClick={() => setRole('technician')} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Technician</button>
+                    <button onClick={() => setRole('customer')} className={cn("flex-1 py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Customer</button>
+                    <button onClick={() => setRole('technician')} className={cn("flex-1 py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all", role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white")}>Technician</button>
                   </div>
                 )}
 
@@ -403,22 +403,22 @@ function SignupInner() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Full Name</Label>
-                          <Input required placeholder="Full Name" className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                          <Input required placeholder="Full Name" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Email Address</Label>
-                          <Input required type="email" placeholder="your@email.com" className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                          <Input required type="email" placeholder="your@email.com" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Phone Number</Label>
-                          <Input required type="tel" placeholder="+91 98XXX XXXXX" className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                          <Input required type="tel" placeholder="+91 98XXX XXXXX" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">City / Address</Label>
-                          <Input required placeholder="City or Full Address" className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                          <Input required placeholder="City or Full Address" className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                         </div>
                       </div>
 
@@ -429,7 +429,7 @@ function SignupInner() {
                             required 
                             type={showPassword ? "text" : "password"} 
                             placeholder="Create a strong password" 
-                            className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold pr-14 focus:border-white/40 transition-all" 
+                            className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold pr-14 focus:border-white/40 transition-all" 
                             value={formData.password} 
                             onChange={e => setFormData({...formData, password: e.target.value})} 
                           />
@@ -447,7 +447,7 @@ function SignupInner() {
                         <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Password Hint</Label>
                         <Input 
                           placeholder="e.g. Favorite Color" 
-                          className="bg-white/10 border-white/20 h-14 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" 
+                          className="bg-white/10 border-white/20 h-14 sm:h-16 rounded-2xl px-5 text-white placeholder:text-slate-500 font-bold focus:border-white/40 transition-all" 
                           value={formData.passwordHint} 
                           onChange={e => setFormData({...formData, passwordHint: e.target.value})} 
                         />
@@ -488,7 +488,7 @@ function SignupInner() {
                         </motion.div>
                       )}
 
-                      <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-3xl mt-4 hover:bg-slate-100 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                      <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] rounded-3xl mt-4 hover:bg-slate-100 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                         {loading ? 'Creating Account...' : 'Create Account'}
                       </Button>
                     </form>
