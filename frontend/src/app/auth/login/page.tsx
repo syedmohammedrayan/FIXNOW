@@ -125,24 +125,24 @@ export default function LoginPage() {
       <FloatingOrbs />
 
       {/* Admin Quick Access */}
-      <div className="absolute top-8 right-8 z-50">
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
         <button 
           onClick={() => setRole(role === 'admin' ? 'customer' : 'admin')}
           className={cn(
-            "flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
+            "flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
             role === 'admin' 
               ? "bg-slate-950/5 border-slate-950/10 text-slate-950 hover:bg-slate-950/10" 
               : "bg-white/5 border-white/10 text-white hover:bg-white/10"
           )}
         >
           <div className={cn(
-            "size-2 rounded-full animate-pulse shadow-lg",
+            "size-1.5 sm:size-2 rounded-full animate-pulse shadow-lg",
             role === 'admin' ? "bg-cyan-500" : "bg-amber-500"
           )} />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-            {role === 'admin' ? 'Exit Admin Terminal' : 'Admin Terminal Access'}
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em]">
+            {role === 'admin' ? 'Exit Admin' : 'Admin Terminal'}
           </span>
-          {role === 'admin' ? <Cpu className="size-4" /> : <Shield className="size-4 text-amber-500" />}
+          {role === 'admin' ? <Cpu className="size-3.5 sm:size-4" /> : <Shield className="size-3.5 sm:size-4 text-amber-500" />}
         </button>
       </div>
       
@@ -155,7 +155,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{
                 boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
@@ -172,7 +172,7 @@ export default function LoginPage() {
               
               <div className="text-center mb-12 relative z-10">
                 <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="mb-10 justify-center group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.8] mb-6 drop-shadow-2xl">
+                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Admin <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Terminal
@@ -246,7 +246,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{ boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)' }}
             >
               {/* Back Arrow */}
@@ -269,7 +269,7 @@ export default function LoginPage() {
                 <Link href="/" className="inline-block mb-8 hover:scale-105 transition-transform">
                   <Logo isAdmin={false} showText />
                 </Link>
-                <h1 className="text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Welcome <br/>
                   <span className="text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Back.
@@ -281,7 +281,7 @@ export default function LoginPage() {
                   <button
                     onClick={() => setRole('customer')}
                     className={cn(
-                      "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                      "flex-1 py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
                       role === 'customer' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white"
                     )}
                   >
@@ -290,7 +290,7 @@ export default function LoginPage() {
                   <button
                     onClick={() => setRole('technician')}
                     className={cn(
-                      "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                      "flex-1 py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
                       role === 'technician' ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:text-white"
                     )}
                   >
@@ -327,7 +327,7 @@ export default function LoginPage() {
                           <Input 
                             type="email" 
                             placeholder="your@email.com" 
-                            className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
+                            className="bg-white/10 border-white/20 rounded-3xl h-14 sm:h-16 pl-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             required
@@ -342,7 +342,7 @@ export default function LoginPage() {
                           <Input 
                             type={showPassword ? "text" : "password"} 
                             placeholder="••••••••" 
-                            className="bg-white/10 border-white/20 rounded-3xl h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
+                            className="bg-white/10 border-white/20 rounded-3xl h-14 sm:h-16 pl-16 pr-16 text-white font-bold text-sm focus:border-cyan-400/40 transition-all placeholder:text-slate-500 shadow-inner"
                             value={formData.password}
                             onChange={(e) => setFormData({...formData, password: e.target.value})}
                             required
@@ -365,7 +365,7 @@ export default function LoginPage() {
                         <button type="button" onClick={() => setView('reset')} className="text-[11px] font-black text-cyan-400 uppercase tracking-widest hover:text-cyan-300 transition underline underline-offset-4">Forgot Password?</button>
                       </div>
 
-                      <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-6 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                      <Button type="submit" disabled={loading} className="w-full h-14 sm:h-16 bg-white text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-3xl hover:bg-slate-100 transition-all active:scale-[0.98] mt-6 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                         {loading ? <Loader2 className="size-6 animate-spin" /> : <>Login <ArrowRight className="size-5 ml-2" /></>}
                       </Button>
                     </form>

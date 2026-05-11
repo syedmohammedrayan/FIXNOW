@@ -13,7 +13,7 @@ interface TechnicianListProps {
 
 export default function TechnicianList({ technicians, onSelect, analyzing }: TechnicianListProps) {
   return (
-    <div className="lg:col-span-4 sticky top-24">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-8 px-2">
         <h2 className="text-xl font-black text-white tracking-tight">Active Dispatch</h2>
         {analyzing && <div className="radar-ring" />}

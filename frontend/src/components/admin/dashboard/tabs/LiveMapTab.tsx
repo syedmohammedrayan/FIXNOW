@@ -195,25 +195,21 @@ export function LiveMapTab() {
         </Map>
 
         {/* Legend / Overlay Controls */}
-        <div className="absolute bottom-8 left-8 z-10 space-y-3 pointer-events-none">
-          <div className="glass-panel border-white/10 bg-slate-950/50 backdrop-blur-md p-4 rounded-3xl border border-white/5 pointer-events-auto">
-            <h4 className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-3">Live Legend</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="size-3 rounded bg-white rotate-45 border border-slate-900 flex items-center justify-center">
-                  <Wrench className="size-2 text-slate-900 -rotate-45" />
+        <div className="absolute top-20 left-4 sm:top-auto sm:bottom-8 sm:left-8 z-10 space-y-3 pointer-events-none">
+          <div className="glass-panel border-white/10 bg-slate-950/50 backdrop-blur-md p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-white/5 pointer-events-auto">
+            <h4 className="text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 sm:mb-3">Live Legend</h4>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="size-2.5 sm:size-3 rounded bg-white rotate-45 border border-slate-900 flex items-center justify-center">
+                  <Wrench className="size-1.5 sm:size-2 text-slate-900 -rotate-45" />
                 </div>
-                <span className="text-[9px] font-black text-white uppercase tracking-widest">Active Technician (🛠️)</span>
+                <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest">Technician</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="size-3 rounded-full bg-emerald-500 border border-white/20 flex items-center justify-center">
-                  <MapPin className="size-2 text-white" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="size-2.5 sm:size-3 rounded-full bg-emerald-500 border border-white/20 flex items-center justify-center">
+                  <MapPin className="size-1.5 sm:size-2 text-white" />
                 </div>
-                <span className="text-[9px] font-black text-white uppercase tracking-widest">Active Customer (📍)</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="size-3 rounded bg-slate-800 rotate-45 border border-slate-700" />
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Offline / Idle Tech</span>
+                <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest">Customer</span>
               </div>
             </div>
           </div>

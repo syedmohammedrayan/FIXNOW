@@ -237,31 +237,31 @@ function SignupInner() {
       <FloatingOrbs />
 
       {/* Admin Quick Access */}
-      <div className="absolute top-8 right-8 z-50">
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
         <button 
           onClick={() => setRole(role === 'admin' ? null : 'admin')}
           className={cn(
-            "flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
+            "flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border transition-all group backdrop-blur-md shadow-2xl",
             role === 'admin' 
               ? "bg-slate-950/5 border-slate-950/10 text-slate-950 hover:bg-slate-950/10" 
               : "bg-white/5 border-white/10 text-white hover:bg-white/10"
           )}
         >
           <div className={cn(
-            "size-2 rounded-full animate-pulse shadow-lg",
+            "size-1.5 sm:size-2 rounded-full animate-pulse shadow-lg",
             role === 'admin' ? "bg-cyan-500" : "bg-amber-500"
           )} />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-            {role === 'admin' ? 'Exit Admin Terminal' : 'Admin Terminal Access'}
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em]">
+            {role === 'admin' ? 'Exit Admin' : 'Admin Terminal'}
           </span>
-          {role === 'admin' ? <Cpu className="size-4" /> : <Shield className="size-4 text-amber-500" />}
+          {role === 'admin' ? <Cpu className="size-3.5 sm:size-4" /> : <Shield className="size-3.5 sm:size-4 text-amber-500" />}
         </button>
       </div>
 
       <motion.div 
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="max-w-[440px] w-full relative z-10"
+        className="max-w-xl w-full relative z-10"
       >
         <AnimatePresence mode="wait">
           {role === 'admin' ? (
@@ -271,7 +271,7 @@ function SignupInner() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="backdrop-blur-[60px] border border-white/30 rounded-[3.5rem] p-12 relative overflow-hidden group/card bg-white/5"
+              className="backdrop-blur-[60px] border border-white/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 relative overflow-hidden group/card bg-white/5"
               style={{
                 boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)'
               }}
@@ -286,7 +286,7 @@ function SignupInner() {
               
               <div className="text-center mb-12 relative z-10">
                 <Logo isAdmin={true} showText isLanding={true} textClassName="text-white" className="justify-center mb-10 group-hover/card:scale-105 transition-transform duration-700" />
-                <h1 className="text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
+                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-6 drop-shadow-2xl">
                   Registry <br/> 
                   <span className="relative inline-block text-transparent bg-gradient-to-r from-amber-400 via-white to-amber-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     Expansion.
@@ -329,7 +329,7 @@ function SignupInner() {
             /* ─────────────────── STANDARD SIGNUP CARD (GLASS THEME) ─────────────────── */
             <motion.div
               key="standard-signup"
-              className="relative w-full rounded-[3.5rem] overflow-hidden backdrop-blur-[60px] border border-white/30 p-12 bg-white/5"
+              className="relative w-full rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden backdrop-blur-[60px] border border-white/30 p-8 sm:p-12 bg-white/5"
               style={{ boxShadow: 'inset 0 0 80px rgba(255,255,255,0.05), 0 40px 100px -20px rgba(0,0,0,0.5)' }}
             >
               {/* Back Arrow */}
@@ -357,7 +357,7 @@ function SignupInner() {
                   </div>
                 )}
 
-                <h1 className="text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-4 drop-shadow-2xl">
+                <h1 className="text-4xl sm:text-5xl font-black text-white tracking-[-0.06em] uppercase italic leading-[0.85] mb-4 drop-shadow-2xl">
                   {role ? 'Create' : 'Get'} <br/>
                   <span className="text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-clip-text bg-[length:200%_auto] animate-gradient-text">
                     {role ? 'Account.' : 'Started.'}

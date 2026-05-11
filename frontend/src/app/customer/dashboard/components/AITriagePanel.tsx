@@ -48,7 +48,7 @@ export default function AITriagePanel({
       initial={{ y: 20, opacity: 0 }} 
       animate={{ y: 0, opacity: 1 }}
       className={cn(
-        "bg-slate-900/90 backdrop-blur-3xl p-5 sm:p-10 relative overflow-hidden space-y-6 sm:space-y-8 border border-white/10 rounded-[2.5rem] shadow-2xl"
+        "bg-slate-900/90 backdrop-blur-3xl p-6 sm:p-10 relative overflow-hidden space-y-8 border border-white/10 rounded-[2.5rem] shadow-2xl"
       )}
     >
       {analyzing && (

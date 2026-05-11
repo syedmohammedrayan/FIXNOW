@@ -223,7 +223,7 @@ export default function ActiveJobCard({
                               value={digit}
                               onChange={(e) => handleOtpChange(i, e.target.value)}
                               className={cn(
-                                "w-16 h-20 text-center text-4xl font-black rounded-2xl bg-white/5 border-2 transition-all duration-300 focus:outline-none focus:scale-105",
+                                "w-12 h-16 sm:w-16 sm:h-20 text-center text-3xl sm:text-4xl font-black rounded-2xl bg-white/5 border-2 transition-all duration-300 focus:outline-none focus:scale-105",
                                 digit ? "border-white text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "border-white/10 text-slate-700 focus:border-white/30"
                               )}
                             />

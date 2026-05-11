@@ -41,7 +41,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 }}
-                className="block font-black uppercase italic tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[4rem] sm:text-[6rem] md:text-[9rem] leading-none select-none"
+                className="block font-black uppercase italic tracking-[-0.05em] text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[9rem] leading-[0.9] select-none"
               >
                 Reliable
               </motion.span>
@@ -51,7 +51,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.45 }}
-                className="block font-black uppercase italic tracking-[-0.05em] leading-none text-[4rem] sm:text-[6rem] md:text-[9rem] select-none
+                className="block font-black uppercase italic tracking-[-0.05em] leading-[0.9] text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[9rem] select-none
                   bg-gradient-to-r from-rose-500 via-violet-500 to-cyan-400 bg-[length:300%_auto] bg-clip-text text-transparent animate-gradient-text
                   drop-shadow-[0_4px_20px_rgba(139,92,246,0.2)]"
               >
@@ -95,11 +95,11 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center mb-20"
           >
-            <h2 className="text-4xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic">Operational Protocol</h2>
-            <div className="w-48 h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic text-center">Operational Protocol</h2>
+            <div className="w-32 sm:w-48 h-2 sm:h-3 bg-gradient-to-r from-white/80 via-white to-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             <StepCard 
               icon={<Search className="w-10 h-10" />}
               title="Identity Request"
@@ -122,9 +122,9 @@ export default function LandingPage() {
         </section>
 
         {/* Feature Section */}
-        <section className="mt-40 sm:mt-60 mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+        <section className="mt-32 sm:mt-60 mb-32 sm:mb-40 w-full max-w-6xl mx-auto flex flex-col items-center text-center px-4">
           <div className="space-y-10 max-w-4xl">
-            <h2 className="text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.06em] leading-[0.75] uppercase italic">
+            <h2 className="text-[3.5rem] sm:text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-2xl tracking-[-0.06em] leading-[0.95] sm:leading-[0.85] uppercase italic">
               Premium <br/> Logistics <br/> <span className="relative text-cyan-400 [text-shadow:0_0_20px_rgba(6,182,212,0.3)]">Infrastructure.</span>
             </h2>
             <p className="text-xl text-slate-300 font-black uppercase tracking-[0.1em] opacity-90 drop-shadow-md">
@@ -149,10 +149,9 @@ function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.6 }}
-      whileHover={{ y: -10, scale: 1.02 }}
-      className="p-10 flex flex-col items-center text-center group cursor-default bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[3rem] shadow-2xl hover:shadow-white/40 hover:bg-white/60 transition-all duration-500 relative overflow-hidden"
+      className="p-8 sm:p-10 flex flex-col items-center text-center group cursor-default bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl hover:shadow-white/40 hover:bg-white/60 transition-all duration-500 relative overflow-hidden"
     >
-      <div className="w-24 h-24 rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
+      <div className="size-20 sm:size-24 rounded-[1.5rem] sm:rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-6 sm:mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
         {icon}
       </div>
       <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
