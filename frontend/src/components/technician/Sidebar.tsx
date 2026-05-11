@@ -15,7 +15,8 @@ import {
   ChevronRight,
   Zap,
   Crown,
-  Circle
+  Circle,
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
@@ -351,99 +352,84 @@ export default function TechnicianSidebar() {
       {/* ─── Bottom Section ─── */}
       <div className={cn(
         "border-t border-white/10 p-4",
-        effectiveCollapsed ? "flex flex-col items-center gap-2" : ""
+        effectiveCollapsed ? "flex flex-col items-center gap-3" : ""
       )}>
         <AnimatePresence>
-          {!effectiveCollapsed && (
+          {!effectiveCollapsed ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="mb-3 p-3 rounded-2xl transition-all duration-300 group cursor-default"
+              className="p-3 rounded-2xl transition-all duration-300 flex items-center justify-between gap-2"
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid rgba(255, 255, 255, 0.05)',
                 boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.2)',
               }}
             >
-              <div className="flex items-center gap-3">
+              <Link 
+                href="#profile" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 flex-1 min-w-0 group cursor-pointer"
+              >
                 <div className="relative shrink-0">
-                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-cyan-500/50 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                     {userAvatar ? (
                       <img src={userAvatar} className="w-full h-full object-cover" alt="Profile" />
                     ) : (
-                      <User className="size-4 text-white/40" />
+                      <User className="size-4 text-white/40 group-hover:text-cyan-400 transition-colors" />
                     )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 size-3.5 bg-slate-900 rounded-full flex items-center justify-center">
+                    <Settings className="size-2.5 text-cyan-400" />
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-semibold text-white truncate">{userName}</p>
+                  <p className="text-[12px] font-semibold text-white truncate group-hover:text-cyan-400 transition-colors">{userName}</p>
                   <p className="text-[10px] text-white/40 truncate">{userEmail || 'technician@fixnow.app'}</p>
                 </div>
-              </div>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="shrink-0 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
+                title="Logout"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className="flex flex-col items-center gap-3 w-full"
+            >
+              <Link 
+                href="#profile" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group"
+                title="Profile Settings"
+              >
+                {userAvatar ? (
+                  <img src={userAvatar} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <User className="size-5 text-white/40 group-hover:text-cyan-400 transition-colors" />
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                  <Settings className="size-4 text-white" />
+                </div>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all active:scale-95"
+                title="Logout"
+              >
+                <LogOut className="size-[18px]" />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          onMouseEnter={() => setHoveredItem('logout')}
-          onMouseLeave={() => setHoveredItem(null)}
-          className={cn(
-            "relative w-full flex items-center gap-3 rounded-[14px] transition-all duration-300 group",
-            effectiveCollapsed ? "justify-center p-3" : "px-4 py-3",
-            "text-slate-500/70 hover:text-rose-400"
-          )}
-        >
-          {hoveredItem === 'logout' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 rounded-[14px]"
-              style={{
-                background: 'rgba(244,63,94,0.05)',
-                border: '1px solid rgba(244,63,94,0.1)',
-              }}
-            />
-          )}
-
-          <div className="relative z-10 shrink-0 group-hover:scale-105 transition-transform duration-300">
-            <LogOut className={cn(
-              "transition-all duration-300",
-              effectiveCollapsed ? "size-[18px]" : "size-[17px]",
-              "group-hover:text-rose-400 group-hover:drop-shadow-[0_0_6px_rgba(244,63,94,0.3)]"
-            )} />
-          </div>
-
-          {!effectiveCollapsed && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="relative z-10 text-[13px] font-semibold tracking-wide group-hover:text-rose-400 transition-colors"
-            >
-              Logout
-            </motion.span>
-          )}
-
-          {/* Tooltip for collapsed */}
-          {effectiveCollapsed && hoveredItem === 'logout' && (
-            <div className="absolute left-full ml-3 z-[100] pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, x: -5, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                className="px-3 py-2 rounded-xl whitespace-nowrap"
-                style={{
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  border: '1px solid rgba(244,63,94,0.2)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                }}
-              >
-                <p className="text-xs font-semibold text-rose-400">Logout</p>
-              </motion.div>
-            </div>
-          )}
-        </button>
       </div>
 
       {/* Bottom gradient line */}
