@@ -45,33 +45,33 @@ export default function TechnicianHeader({
     <header className="flex flex-col gap-4 mb-8 lg:mb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tighter italic">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter">
             Technician Dashboard
           </h1>
-          <div className="flex items-center gap-3 mt-2">
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
             {profile.online ? (
               <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" />
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
                   Active Console
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/40 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-slate-400" />
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-slate-500" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                   Offline
                 </span>
               </div>
             )}
-            <span className="text-slate-600 text-[11px] font-bold uppercase tracking-tight">
+            <span className="text-slate-400 text-[11px] font-bold uppercase tracking-tight">
               Liaison: {profile.name}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-          <div className="bg-white/10 border border-white/40 shadow-xl backdrop-blur-md rounded-2xl p-1.5 flex shrink-0">
+          <div className="bg-white/5 border border-white/10 shadow-xl backdrop-blur-md rounded-2xl p-1.5 flex shrink-0">
             <button
               onClick={async () => {
                 setProfile({ ...profile, online: true });
@@ -85,13 +85,13 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
+                "px-3 sm:px-5 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
                 profile.online
-                  ? "bg-slate-950 text-white shadow-2xl"
-                  : "text-slate-500 hover:text-slate-950",
+                  ? "bg-emerald-500 text-white shadow-lg"
+                  : "text-slate-400 hover:text-white",
               )}
             >
-              Go Online
+              Online
             </button>
             <button
               onClick={async () => {
@@ -110,24 +110,24 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
+                "px-3 sm:px-5 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
                 !profile.online
-                  ? "bg-white text-slate-950 shadow-inner"
-                  : "text-slate-500 hover:text-slate-950",
+                  ? "bg-slate-700 text-white shadow-inner"
+                  : "text-slate-400 hover:text-white",
               )}
             >
-              Go Offline
+              Offline
             </button>
           </div>
 
           <div className="relative shrink-0">
             <button 
               onClick={() => setBellMenuOpen(!bellMenuOpen)}
-              className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/10 border border-white/40 rounded-2xl flex items-center justify-center hover:border-white/60 transition group shadow-xl backdrop-blur-md shrink-0"
+              className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition group shadow-xl backdrop-blur-md shrink-0"
             >
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 group-hover:scale-110 transition" />
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition" />
               {bellNotifications.filter(n => !n.read).length > 0 && (
-                <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-rose-600 rounded-full border-2 border-white animate-pulse shadow-lg" />
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-slate-950 animate-pulse shadow-lg" />
               )}
             </button>
             <AnimatePresence>

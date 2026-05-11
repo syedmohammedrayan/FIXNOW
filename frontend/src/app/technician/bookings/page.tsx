@@ -228,12 +228,12 @@ export default function TechnicianBookings() {
       <TechnicianSidebar />
       <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen">
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1600px] mx-auto">
-          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
             <div>
-              <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
-                Bookings <CalendarCheck className="w-8 h-8" />
+              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                Bookings <CalendarCheck className="w-6 h-6 sm:w-8 sm:h-8" />
               </h1>
-              <p className="text-slate-400 mt-2 font-medium">Manage customer service requests and track your work.</p>
+              <p className="text-slate-400 mt-1.5 text-sm font-medium">Manage customer service requests and track your work.</p>
             </div>
             <div className="relative group w-full sm:w-80">
               <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -242,7 +242,7 @@ export default function TechnicianBookings() {
                 placeholder="Search bookings..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border-white/10 border rounded-2xl pl-12 pr-4 py-3.5 text-white text-sm"
+                className="w-full bg-white/5 border-white/10 border rounded-2xl pl-12 pr-4 py-3.5 text-white text-sm outline-none focus:border-white/30 transition"
               />
             </div>
           </header>
@@ -296,9 +296,9 @@ export default function TechnicianBookings() {
                         </div>
                       </div>
                       {tab === 'pending' && (
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => handleAccept(booking)} className="px-6 py-3 bg-white text-slate-900 rounded-2xl text-sm font-black flex items-center gap-2">{accepting === booking.id ? <Loader2 className="animate-spin size-4" /> : <CheckCircle2 className="size-4" />} Accept</button>
-                          <button onClick={() => setDeclineModal({ open: true, booking })} className="px-5 py-3 bg-white/5 border border-white/10 text-slate-400 rounded-2xl text-sm font-bold">Decline</button>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-4 lg:mt-0">
+                          <button onClick={() => handleAccept(booking)} className="flex-1 sm:flex-none px-6 py-3 bg-white text-slate-900 rounded-2xl text-sm font-black flex items-center justify-center gap-2 active:scale-95 transition">{accepting === booking.id ? <Loader2 className="animate-spin size-4" /> : <CheckCircle2 className="size-4" />} Accept</button>
+                          <button onClick={() => setDeclineModal({ open: true, booking })} className="flex-1 sm:flex-none px-5 py-3 bg-white/5 border border-white/10 text-slate-400 rounded-2xl text-sm font-bold text-center">Decline</button>
                         </div>
                       )}
                       {tab === 'active' && (

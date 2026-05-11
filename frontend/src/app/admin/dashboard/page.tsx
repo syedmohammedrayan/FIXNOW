@@ -312,17 +312,17 @@ export default function AdminDashboard() {
 
       <AnimatePresence>
         {showAddModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-slate-900 border-white/10 border rounded-[2rem] p-10 max-w-md w-full shadow-2xl relative">
-              <button onClick={() => setShowAddModal(false)} className="absolute top-6 right-6 p-2 bg-white/5 border border-white/10 rounded-full text-slate-400 hover:text-white transition"><X className="w-5 h-5" /></button>
-              <h2 className="text-2xl font-black text-white mb-8 tracking-tight">NEW TECHNICIAN</h2>
-              <form onSubmit={handleAddTech} className="space-y-6">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-slate-900 border-white/[0.08] border rounded-[2rem] p-6 sm:p-10 max-w-md w-full shadow-2xl relative my-8">
+              <button onClick={() => setShowAddModal(false)} className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 bg-white/[0.05] border border-white/[0.08] rounded-full text-slate-400 hover:text-white transition active:scale-95"><X className="w-4 h-4 sm:w-5 sm:h-5" /></button>
+              <h2 className="text-xl sm:text-2xl font-black text-white mb-6 sm:mb-8 tracking-tight">NEW TECHNICIAN</h2>
+              <form onSubmit={handleAddTech} className="space-y-5 sm:space-y-6">
                 <InputField label="Full Name" value={newTech.name} onChange={v => setNewTech({ ...newTech, name: v })} />
                 <InputField label="Email Address" type="email" value={newTech.email} onChange={v => setNewTech({ ...newTech, email: v })} />
                 <InputField label="Phone Number" value={newTech.phone} onChange={v => setNewTech({ ...newTech, phone: v })} />
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Specialization</label>
-                  <select value={newTech.category} onChange={e => setNewTech({ ...newTech, category: e.target.value })} className="w-full bg-slate-950 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-white transition outline-none">
+                  <select value={newTech.category} onChange={e => setNewTech({ ...newTech, category: e.target.value })} className="w-full bg-slate-950/50 border border-white/[0.08] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 text-sm sm:text-base text-white focus:border-white/20 transition outline-none appearance-none cursor-pointer">
                     {[
                       'HVAC / AC Technician', 'Electrician', 'Washing Machine Technician', 
                       'Water Systems Technician', 'Refrigerator Technician', 'Kitchen Services Technician', 
@@ -335,7 +335,7 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <InputField label="Core Skills" placeholder="e.g. Pipe Leak, Wiring" value={newTech.skills} onChange={v => setNewTech({ ...newTech, skills: v })} />
-                <button type="submit" className="w-full py-5 bg-white text-slate-900 font-black rounded-2xl transition shadow-2xl mt-4 hover:bg-slate-100 active:scale-95">CREATE ACCOUNT</button>
+                <button type="submit" className="w-full py-4 sm:py-5 bg-white text-slate-900 text-sm sm:text-base font-black rounded-2xl transition shadow-xl mt-4 hover:bg-slate-100 active:scale-95 uppercase tracking-widest">Create Account</button>
               </form>
             </motion.div>
           </motion.div>

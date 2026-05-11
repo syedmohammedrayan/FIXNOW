@@ -59,7 +59,7 @@ export function Sidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -70,9 +70,9 @@ export function Sidebar({
         className={cn(
           // Base
           'fixed top-0 left-0 h-screen z-50 flex flex-col',
-          // Background / glass
-          'bg-slate-950/95 backdrop-blur-3xl border-r border-white/[0.08]',
-          'shadow-[4px_0_32px_rgba(0,0,0,0.6)]',
+          // Background / glass - Light Theme
+          'bg-white/95 backdrop-blur-3xl border-r border-slate-200/60',
+          'shadow-[4px_0_32px_rgba(0,0,0,0.05)]',
           // Mobile: full-width drawer; Desktop: collapsible column
           'w-[280px] lg:relative lg:z-auto',
           desktopWidth,
@@ -84,21 +84,21 @@ export function Sidebar({
       >
         {/* Top ambient glow */}
         <div className="absolute top-0 left-0 w-full h-40 pointer-events-none opacity-20"
-          style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.12) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%)' }}
         />
         {/* Top gradient line */}
         <div className="absolute top-0 left-0 w-full h-[1px]"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent)' }}
         />
 
         {/* ── Brand Header ── */}
         <div className={cn(
-          'relative flex items-center border-b border-white/[0.08] shrink-0',
+          'relative flex items-center border-b border-slate-200/60 shrink-0',
           'h-[72px] px-5 lg:px-4',
           !sidebarOpen && 'lg:justify-center lg:px-0'
         )}>
           <div className="flex items-center gap-3 min-w-0">
-            <Logo iconClassName="w-8 shrink-0" />
+            <Logo iconClassName="w-8 shrink-0 text-slate-900" />
             <AnimatePresence>
               {(sidebarOpen) && (
                 <motion.div
@@ -108,8 +108,8 @@ export function Sidebar({
                   transition={{ duration: 0.2 }}
                   className="flex flex-col min-w-0"
                 >
-                  <span className="text-[13px] font-black tracking-tight text-white uppercase leading-none">FixNow</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/40 mt-0.5">Admin Console</span>
+                  <span className="text-[13px] font-black tracking-tight text-slate-900 uppercase leading-none">FixNow</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mt-0.5">Admin Console</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -118,7 +118,7 @@ export function Sidebar({
           {/* Close button on mobile */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition lg:hidden"
+            className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition lg:hidden"
           >
             <X className="size-4" />
           </button>
@@ -126,11 +126,11 @@ export function Sidebar({
           {/* Collapse toggle on desktop */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-slate-900 border border-white/10 hover:border-white/20 items-center justify-center shadow-lg transition active:scale-90"
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-white border border-slate-200 hover:border-slate-300 items-center justify-center shadow-sm transition active:scale-90"
           >
             {sidebarOpen
-              ? <ChevronLeft className="size-3 text-white" />
-              : <ChevronRight className="size-3 text-white" />
+              ? <ChevronLeft className="size-3 text-slate-600" />
+              : <ChevronRight className="size-3 text-slate-600" />
             }
           </button>
         </div>
@@ -144,7 +144,7 @@ export function Sidebar({
               exit={{ opacity: 0 }}
               className="px-5 pt-5 pb-1 shrink-0"
             >
-              <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-500">Main Menu</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400">Main Menu</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -153,7 +153,7 @@ export function Sidebar({
         <nav className={cn(
           'flex-1 overflow-y-auto overflow-x-hidden py-2',
           // Custom scrollbar
-          'scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent',
+          'scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent',
           sidebarOpen ? 'px-3' : 'lg:px-2 px-3'
         )}>
           <div className="space-y-1">
@@ -176,7 +176,7 @@ export function Sidebar({
 
         {/* Bottom gradient line */}
         <div className="shrink-0 h-[1px] mx-4"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)' }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent)' }}
         />
 
         {/* ── Logout ── */}
@@ -185,11 +185,11 @@ export function Sidebar({
             onClick={handleSignOut}
             className={cn(
               'flex items-center gap-3 rounded-[14px] transition-all duration-200 group',
-              'text-slate-500 hover:text-rose-400 hover:bg-rose-500/5',
+              'text-slate-600 hover:text-rose-600 hover:bg-rose-50',
               sidebarOpen ? 'w-full px-4 py-3' : 'lg:p-3 lg:justify-center w-full px-4 py-3'
             )}
           >
-            <LogOut className="size-[18px] shrink-0 group-hover:drop-shadow-[0_0_6px_rgba(244,63,94,0.4)] transition-all" />
+            <LogOut className="size-[18px] shrink-0 transition-all" />
             <AnimatePresence>
               {sidebarOpen && (
                 <motion.span

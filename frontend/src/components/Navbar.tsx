@@ -134,8 +134,8 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
           "w-full max-w-7xl mx-auto rounded-[1.5rem] sm:rounded-[2rem] border backdrop-blur-3xl transition-all duration-700",
           "pl-2 pr-3 sm:pl-3 sm:pr-6 py-1 flex items-center justify-between gap-2 sm:gap-4",
           scrolled
-            ? "bg-slate-950/70 border-white/[0.12] shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
-            : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2)]"
+            ? "bg-slate-950/70 border-white/[0.12] shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)]"
+            : "bg-white/[0.04] border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.2),0_0_0_1px_rgba(0,0,0,0.4)]"
         )}>
 
           {/* ── LEFT: Logo + Brand Text ── */}
@@ -239,7 +239,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
             {/* Hamburger — mobile/tablet only */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden size-10 sm:size-11 flex items-center justify-center rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/[0.08] text-white transition-all active:scale-90"
+              className="lg:hidden size-10 sm:size-11 flex items-center justify-center rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/[0.08] text-white transition-all active:scale-90 shadow-[0_0_0_1px_rgba(0,0,0,0.35)]"
               aria-label="Open menu"
             >
               <Menu className="size-5" />

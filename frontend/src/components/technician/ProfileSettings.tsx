@@ -250,7 +250,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-neon-card p-10 relative overflow-hidden"
+        className="glass-neon-card p-6 sm:p-10 relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-8 opacity-10">
           <Shield className="size-40 text-white" />
@@ -328,7 +328,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="glass-neon-card p-10"
+            className="glass-neon-card p-6 sm:p-10"
           >
             <div className="space-y-10">
               <div className="grid md:grid-cols-2 gap-8">
@@ -565,7 +565,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-slate-900/90 backdrop-blur-3xl p-8 text-white border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden relative"
+            className="bg-slate-900/90 backdrop-blur-3xl p-6 sm:p-8 text-white border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden relative"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.03] blur-[60px] -mr-32 -mt-32" />
             <div className="size-14 rounded-2xl bg-white/10 flex items-center justify-center mb-6 relative z-10">
@@ -586,7 +586,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-neon-card p-8 border-rose-100 bg-rose-50/30"
+            className="glass-neon-card p-6 sm:p-8 border-rose-100 bg-rose-50/30"
           >
             <div className="flex items-center gap-3 mb-6">
                <AlertCircle className="size-5 text-rose-500" />

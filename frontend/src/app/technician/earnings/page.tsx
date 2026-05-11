@@ -373,7 +373,39 @@ export default function TechnicianEarnings() {
           {/* LEDGER TAB */}
           {!loading && activeTab === 'ledger' && (
             <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl">
-              <div className="overflow-x-auto">
+              {/* Mobile Card Layout */}
+              <div className="block sm:hidden divide-y divide-white/5">
+                {transactions.length === 0 ? (
+                  <div className="p-10 text-center">
+                    <History className="size-10 text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-500 text-sm font-bold">No transactions yet</p>
+                  </div>
+                ) : transactions.map((txn, i) => (
+                  <motion.div key={txn.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="p-4 flex items-center gap-3">
+                    <div className={cn("size-10 rounded-xl flex items-center justify-center shrink-0", txn.type === 'service_payment' ? "bg-white/5 text-white" : "bg-white/5 text-rose-400")}>
+                      {txn.type === 'service_payment' ? <Wrench className="size-4" /> : <Package className="size-4" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-white truncate">{txn.type === 'service_payment' ? (txn.customerName || 'Service Payment') : 'Tool Purchase'}</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{new Date(txn.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0 gap-1">
+                      <span className={cn("text-base font-black", txn.type === 'service_payment' ? "text-emerald-400" : "text-rose-400")}>
+                        {txn.type === 'service_payment' ? '+' : '-'}₹{(txn.amount || 0).toLocaleString()}
+                      </span>
+                      <div className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase border",
+                        txn.status === 'Success' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                      )}>
+                        {txn.status === 'Success' ? <CheckCircle2 className="size-2.5" /> : <Clock className="size-2.5" />}
+                        {txn.status}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Desktop Table Layout */}
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="text-left border-b border-white/5 bg-white/[0.02]">
