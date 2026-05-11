@@ -280,7 +280,7 @@ function SignupInner() {
               }}
             >
               {/* Back Arrow */}
-              <button onClick={() => setRole(null)} className="absolute top-5 left-5 sm:top-7 sm:left-7 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/10">
+              <button onClick={() => router.push('/')} className="absolute top-5 left-5 sm:top-7 sm:left-7 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/10">
                 <ArrowLeft className="size-5 group-hover/back:-translate-x-1 transition-transform" />
               </button>
 
@@ -339,7 +339,7 @@ function SignupInner() {
               <button 
                 onClick={() => {
                   if (role) setRole(null);
-                  else router.back();
+                  else router.push('/');
                 }} 
                 className="absolute top-5 left-5 sm:top-7 sm:left-7 z-20 text-white/50 hover:text-white transition-colors group/back flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/10"
               >

@@ -184,8 +184,8 @@ export default function DynamicLoginPage() {
             </form>
 
             <footer className="mt-12 text-center pt-8 border-t border-white/5">
-              <Link href="/auth/login" className="flex items-center justify-center gap-3 text-[10px] font-black text-slate-500 hover:text-white transition-all uppercase tracking-[0.2em]">
-                <ArrowLeft className="w-3.5 h-3.5" /> Revert to Global Terminal
+              <Link href="/" className="flex items-center justify-center gap-3 text-[10px] font-black text-slate-500 hover:text-white transition-all uppercase tracking-[0.2em]">
+                <ArrowLeft className="w-3.5 h-3.5" /> Revert to Home
               </Link>
             </footer>
           </div>

@@ -70,46 +70,43 @@ export function Sidebar({
         className={cn(
           // Base
           'fixed top-0 left-0 h-screen z-50 flex flex-col',
-          // Background / glass - Light Theme
-          'bg-white/95 backdrop-blur-3xl border-r border-slate-200/60',
-          'shadow-[4px_0_32px_rgba(0,0,0,0.05)]',
+          // Background / glass - Midnight Glass Theme
+          'bg-slate-950/40 backdrop-blur-[40px] border-r border-white/[0.08]',
+          'shadow-[10px_0_50px_rgba(0,0,0,0.3),inset_1px_0_0_rgba(255,255,255,0.05)]',
           // Mobile: full-width drawer; Desktop: collapsible column
           'w-[280px] lg:relative lg:z-auto',
           desktopWidth,
-          'transition-[width] duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
+          'transition-[width] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]',
           // Translate
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          'transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]'
+          'transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]'
         )}
       >
-        {/* Top ambient glow */}
-        <div className="absolute top-0 left-0 w-full h-40 pointer-events-none opacity-20"
-          style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%)' }}
-        />
-        {/* Top gradient line */}
-        <div className="absolute top-0 left-0 w-full h-[1px]"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent)' }}
-        />
+        {/* Dynamic mesh glow effects */}
+        <div className="absolute top-0 left-0 w-full h-80 pointer-events-none opacity-40 overflow-hidden">
+          <div className="absolute -top-40 -left-20 w-80 h-80 bg-cyan-500/20 blur-[100px] rounded-full" />
+          <div className="absolute top-20 -right-20 w-40 h-40 bg-purple-500/10 blur-[80px] rounded-full" />
+        </div>
 
         {/* ── Brand Header ── */}
         <div className={cn(
-          'relative flex items-center border-b border-slate-200/60 shrink-0',
+          'relative flex items-center border-b border-white/[0.06] shrink-0',
           'h-[72px] px-5 lg:px-4',
           !sidebarOpen && 'lg:justify-center lg:px-0'
         )}>
           <div className="flex items-center gap-3 min-w-0">
-            <Logo iconClassName="w-8 shrink-0 text-slate-900" />
-            <AnimatePresence>
+            <Logo iconClassName="w-9 shrink-0 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" isAdmin={true} />
+            <AnimatePresence mode="wait">
               {(sidebarOpen) && (
                 <motion.div
-                  initial={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
                   className="flex flex-col min-w-0"
                 >
-                  <span className="text-[13px] font-black tracking-tight text-slate-900 uppercase leading-none">FixNow</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mt-0.5">Admin Console</span>
+                  <span className="text-[14px] font-black tracking-tight text-white uppercase leading-none italic">FixNow</span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.4em] text-cyan-400/70 mt-1">Command Matrix</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -118,7 +115,7 @@ export function Sidebar({
           {/* Close button on mobile */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition lg:hidden"
+            className="ml-auto size-9 flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/60 hover:text-white transition-all active:scale-90 lg:hidden"
           >
             <X className="size-4" />
           </button>
@@ -126,11 +123,11 @@ export function Sidebar({
           {/* Collapse toggle on desktop */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-white border border-slate-200 hover:border-slate-300 items-center justify-center shadow-sm transition active:scale-90"
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-slate-900 border border-white/[0.1] hover:border-cyan-500/50 items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all active:scale-90 group"
           >
             {sidebarOpen
-              ? <ChevronLeft className="size-3 text-slate-600" />
-              : <ChevronRight className="size-3 text-slate-600" />
+              ? <ChevronLeft className="size-3.5 text-white/40 group-hover:text-cyan-400" />
+              : <ChevronRight className="size-3.5 text-white/40 group-hover:text-cyan-400" />
             }
           </button>
         </div>
@@ -142,21 +139,21 @@ export function Sidebar({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="px-5 pt-5 pb-1 shrink-0"
+              className="px-6 pt-7 pb-2 shrink-0"
             >
-              <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400">Main Menu</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">System Navigation</p>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* ── Navigation Links — SCROLLABLE ── */}
         <nav className={cn(
-          'flex-1 overflow-y-auto overflow-x-hidden py-2',
+          'flex-1 overflow-y-auto overflow-x-hidden py-3',
           // Custom scrollbar
-          'scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent',
-          sidebarOpen ? 'px-3' : 'lg:px-2 px-3'
+          'scrollbar-none',
+          sidebarOpen ? 'px-4' : 'lg:px-2 px-4'
         )}>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {navLinks.map(link => (
               <SidebarLink
                 key={link.tab}
@@ -171,38 +168,39 @@ export function Sidebar({
           </div>
 
           {/* Scroll padding */}
-          <div className="h-4" />
+          <div className="h-6" />
         </nav>
 
-        {/* Bottom gradient line */}
-        <div className="shrink-0 h-[1px] mx-4"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent)' }}
-        />
-
-        {/* ── Logout ── */}
-        <div className={cn('shrink-0 p-3', !sidebarOpen && 'lg:flex lg:justify-center')}>
+        {/* ── Bottom Section ── */}
+        <div className="shrink-0 p-4 border-t border-white/[0.06] bg-black/10">
           <button
             onClick={handleSignOut}
             className={cn(
-              'flex items-center gap-3 rounded-[14px] transition-all duration-200 group',
-              'text-slate-600 hover:text-rose-600 hover:bg-rose-50',
-              sidebarOpen ? 'w-full px-4 py-3' : 'lg:p-3 lg:justify-center w-full px-4 py-3'
+              'flex items-center gap-4 rounded-2xl transition-all duration-300 group',
+              'bg-rose-500/5 border border-rose-500/10 text-rose-400/70 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20',
+              sidebarOpen ? 'w-full px-5 py-3.5' : 'lg:p-3.5 lg:justify-center w-full px-5 py-3.5'
             )}
           >
-            <LogOut className="size-[18px] shrink-0 transition-all" />
+            <LogOut className="size-[18px] shrink-0 transition-transform group-hover:-translate-x-0.5" />
             <AnimatePresence>
               {sidebarOpen && (
                 <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-[13px] font-semibold tracking-wide"
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -5 }}
+                  className="text-[11px] font-black uppercase tracking-widest"
                 >
-                  Logout
+                  Terminate Session
                 </motion.span>
               )}
             </AnimatePresence>
           </button>
+          
+          {sidebarOpen && (
+             <p className="text-center text-[7px] font-black text-white/10 uppercase tracking-[0.5em] mt-6 select-none">
+                Protocol v2.4.0 • Secured
+             </p>
+          )}
         </div>
       </motion.aside>
     </>
