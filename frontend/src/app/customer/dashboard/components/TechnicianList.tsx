@@ -66,7 +66,7 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
                       </div>
                     )}
                   </div>
-                  <p className="text-[9px] sm:text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{tech.category}</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{tech.category}</p>
                 </div>
               </div>
               
@@ -78,7 +78,7 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
                   </div>
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     <MapPin className="size-3 sm:size-3.5 text-white/30" />
-                    <span className="text-[9px] sm:text-[10px] font-black text-white/30 uppercase tracking-widest">{tech.distance}</span>
+                    <span className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">{tech.distance}</span>
                   </div>
                 </div>
               </div>

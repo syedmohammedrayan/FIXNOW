@@ -149,13 +149,13 @@ function StepCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.6 }}
-      className="p-8 sm:p-10 flex flex-col items-center text-center group cursor-default bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl hover:shadow-white/40 hover:bg-white/60 transition-all duration-500 relative overflow-hidden"
+      className="p-8 sm:p-10 flex flex-col items-center text-center group cursor-default bg-slate-900/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl hover:shadow-white/10 hover:bg-slate-900/80 transition-all duration-500 relative overflow-hidden"
     >
       <div className="size-20 sm:size-24 rounded-[1.5rem] sm:rounded-[2rem] bg-white/20 border border-white/40 flex items-center justify-center mb-6 sm:mb-8 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 relative z-10 text-white backdrop-blur-xl">
         {icon}
       </div>
       <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-md mb-4 uppercase tracking-tighter relative z-10 italic">{title}</h3>
-      <p className="text-white/70 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10">{desc}</p>
+      <p className="text-white/80 font-bold text-[13px] leading-relaxed uppercase tracking-wider relative z-10">{desc}</p>
     </motion.div>
   );
 }
@@ -168,13 +168,13 @@ function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode, titl
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
       whileHover={{ scale: 1.05 }}
-      className="p-8 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[2.5rem] shadow-xl hover:shadow-white/50 transition-all duration-500 cursor-default group"
+      className="p-8 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-xl hover:shadow-white/20 transition-all duration-500 cursor-default group"
     >
       <div className="mb-4 bg-white/20 backdrop-blur-xl p-3 rounded-2xl w-fit shadow-inner border border-white/40">
         {icon}
       </div>
       <h4 className="text-lg font-black text-white drop-shadow-md mb-2 uppercase tracking-tighter italic">{title}</h4>
-      <p className="text-slate-200 font-bold text-[11px] leading-relaxed uppercase tracking-widest drop-shadow-sm">{desc}</p>
+      <p className="text-slate-300 font-bold text-[11px] leading-relaxed uppercase tracking-widest drop-shadow-sm">{desc}</p>
     </motion.div>
   );
 }

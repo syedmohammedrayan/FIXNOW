@@ -25,8 +25,8 @@ export default function MaintenanceLogs({ reminders, onBookUrgent }: Maintenance
       {reminders.length === 0 ? (
         <div className="text-center py-10 sm:py-12 px-4 sm:px-6 border-2 border-dashed border-white/[0.06] rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.02]">
           <Calendar className="size-8 sm:size-10 text-white/20 mx-auto mb-3 sm:mb-4" />
-          <p className="text-white/30 font-black uppercase tracking-widest text-xs sm:text-sm">No Scheduled Protocols</p>
-          <p className="text-white/15 font-medium text-[10px] sm:text-xs mt-2">Maintain your appliances with automated alerts</p>
+          <p className="text-white/50 font-black uppercase tracking-widest text-xs sm:text-sm">No Scheduled Protocols</p>
+          <p className="text-white/30 font-medium text-[10px] sm:text-xs mt-2">Maintain your appliances with automated alerts</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -64,7 +64,7 @@ export default function MaintenanceLogs({ reminders, onBookUrgent }: Maintenance
                   <p className={cn(
                     "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-2 sm:mt-3", 
                     isUrgent ? 'text-rose-500' : 
-                    isOverdue ? 'text-white/25' : 
+                    isOverdue ? 'text-white/40' : 
                     'text-emerald-500'
                   )}>
                     {isOverdue ? `Expired • ${Math.abs(diffDays)} Days` : `Due in ${diffDays} Days`}

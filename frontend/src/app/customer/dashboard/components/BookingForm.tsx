@@ -149,25 +149,25 @@ export default function BookingForm({
                   ? 'border-white/5 bg-white/5 cursor-not-allowed opacity-50'
                   : paymentMethod === 'now'
                   ? 'border-white bg-white/10 shadow-2xl shadow-black/40'
-                  : 'border-white/10 bg-white/5 text-slate-500 hover:border-white/30'
+                  : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/30'
               }`}
             >
               <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mb-3 transition-colors", paymentMethod === 'now' && selectedTech.online !== false ? "border-white" : "border-white/20")}>{paymentMethod === 'now' && selectedTech.online !== false && <div className="w-2.5 h-2.5 bg-white rounded-full" />}</div>
-              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'now' && selectedTech.online !== false ? "text-white" : "text-slate-500")}>Online Payment</p>
-              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'now' && selectedTech.online !== false ? "text-indigo-600/80" : "text-slate-400")}>{selectedTech.online === false ? 'Unavailable (Offline)' : 'Instant Activation'}</p>
+              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'now' && selectedTech.online !== false ? "text-white" : "text-slate-400")}>Online Payment</p>
+              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'now' && selectedTech.online !== false ? "text-indigo-400" : "text-slate-400")}>{selectedTech.online === false ? 'Unavailable (Offline)' : 'Instant Activation'}</p>
             </button>
             <button
               type="button"
               onClick={() => setPaymentMethod('later')}
               className={`p-4 sm:p-5 rounded-[1.25rem] sm:rounded-[1.5rem] border-2 text-left transition-all relative overflow-hidden group ${
                 paymentMethod === 'later'
-                  ? 'border-emerald-600 bg-emerald-500/10 shadow-md shadow-emerald-500/10'
-                  : 'border-white/10 bg-white/5 text-slate-500 hover:border-white/30'
+                  ? 'border-emerald-500/50 bg-emerald-500/10 shadow-md shadow-emerald-500/10'
+                  : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/30'
               }`}
             >
-              <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mb-3 transition-colors", paymentMethod === 'later' ? "border-emerald-600" : "border-white/20")}>{paymentMethod === 'later' && <div className="w-2.5 h-2.5 bg-emerald-600 rounded-full" />}</div>
-              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'later' ? "text-emerald-900" : "text-slate-600")}>Post-Service</p>
-              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'later' ? "text-emerald-600/80" : "text-slate-400")}>Pay Tech Directly</p>
+              <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mb-3 transition-colors", paymentMethod === 'later' ? "border-emerald-500" : "border-white/20")}>{paymentMethod === 'later' && <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />}</div>
+              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'later' ? "text-emerald-100" : "text-slate-400")}>Post-Service</p>
+              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'later' ? "text-emerald-400" : "text-slate-400")}>Pay Tech Directly</p>
             </button>
           </div>
         </div>

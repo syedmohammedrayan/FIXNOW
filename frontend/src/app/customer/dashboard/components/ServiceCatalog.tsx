@@ -39,7 +39,7 @@ export default function ServiceCatalog({
           <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white flex items-center gap-2 sm:gap-3">
             <Search className="size-5 sm:size-6 text-white" /> Instant Connect Services
           </h2>
-          <p className="text-[9px] sm:text-xs text-white/30 font-bold uppercase tracking-widest mt-1 sm:mt-2">Browse or search 150+ verified technician types instantly</p>
+          <p className="text-[9px] sm:text-xs text-white/50 font-bold uppercase tracking-widest mt-1 sm:mt-2">Browse or search 150+ verified technician types instantly</p>
         </div>
         {serviceSearch.trim() && (
           <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/[0.06] text-white text-[10px] sm:text-xs font-black uppercase tracking-widest self-start">
@@ -81,7 +81,7 @@ export default function ServiceCatalog({
               "px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all duration-300 whitespace-nowrap shrink-0",
               selectedCategory === cat
                 ? "bg-white text-slate-900 border-white shadow-lg shadow-black/20"
-                : "bg-white/[0.04] text-white/30 border-white/[0.06] hover:border-white/20 hover:text-white"
+                : "bg-white/[0.04] text-white/50 border-white/[0.06] hover:border-white/30 hover:text-white"
             )}
           >
             {cat}
@@ -103,7 +103,7 @@ export default function ServiceCatalog({
               style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.02)' }}
             >
               <div className="flex items-start justify-between">
-                <p className="text-[11px] sm:text-sm font-bold text-white/50 tracking-tight leading-snug group-hover:text-white transition-colors duration-300 line-clamp-2">
+                <p className="text-[11px] sm:text-sm font-bold text-white/70 tracking-tight leading-snug group-hover:text-white transition-colors duration-300 line-clamp-2">
                   {item}
                 </p>
                 <Sparkles className="size-3 sm:size-3.5 text-white group-hover:scale-110 opacity-0 group-hover:opacity-60 transition-all duration-300 flex-shrink-0" />

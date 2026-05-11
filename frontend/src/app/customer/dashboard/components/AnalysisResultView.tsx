@@ -81,8 +81,8 @@ export default function AnalysisResultView({
           <div>
             <h3 className="font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[10px] sm:text-[11px]">Diagnostic Assessment</h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[9px] sm:text-[10px] text-white/30 uppercase font-black tracking-[0.2em] sm:tracking-[0.3em]">Core Intelligence Protocol</span>
-              <div className="h-1 w-1 rounded-full bg-white/30 animate-pulse" />
+              <span className="text-[9px] sm:text-[10px] text-white/50 uppercase font-black tracking-[0.2em] sm:tracking-[0.3em]">Core Intelligence Protocol</span>
+              <div className="h-1 w-1 rounded-full bg-white/50 animate-pulse" />
             </div>
           </div>
         </div>
@@ -94,8 +94,8 @@ export default function AnalysisResultView({
               {getCategoryIcon(analysisResult.category)}
             </div>
             <div>
-              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em] flex items-center gap-2">
-                <ShieldCheck className="w-3 h-3 text-white/30" /> Required Unit
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/40 mb-3 sm:mb-4 tracking-[0.2em] flex items-center gap-2">
+                <ShieldCheck className="w-3 h-3 text-white/50" /> Required Unit
               </p>
               <h2 className="text-white font-black text-xl sm:text-2xl md:text-3xl leading-tight tracking-tight">
                 {analysisResult.category}
@@ -109,7 +109,7 @@ export default function AnalysisResultView({
 
           <div className="p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.04] border border-white/[0.06] flex flex-col justify-between min-h-[130px] sm:min-h-[160px]" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
             <div>
-              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em]">Threat Level</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/40 mb-3 sm:mb-4 tracking-[0.2em]">Threat Level</p>
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "size-3 rounded-full animate-pulse",
@@ -125,12 +125,12 @@ export default function AnalysisResultView({
                 )}>{analysisResult.urgency}</p>
               </div>
             </div>
-            <p className="text-[8px] sm:text-[9px] font-bold text-white/25 uppercase tracking-widest mt-3 sm:mt-4">Calculated from issue analysis</p>
+            <p className="text-[8px] sm:text-[9px] font-bold text-white/40 uppercase tracking-widest mt-3 sm:mt-4">Calculated from issue analysis</p>
           </div>
 
           <div className="p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.04] border border-white/[0.06] flex flex-col justify-between min-h-[130px] sm:min-h-[160px]" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
             <div>
-              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em]">Budget Forecast</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/40 mb-3 sm:mb-4 tracking-[0.2em]">Budget Forecast</p>
               <p className="text-white font-black text-xl sm:text-2xl md:text-3xl leading-none tracking-tight">₹{analysisResult.estimatedCostRange}</p>
             </div>
             <div className="flex items-center gap-2 mt-4">
@@ -140,12 +140,12 @@ export default function AnalysisResultView({
         </div>
 
         <div className="mt-6 sm:mt-10 pt-6 sm:pt-10 border-t border-white/[0.06]">
-          <p className="text-[9px] sm:text-[10px] font-black text-white/25 uppercase tracking-[0.2em] mb-4 sm:mb-5 flex items-center gap-2">
-            <Plus className="w-3 h-3 text-white/30" /> Material Logistics Required
+          <p className="text-[9px] sm:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4 sm:mb-5 flex items-center gap-2">
+            <Plus className="w-3 h-3 text-white/50" /> Material Logistics Required
           </p>
           <div className="flex flex-wrap gap-3">
             {analysisResult.recommendedMaterials.map((m, i) => (
-              <span key={i} className="px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] text-white/35 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:border-white/20 transition-colors cursor-default">
+              <span key={i} className="px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] text-white/60 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:border-white/20 transition-colors cursor-default">
                 {m}
               </span>
             ))}

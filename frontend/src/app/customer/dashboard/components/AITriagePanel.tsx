@@ -151,7 +151,7 @@ export default function AITriagePanel({
               <h3 className="text-xs sm:text-sm font-black text-white group-hover:text-white transition uppercase tracking-wider">
                 {isListening ? 'Listening your voice...' : 'Speak Issue'}
               </h3>
-              <p className="text-[10px] sm:text-xs text-white/30 font-medium mt-0.5 leading-relaxed group-hover:text-white/50">Describe the issue out loud to diagnose instantly</p>
+              <p className="text-[10px] sm:text-xs text-white/50 font-bold mt-0.5 leading-relaxed group-hover:text-white/80">Describe the issue out loud to diagnose instantly</p>
             </div>
           </motion.button>
         </div>
