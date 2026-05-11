@@ -28,7 +28,7 @@ export default function SuccessState({
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-slate-900/90 backdrop-blur-3xl border border-white/10 p-8 sm:p-10 rounded-3xl text-center max-w-md w-full shadow-2xl relative overflow-hidden flex flex-col items-center"
+        className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] p-6 sm:p-10 rounded-2xl sm:rounded-3xl text-center max-w-md w-full shadow-2xl relative overflow-hidden flex flex-col items-center"
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/[0.03] blur-[40px] -mr-16 -mt-16" />
         <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">

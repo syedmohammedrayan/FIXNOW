@@ -69,35 +69,35 @@ export default function AnalysisResultView({
       className="space-y-6"
     >
       {/* Diagnostic Assessment Card */}
-      <div className="bg-slate-900/90 backdrop-blur-3xl p-8 sm:p-10 relative overflow-hidden border border-white/10 rounded-[2.5rem] shadow-2xl">
+      <div className="bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative overflow-hidden border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 60px rgba(0,0,0,0.3)' }}>
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.03] blur-[80px] -mr-32 -mt-32 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/[0.02] blur-[80px] -ml-32 -mb-32 pointer-events-none" />
         
-        <div className="flex items-center gap-5 mb-10">
-          <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-            <Activity className="w-7 h-7 text-white" />
+        <div className="flex items-center gap-3 sm:gap-5 mb-6 sm:mb-10">
+          <div className="size-10 sm:size-14 rounded-xl sm:rounded-2xl bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
+            <Activity className="size-5 sm:size-7 text-white" />
           </div>
           <div>
-            <h3 className="font-black text-white uppercase tracking-[0.2em] text-[11px]">Diagnostic Assessment</h3>
+            <h3 className="font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[10px] sm:text-[11px]">Diagnostic Assessment</h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black tracking-[0.3em]">Core Intelligence Protocol</span>
-              <div className="h-1 w-1 rounded-full bg-white/40 animate-pulse" />
+              <span className="text-[9px] sm:text-[10px] text-white/30 uppercase font-black tracking-[0.2em] sm:tracking-[0.3em]">Core Intelligence Protocol</span>
+              <div className="h-1 w-1 rounded-full bg-white/30 animate-pulse" />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {/* Required Unit Card - Redesigned */}
-          <div className="group relative p-6 rounded-[2rem] bg-white/5 border border-white/10 shadow-xl overflow-hidden min-h-[160px] flex flex-col justify-between">
+          <div className="group relative p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.04] border border-white/[0.06] shadow-xl overflow-hidden min-h-[130px] sm:min-h-[160px] flex flex-col justify-between" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
             <div className="absolute top-0 right-0 p-4 opacity-[0.1] group-hover:opacity-[0.2] transition-opacity duration-500">
               {getCategoryIcon(analysisResult.category)}
             </div>
             <div>
-              <p className="text-[10px] uppercase font-black text-slate-500 mb-4 tracking-[0.2em] flex items-center gap-2">
-                <ShieldCheck className="w-3 h-3 text-white/50" /> Required Unit
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em] flex items-center gap-2">
+                <ShieldCheck className="w-3 h-3 text-white/30" /> Required Unit
               </p>
-              <h2 className="text-white font-black text-2xl sm:text-3xl leading-tight tracking-tight drop-shadow-sm">
+              <h2 className="text-white font-black text-xl sm:text-2xl md:text-3xl leading-tight tracking-tight">
                 {analysisResult.category}
               </h2>
             </div>
@@ -107,9 +107,9 @@ export default function AnalysisResultView({
             </div>
           </div>
 
-          <div className="p-6 rounded-[2rem] bg-white/5 border border-white/10 shadow-inner flex flex-col justify-between min-h-[160px]">
+          <div className="p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.04] border border-white/[0.06] flex flex-col justify-between min-h-[130px] sm:min-h-[160px]" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
             <div>
-              <p className="text-[10px] uppercase font-black text-slate-500 mb-4 tracking-[0.2em]">Threat Level</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em]">Threat Level</p>
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "size-3 rounded-full animate-pulse",
@@ -118,34 +118,34 @@ export default function AnalysisResultView({
                   'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
                 )} />
                 <p className={cn(
-                  "font-black text-2xl sm:text-3xl leading-none tracking-tight uppercase",
+                  "font-black text-xl sm:text-2xl md:text-3xl leading-none tracking-tight uppercase",
                   analysisResult.urgency === 'High' ? 'text-rose-500' : 
                   analysisResult.urgency === 'Medium' ? 'text-amber-500' : 
                   'text-emerald-500'
                 )}>{analysisResult.urgency}</p>
               </div>
             </div>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-4">Calculated from issue analysis</p>
+            <p className="text-[8px] sm:text-[9px] font-bold text-white/25 uppercase tracking-widest mt-3 sm:mt-4">Calculated from issue analysis</p>
           </div>
 
-          <div className="p-6 rounded-[2rem] bg-white/5 border border-white/10 shadow-inner flex flex-col justify-between min-h-[160px]">
+          <div className="p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.04] border border-white/[0.06] flex flex-col justify-between min-h-[130px] sm:min-h-[160px]" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
             <div>
-              <p className="text-[10px] uppercase font-black text-slate-500 mb-4 tracking-[0.2em]">Budget Forecast</p>
-              <p className="text-white font-black text-2xl sm:text-3xl leading-none tracking-tight">₹{analysisResult.estimatedCostRange}</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-black text-white/25 mb-3 sm:mb-4 tracking-[0.2em]">Budget Forecast</p>
+              <p className="text-white font-black text-xl sm:text-2xl md:text-3xl leading-none tracking-tight">₹{analysisResult.estimatedCostRange}</p>
             </div>
             <div className="flex items-center gap-2 mt-4">
-              <span className="text-[9px] font-black text-white uppercase tracking-widest px-2 py-0.5 bg-white/10 rounded border border-white/10">Market Rate</span>
+              <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest px-2 py-0.5 bg-white/[0.06] rounded border border-white/[0.06]">Market Rate</span>
             </div>
           </div>
         </div>
 
-        <div className="mt-10 pt-10 border-t border-white/10">
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
-            <Plus className="w-3 h-3 text-white/50" /> Material Logistics Required
+        <div className="mt-6 sm:mt-10 pt-6 sm:pt-10 border-t border-white/[0.06]">
+          <p className="text-[9px] sm:text-[10px] font-black text-white/25 uppercase tracking-[0.2em] mb-4 sm:mb-5 flex items-center gap-2">
+            <Plus className="w-3 h-3 text-white/30" /> Material Logistics Required
           </p>
           <div className="flex flex-wrap gap-3">
             {analysisResult.recommendedMaterials.map((m, i) => (
-              <span key={i} className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-slate-400 text-[10px] font-black uppercase tracking-widest shadow-sm hover:border-white/30 transition-colors cursor-default">
+              <span key={i} className="px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] text-white/35 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:border-white/20 transition-colors cursor-default">
                 {m}
               </span>
             ))}
@@ -154,7 +154,7 @@ export default function AnalysisResultView({
 
         {/* Book Expert button - only show when idle */}
         {broadcastStatus === 'idle' && (
-          <div className="mt-12 pt-10 border-t border-white/10">
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-10 border-t border-white/[0.06]">
             <button 
               onClick={onBroadcastBook}
               className="group relative w-full px-8 py-6 bg-white text-slate-900 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs transition-all duration-300 active:scale-[0.98] shadow-2xl shadow-black/40 overflow-hidden flex items-center justify-center gap-4"

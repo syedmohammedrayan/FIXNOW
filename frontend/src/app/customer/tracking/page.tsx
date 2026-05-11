@@ -323,7 +323,7 @@ export default function TrackingPage() {
           "relative overflow-hidden bg-slate-900 transition-all duration-500",
           isMapFullscreen 
             ? "fixed inset-0 z-[150] h-full w-full" 
-            : "h-[45vh] md:h-[55vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-white/10"
+            : "h-[35vh] sm:h-[45vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-white/10"
         )}>
           {!isLoaded && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-xl z-10">
@@ -391,51 +391,51 @@ export default function TrackingPage() {
             </GoogleMap>
           )}
 
-            <div className="absolute top-6 right-6 z-50 flex flex-col gap-3 pointer-events-auto">
+            <div className="absolute top-3 sm:top-6 right-3 sm:right-6 z-50 flex flex-col gap-2 sm:gap-3 pointer-events-auto">
               <button
                 onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                className="p-4 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
                 title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
               >
                 {isMapFullscreen ? (
-                  <Minimize2 className="size-6" />
+                  <Minimize2 className="size-4 sm:size-6" />
                 ) : (
-                  <Maximize2 className="size-6" />
+                  <Maximize2 className="size-4 sm:size-6" />
                 )}
               </button>
 
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="p-4 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
               >
-                {isDarkMode ? <Sun className="size-6 text-amber-400" /> : <Moon className="size-6" />}
+                {isDarkMode ? <Sun className="size-4 sm:size-6 text-amber-400" /> : <Moon className="size-4 sm:size-6" />}
               </button>
             </div>
 
           {/* FLOATING INTELLIGENCE HUD - TOP ON MOBILE, LEFT ON DESKTOP */}
-          <div className="absolute top-4 lg:top-32 left-4 lg:left-8 w-[calc(100%-8rem)] lg:w-auto flex flex-wrap lg:flex-col gap-3 lg:gap-5 pointer-events-none z-20">
-             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="bg-slate-900/90 backdrop-blur-2xl p-3 lg:p-5 rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-[140px]">
-                <div className="size-10 lg:size-14 bg-white/5 rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
-                   <Clock className={cn("size-5 lg:size-7 text-white", eta === 'Syncing...' && "animate-spin")} />
+          <div className="absolute top-3 sm:top-4 lg:top-32 left-3 sm:left-4 lg:left-8 w-[calc(100%-5rem)] sm:w-[calc(100%-8rem)] lg:w-auto flex flex-row lg:flex-col gap-2 sm:gap-3 lg:gap-5 pointer-events-none z-20">
+             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="bg-slate-900/90 backdrop-blur-2xl p-2.5 sm:p-3 lg:p-5 rounded-xl sm:rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-2 sm:gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-0">
+                <div className="size-8 sm:size-10 lg:size-14 bg-white/5 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
+                   <Clock className={cn("size-4 sm:size-5 lg:size-7 text-white", eta === 'Syncing...' && "animate-spin")} />
                 </div>
                 <div className="min-w-0">
-                   <div className="flex items-center gap-1.5 mb-1">
-                      <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] truncate">Live ETA</p>
-                      <span className="flex size-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+                   <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1">
+                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate">ETA</p>
+                      <span className="flex size-1 sm:size-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
                    </div>
-                   <p className={cn("text-sm lg:text-2xl font-black text-white truncate leading-none tracking-tight", eta === 'Syncing...' && "text-slate-500 animate-pulse")}>
+                   <p className={cn("text-xs sm:text-sm lg:text-2xl font-black text-white truncate leading-none tracking-tight", eta === 'Syncing...' && "text-slate-500 animate-pulse")}>
                       {eta}
                    </p>
                 </div>
              </motion.div>
 
-             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-slate-900/90 backdrop-blur-2xl p-3 lg:p-5 rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-[140px]">
-                <div className="size-10 lg:size-14 bg-white/5 rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
-                   <LocateFixed className="size-5 lg:size-7 text-white" />
+             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-slate-900/90 backdrop-blur-2xl p-2.5 sm:p-3 lg:p-5 rounded-xl sm:rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-2 sm:gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-0">
+                <div className="size-8 sm:size-10 lg:size-14 bg-white/5 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
+                   <LocateFixed className="size-4 sm:size-5 lg:size-7 text-white" />
                 </div>
                 <div className="min-w-0">
-                   <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] truncate mb-1">Grid Distance</p>
-                   <p className="text-sm lg:text-2xl font-black text-white tracking-tight truncate leading-none">{localDistance}</p>
+                   <p className="text-[7px] sm:text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate mb-0.5 sm:mb-1">Distance</p>
+                   <p className="text-xs sm:text-sm lg:text-2xl font-black text-white tracking-tight truncate leading-none">{localDistance}</p>
                 </div>
              </motion.div>
 
@@ -443,29 +443,29 @@ export default function TrackingPage() {
         </section>
 
         {/* SIDEBAR */}
-        <aside className="w-full lg:w-[450px] xl:w-[500px] flex-1 lg:flex-none lg:h-full bg-slate-950 flex flex-col border-l border-white/10 relative z-10 overflow-hidden">
-          <div className="flex-1 min-h-0 overflow-y-scroll p-6 lg:p-12 pb-24 lg:pb-12 custom-scrollbar relative">
+        <aside className="w-full lg:w-[400px] xl:w-[450px] flex-1 lg:flex-none lg:h-full bg-slate-950 flex flex-col border-l border-white/10 relative z-10 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-y-scroll p-4 sm:p-6 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
             {/* TACTICAL BACK BUTTON - UPPER RIGHT */}
-            <div className="absolute top-6 lg:top-12 right-6 lg:right-12 z-30">
+            <div className="absolute top-4 sm:top-6 lg:top-10 right-4 sm:right-6 lg:right-10 z-30">
               <button 
                 onClick={() => router.push('/customer/dashboard')}
-                className="size-12 lg:size-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-2xl group"
+                className="size-10 sm:size-12 lg:size-14 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-2xl group"
               >
-                <ArrowLeft className="size-6 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="size-5 sm:size-6 group-hover:-translate-x-1 transition-transform" />
               </button>
             </div>
 
-            <div className="mb-10 lg:mb-16 pt-12 lg:pt-0">
-              <h1 className="text-3xl lg:text-5xl font-black text-white leading-none tracking-tighter mb-4 pr-16 italic">{techDetails.service}</h1>
-              <p className="text-slate-500 text-[10px] lg:text-xs font-black uppercase tracking-[0.4em]">DEPLOYMENT ID: {bookingId?.slice(-6).toUpperCase()}</p>
+            <div className="mb-8 sm:mb-10 lg:mb-14 pt-10 sm:pt-12 lg:pt-0">
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-none tracking-tighter mb-3 sm:mb-4 pr-14 sm:pr-16 italic">{techDetails.service}</h1>
+              <p className="text-slate-500 text-[9px] sm:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] sm:tracking-[0.4em]">DEPLOYMENT ID: {bookingId?.slice(-6).toUpperCase()}</p>
             </div>
 
-            <div className="space-y-10">
+            <div className="space-y-6 sm:space-y-10">
               {/* Tech Profile Card */}
-              <div className="bg-white/5 rounded-[3rem] p-10 border border-white/10 relative overflow-hidden group shadow-2xl">
-                 <div className="flex items-center gap-8 mb-10">
+              <div className="bg-white/[0.04] rounded-[2rem] sm:rounded-[3rem] p-5 sm:p-7 lg:p-10 border border-white/[0.08] relative overflow-hidden group shadow-2xl" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.04)' }}>
+                 <div className="flex items-center gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8 lg:mb-10">
                     <div className="relative">
-                      <div className="size-24 rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
+                      <div className="size-16 sm:size-20 lg:size-24 rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
                         {techDetails.avatar ? (
                           <div className="relative size-full">
                             <img src={techDetails.avatar} className="w-full h-full object-cover" />
@@ -476,12 +476,12 @@ export default function TrackingPage() {
                         )}
                         <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
                       </div>
-                      <div className="absolute -bottom-2 -right-2 size-10 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center shadow-2xl">
-                        <CheckCircle2 className="size-5 text-white" />
+                      <div className="absolute -bottom-1.5 sm:-bottom-2 -right-1.5 sm:-right-2 size-7 sm:size-8 lg:size-10 bg-emerald-500 rounded-full border-3 sm:border-4 border-slate-900 flex items-center justify-center shadow-2xl">
+                        <CheckCircle2 className="size-4 sm:size-5 text-white" />
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-black text-white tracking-tighter italic">{techDetails.name}</h3>
+                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter italic">{techDetails.name}</h3>
                       <div className="flex items-center gap-2.5 mt-2">
                         <div className="flex text-amber-400">
                           {[...Array(5)].map((_, i) => <Star key={i} className="size-4 fill-current" />)}
@@ -491,14 +491,14 @@ export default function TrackingPage() {
                     </div>
                  </div>
                  
-                 <div className="grid grid-cols-2 gap-5">
-                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-5 bg-white rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-2xl">
-                       <Phone className="size-6 text-slate-900" />
-                       <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Voice Link</span>
+                 <div className="grid grid-cols-2 gap-3 sm:gap-5">
+                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-5 bg-white rounded-xl sm:rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-2xl">
+                       <Phone className="size-4 sm:size-6 text-slate-900" />
+                       <span className="text-[9px] sm:text-[11px] font-black text-slate-900 uppercase tracking-widest">Call</span>
                      </a>
-                     <div className="flex flex-col items-center justify-center py-3 bg-slate-900/50 backdrop-blur-md text-white rounded-3xl border border-white/10 shadow-inner">
-                       <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-500 mb-1">Access OTP</span>
-                       <span className="text-2xl font-black tracking-[0.3em]">{otp}</span>
+                     <div className="flex flex-col items-center justify-center py-2 sm:py-3 bg-white/[0.04] backdrop-blur-md text-white rounded-xl sm:rounded-3xl border border-white/[0.08] shadow-inner">
+                       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 mb-0.5 sm:mb-1">Access OTP</span>
+                       <span className="text-lg sm:text-2xl font-black tracking-[0.2em] sm:tracking-[0.3em]">{otp}</span>
                      </div>
                  </div>
 
@@ -515,7 +515,7 @@ export default function TrackingPage() {
               </div>
 
               {/* Timeline */}
-              <div className="space-y-12 pb-12">
+              <div className="space-y-8 sm:space-y-12 pb-8 sm:pb-12">
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] font-black text-slate-500 uppercase tracking-[0.5em]">Protocol Status</span>
                 </div>
@@ -541,13 +541,13 @@ export default function TrackingPage() {
                   <Clock className="size-20 text-slate-950 animate-pulse" />
                 </div>
              </div>
-             <h2 className="text-5xl lg:text-7xl font-black text-white mb-6 tracking-tighter italic uppercase">Synchronizing...</h2>
-             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.3em] text-[10px] lg:text-xs leading-loose">
-               Your request has been broadcasted to the elite network. Grid tracking will activate once the specialist accepts the protocol.
+             <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6 tracking-tighter italic uppercase">Synchronizing...</h2>
+             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] lg:text-xs leading-loose px-4">
+               Your request has been broadcasted to the network. Tracking will activate once the specialist accepts.
              </p>
-             <div className="flex flex-col sm:flex-row gap-5 mt-16 w-full max-w-md">
-                <button onClick={() => router.push('/customer/dashboard')} className="flex-1 px-10 py-6 bg-white text-slate-900 rounded-3xl font-black text-xs uppercase tracking-[0.3em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Base</button>
-                <button onClick={() => setShowCancelModal(true)} className="flex-1 px-10 py-6 bg-white/5 text-slate-400 rounded-3xl font-black text-xs uppercase tracking-[0.3em] border border-white/10 transition-all hover:bg-white/10 active:scale-95">Cancel Manifest</button>
+             <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-10 sm:mt-16 w-full max-w-md px-4">
+                <button onClick={() => router.push('/customer/dashboard')} className="flex-1 px-6 sm:px-10 py-4 sm:py-6 bg-white text-slate-900 rounded-2xl sm:rounded-3xl font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Base</button>
+                <button onClick={() => setShowCancelModal(true)} className="flex-1 px-6 sm:px-10 py-4 sm:py-6 bg-white/5 text-slate-400 rounded-2xl sm:rounded-3xl font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] border border-white/10 transition-all hover:bg-white/10 active:scale-95">Cancel</button>
              </div>
           </motion.div>
         )}
@@ -563,9 +563,9 @@ export default function TrackingPage() {
                   <Zap className="size-20 text-slate-950 animate-pulse" />
                 </div>
              </div>
-             <h2 className="text-5xl lg:text-8xl font-black text-white mb-6 tracking-tighter italic">EXECUTION ACTIVE</h2>
-             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.3em] text-[10px] lg:text-xs leading-loose">Specialist is currently optimizing your service manifest. Tactical link remains fully encrypted.</p>
-             <button onClick={() => setStatus('Arrived')} className="mt-16 px-16 py-6 bg-white text-slate-900 rounded-3xl font-black text-xs uppercase tracking-[0.4em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Monitoring</button>
+             <h2 className="text-3xl sm:text-5xl lg:text-8xl font-black text-white mb-4 sm:mb-6 tracking-tighter italic">EXECUTION ACTIVE</h2>
+             <p className="text-slate-400 font-bold max-w-md uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] lg:text-xs leading-loose px-4">Specialist is currently working on your service. Tactical link remains encrypted.</p>
+             <button onClick={() => setStatus('Arrived')} className="mt-10 sm:mt-16 px-10 sm:px-16 py-4 sm:py-6 bg-white text-slate-900 rounded-2xl sm:rounded-3xl font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95">Return to Monitoring</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -573,8 +573,8 @@ export default function TrackingPage() {
       {/* CANCEL CONFIRMATION MODAL */}
       <AnimatePresence>
         {showCancelModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="bg-slate-900/95 backdrop-blur-3xl rounded-[3rem] p-10 md:p-12 max-w-md w-full shadow-2xl relative overflow-hidden border border-white/10">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="bg-slate-900/95 backdrop-blur-3xl rounded-t-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-12 max-w-md w-full shadow-2xl relative overflow-hidden border border-white/10">
                 <div className="absolute top-0 left-0 w-full h-2 bg-rose-600" />
                 
                 <div className="flex justify-between items-start mb-8">
@@ -618,7 +618,7 @@ export default function TrackingPage() {
 
 function TimelineItem({ active, completed, title, desc, icon, isLast }: any) {
   return (
-    <div className="flex gap-8 lg:gap-10 pb-10 lg:pb-12 relative">
+    <div className="flex gap-5 sm:gap-8 lg:gap-10 pb-6 sm:pb-10 lg:pb-12 relative">
       {!isLast && (
         <div className={cn(
           "absolute top-12 left-6 -ml-px w-0.5 h-[calc(100%-2.5rem)]",

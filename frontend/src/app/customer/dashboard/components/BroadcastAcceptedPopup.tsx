@@ -63,7 +63,7 @@ export default function BroadcastAcceptedPopup({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 40 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl"
+            className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/[0.08] rounded-t-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl"
           >
             {/* Top gradient accent */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-white to-emerald-500" />
@@ -77,7 +77,7 @@ export default function BroadcastAcceptedPopup({
             </button>
 
             {/* Content */}
-            <div className="p-8 sm:p-10 flex flex-col items-center text-center">
+            <div className="p-6 sm:p-8 md:p-10 flex flex-col items-center text-center">
               {/* Celebration particles */}
               <div className="absolute top-0 left-0 right-0 overflow-hidden h-40 pointer-events-none">
                 {[...Array(8)].map((_, i) => (
@@ -141,9 +141,9 @@ export default function BroadcastAcceptedPopup({
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="w-full p-5 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center gap-4 mb-8"
+                className="w-full p-4 sm:p-5 rounded-[1.25rem] sm:rounded-[1.5rem] bg-white/[0.04] border border-white/[0.08] flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8"
               >
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0">
                   {hasRealAvatar ? (
                     <div className="relative size-full">
                       <img src={avatarUrl!} className="w-full h-full object-cover" alt={technician.name} />
@@ -154,7 +154,7 @@ export default function BroadcastAcceptedPopup({
                   )}
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                  <h3 className="font-black text-lg text-white truncate">{technician.name}</h3>
+                  <h3 className="font-black text-base sm:text-lg text-white truncate">{technician.name}</h3>
                   <div className="flex items-center gap-3 mt-1">
                     <div className="flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />

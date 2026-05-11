@@ -35,33 +35,34 @@ export default function StatusBanners({
           initial={{ y: -50, opacity: 0 }} 
           animate={{ y: 0, opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
-          className="mb-8 w-full bg-slate-900/90 backdrop-blur-3xl rounded-3xl p-6 shadow-2xl text-white flex flex-col md:flex-row items-start md:items-center justify-between border border-amber-500/20 gap-4"
+          className="mb-6 sm:mb-8 w-full bg-white/[0.04] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between border border-amber-500/15 gap-4"
+          style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.3)' }}
         >
-          <div className="flex items-center gap-5">
-            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl backdrop-blur-md">
-              <BellRing className="w-8 h-8 text-amber-500" />
+          <div className="flex items-start sm:items-center gap-3 sm:gap-5">
+            <div className="p-3 sm:p-4 bg-amber-500/10 border border-amber-500/15 rounded-xl sm:rounded-2xl backdrop-blur-md shrink-0">
+              <BellRing className="size-6 sm:size-8 text-amber-500" />
             </div>
             <div>
-              <p className="font-black text-2xl tracking-tight leading-tight">Service Protocol Update</p>
-              <p className="text-sm font-black opacity-90 text-amber-50 mt-1 uppercase tracking-widest">
+              <p className="font-black text-lg sm:text-2xl tracking-tight leading-tight">Service Protocol Update</p>
+              <p className="text-xs sm:text-sm font-bold opacity-80 text-amber-50/70 mt-1 uppercase tracking-wider sm:tracking-widest line-clamp-2">
                 {declineNotifications.length === 1 
                   ? declineNotifications[0].message 
-                  : `Automated matching found ${declineNotifications.length} unavailable units. Re-initialize matching for alternative options.`}
+                  : `${declineNotifications.length} units unavailable. Re-initialize matching for alternatives.`}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
             <button 
               onClick={() => { setShowHistory(true); onMarkAllRead(); }}
-              className="px-6 py-4 bg-white text-slate-900 font-extrabold text-sm rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95"
+              className="flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-4 bg-white text-slate-900 font-extrabold text-xs sm:text-sm rounded-xl sm:rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95 text-center"
             >
               View Bookings
             </button>
             <button 
               onClick={() => { setDismissedBanner(true); onMarkAllRead(); }}
-              className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition"
+              className="p-2.5 sm:p-3 bg-white/[0.04] border border-white/[0.06] rounded-xl sm:rounded-2xl hover:bg-white/[0.08] transition"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="size-4 sm:size-5 text-white" />
             </button>
           </div>
         </motion.div>
@@ -69,21 +70,26 @@ export default function StatusBanners({
 
       {/* Urgent Reminders Banner */}
       {urgentReminders.length > 0 && (
-        <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-8 w-full bg-slate-900/90 backdrop-blur-3xl rounded-3xl p-6 shadow-2xl text-white flex flex-col md:flex-row items-start md:items-center justify-between border border-rose-500/20 gap-4">
-          <div className="flex items-center gap-5">
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl">
-              <ShieldAlert className="w-8 h-8 text-rose-500" />
+        <motion.div 
+          initial={{ y: -50, opacity: 0 }} 
+          animate={{ y: 0, opacity: 1 }} 
+          className="mb-6 sm:mb-8 w-full bg-white/[0.04] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between border border-rose-500/15 gap-4"
+          style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.3)' }}
+        >
+          <div className="flex items-start sm:items-center gap-3 sm:gap-5">
+            <div className="p-2.5 sm:p-3 bg-rose-500/10 border border-rose-500/15 rounded-xl sm:rounded-2xl shrink-0">
+              <ShieldAlert className="size-6 sm:size-8 text-rose-500" />
             </div>
             <div>
-              <p className="font-extrabold text-2xl leading-tight">Service Required Soon!</p>
-              <p className="text-base font-medium text-slate-300 mt-1 flex items-center gap-1">
-                You have {urgentReminders.length} appliance(s) requiring maintenance: <strong className="text-white">{urgentReminders.map(r => r.appliance).join(', ')}</strong>.
+              <p className="font-extrabold text-lg sm:text-2xl leading-tight">Service Required Soon!</p>
+              <p className="text-xs sm:text-base font-medium text-white/50 mt-1 flex flex-wrap items-center gap-1">
+                {urgentReminders.length} appliance(s) need maintenance: <strong className="text-white">{urgentReminders.map(r => r.appliance).join(', ')}</strong>.
               </p>
             </div>
           </div>
           <button 
             onClick={() => { setIssueText(`I need a technician for my ${urgentReminders[0].appliance} servicing.`); window.scrollTo(0, 0); }} 
-            className="px-6 py-4 bg-white text-slate-900 shrink-0 font-extrabold text-sm rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95"
+            className="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-4 bg-white text-slate-900 shrink-0 font-extrabold text-xs sm:text-sm rounded-xl sm:rounded-2xl hover:bg-slate-100 transition shadow-md active:scale-95 text-center"
           >
             Book Tech Instantly
           </button>

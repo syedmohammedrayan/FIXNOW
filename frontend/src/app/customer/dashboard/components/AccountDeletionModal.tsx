@@ -20,7 +20,7 @@ export default function AccountDeletionModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
@@ -32,7 +32,7 @@ export default function AccountDeletionModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/[0.08] rounded-t-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 shadow-2xl overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-white/20 to-rose-500" />
             
@@ -40,8 +40,8 @@ export default function AccountDeletionModal({
               <ShieldAlert className="w-10 h-10 text-rose-400 animate-pulse" />
             </div>
             
-            <h3 className="font-display text-3xl font-black text-white text-center mb-4 tracking-tight">Delete Account Permanently?</h3>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-8 backdrop-blur-sm">
+            <h3 className="font-display text-xl sm:text-3xl font-black text-white text-center mb-3 sm:mb-4 tracking-tight">Delete Account Permanently?</h3>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-6 sm:mb-8 backdrop-blur-sm">
               <p className="text-slate-300 text-center text-sm leading-relaxed font-bold">
                 This action is <strong className="text-rose-400">irreversible</strong>. All your profile data, booking history, notifications, and associated records will be wiped from our systems forever.
               </p>

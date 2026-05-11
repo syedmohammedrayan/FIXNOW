@@ -55,7 +55,7 @@ export default function BroadcastWaitingOverlay({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full bg-slate-900/90 backdrop-blur-3xl p-8 sm:p-10 relative overflow-hidden border border-white/10 rounded-[2.5rem] shadow-2xl"
+        className="w-full bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative overflow-hidden border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-rose-500/5 pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center text-center">
@@ -92,7 +92,7 @@ export default function BroadcastWaitingOverlay({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full bg-slate-900/90 backdrop-blur-3xl p-8 sm:p-10 relative overflow-hidden border border-white/10 rounded-[2.5rem] shadow-2xl"
+      className="w-full bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative overflow-hidden border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl"
     >
       {/* Animated background pulse */}
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-violet-500/5 pointer-events-none" />

@@ -332,7 +332,7 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-20 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto font-sans">
+    <div className="min-h-screen bg-slate-950 text-white pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto font-sans">
       <StatusBanners 
         dismissedBanner={dismissedBanner}
         setDismissedBanner={setDismissedBanner}
@@ -364,9 +364,9 @@ export default function CustomerDashboard() {
         onTrack={(id) => router.push(`/customer/tracking?id=${id}`)}
       />
 
-      <div className="mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-start">
-          <div className="lg:col-span-8 space-y-8">
+      <div className="mt-6 sm:mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-start">
+          <div className="lg:col-span-8 space-y-6 sm:space-y-8">
             <AITriagePanel 
               analyzing={analyzing}
               issueText={issueText}
