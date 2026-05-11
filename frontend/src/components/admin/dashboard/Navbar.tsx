@@ -1,5 +1,6 @@
 import React from 'react';
-import { Menu, Activity, Plus, RefreshCw } from 'lucide-react';
+import { Menu, RefreshCw } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 
 interface NavbarProps {
   sidebarOpen: boolean;
@@ -52,24 +53,16 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, fetchData, setS
           <RefreshCw className="w-4 h-4" />
         </button>
 
-        {/* Add Technician — full button on md+, icon-only on mobile */}
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white text-slate-900 hover:bg-slate-100 active:scale-95 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all shadow-lg shadow-black/20"
-        >
-          <Plus className="w-4 h-4" />
-          Add Technician
-        </button>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="sm:hidden p-2.5 bg-white text-slate-900 rounded-xl transition active:scale-95 shadow-lg"
-          title="Add Technician"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
+        {/* Brand Logo — Replaces Add Technician Button */}
+        <div className="flex items-center">
+          <Logo 
+            isAdmin 
+            iconClassName="w-[110px] sm:w-[130px] opacity-90 hover:opacity-100 transition-opacity" 
+          />
+        </div>
 
-        {/* Admin badge */}
-        <div className="hidden xs:flex w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] items-center justify-center text-white font-black text-[8px] uppercase tracking-widest shrink-0">
+        {/* Admin badge — Hidden on mobile for better logo spacing */}
+        <div className="hidden sm:flex w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] items-center justify-center text-white font-black text-[8px] uppercase tracking-widest shrink-0">
           ADM
         </div>
       </div>
