@@ -137,7 +137,7 @@ export default function TechnicianHeader({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="absolute right-0 sm:right-0 mt-4 w-[320px] sm:w-[380px] bg-[#0B0F17]/95 backdrop-blur-[40px] border border-white/[0.08] rounded-[1.5rem] p-3 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] z-[100] max-h-[400px] overflow-y-auto"
+                  className="fixed left-4 right-4 top-20 sm:absolute sm:top-auto sm:left-auto sm:right-0 mt-4 sm:w-[380px] bg-[#0B0F17]/95 backdrop-blur-[40px] border border-white/[0.08] rounded-[1.5rem] p-3 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] z-[100] max-h-[450px] overflow-y-auto"
                 >
                   <div className="px-4 pt-2 pb-4 mb-2 border-b border-white/[0.05] flex items-center justify-between">
                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System Alerts</h3>
