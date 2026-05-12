@@ -360,7 +360,7 @@ export default function TechnicianSidebar({ profile, onOpenChange }: { profile?:
 
                 <button
                   onClick={handleLogout}
-                  className="hidden md:flex shrink-0 size-9 rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 transition-all active:scale-90"
+                  className="hidden md:flex items-center justify-center shrink-0 size-9 rounded-xl text-slate-500 hover:bg-rose-500/10 hover:text-rose-500 transition-all active:scale-90"
                   title="Purge Session"
                 >
                   <LogOut className="size-4" />
@@ -390,7 +390,7 @@ export default function TechnicianSidebar({ profile, onOpenChange }: { profile?:
 
                 <button
                   onClick={handleLogout}
-                  className="hidden md:flex size-12 rounded-2xl items-center justify-center bg-white/5 border border-white/10 text-slate-500 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 transition-all active:scale-90"
+                  className="hidden md:flex size-12 rounded-2xl items-center justify-center text-slate-500 hover:bg-rose-500/10 hover:text-rose-500 transition-all active:scale-90"
                   title="Purge Session"
                 >
                   <LogOut className="size-5" />
