@@ -591,28 +591,39 @@ export default function TechnicianServicePage() {
             </div>
 
             {/* Right Panel: Map Environment */}
-            <div className="flex-1 h-[450px] lg:h-full min-h-[400px] lg:min-h-0 order-1 lg:order-2">
+            <div className={cn(
+              "flex-1 order-1 lg:order-2 transition-all duration-700 z-10",
+              isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-[450px] sm:h-[500px] lg:h-full min-h-[450px] lg:min-h-0"
+            )}>
               {!serviceInProgress ? (
                 <div className={cn(
-                  "bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full",
-                  isMapFullscreen && "fixed inset-0 z-[100] rounded-none"
+                  "bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full w-full",
+                  isMapFullscreen ? "rounded-none" : "rounded-[2.5rem] sm:rounded-[3rem]"
                 )}>
-                <div className="relative h-full w-full">
+                <div className="relative h-full w-full bg-slate-900/50">
                   {/* Floating Map Controls - Tactical Style */}
-                  <div className="absolute top-6 right-6 z-20 flex flex-col gap-3">
+                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] flex flex-col gap-3">
                     <button
                       onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl group active:scale-90"
+                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
                       title={isMapFullscreen ? "Exit HUD" : "Tactical HUD"}
                     >
-                      {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6" /> : <Maximize2 className="size-5 sm:size-6" />}
+                      {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6 text-cyan-400" /> : <Maximize2 className="size-5 sm:size-6" />}
                     </button>
                     <button
                       onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl group active:scale-90"
+                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
                     >
                       {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-5 sm:size-6" />}
                     </button>
+                    {techLocation && (
+                      <button
+                        onClick={() => map?.panTo(techLocation)}
+                        className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                      >
+                        <Zap className="size-5 sm:size-6 text-emerald-400" />
+                      </button>
+                    )}
                   </div>
 
                   {isLoaded && (
