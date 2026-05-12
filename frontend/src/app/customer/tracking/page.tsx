@@ -244,46 +244,37 @@ export default function TrackingPage() {
   // Map & Route Management
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   useEffect(() => {
-    if (!window.google?.maps || !techLocation || !userLocation) {
-      console.log('Tracking: Waiting for google maps or locations...', { techLocation, userLocation });
+    const destination = userLocation || booking?.customerLocation;
+    if (!window.google?.maps || !techLocation || !destination) {
+      console.log('Tracking: Waiting for components...', { techLocation, userLocation, bookingLoc: booking?.customerLocation });
       return;
     }
     
-    console.log('Tracking: Requesting Distance Matrix...', { techLocation, userLocation });
+    console.log('Tracking: Requesting Distance Matrix...', { techLocation, destination });
     
-    // Distance Matrix for HUD
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
         origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
-        destinations: [new window.google.maps.LatLng(userLocation.lat, userLocation.lng)],
+        destinations: [new window.google.maps.LatLng(destination.lat, destination.lng)],
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (response, status) => {
-        console.log('Tracking: Distance Matrix Status:', status);
         if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
           const element = response.rows[0].elements[0];
-          console.log('Tracking: Distance Matrix Element:', element);
           if (element.status === 'OK') {
-            const distText = element.distance?.text;
-            const distValue = element.distance?.value;
-            const durationText = element.duration?.text;
+            const dText = element.distance?.text;
+            const dVal = element.distance?.value;
+            const eText = element.duration?.text;
 
-            if (distText) {
-              setLocalDistance(distText);
-            } else if (typeof distValue === 'number') {
-              setLocalDistance(distValue > 1000 ? `${(distValue/1000).toFixed(1)}km` : `${Math.round(distValue)}m`);
-            }
+            if (dText) setLocalDistance(dText);
+            else if (dVal !== undefined) setLocalDistance(dVal > 1000 ? `${(dVal/1000).toFixed(1)}km` : `${Math.round(dVal)}m`);
             
-            if (durationText) {
-              setEta(durationText);
-            }
+            if (eText) setEta(eText);
           } else {
-            console.error('Tracking: Distance Matrix Element Error:', element.status);
-            // Fallback to simple calculation if matrix fails
             const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
               new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-              new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
+              new window.google.maps.LatLng(destination.lat, destination.lng)
             );
             setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
             setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
@@ -292,14 +283,13 @@ export default function TrackingPage() {
       }
     );
 
-    // Directions for visual route
     if (!directionsServiceRef.current) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
     directionsServiceRef.current.route(
       {
         origin: techLocation,
-        destination: userLocation,
+        destination: destination,
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
@@ -308,7 +298,7 @@ export default function TrackingPage() {
         }
       }
     );
-  }, [techLocation, userLocation]);
+  }, [techLocation, userLocation, booking?.customerLocation]);
 
   useEffect(() => {
     if (map && techLocation && userLocation && window.google?.maps && !hasInitiallyCentered.current) {
