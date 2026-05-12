@@ -579,17 +579,17 @@ export default function TechnicianServicePage() {
               )}
             </div>
 
-            {/* Right Panel: Map Environment */}
+            {/* Right Panel: Map & Console Environment */}
             <div className={cn(
-              "flex-1 order-1 lg:order-2 transition-all duration-700 z-10",
-              isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-[70vh] sm:h-[600px] lg:h-full min-h-[500px] lg:min-h-0"
+              "flex-1 order-1 lg:order-2 transition-all duration-700 z-20 flex flex-col gap-6",
+              isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-auto lg:h-full"
             )}>
-              {!serviceInProgress ? (
-                <div className={cn(
-                  "bg-slate-900 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full w-full",
-                  isMapFullscreen ? "rounded-none" : "rounded-[2.5rem] sm:rounded-[3rem]"
-                )}>
-                  <div className="relative h-full w-full bg-slate-950">
+              {/* Map Section - Always visible or primary */}
+              <div className={cn(
+                "bg-slate-950 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative",
+                isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[500px] sm:h-[600px] lg:h-full rounded-[2.5rem] sm:rounded-[3rem]"
+              )}>
+                <div className="relative h-full w-full bg-slate-950">
                   {/* Mobile-Only Tactical Overlay Headers */}
                   <div className="absolute top-4 left-4 z-[60] sm:hidden flex flex-col gap-2">
                     <div className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl">
@@ -650,6 +650,20 @@ export default function TechnicianServicePage() {
                         backgroundColor: '#020617'
                       }}
                     >
+                        {directions && (
+                          <DirectionsRenderer
+                            directions={directions}
+                            options={{
+                              suppressMarkers: true,
+                              polylineOptions: {
+                                strokeColor: "#22d3ee",
+                                strokeWeight: 6,
+                                strokeOpacity: 0.9,
+                                zIndex: 50
+                              }
+                            }}
+                          />
+                        )}
                         {/* Final robust check for Polyline path */}
                         {techLocation && (booking?.customerLocation || booking?.customer_location) && (
                           <Polyline
@@ -716,17 +730,13 @@ export default function TechnicianServicePage() {
                             </div>
                           </OverlayView>
                         )}
-                      </GoogleMap>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
-                        <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
-                        {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
-                      </div>
                     )}
                   </div>
                 </div>
-              ) : (
+
+              {/* Console Section - Shown below map on mobile when in progress */}
+              {serviceInProgress && !isMapFullscreen && (
+                <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
                 <div className="h-full flex flex-col gap-6">
                   <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex-1 flex flex-col relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
