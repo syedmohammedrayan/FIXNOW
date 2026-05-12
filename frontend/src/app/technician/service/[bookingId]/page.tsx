@@ -11,7 +11,7 @@ import axios from 'axios';
 import {
   ArrowLeft, MapPin, Phone, Navigation, CheckCircle2,
   XCircle, Loader2, ShieldCheck, AlertTriangle, Activity,
-  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Trash2, CreditCard, Printer, Moon, Sun, Maximize2, Minimize2, AlertCircle, X
+  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Minus, Trash2, CreditCard, Printer, Moon, Sun, Maximize2, Minimize2, AlertCircle, X
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
@@ -650,6 +650,23 @@ export default function TechnicianServicePage() {
                     >
                       {isDarkMode ? <Sun className="size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-6 text-slate-400" />}
                     </button>
+                    
+                    {/* Custom Tactical Zoom Controls */}
+                    <div className="flex flex-col gap-3 mt-2">
+                      <button
+                        onClick={() => map?.setZoom((map.getZoom() || 14) + 1)}
+                        className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90 font-black text-xl"
+                      >
+                        <Plus className="size-6" />
+                      </button>
+                      <button
+                        onClick={() => map?.setZoom((map.getZoom() || 14) - 1)}
+                        className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90 font-black text-xl"
+                      >
+                        <Minus className="size-6" />
+                      </button>
+                    </div>
+
                     {techLocation && (
                       <button
                         onClick={() => map?.panTo(techLocation)}
@@ -688,7 +705,7 @@ export default function TechnicianServicePage() {
                       }}
                       options={{ 
                         disableDefaultUI: true, 
-                        zoomControl: true, 
+                        zoomControl: false, 
                         styles: isDarkMode ? darkMapStyles : lightMapStyles,
                         gestureHandling: 'greedy',
                         backgroundColor: '#020617'

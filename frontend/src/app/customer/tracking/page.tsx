@@ -25,7 +25,9 @@ import {
   Loader2,
   X,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Plus,
+  Minus
 } from 'lucide-react';
 import axios from 'axios';
 import { GoogleMap, useJsApiLoader, DirectionsRenderer, OverlayView, Polyline } from '@react-google-maps/api';
@@ -360,7 +362,7 @@ export default function TrackingPage() {
               }}
               options={{ 
                 disableDefaultUI: true, 
-                zoomControl: true,
+                zoomControl: false,
                 styles: isDarkMode ? darkMapStyles : lightMapStyles
               }}
             >
@@ -455,25 +457,41 @@ export default function TrackingPage() {
             </GoogleMap>
           )}
 
-            <div className="absolute top-3 sm:top-6 right-3 sm:right-6 z-50 flex flex-col gap-2 sm:gap-3 pointer-events-auto">
+            <div className="absolute bottom-6 right-6 sm:top-6 sm:right-6 sm:bottom-auto z-[200] flex flex-col gap-2 sm:gap-3 pointer-events-auto">
               <button
                 onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center active:scale-90"
                 title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
               >
                 {isMapFullscreen ? (
-                  <Minimize2 className="size-4 sm:size-6" />
+                  <Minimize2 className="size-5 sm:size-6 text-cyan-400" />
                 ) : (
-                  <Maximize2 className="size-4 sm:size-6" />
+                  <Maximize2 className="size-5 sm:size-6" />
                 )}
               </button>
 
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center active:scale-90"
               >
-                {isDarkMode ? <Sun className="size-4 sm:size-6 text-amber-400" /> : <Moon className="size-4 sm:size-6" />}
+                {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400" /> : <Moon className="size-5 sm:size-6" />}
               </button>
+
+              {/* Custom Tactical Zoom Controls */}
+              <div className="flex flex-col gap-2 mt-2">
+                <button
+                  onClick={() => map?.setZoom((map.getZoom() || 14) + 1)}
+                  className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center font-black text-xl active:scale-90"
+                >
+                  <Plus className="size-5 sm:size-6" />
+                </button>
+                <button
+                  onClick={() => map?.setZoom((map.getZoom() || 14) - 1)}
+                  className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center font-black text-xl active:scale-90"
+                >
+                  <Minus className="size-5 sm:size-6" />
+                </button>
+              </div>
             </div>
 
           {/* FLOATING HUD - top-left on mobile (below buttons strip), left panel on desktop */}
