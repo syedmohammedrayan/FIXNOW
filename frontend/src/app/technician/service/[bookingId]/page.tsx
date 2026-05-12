@@ -11,7 +11,7 @@ import axios from 'axios';
 import {
   ArrowLeft, MapPin, Phone, Navigation, CheckCircle2,
   XCircle, Loader2, ShieldCheck, AlertTriangle, Activity,
-  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Trash2, CreditCard, Printer, Moon, Sun, Maximize2, Minimize2
+  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Trash2, CreditCard, Printer, Moon, Sun, Maximize2, Minimize2, AlertCircle, X
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
@@ -430,9 +430,10 @@ export default function TechnicianServicePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-cyan-500/30">
       <TechnicianSidebar />
-      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen relative">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyan-500/5 blur-[120px] rounded-full -mr-64 -mt-64" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-500/5 blur-[100px] rounded-full -ml-48 -mb-48" />
+      <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen relative overflow-x-hidden">
+        {/* Cinematic Background Accents */}
+        <div className="fixed top-0 right-0 w-[60vw] h-[60vw] bg-cyan-500/[0.03] blur-[150px] rounded-full pointer-events-none -mr-[20vw] -mt-[20vw]" />
+        <div className="fixed bottom-0 left-0 w-[50vw] h-[50vw] bg-slate-500/[0.03] blur-[120px] rounded-full pointer-events-none -ml-[15vw] -mb-[15vw]" />
 
         <div className="p-4 lg:p-10 max-w-[1400px] mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10">
@@ -466,33 +467,45 @@ export default function TechnicianServicePage() {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-6 sm:p-8 rounded-[2.5rem] shadow-2xl">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Job Parameters</p>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-5 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-white/20 transition-all duration-300">
-                    <div className="size-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">
-                      <MapPin className="size-5" />
+          <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-220px)] lg:min-h-[600px]">
+            {/* Left Panel: Job Controls */}
+            <div className="w-full lg:w-[420px] shrink-0 space-y-6 lg:overflow-y-auto lg:pr-2 scrollbar-hide pb-20 lg:pb-0 order-2 lg:order-1">
+              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-6 sm:p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+                
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                  <span className="w-8 h-px bg-slate-800" />
+                  Tactical Parameters
+                </p>
+
+                <div className="space-y-5">
+                  <div className="flex items-start gap-4 p-5 bg-white/[0.03] border border-white/[0.05] rounded-[2rem] group/item hover:bg-white/[0.05] transition-all">
+                    <div className="size-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 shrink-0 group-hover/item:scale-110 transition-transform">
+                      <MapPin className="size-6" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Customer Location</p>
-                      </div>
-                      <p className="text-sm text-white font-bold leading-tight line-clamp-2">
-                        {liveAddress || booking?.address || "Locating..."}
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Target Coordinate</p>
+                      <p className="text-sm text-white font-black leading-tight line-clamp-2 italic tracking-tight">
+                        {liveAddress || booking?.address || "ACQUIRING..."}
                       </p>
                     </div>
                   </div>
+
                   {booking?.contactNumber && (
-                    <a href={`tel:${booking.contactNumber}`} className="flex items-center gap-3 w-full p-4 bg-white/5 border border-white/10 rounded-[1.5rem] hover:bg-white/10 transition-all active:scale-[0.98]">
-                      <div className="size-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><Phone className="size-5" /></div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Communication</p>
-                        <span className="text-sm text-white font-bold">{booking.contactNumber}</span>
+                    <a href={`tel:${booking.contactNumber}`} className="flex items-center gap-4 w-full p-5 bg-white/[0.03] border border-white/[0.05] rounded-[2rem] hover:bg-white/[0.08] transition-all group/item">
+                      <div className="size-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover/item:scale-110 transition-transform">
+                        <Phone className="size-6" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Communication Link</p>
+                        <span className="text-base text-white font-black tracking-tighter">{booking.contactNumber}</span>
+                      </div>
+                      <div className="size-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        <ArrowLeft className="size-4 rotate-180 text-white" />
                       </div>
                     </a>
                   )}
+
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Distance Gap</p>
@@ -516,112 +529,117 @@ export default function TechnicianServicePage() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Verification Protocol</p>
+              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                  <span className="w-8 h-px bg-slate-800" />
+                  Verification Logic
+                </p>
+                
                 {otpPhase === 'idle' && booking?.status !== 'In Progress' && (
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-center mx-auto mb-6 group">
-                      <ShieldCheck className="size-10 text-white group-hover:text-cyan-400 transition-colors" />
+                  <div className="text-center relative">
+                    <div className="relative size-24 bg-white/[0.03] border border-white/[0.1] rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 group/icon overflow-hidden">
+                      <div className="absolute inset-0 bg-cyan-500/5 group-hover/icon:bg-cyan-500/10 transition-colors" />
+                      <ShieldCheck className="size-10 text-white relative z-10 group-hover/icon:scale-110 transition-transform" />
                     </div>
-                    <button onClick={handleGenerateOtp} className="w-full py-5 bg-white text-slate-950 hover:bg-slate-100 font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95">
-                      <Zap className="size-4" /> Initiate Protocol
+                    <button onClick={handleGenerateOtp} className="w-full py-5 bg-white text-slate-950 hover:bg-slate-50 font-black text-xs uppercase tracking-[0.3em] rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-3 active:scale-95 group/btn">
+                      <Zap className="size-4 group-hover:scale-125 transition-transform" /> Initiate Handover
                     </button>
                   </div>
                 )}
+                
                 {otpPhase === 'entering' && (
                   <div>
-                    <div className="flex gap-3 justify-center mb-8">
+                    <div className="flex gap-2 sm:gap-3 justify-center mb-10">
                       {otpInput.map((digit, i) => (
-                        <input key={i} ref={(el) => { otpRefs.current[i] = el; }} type="text" inputMode="numeric" maxLength={1} value={digit} onChange={(e) => handleOtpChange(i, e.target.value)} className="w-12 h-16 sm:w-14 sm:h-18 text-center text-2xl font-black bg-white/5 border border-white/10 focus:border-white rounded-2xl text-white outline-none transition-all" />
+                        <input key={i} ref={(el) => { otpRefs.current[i] = el; }} type="text" inputMode="numeric" maxLength={1} value={digit} onChange={(e) => handleOtpChange(i, e.target.value)} className="w-12 h-16 sm:w-14 sm:h-18 text-center text-2xl font-black bg-white/[0.05] border border-white/[0.1] focus:border-cyan-500/50 rounded-2xl text-white outline-none transition-all shadow-inner focus:bg-white/[0.08]" />
                       ))}
                     </div>
-                    {otpError && <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl mb-6 text-rose-500 text-[10px] font-black uppercase tracking-wider text-center">{otpError}</div>}
+                    {otpError && <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl mb-6 text-rose-500 text-[10px] font-black uppercase tracking-wider text-center flex items-center justify-center gap-2"><AlertCircle className="size-3" /> {otpError}</div>}
                     <div className="flex gap-3">
-                      <button onClick={handleVerifyOtp} className="flex-1 py-5 bg-white text-slate-950 hover:bg-slate-100 font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all flex items-center justify-center gap-3 active:scale-95">Authorize</button>
-                      <button onClick={handleGenerateOtp} className="p-5 bg-white/5 border border-white/10 text-slate-400 rounded-2xl hover:bg-white/10 transition active:scale-95"><RefreshCw className="size-4" /></button>
+                      <button onClick={handleVerifyOtp} className="flex-1 py-5 bg-cyan-500 hover:bg-cyan-400 text-white font-black text-xs uppercase tracking-[0.3em] rounded-2xl transition-all flex items-center justify-center gap-3 active:scale-95 shadow-lg shadow-cyan-500/20">Authorize</button>
+                      <button onClick={handleGenerateOtp} className="p-5 bg-white/[0.05] border border-white/[0.1] text-slate-400 rounded-2xl hover:bg-white/[0.1] transition active:scale-95"><RefreshCw className="size-4" /></button>
                     </div>
                   </div>
                 )}
+                
                 {(otpPhase === 'verified' || booking?.status === 'In Progress') && (
                   <div className="text-center py-6">
-                    <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6"><CheckCircle2 className="size-10 text-emerald-400" /></div>
-                    <h3 className="text-xl font-black text-white tracking-tight">Active Operation</h3>
-                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mt-2">Protocol Verified & Syncing</p>
+                    <div className="relative size-24 bg-emerald-500/10 border border-emerald-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6">
+                      <div className="absolute inset-0 bg-emerald-500/5 animate-pulse" />
+                      <CheckCircle2 className="size-12 text-emerald-400 relative z-10" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white tracking-tighter italic">ACTIVE EXECUTION</h3>
+                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mt-3 flex items-center justify-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Secure Link Synced
+                    </p>
                   </div>
                 )}
               </div>
 
               {serviceInProgress && (
-                <div className="space-y-4">
-                  <button onClick={handleComplete} disabled={completing} className="w-full py-5 bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-[1.5rem] transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 text-sm uppercase tracking-widest">
-                    {completing ? <Loader2 className="size-5 animate-spin" /> : <CheckCircle2 className="size-5" />} Complete Service
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                  <button onClick={handleComplete} disabled={completing} className="w-full py-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black rounded-[2rem] transition-all shadow-[0_20px_50px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 text-sm uppercase tracking-[0.3em]">
+                    {completing ? <Loader2 className="size-6 animate-spin" /> : <CheckCircle2 className="size-6" />} Complete Protocol
                   </button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => window.print()} className="py-4 bg-white/5 border border-white/10 text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2 active:scale-95"><Printer className="size-4" /> Receipt</button>
-                    <button onClick={() => setRefuseConfirm(true)} disabled={refusing} className="py-4 bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-rose-600 transition-all flex items-center justify-center gap-2 active:scale-95"><XCircle className="size-4" /> Refused</button>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button onClick={() => window.print()} className="py-5 bg-white/[0.03] border border-white/[0.08] text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/[0.08] hover:text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><Printer className="size-4" /> Receipt</button>
+                    <button onClick={() => setRefuseConfirm(true)} disabled={refusing} className="py-5 bg-rose-500/[0.03] border border-rose-500/[0.1] text-rose-500 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-rose-500/10 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><XCircle className="size-4" /> Abort</button>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="lg:col-span-3">
+            {/* Right Panel: Map Environment */}
+            <div className="flex-1 h-[450px] lg:h-full min-h-[400px] lg:min-h-0 order-1 lg:order-2">
               {!serviceInProgress ? (
                 <div className={cn(
-                  "bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl",
-                  isMapFullscreen ? "fixed inset-0 z-[100] rounded-0 h-screen w-screen" : "h-full min-h-[500px] flex flex-col"
+                  "bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full",
+                  isMapFullscreen && "fixed inset-0 z-[100] rounded-none"
                 )}>
-                  <div className="relative flex-1">
-                    {/* Floating Map Controls */}
-                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-                      <button
-                        onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                        className="p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl"
-                        title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
-                      >
-                        {isMapFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-                      </button>
-                      <button
-                        onClick={() => setIsDarkMode(!isDarkMode)}
-                        className="p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl"
-                        title={isDarkMode ? "Switch to Light Mode" : "Switch to Midnight Mode"}
-                      >
-                        {isDarkMode ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
-                      </button>
-                    </div>
+                <div className="relative h-full w-full">
+                  {/* Floating Map Controls - Tactical Style */}
+                  <div className="absolute top-6 right-6 z-20 flex flex-col gap-3">
+                    <button
+                      onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl group active:scale-90"
+                      title={isMapFullscreen ? "Exit HUD" : "Tactical HUD"}
+                    >
+                      {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6" /> : <Maximize2 className="size-5 sm:size-6" />}
+                    </button>
+                    <button
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl group active:scale-90"
+                    >
+                      {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-5 sm:size-6" />}
+                    </button>
+                  </div>
 
-                    {isLoaded && (
-                      <GoogleMap
-                        mapContainerStyle={{ width: '100%', height: '100%' }}
-                        center={techLocation || { lat: 28.6139, lng: 77.2090 }}
-                        zoom={14}
-                        onLoad={(m) => { setMap(m); setMapReady(true); }}
-                        options={{ disableDefaultUI: true, zoomControl: true, styles: isDarkMode ? darkMapStyles : lightMapStyles }}
-                      >
-                        {directions && (
-                          <DirectionsRenderer
-                            directions={directions}
-                            options={{
-                              suppressMarkers: true,
-                              polylineOptions: {
-                                strokeColor: isDarkMode ? "#22d3ee" : "#4f46e5",
-                                strokeWeight: 5,
-                                strokeOpacity: 0.8
-                              }
-                            }}
-                          />
-                        )}
+                  {isLoaded && (
+                    <GoogleMap
+                      mapContainerStyle={{ width: '100%', height: '100%' }}
+                      center={techLocation || { lat: 28.6139, lng: 77.2090 }}
+                      zoom={14}
+                      onLoad={(m) => { setMap(m); setMapReady(true); }}
+                      options={{ 
+                        disableDefaultUI: true, 
+                        zoomControl: true, 
+                        styles: isDarkMode ? darkMapStyles : lightMapStyles,
+                        gestureHandling: 'greedy'
+                      }}
+                    >
                         {techLocation && booking?.customerLocation && (
                           <Polyline
                             path={[techLocation, booking.customerLocation]}
                             options={{
-                              strokeColor: "#ffffff",
+                              strokeColor: isDarkMode ? "#ffffff" : "#000000",
                               strokeOpacity: 0,
                               icons: [{
                                 icon: {
                                   path: 'M 0,-1 0,1',
                                   strokeOpacity: 1,
                                   scale: 3,
-                                  strokeColor: '#ffffff'
+                                  strokeColor: isDarkMode ? '#ffffff' : '#000000'
                                 },
                                 offset: '0',
                                 repeat: '20px'
@@ -630,14 +648,49 @@ export default function TechnicianServicePage() {
                             }}
                           />
                         )}
+
                         {techLocation && (
                           <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
-                            <div className="relative -translate-x-1/2 -translate-y-1/2"><div className="size-10 bg-white rounded-full border-4 border-slate-900 shadow-xl flex items-center justify-center"><Wrench className="size-5 text-slate-900" /></div></div>
+                            <div className="relative -translate-x-1/2 -translate-y-1/2">
+                              <div className="relative group flex flex-col items-center">
+                                {/* Tactical Pulse */}
+                                <div className="absolute inset-0 bg-cyan-500/20 rounded-full animate-ping scale-150" />
+                                
+                                {/* Tactical Label */}
+                                <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-30">
+                                  <div className="px-4 py-2 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] whitespace-nowrap flex items-center gap-3">
+                                    <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
+                                      <Clock className="size-3.5 text-amber-400" />
+                                      <span className="text-[11px] font-black text-white uppercase tracking-tighter">{eta}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <Navigation className="size-3.5 text-cyan-400" />
+                                      <span className="text-[11px] font-black text-white uppercase tracking-tighter">{localDistance}</span>
+                                    </div>
+                                  </div>
+                                  <div className="w-0.5 h-4 bg-gradient-to-b from-white/30 to-transparent" />
+                                </div>
+
+                                <div className="size-14 bg-slate-900 rounded-[1.5rem] p-1 shadow-2xl border border-white/20 relative z-10">
+                                  <div className="w-full h-full bg-cyan-500 rounded-[1.3rem] flex items-center justify-center">
+                                    <Navigation className="size-6 text-slate-950 fill-current" />
+                                  </div>
+                                </div>
+                                <div className="mt-2 px-2.5 py-0.5 bg-slate-900/90 backdrop-blur-md text-[8px] font-black text-white rounded-full border border-white/10 uppercase tracking-widest shadow-xl">TECH • LIVE</div>
+                              </div>
+                            </div>
                           </OverlayView>
                         )}
+
                         {booking?.customerLocation && (
                           <OverlayView position={booking.customerLocation} mapPaneName="overlayMouseTarget">
-                            <div className="relative -translate-x-1/2 -translate-y-1/2"><div className="size-10 bg-cyan-400 rounded-full border-4 border-slate-900 shadow-xl flex items-center justify-center"><MapPin className="size-5 text-slate-900" /></div></div>
+                            <div className="relative -translate-x-1/2 -translate-y-1/2">
+                              <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl flex items-center justify-center relative group">
+                                <MapPin className="size-5 text-white" />
+                                <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
+                                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl whitespace-nowrap">Target Location</div>
+                              </div>
+                            </div>
                           </OverlayView>
                         )}
                       </GoogleMap>
@@ -645,52 +698,62 @@ export default function TechnicianServicePage() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-10 h-full min-h-[600px] flex flex-col shadow-2xl">
-                  <h2 className="text-2xl font-black text-white tracking-tight mb-10 uppercase">Execution Console</h2>
-                  <div className="grid md:grid-cols-5 gap-10 flex-1">
-                    <div className="md:col-span-3 space-y-8">
-                      <div>
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-3">Service Documentation</label>
-                        <textarea value={servicesDone} onChange={(e) => setServicesDone(e.target.value)} placeholder="Describe work performed..." className="w-full h-40 bg-white/5 border border-white/10 rounded-3xl p-6 text-sm text-white font-bold focus:border-white transition-all outline-none resize-none" />
+                <div className="h-full flex flex-col gap-6">
+                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex-1 flex flex-col relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
+                    
+                    <div className="flex items-center gap-4 mb-10">
+                      <div className="size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+                        <Zap className="size-7" />
                       </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-3">Base Price (INR)</label>
-                          <div className="relative">
-                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
-                            <input type="number" placeholder="0" value={baseAmount} onChange={(e) => setBaseAmount(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-5 py-3 text-sm text-white font-bold focus:border-white outline-none transition-all" />
+                      <div>
+                        <h2 className="text-2xl font-black text-white tracking-tighter italic">LIVE OPERATION HUD</h2>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Satellite Link Synchronized</p>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-5 gap-8 flex-1 overflow-hidden">
+                      <div className="md:col-span-3 space-y-6 overflow-y-auto pr-2 scrollbar-hide">
+                        <div className="p-6 bg-white/[0.03] border border-white/[0.05] rounded-3xl">
+                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Inventory Control</p>
+                          <div className="space-y-3">
+                            {accessories.map((acc, i) => (
+                              <div key={i} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/[0.05] rounded-2xl group/item">
+                                <span className="text-sm font-bold text-slate-300">{acc.name}</span>
+                                <div className="flex items-center gap-4">
+                                  <span className="text-sm font-black text-white italic tracking-tight">₹{acc.price}</span>
+                                  <button onClick={() => removeAccessory(i)} className="p-2 hover:bg-rose-500/20 text-slate-500 hover:text-rose-500 rounded-xl transition-all opacity-0 group-hover/item:opacity-100"><X className="size-4" /></button>
+                                </div>
+                              </div>
+                            ))}
                           </div>
+                          
+                          <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
+                            <div className="flex gap-3">
+                              <input type="text" placeholder="Component Name" value={newAccName} onChange={(e) => setNewAccName(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white transition-all" />
+                              <input type="number" placeholder="₹" value={newAccPrice} onChange={(e) => setNewAccPrice(e.target.value)} className="w-28 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white transition-all" />
+                              <button onClick={addAccessory} className="p-4 bg-white text-slate-950 rounded-2xl transition active:scale-95 hover:bg-slate-100 shadow-lg"><Plus className="size-5" /></button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-white/[0.03] border border-white/[0.05] rounded-3xl">
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-3">Service Documentation</label>
+                          <textarea value={servicesDone} onChange={(e) => setServicesDone(e.target.value)} placeholder="Describe work performed..." className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white font-bold focus:border-white transition-all outline-none resize-none" />
                         </div>
                       </div>
 
-                      <div>
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-3">Additional Components</label>
-                        <div className="flex gap-3 mb-4">
-                          <input type="text" placeholder="Component Name" value={newAccName} onChange={(e) => setNewAccName(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white" />
-                          <input type="number" placeholder="₹" value={newAccPrice} onChange={(e) => setNewAccPrice(e.target.value)} className="w-28 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white" />
-                          <button onClick={addAccessory} className="p-4 bg-white text-slate-950 rounded-2xl transition active:scale-95"><Plus className="size-5" /></button>
-                        </div>
-                        <div className="space-y-3 max-h-60 overflow-y-auto pr-3 custom-scrollbar">
-                          {accessories.map((acc, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
-                              <span className="text-sm font-bold text-white">{acc.name}</span>
-                              <div className="flex items-center gap-4"><span className="text-sm font-black text-cyan-400">₹{acc.price}</span><button onClick={() => removeAccessory(i)} className="text-rose-500 hover:text-rose-400 transition"><Trash2 className="size-4" /></button></div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="md:col-span-2">
-                      <div className="bg-slate-950 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative">
-                        <h3 className="text-lg font-black tracking-tighter uppercase text-center mb-8 italic">Service Ledger</h3>
-                        <div className="space-y-4 mb-10 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          <div className="flex justify-between border-b border-white/5 pb-3"><span>Base Protocol</span><span className="text-white text-sm font-black">₹{baseAmount || '0'}</span></div>
-                          {accessories.map((acc, i) => <div key={i} className="flex justify-between border-b border-white/5 pb-3"><span>{acc.name}</span><span className="text-cyan-400 text-sm font-black">+ ₹{acc.price}</span></div>)}
-                        </div>
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
-                          <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Final Settlement</p>
-                          <h4 className="text-4xl font-black text-white tracking-tighter">₹{calculateTotal()}</h4>
+                      <div className="md:col-span-2">
+                        <div className="bg-slate-950/50 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl h-full flex flex-col">
+                          <h3 className="text-lg font-black tracking-tighter uppercase text-center mb-8 italic">Service Ledger</h3>
+                          <div className="space-y-4 mb-10 text-[10px] font-black uppercase tracking-widest text-slate-500 flex-1 overflow-y-auto pr-2 scrollbar-hide">
+                            <div className="flex justify-between border-b border-white/5 pb-3"><span>Base Protocol</span><span className="text-white text-sm font-black">₹{baseAmount || '0'}</span></div>
+                            {accessories.map((acc, i) => <div key={i} className="flex justify-between border-b border-white/5 pb-3"><span>{acc.name}</span><span className="text-cyan-400 text-sm font-black">+ ₹{acc.price}</span></div>)}
+                          </div>
+                          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center mt-auto">
+                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Final Settlement</p>
+                            <h4 className="text-4xl font-black text-white tracking-tighter">₹{calculateTotal()}</h4>
+                          </div>
                         </div>
                       </div>
                     </div>
