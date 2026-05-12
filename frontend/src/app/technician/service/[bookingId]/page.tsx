@@ -762,7 +762,9 @@ export default function TechnicianServicePage() {
                                     <Navigation className="size-8 sm:size-10 text-slate-950 fill-current" />
                                   </div>
                                 </div>
-                                <div className="mt-3 px-4 py-1.5 bg-cyan-400 text-[10px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-2xl">TECH • LIVE</div>
+                                <div className="mt-3 px-4 py-1.5 bg-cyan-400 text-[10px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-2xl flex items-center gap-1.5">
+                                  <span className="text-xs">🛠️</span> YOU • LIVE
+                                </div>
                               </div>
                             </div>
                           </OverlayView>
@@ -776,7 +778,9 @@ export default function TechnicianServicePage() {
                                   <MapPin className="size-7 sm:size-8 text-white" />
                                   <div className="absolute inset-0 bg-emerald-500 rounded-[1.5rem] animate-ping opacity-30" />
                                 </div>
-                                <div className="mt-2 px-3 py-1.5 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl">TARGET CUSTOMER</div>
+                                <div className="mt-2 px-3 py-1.5 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl flex items-center gap-1.5">
+                                  <span className="text-xs">📍</span> TARGET CUSTOMER
+                                </div>
                               </div>
                             </div>
                           </OverlayView>

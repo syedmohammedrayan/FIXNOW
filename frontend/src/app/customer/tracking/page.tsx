@@ -433,8 +433,8 @@ export default function TrackingPage() {
                         </div>
                       </div>
                       
-                      <div className="absolute top-16 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] font-black rounded-lg uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10">
-                        {techDetails.name} • LIVE
+                      <div className="absolute top-16 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] sm:text-[9px] font-black rounded-lg uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10 flex items-center gap-1.5">
+                        <span className="text-[10px] sm:text-xs">🛠️</span> {techDetails.name} • LIVE
                       </div>
                     </div>
                   </div>
@@ -447,7 +447,9 @@ export default function TrackingPage() {
                     <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl relative flex items-center justify-center">
                        <MapPin className="size-5 text-white" />
                        <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
-                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-emerald-500 text-[8px] font-black text-white uppercase tracking-widest rounded shadow-lg whitespace-nowrap">Destination</div>
+                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-emerald-500 text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest rounded shadow-lg whitespace-nowrap flex items-center gap-1">
+                         <span className="text-[10px] sm:text-xs">📍</span> YOU
+                       </div>
                     </div>
                   </div>
                 </OverlayView>
