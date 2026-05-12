@@ -135,7 +135,7 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
         <h3 className="text-2xl font-black text-white tracking-tight mb-2 italic uppercase">
           Service Manifest
         </h3>
-        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.15em] mb-10 leading-relaxed max-w-[280px]">
+        <p className="bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-100 to-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-10 leading-relaxed max-w-[280px]">
           Command center for mission critical assignments & field logistics.
         </p>
 
