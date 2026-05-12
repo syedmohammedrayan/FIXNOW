@@ -147,7 +147,7 @@ export default function TechnicianServicePage() {
         if (!b.customerName && b.customer_name) b.customerName = b.customer_name;
         if (!b.technicianId && b.technician_id) b.technicianId = b.technician_id;
         
-        if (!baseAmount && b.estimatedCostRange) {
+        if (!baseAmount && b.estimatedCostRange && typeof b.estimatedCostRange === 'string') {
           setBaseAmount(b.estimatedCostRange.split('-')[0]);
         }
         
@@ -215,14 +215,23 @@ export default function TechnicianServicePage() {
   const resolvedCustomerLoc = useMemo(() => {
     if (!booking) return null;
     const loc = booking.customerLocation || booking.customer_location;
-    if (loc?.lat && loc?.lng) return { lat: Number(loc.lat), lng: Number(loc.lng) };
-    if (booking.customer_lat && booking.customer_lng) return { lat: Number(booking.customer_lat), lng: Number(booking.customer_lng) };
+    if (loc?.lat && loc?.lng) {
+      const lat = Number(loc.lat);
+      const lng = Number(loc.lng);
+      if (!isNaN(lat) && !isNaN(lng)) return { lat, lng };
+    }
+    if (booking.customer_lat && booking.customer_lng) {
+      const lat = Number(booking.customer_lat);
+      const lng = Number(booking.customer_lng);
+      if (!isNaN(lat) && !isNaN(lng)) return { lat, lng };
+    }
     return null;
   }, [booking]);
 
   // 2. Tactical Metrics Engine
   useEffect(() => {
     if (!window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
+    if (!window.google.maps.geometry || !window.google.maps.DistanceMatrixService) return;
     
     if (window.google?.maps?.geometry?.spherical) {
       const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
@@ -254,7 +263,7 @@ export default function TechnicianServicePage() {
 
   // 3. Camera Management
   useEffect(() => {
-    if (map && techLocation && resolvedCustomerLoc) {
+    if (map && techLocation && resolvedCustomerLoc && window.google?.maps?.LatLngBounds) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(resolvedCustomerLoc);
@@ -627,14 +636,19 @@ export default function TechnicianServicePage() {
                       center={techLocation || resolvedCustomerLoc || { lat: 20.5937, lng: 78.9629 }}
                       zoom={14}
                       onLoad={(m) => { 
+                        if (!window.google?.maps) return;
                         setMap(m); 
                         setMapReady(true);
                         // Force initial Tactical Fit
-                        if (techLocation && resolvedCustomerLoc) {
-                          const b = new window.google.maps.LatLngBounds();
-                          b.extend(techLocation);
-                          b.extend(resolvedCustomerLoc);
-                          m.fitBounds(b, { top: 80, right: 80, bottom: 250, left: 80 });
+                        if (techLocation && resolvedCustomerLoc && window.google.maps.LatLngBounds) {
+                          try {
+                            const b = new window.google.maps.LatLngBounds();
+                            b.extend(techLocation);
+                            b.extend(resolvedCustomerLoc);
+                            m.fitBounds(b, { top: 80, right: 80, bottom: 250, left: 80 });
+                          } catch (e) {
+                            console.warn("Map fitBounds failed:", e);
+                          }
                         }
                       }}
                       options={{ 

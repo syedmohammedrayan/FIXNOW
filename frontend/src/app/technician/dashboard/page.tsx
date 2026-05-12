@@ -168,7 +168,7 @@ export default function TechnicianDashboard() {
     if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
       script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${currentKey}&libraries=places,geometry`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${currentKey}&libraries=places,geometry,visualization`;
       script.async = true;
       script.onload = () => setGoogleReady(true);
       script.onerror = () => {
