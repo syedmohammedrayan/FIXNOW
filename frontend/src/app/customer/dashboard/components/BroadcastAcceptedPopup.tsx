@@ -159,7 +159,10 @@ export default function BroadcastAcceptedPopup({
                   <div className="flex items-center gap-3 mt-1">
                     <div className="flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                      <span className="text-sm text-slate-300 font-bold">{technician.rating?.toFixed(1) || '5.0'}</span>
+                      <span className="text-sm text-slate-300 font-bold">
+                        {typeof technician.rating === 'number' ? technician.rating.toFixed(1) : 
+                         typeof technician.rating === 'string' && !isNaN(parseFloat(technician.rating)) ? parseFloat(technician.rating).toFixed(1) : '5.0'}
+                      </span>
                     </div>
                     {technician.phone && (
                       <>

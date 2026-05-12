@@ -77,9 +77,9 @@ export default function DashboardHeader({
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="size-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                    <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Status: {activeJob.status}</p>
+                    <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Status: {activeJob?.status || 'Active'}</p>
                   </div>
-                  <h4 className="text-[10px] sm:text-[11px] font-black text-white tracking-tight mt-1 truncate max-w-[120px] sm:max-w-[150px]">{activeJob.category} Ongoing</h4>
+                  <h4 className="text-[10px] sm:text-[11px] font-black text-white tracking-tight mt-1 truncate max-w-[120px] sm:max-w-[150px]">{activeJob?.category || 'Service'} Ongoing</h4>
                 </div>
               </div>
                 <button 

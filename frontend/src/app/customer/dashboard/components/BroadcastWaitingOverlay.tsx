@@ -66,7 +66,7 @@ export default function BroadcastWaitingOverlay({
             No Expert Currently Available
           </h3>
           <p className="text-slate-400 text-sm font-medium max-w-md mb-8">
-            Unfortunately, no {category} experts were available to accept your request within the time limit. Please try again later.
+            Unfortunately, no {(category || '').toLowerCase()} experts were available to accept your request within the time limit. Please try again later.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
@@ -178,7 +178,7 @@ export default function BroadcastWaitingOverlay({
           Searching for {category} Expert
         </h3>
         <p className="text-slate-400 text-sm font-medium max-w-md mb-2">
-          Your service request has been broadcast to all available {category.toLowerCase()} experts in your area.
+          Your service request has been broadcast to all available {(category || '').toLowerCase()} experts in your area.
           An expert will accept your request shortly.
         </p>
         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-8">
