@@ -465,7 +465,12 @@ export default function TechnicianDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Cinematic Background Atmosphere */}
+      <div className="fixed top-0 right-0 w-[50vw] h-[50vw] bg-indigo-500/[0.03] blur-[150px] rounded-full pointer-events-none -mr-[10vw] -mt-[10vw] z-0" />
+      <div className="fixed bottom-0 left-0 w-[40vw] h-[40vw] bg-cyan-500/[0.03] blur-[120px] rounded-full pointer-events-none -ml-[10vw] -mb-[10vw] z-0" />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-slate-500/[0.01] blur-[180px] rounded-full pointer-events-none z-0" />
+
       <TechnicianSidebar profile={profile} onOpenChange={setIsSidebarOpen} />
       
       <AnimatePresence>
@@ -475,20 +480,20 @@ export default function TechnicianDashboard() {
             animate={{ opacity: 1, y: 30, x: '-50%' }}
             exit={{ opacity: 0, y: -100, x: '-50%' }}
             className={cn(
-              "fixed top-0 left-1/2 z-[9999] px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl flex items-center gap-3 sm:gap-5 border-2 font-black text-xs sm:text-sm uppercase tracking-wider w-[calc(100%-2rem)] sm:w-auto sm:min-w-[450px] max-w-[95vw] backdrop-blur-xl",
-              notification.type === 'success' ? "bg-emerald-600/90 text-white border-emerald-400" :
-              notification.type === 'error' ? "bg-rose-600/90 text-white border-rose-400" :
-              "bg-slate-900/90 text-white border-white/10"
+              "fixed top-0 left-1/2 z-[9999] px-4 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl flex items-center gap-3 sm:gap-5 border font-black text-xs sm:text-sm uppercase tracking-wider w-[calc(100%-2rem)] sm:w-auto sm:min-w-[450px] max-w-[95vw] backdrop-blur-3xl",
+              notification.type === 'success' ? "bg-emerald-600/80 text-white border-emerald-400/30" :
+              notification.type === 'error' ? "bg-rose-600/80 text-white border-rose-400/30" :
+              "bg-slate-900/80 text-white border-white/10"
             )}
           >
-            <div className="w-12 h-12 rounded-2xl glass-panel border-white/20 flex items-center justify-center shadow-inner">
-              {notification.type === 'success' ? <CheckCircle2 className="w-7 h-7" /> : <Activity className="w-7 h-7" />}
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner shrink-0">
+              {notification.type === 'success' ? <CheckCircle2 className="w-7 h-7 text-emerald-400" /> : <Activity className="w-7 h-7 text-white" />}
             </div>
-            <div className="flex-1">
-              <p className="opacity-70 text-[10px] mb-1 font-bold text-slate-400 uppercase tracking-widest">System Broadcast</p>
-              <p className="leading-tight">{notification.message}</p>
+            <div className="flex-1 min-w-0">
+              <p className="opacity-50 text-[9px] mb-1 font-black text-slate-400 uppercase tracking-[0.2em]">Broadcast Signal</p>
+              <p className="leading-tight truncate sm:whitespace-normal">{notification.message}</p>
             </div>
-            <button onClick={() => setNotification(null)} className="p-2 hover:glass-panel border-white/10 rounded-full transition-colors">
+            <button onClick={() => setNotification(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all active:scale-90">
               <X className="w-5 h-5" />
             </button>
           </motion.div>
@@ -496,7 +501,7 @@ export default function TechnicianDashboard() {
       </AnimatePresence>
 
       <main className={cn(
-        "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-500",
+        "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-700 relative z-10",
         isSidebarOpen ? "hidden md:block" : "block"
       )}>
         <div className="p-4 sm:p-6 lg:p-10 max-w-[1600px] mx-auto overflow-x-hidden">
@@ -521,15 +526,16 @@ export default function TechnicianDashboard() {
             <ProfileSettings user={user} profile={profile} setProfile={setProfile} />
           ) : (
             <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+              {/* Stats Section — Improved Depth */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
                 <StatCard icon={<DollarSign className="w-5 h-5" />} label="Gross Earnings" value={`₹${profile.earnings.toLocaleString()}`} trend="+12% from last week" color="cyan" />
                 <StatCard icon={<Star className="w-5 h-5" />} label="Service Rating" value={`${profile.rating.toFixed(1)}`} trend="Highly Rated" color="emerald" />
                 <StatCard icon={<Briefcase className="w-5 h-5" />} label="Total Tasks" value={profile.totalJobs.toString()} trend="+3 completed today" color="slate" />
                 <StatCard icon={<Clock className="w-5 h-5" />} label="Current Availability" value={profile.online ? "ONLINE" : "OFFLINE"} trend={profile.online ? "Ready for assignments" : "Not accepting jobs"} color={profile.online ? "emerald" : "slate"} />
               </div>
 
-              <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-                <div className="lg:col-span-2 space-y-8">
+              <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-10">
                   <AnimatePresence mode="wait">
                     {currentJob ? (
                       <ActiveJobCard 
@@ -568,127 +574,158 @@ export default function TechnicianDashboard() {
                         liveAddress={liveAddress}
                        />
                     ) : (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-[300px] bg-slate-900/50 backdrop-blur-3xl border-2 border-dashed border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-10 relative overflow-hidden group/empty">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 pointer-events-none" />
-                        <div className="relative z-10">
-                          <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl border border-white/10 relative group">
-                            <div className="absolute inset-0 bg-white/10 rounded-[2rem] animate-ping opacity-20" />
-                            <Activity className="w-12 h-12 text-white transition-transform duration-500 group-hover:scale-110" />
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.98 }} 
+                        animate={{ opacity: 1, scale: 1 }} 
+                        className="h-[350px] bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] flex flex-col items-center justify-center text-center p-10 relative overflow-hidden group/empty shadow-2xl"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-emerald-500/5 opacity-50" />
+                        <div className="relative z-10 flex flex-col items-center">
+                          <div className="size-24 rounded-[2.5rem] bg-slate-900 border border-white/10 flex items-center justify-center mb-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative group-hover/empty:scale-110 transition-transform duration-700">
+                            <div className="absolute inset-0 bg-white/5 rounded-[2.5rem] animate-ping opacity-20" />
+                            <Activity className="w-12 h-12 text-slate-400 group-hover/empty:text-white transition-colors duration-500" />
                           </div>
-                          <h3 className="text-2xl font-black text-white tracking-tight">No Active Assignments</h3>
-                          <p className="text-slate-500 mt-2 max-w-xs mx-auto text-[11px] font-bold uppercase tracking-widest leading-relaxed opacity-80">Your console is synchronized. Incoming requests will appear here in real-time.</p>
+                          <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Console Synchronized</h3>
+                          <p className="text-slate-500 mt-4 max-w-xs mx-auto text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed opacity-60">Scanning for incoming professional requests across the network...</p>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  <AnimatePresence>
-                    {availableBroadcasts.map((broadcast) => {
-                      const elapsedSec = broadcast.receivedAt ? Math.floor((Date.now() - broadcast.receivedAt) / 1000) : 0;
-                      const elapsedMin = Math.floor(elapsedSec / 60);
-                      const elapsedStr = elapsedMin > 0 ? `${elapsedMin}m ago` : `${elapsedSec}s ago`;
-                      
-                      return (
-                        <motion.div 
-                          key={broadcast.id}
-                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          className="bg-slate-900/90 backdrop-blur-3xl p-6 sm:p-8 mb-6 border border-white/10 rounded-[2.5rem] shadow-2xl relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent animate-pulse" />
-                          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                  <Radio className="w-3 h-3 animate-pulse text-cyan-400" />
-                                  Live Broadcast
-                                </span>
-                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{elapsedStr}</span>
-                              </div>
-                              <h3 className="text-xl font-black text-white mb-1">
-                                {broadcast.customerName || broadcast.customer_name || 'Valued Customer'} • {broadcast.category}
-                              </h3>
-                              {broadcast.address && (
-                                <div className="flex items-center gap-1.5 mb-2">
-                                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                  <p className="text-slate-300 text-sm font-medium truncate">{broadcast.address}</p>
+                  <div className="space-y-6">
+                    <AnimatePresence>
+                      {availableBroadcasts.map((broadcast) => {
+                        const elapsedSec = broadcast.receivedAt ? Math.floor((Date.now() - broadcast.receivedAt) / 1000) : 0;
+                        const elapsedMin = Math.floor(elapsedSec / 60);
+                        const elapsedStr = elapsedMin > 0 ? `${elapsedMin}m ago` : `${elapsedSec}s ago`;
+                        
+                        return (
+                          <motion.div 
+                            key={broadcast.id}
+                            initial={{ opacity: 0, x: -20, scale: 0.98 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-white/[0.03] backdrop-blur-3xl p-6 sm:p-10 border border-white/[0.08] rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                            
+                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-4 mb-5 flex-wrap">
+                                  <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-cyan-500/10">
+                                    <Radio className="w-3.5 h-3.5 animate-pulse" />
+                                    Tactical Broadcast
+                                  </div>
+                                  <div className="inline-flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    <Clock className="size-3.5" />
+                                    {elapsedStr}
+                                  </div>
                                 </div>
-                              )}
-                              {broadcast.issueDescription && (
-                                <p className="text-slate-400 text-xs font-medium italic mb-3 line-clamp-2">"{broadcast.issueDescription}"</p>
-                              )}
-                              <div className="flex gap-3 flex-wrap">
-                                <span className="text-cyan-400 text-[11px] font-bold uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-lg">Est: {broadcast.estimatedCostRange || 'Standard'}</span>
-                                <span className={cn(
-                                  "text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg",
-                                  broadcast.urgency === 'High' ? 'text-rose-400 bg-rose-500/10' : 'text-emerald-400 bg-emerald-500/10'
-                                )}>{broadcast.urgency || 'Standard'} Priority</span>
-                                <span className="text-amber-400 text-[11px] font-bold uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-lg">Pay After Service</span>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => acceptBroadcast(broadcast.id)}
-                              className="px-8 py-4 bg-white text-indigo-900 rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:bg-indigo-50 transition-all active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(255,255,255,0.4)] whitespace-nowrap shrink-0"
-                            >
-                              Accept Now
-                            </button>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
 
-                  {/* Booking Missed Popup */}
+                                <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tighter italic uppercase">
+                                  {broadcast.customerName || broadcast.customer_name || 'Valued Customer'}
+                                </h3>
+                                
+                                <div className="flex items-center gap-3 mb-6">
+                                  <div className="size-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <Briefcase className="size-4 text-slate-300" />
+                                  </div>
+                                  <p className="text-slate-300 text-sm font-black uppercase tracking-tight italic">{broadcast.category}</p>
+                                </div>
+
+                                <div className="space-y-3 mb-8">
+                                  {broadcast.address && (
+                                    <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                                      <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                                      <p className="text-slate-400 text-xs font-bold leading-relaxed">{broadcast.address}</p>
+                                    </div>
+                                  )}
+                                  {broadcast.issueDescription && (
+                                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.05] italic">
+                                      <Activity className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                                      <p className="text-slate-300 text-sm font-medium leading-relaxed truncate-2-lines">"{broadcast.issueDescription}"</p>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex gap-3 flex-wrap">
+                                  <div className="flex flex-col gap-1 p-3 px-5 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
+                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Est. Revenue</span>
+                                    <span className="text-cyan-400 text-sm font-black tracking-tighter italic">₹{broadcast.estimatedCostRange || 'Standard'}</span>
+                                  </div>
+                                  <div className="flex flex-col gap-1 p-3 px-5 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
+                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Priority</span>
+                                    <span className={cn(
+                                      "text-sm font-black tracking-tighter italic uppercase",
+                                      broadcast.urgency === 'High' ? 'text-rose-400' : 'text-emerald-400'
+                                    )}>{broadcast.urgency || 'Standard'}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => acceptBroadcast(broadcast.id)}
+                                className="px-10 py-6 bg-white text-slate-950 rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-cyan-50 hover:scale-[1.02] transition-all active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.2)] lg:self-end group-hover:shadow-[0_25px_60px_rgba(34,211,238,0.2)]"
+                              >
+                                Accept Protocol
+                              </button>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Notification Popups — Refined visuals */}
                   <AnimatePresence>
                     {missedBroadcast && (
                       <motion.div
-                        initial={{ opacity: 0, x: 60 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 60 }}
+                        initial={{ opacity: 0, x: 60, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 60, scale: 0.9 }}
                         className="fixed bottom-6 right-6 z-[100] max-w-sm w-full"
                       >
-                        <div className="bg-gradient-to-r from-rose-950 to-slate-950 p-5 rounded-2xl border border-rose-500/30 shadow-2xl shadow-rose-500/20 flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
-                            <AlertTriangle className="w-5 h-5 text-rose-400" />
+                        <div className="bg-slate-900/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-rose-500/30 shadow-[0_30px_100px_rgba(244,63,94,0.15)] flex items-start gap-5">
+                          <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center shrink-0">
+                            <AlertTriangle className="w-6 h-6 text-rose-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-black text-white mb-1">Booking Missed</h4>
-                            <p className="text-xs text-rose-300/80 font-medium">
-                              This request was accepted by <strong className="text-white">{missedBroadcast.acceptedBy}</strong>. Better luck next time!
+                            <h4 className="text-base font-black text-white mb-1 uppercase tracking-tight italic">Protocol Missed</h4>
+                            <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                              This assignment was successfully intercepted by <span className="text-white font-black">{missedBroadcast.acceptedBy}</span>.
                             </p>
                           </div>
-                          <button onClick={() => setMissedBroadcast(null)} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors shrink-0">
-                            <X className="w-4 h-4 text-white/50" />
+                          <button onClick={() => setMissedBroadcast(null)} className="p-2 hover:bg-white/5 rounded-xl transition-all">
+                            <X className="w-4 h-4 text-slate-500" />
                           </button>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {/* Booking Cancelled Popup */}
                   <AnimatePresence>
                     {cancelledBooking && (
                       <motion.div
-                        initial={{ opacity: 0, x: 60 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 60 }}
+                        initial={{ opacity: 0, x: 60, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 60, scale: 0.9 }}
                         className="fixed bottom-28 right-6 z-[100] max-w-sm w-full"
                       >
-                        <div className="bg-gradient-to-r from-orange-950 to-slate-950 p-5 rounded-2xl border border-orange-500/30 shadow-2xl shadow-orange-500/20 flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center shrink-0">
-                            <ShieldAlert className="w-5 h-5 text-orange-400" />
+                        <div className="bg-slate-900/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-orange-500/30 shadow-[0_30px_100px_rgba(249,115,22,0.15)] flex items-start gap-5">
+                          <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                            <ShieldAlert className="w-6 h-6 text-orange-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-black text-white mb-1">Booking Cancelled</h4>
-                            <p className="text-xs text-orange-300/80 font-medium leading-relaxed">
-                              <strong className="text-white">{cancelledBooking.customerName}</strong> cancelled the request.
-                              <br />
-                              <span className="text-[10px] opacity-60 mt-1 block italic">Reason: {cancelledBooking.reason}</span>
+                            <h4 className="text-base font-black text-white mb-1 uppercase tracking-tight italic">Deployment Aborted</h4>
+                            <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                              <span className="text-white font-black">{cancelledBooking.customerName}</span> has terminated the mission request.
                             </p>
+                            <div className="mt-3 py-2 px-3 rounded-xl bg-white/5 border border-white/10 italic">
+                              <p className="text-[10px] text-orange-300 font-bold uppercase tracking-widest opacity-80">Reason: {cancelledBooking.reason || 'Not specified'}</p>
+                            </div>
                           </div>
-                          <button onClick={() => setCancelledBooking(null)} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors shrink-0">
-                            <X className="w-4 h-4 text-white/50" />
+                          <button onClick={() => setCancelledBooking(null)} className="p-2 hover:bg-white/5 rounded-xl transition-all">
+                            <X className="w-4 h-4 text-slate-500" />
                           </button>
                         </div>
                       </motion.div>
@@ -708,9 +745,13 @@ export default function TechnicianDashboard() {
 
                 <div className="space-y-8">
                   <ServiceManifest activeJobsCount={activeJobs.length} />
-                  <div className="glass-neon-card p-8">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-8">Network Performance</h3>
-                    <div className="space-y-6">
+                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
+                    <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] mb-10 flex items-center gap-3 italic">
+                      <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                      Network Metrics
+                    </h3>
+                    <div className="space-y-8">
                       <MetricRow label="Avg Response" value="4.2m" progress={85} />
                       <MetricRow label="Success Rate" value="98%" progress={98} />
                       <MetricRow label="Service Rating" value="4.9" progress={92} />
@@ -722,8 +763,6 @@ export default function TechnicianDashboard() {
           )}
         </div>
       </main>
-
-
     </div>
   );
 }

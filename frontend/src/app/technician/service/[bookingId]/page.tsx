@@ -81,13 +81,14 @@ export default function TechnicianServicePage() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [liveAddress, setLiveAddress] = useState<string>('');
   const [addressParts, setAddressParts] = useState<{ street: string; area: string; zone: string; city: string }>({ street: '', area: '', zone: '', city: '' });
-  const [localDistance, setLocalDistance] = useState<string>('');
+  const [localDistance, setLocalDistance] = useState<string>('Syncing...');
   const [mapReady, setMapReady] = useState(false);
   const [eta, setEta] = useState<string>('Syncing...');
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
     googleMapsApiKey: currentKey || 'DUMMY_KEY',
     libraries: LIBRARIES
   });
@@ -200,6 +201,13 @@ export default function TechnicianServicePage() {
       updateDoc(doc(db, 'technicians', user.uid), { location: loc }).catch(console.error);
     };
 
+    // Initial position fetch for immediate responsiveness
+    navigator.geolocation.getCurrentPosition(
+      (pos) => updateLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      (err) => console.error("Initial geolocation fetch failed:", err),
+      { enableHighAccuracy: true }
+    );
+
     const wid = navigator.geolocation.watchPosition(
       (pos) => updateLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       (err) => console.error("Technician geolocation error:", err),
@@ -230,9 +238,9 @@ export default function TechnicianServicePage() {
 
   // 2. Tactical Metrics Engine
   useEffect(() => {
-    if (!window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
-    if (!window.google.maps.geometry || !window.google.maps.DistanceMatrixService) return;
+    if (!isLoaded || !mapReady || !window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
     
+    // Fallback static calculation
     if (window.google?.maps?.geometry?.spherical) {
       const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
         new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
@@ -242,32 +250,46 @@ export default function TechnicianServicePage() {
       setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
     }
 
-    const service = new window.google.maps.DistanceMatrixService();
-    service.getDistanceMatrix(
-      { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
-      (response, status) => {
-        if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
-          const el = response.rows[0].elements[0];
-          setLocalDistance(el.distance.text);
-          setEta(el.duration.text);
+    // Precise Matrix Calculation
+    try {
+      const service = new window.google.maps.DistanceMatrixService();
+      service.getDistanceMatrix(
+        { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
+        (response, status) => {
+          if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
+            const el = response.rows[0].elements[0];
+            setLocalDistance(el.distance.text);
+            setEta(el.duration.text);
+          }
         }
-      }
-    );
+      );
+    } catch (e) {
+      console.error("DistanceMatrix failed:", e);
+    }
 
+    // Directions Routing
     if (!directionsServiceRef.current) directionsServiceRef.current = new window.google.maps.DirectionsService();
-    directionsServiceRef.current.route(
-      { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
-      (result, status) => { if (status === 'OK') setDirections(result); }
-    );
-  }, [techLocation, resolvedCustomerLoc]);
+    try {
+      directionsServiceRef.current.route(
+        { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
+        (result, status) => { if (status === 'OK') setDirections(result); }
+      );
+    } catch (e) {
+      console.error("DirectionsService failed:", e);
+    }
+  }, [isLoaded, mapReady, techLocation, resolvedCustomerLoc]);
 
   // 3. Camera Management
   useEffect(() => {
     if (map && techLocation && resolvedCustomerLoc && window.google?.maps?.LatLngBounds) {
-      const bounds = new window.google.maps.LatLngBounds();
-      bounds.extend(techLocation);
-      bounds.extend(resolvedCustomerLoc);
-      map.fitBounds(bounds, { top: 80, right: 80, bottom: 250, left: 80 });
+      try {
+        const bounds = new window.google.maps.LatLngBounds();
+        bounds.extend(techLocation);
+        bounds.extend(resolvedCustomerLoc);
+        map.fitBounds(bounds, { top: 80, right: 80, bottom: 250, left: 80 });
+      } catch (e) {
+        console.warn("Bounds fitting error:", e);
+      }
     }
   }, [map, techLocation, resolvedCustomerLoc]);
 
@@ -493,7 +515,7 @@ export default function TechnicianServicePage() {
                         <div className="size-7 sm:size-8 rounded-lg sm:rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/20 group-hover/hud:scale-110 transition-transform">
                           <Navigation className="size-3.5 sm:size-4 text-cyan-400" />
                         </div>
-                        <span className="text-base sm:text-xl font-black text-white italic tracking-tighter">{localDistance || '---'}</span>
+                        <span className={cn("text-base sm:text-xl font-black italic tracking-tighter transition-all", localDistance === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{localDistance}</span>
                       </div>
                     </div>
                     <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
@@ -502,7 +524,7 @@ export default function TechnicianServicePage() {
                         <div className="size-7 sm:size-8 rounded-lg sm:rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-400/20 group-hover/hud:scale-110 transition-transform">
                           <Clock className="size-3.5 sm:size-4 text-amber-400" />
                         </div>
-                        <span className={cn("text-base sm:text-xl font-black italic tracking-tighter", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
+                        <span className={cn("text-base sm:text-xl font-black italic tracking-tighter transition-all", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
                       </div>
                     </div>
                   </div>
@@ -581,50 +603,52 @@ export default function TechnicianServicePage() {
                 isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[58vh] sm:h-[65vh] lg:h-full rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[3rem]"
               )}>
                 <div className="relative h-full w-full bg-slate-950">
-                  {/* Mobile Map Top Info Strip */}
-                  <div className="absolute top-3 left-3 right-16 z-[60] lg:hidden">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl">
-                        <div className={cn(
-                          "w-2 h-2 rounded-full shrink-0",
-                          booking?.status === 'Completed' ? "bg-emerald-400" :
-                          booking?.status === 'Cancelled' ? "bg-rose-400" : "bg-cyan-400 animate-pulse"
-                        )} />
-                        <span className="text-[9px] font-black text-white uppercase tracking-wider truncate">{booking?.status || 'On The Way'}</span>
-                      </div>
-                      {(localDistance || eta) && (
-                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl">
-                          <Navigation className="size-3 text-cyan-400 shrink-0" />
-                          <span className="text-[9px] font-black text-cyan-300">{localDistance || '---'}</span>
-                          <span className="text-white/20">·</span>
-                          <Clock className="size-3 text-amber-400 shrink-0" />
-                          <span className="text-[9px] font-black text-amber-300">{eta || '---'}</span>
+                  {/* Mobile Map Top HUD Strip - Optimized for Mobile responsiveness and zero overlap */}
+                  <div className="absolute top-4 left-4 right-4 z-[60] lg:hidden">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl">
+                          <div className={cn(
+                            "size-2.5 rounded-full shrink-0 shadow-[0_0_10px_currentColor]",
+                            booking?.status === 'Completed' ? "text-emerald-400 bg-emerald-400" :
+                            booking?.status === 'Cancelled' ? "text-rose-400 bg-rose-400" : "text-cyan-400 bg-cyan-400 animate-pulse"
+                          )} />
+                          <span className="text-[11px] font-black text-white uppercase tracking-[0.1em] truncate italic">{booking?.status || 'On The Way'}</span>
                         </div>
-                      )}
+                        <div className="px-4 py-3 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex items-center gap-4">
+                           <div className="flex items-center gap-2 border-r border-white/10 pr-3">
+                              <Navigation className="size-3.5 text-cyan-400" />
+                              <span className={cn("text-[10px] font-black italic tracking-tighter", localDistance === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{localDistance}</span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <Clock className="size-3.5 text-amber-400" />
+                              <span className={cn("text-[10px] font-black italic tracking-tighter", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
+                           </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
                   {/* Floating Map Controls - Tactical Style */}
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] flex flex-col gap-3">
+                  <div className="absolute bottom-6 right-6 lg:top-6 lg:right-6 lg:bottom-auto z-[60] flex flex-col gap-3">
                     <button
                       onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
-                      title={isMapFullscreen ? "Exit HUD" : "Tactical HUD"}
+                      className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90"
                     >
-                      {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6 text-cyan-400" /> : <Maximize2 className="size-5 sm:size-6" />}
+                      {isMapFullscreen ? <Minimize2 className="size-6 text-cyan-400" /> : <Maximize2 className="size-6" />}
                     </button>
                     <button
                       onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                      className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90"
                     >
-                      {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-5 sm:size-6" />}
+                      {isDarkMode ? <Sun className="size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-6 text-slate-400" />}
                     </button>
                     {techLocation && (
                       <button
                         onClick={() => map?.panTo(techLocation)}
-                        className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                        className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90"
                       >
-                        <Zap className="size-5 sm:size-6 text-emerald-400" />
+                        <Zap className="size-6 text-emerald-400" />
                       </button>
                     )}
                   </div>
@@ -689,28 +713,28 @@ export default function TechnicianServicePage() {
                                 <div className="absolute inset-0 bg-cyan-400/30 rounded-full animate-ping scale-[2.5]" />
                                 <div className="absolute inset-0 bg-cyan-400/10 rounded-full animate-pulse scale-[4]" />
                                 
-                                {/* Status HUD Overlay */}
-                                <div className="absolute -top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-30">
-                                  <div className="px-5 py-2.5 bg-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.6)] whitespace-nowrap flex items-center gap-4">
-                                    <div className="flex items-center gap-2 border-r border-white/10 pr-4">
-                                      <Clock className="size-4 text-amber-400" />
-                                      <span className="text-[12px] font-black text-white uppercase tracking-tighter">{eta || '---'}</span>
+                                {/* Status HUD Overlay - Only on Laptop/Large Screen */}
+                                <div className="absolute -top-24 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 pointer-events-none z-30">
+                                  <div className="px-6 py-3 bg-slate-950/95 backdrop-blur-3xl rounded-[1.5rem] border border-white/20 shadow-[0_30px_70px_rgba(0,0,0,0.8)] whitespace-nowrap flex items-center gap-5">
+                                    <div className="flex items-center gap-3 border-r border-white/10 pr-5">
+                                      <Clock className="size-5 text-amber-400" />
+                                      <span className={cn("text-[14px] font-black uppercase tracking-tighter italic", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <Navigation className="size-4 text-cyan-400" />
-                                      <span className="text-[12px] font-black text-white uppercase tracking-tighter">{localDistance || '---'}</span>
+                                    <div className="flex items-center gap-3">
+                                      <Navigation className="size-5 text-cyan-400" />
+                                      <span className={cn("text-[14px] font-black uppercase tracking-tighter italic", localDistance === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{localDistance}</span>
                                     </div>
                                   </div>
-                                  <div className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-transparent opacity-50" />
+                                  <div className="w-1.5 h-8 bg-gradient-to-b from-cyan-400 to-transparent opacity-60 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
                                 </div>
 
                                 {/* Main Technician Icon */}
-                                <div className="size-16 bg-slate-900 rounded-[1.8rem] p-1.5 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-2 border-cyan-400 relative z-10">
-                                  <div className="w-full h-full bg-cyan-400 rounded-[1.4rem] flex items-center justify-center shadow-inner">
-                                    <Navigation className="size-8 text-slate-950 fill-current" />
+                                <div className="size-16 sm:size-20 bg-slate-900 rounded-[1.8rem] sm:rounded-[2rem] p-2 shadow-[0_0_40px_rgba(34,211,238,0.4)] border-2 border-cyan-400 relative z-10">
+                                  <div className="w-full h-full bg-cyan-400 rounded-[1.4rem] sm:rounded-[1.6rem] flex items-center justify-center shadow-inner">
+                                    <Navigation className="size-8 sm:size-10 text-slate-950 fill-current" />
                                   </div>
                                 </div>
-                                <div className="mt-3 px-4 py-1 bg-cyan-400 text-[9px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-xl">TECH • LIVE</div>
+                                <div className="mt-3 px-4 py-1.5 bg-cyan-400 text-[10px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-2xl">TECH • LIVE</div>
                               </div>
                             </div>
                           </OverlayView>
@@ -720,21 +744,24 @@ export default function TechnicianServicePage() {
                           <OverlayView position={resolvedCustomerLoc} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="relative group flex flex-col items-center">
-                                <div className="size-12 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl flex items-center justify-center relative z-10">
-                                  <MapPin className="size-6 text-white" />
-                                  <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-30" />
+                                <div className="size-14 sm:size-16 bg-emerald-500 rounded-[1.5rem] border-4 border-slate-950 shadow-2xl flex items-center justify-center relative z-10">
+                                  <MapPin className="size-7 sm:size-8 text-white" />
+                                  <div className="absolute inset-0 bg-emerald-500 rounded-[1.5rem] animate-ping opacity-30" />
                                 </div>
-                                <div className="mt-2 px-3 py-1 bg-emerald-500 text-[8px] font-black text-white uppercase tracking-widest rounded-lg shadow-xl">TARGET CUSTOMER</div>
+                                <div className="mt-2 px-3 py-1.5 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl">TARGET CUSTOMER</div>
                               </div>
                             </div>
                           </OverlayView>
                         )}
                     </GoogleMap>
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
-                      <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
-                      {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 gap-6">
+                      <div className="w-16 h-16 border-4 border-white/5 border-t-cyan-400 rounded-full animate-spin shadow-[0_0_40px_rgba(34,211,238,0.2)]" />
+                      <div className="text-center">
+                        <p className="text-[12px] font-black text-white uppercase tracking-[0.3em] italic mb-2">Synchronizing Satellite Feed</p>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Awaiting Uplink Confirmation...</p>
+                      </div>
+                      {loadError && <p className="text-rose-500 text-[10px] font-black px-8 text-center uppercase tracking-widest">{loadError.message}</p>}
                     </div>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bell, BellRing } from "lucide-react";
+import { Bell, BellRing, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { getAvatarUrl } from "@/lib/image-utils";
@@ -65,36 +65,37 @@ export default function TechnicianHeader({
   }, [setAvatarMenuOpen]);
 
   return (
-    <header className="flex flex-col gap-4 mb-8 lg:mb-12 relative z-[100]">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <header className="flex flex-col gap-6 mb-10 lg:mb-14 relative z-[100]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tighter">
-            Technician Dashboard
+          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase italic">
+            Command Center
           </h1>
-          <div className="flex items-center gap-3 mt-2 flex-wrap">
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
             {profile.online ? (
-              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
-                  Active Console
+              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)] animate-pulse" />
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+                  Console Active
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-slate-500" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  Offline
+              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 shadow-inner">
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-600" />
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                  Offline Node
                 </span>
               </div>
             )}
-            <span className="text-slate-400 text-[11px] font-bold uppercase tracking-tight">
+            <div className="flex items-center gap-2 text-slate-400 text-[11px] font-black uppercase tracking-widest opacity-60">
+              <span className="w-4 h-px bg-slate-800" />
               Liaison: {profile.name}
-            </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 sm:gap-4">
-          <div className="bg-white/5 border border-white/10 shadow-xl backdrop-blur-md rounded-2xl p-1.5 flex shrink-0">
+        <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-3 sm:gap-6">
+          <div className="bg-white/[0.03] border border-white/[0.08] shadow-2xl backdrop-blur-3xl rounded-[1.5rem] p-1.5 flex shrink-0">
             <button
               onClick={async () => {
                 setProfile({ ...profile, online: true });
@@ -108,13 +109,13 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-3 sm:px-5 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
+                "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
                 profile.online
-                  ? "bg-emerald-500 text-white shadow-lg"
-                  : "text-slate-400 hover:text-white",
+                  ? "bg-white text-slate-950 shadow-[0_10px_25px_rgba(255,255,255,0.2)] scale-105"
+                  : "text-slate-500 hover:text-white hover:bg-white/5",
               )}
             >
-              Online
+              Go Online
             </button>
             <button
               onClick={async () => {
@@ -133,139 +134,141 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-3 sm:px-5 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest",
+                "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
                 !profile.online
-                  ? "bg-slate-700 text-white shadow-inner"
-                  : "text-slate-400 hover:text-white",
+                  ? "bg-slate-800 text-white shadow-inner scale-105"
+                  : "text-slate-500 hover:text-white hover:bg-white/5",
               )}
             >
               Offline
             </button>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-5">
             <div className="relative shrink-0" ref={bellRef}>
-            <button 
-              onClick={() => setBellMenuOpen(!bellMenuOpen)}
-              className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition group shadow-xl backdrop-blur-md shrink-0"
-            >
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition" />
-              {bellNotifications.filter(n => !n.read).length > 0 && (
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-slate-950 animate-pulse shadow-lg" />
-              )}
-            </button>
-            <AnimatePresence>
-              {bellMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="fixed left-4 right-4 top-20 sm:absolute sm:top-auto sm:left-auto sm:right-0 mt-4 sm:w-[380px] bg-[#0B0F17]/95 backdrop-blur-[40px] border border-white/[0.08] rounded-[1.5rem] p-3 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] z-[100] max-h-[450px] overflow-y-auto"
-                >
-                  <div className="px-4 pt-2 pb-4 mb-2 border-b border-white/[0.05] flex items-center justify-between">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System Alerts</h3>
-                    <div className="px-2 py-0.5 bg-white/[0.05] rounded-full">
-                      <span className="text-[9px] font-bold text-white/50">{bellNotifications.filter(n => !n.read).length} New</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    {bellNotifications.length === 0 ? (
-                      <div className="px-4 py-8 text-sm text-slate-500 font-medium text-center flex flex-col items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                          <Bell className="w-4 h-4 text-slate-600" />
-                        </div>
-                        All clear. No active alerts.
+              <button 
+                onClick={() => setBellMenuOpen(!bellMenuOpen)}
+                className="relative size-12 sm:size-14 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition-all group shadow-2xl backdrop-blur-3xl shrink-0 active:scale-95"
+              >
+                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 group-hover:text-white group-hover:scale-110 transition-all duration-500" />
+                {bellNotifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute top-3.5 right-3.5 size-3 bg-cyan-400 rounded-full border-2 border-slate-950 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {bellMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                    className="fixed left-4 right-4 top-24 sm:absolute sm:top-auto sm:left-auto sm:right-0 mt-4 sm:w-[420px] bg-slate-900/95 backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] p-4 shadow-[0_40px_100px_rgba(0,0,0,0.8)] z-[100] max-h-[500px] overflow-y-auto scrollbar-hide"
+                  >
+                    <div className="px-5 pt-3 pb-5 mb-3 border-b border-white/[0.05] flex items-center justify-between">
+                      <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] italic">System Intelligence</h3>
+                      <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
+                        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">{bellNotifications.filter(n => !n.read).length} New Signal</span>
                       </div>
-                    ) : (
-                      bellNotifications.map(notif => (
-                        <div 
-                          key={notif.id} 
-                          onClick={() => {
-                            if (!notif.read) markNotificationRead(notif.id);
-                          }}
-                          className={cn(
-                            "p-4 rounded-2xl transition-all cursor-pointer group/notif relative overflow-hidden", 
-                            !notif.read 
-                              ? "bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.06]" 
-                              : "hover:bg-white/[0.02] border border-transparent"
-                          )}
-                        >
-                          {!notif.read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />}
-                          <div className="flex justify-between items-start mb-2">
-                            <div className={cn("text-xs font-black uppercase tracking-wider", !notif.read ? "text-white" : "text-slate-300")}>
-                              {notif.title}
-                            </div>
-                            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
-                              {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {bellNotifications.length === 0 ? (
+                        <div className="px-4 py-12 text-sm text-slate-500 font-bold text-center flex flex-col items-center gap-5 italic uppercase tracking-widest opacity-50">
+                          <div className="size-16 rounded-[1.5rem] bg-white/5 flex items-center justify-center border border-white/10">
+                            <Bell className="w-7 h-7 text-slate-600" />
                           </div>
-                          <div className="text-xs text-slate-400 leading-relaxed font-medium group-hover/notif:text-slate-300 transition-colors">
-                            {notif.message}
-                          </div>
+                          No active signals detected.
                         </div>
-                      ))
-                    )}
+                      ) : (
+                        bellNotifications.map(notif => (
+                          <div 
+                            key={notif.id} 
+                            onClick={() => {
+                              if (!notif.read) markNotificationRead(notif.id);
+                            }}
+                            className={cn(
+                              "p-5 rounded-[1.5rem] transition-all cursor-pointer group/notif relative overflow-hidden", 
+                              !notif.read 
+                                ? "bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08]" 
+                                : "hover:bg-white/[0.02] border border-transparent"
+                            )}
+                          >
+                            {!notif.read && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)]" />}
+                            <div className="flex justify-between items-start mb-2">
+                              <div className={cn("text-xs font-black uppercase tracking-widest italic", !notif.read ? "text-white" : "text-slate-400")}>
+                                {notif.title}
+                              </div>
+                              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0 mt-0.5 opacity-60">
+                                {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            </div>
+                            <div className="text-xs text-slate-400 leading-relaxed font-medium group-hover/notif:text-slate-300 transition-colors">
+                              {notif.message}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="relative shrink-0" ref={avatarRef}>
+              <button
+                onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                className="size-12 sm:size-14 rounded-2xl overflow-hidden border border-white/20 hover:border-white/50 hover:scale-105 transition-all duration-500 shadow-2xl relative bg-white/5 backdrop-blur-3xl group active:scale-95"
+              >
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-10">
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                )}
+                {profile.avatar && profile.avatar.length > 2 ? (
+                  <img
+                    src={getAvatarUrl(profile.avatar)!}
+                    alt="Avatar"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white/5 flex items-center justify-center text-2xl group-hover:bg-white/10 transition-colors">
+                    👷
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
 
-          <div className="relative shrink-0" ref={avatarRef}>
-            <button
-              onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden border border-white/40 hover:border-white/60 transition shadow-xl relative bg-white/10 backdrop-blur-md"
-            >
-              {uploadingAvatar && (
-                <div className="absolute inset-0 glass-panel border-white/80 flex items-center justify-center z-10">
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                </div>
-              )}
-              {profile.avatar && profile.avatar.length > 2 ? (
-                <img
-                  src={getAvatarUrl(profile.avatar)!}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-white/10 flex items-center justify-center text-xl">
-                  👷
-                </div>
-              )}
-            </button>
-
-            <AnimatePresence>
-              {avatarMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 mt-3 w-48 bg-slate-900/95 backdrop-blur-3xl border-white/10 border rounded-2xl p-2 shadow-2xl z-50"
-                >
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition"
+              <AnimatePresence>
+                {avatarMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                    className="absolute right-0 mt-4 w-56 bg-slate-900/95 backdrop-blur-3xl border border-white/[0.08] rounded-[1.5rem] p-2.5 shadow-[0_40px_100px_rgba(0,0,0,0.8)] z-50"
                   >
-                    Upload Photo
-                  </button>
-                  <button
-                    onClick={handleAvatarDelete}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition mt-1"
-                  >
-                    Remove Photo
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleAvatarUpload}
-            />
-          </div>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                    >
+                      Update Identity
+                    </button>
+                    <button
+                      onClick={handleAvatarDelete}
+                      className="w-full text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-rose-500/70 hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all mt-1"
+                    >
+                      Purge Avatar
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+              />
+            </div>
           </div>
         </div>
       </div>

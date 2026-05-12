@@ -43,11 +43,11 @@ export function StatCard({
         >
           {icon}
         </div>
-        
+
         {/* Live Indicator */}
         <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.05] px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full backdrop-blur-md">
-           <span className={cn("size-1.5 sm:size-2 rounded-full animate-pulse", dotColors[color] || dotColors.slate)} />
-           <span className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Sync</span>
+          <span className={cn("size-1.5 sm:size-2 rounded-full animate-pulse", dotColors[color] || dotColors.slate)} />
+          <span className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Sync</span>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ export function StatCard({
         <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mb-2 sm:mb-3">
           {label}
         </p>
-        
+
         <div
           className={cn(
             "inline-block text-[8px] sm:text-[9px] font-black px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border shadow-sm truncate max-w-full transition-colors",
