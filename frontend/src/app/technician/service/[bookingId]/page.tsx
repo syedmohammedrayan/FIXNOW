@@ -17,7 +17,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
 import { io, Socket } from 'socket.io-client';
 import TechnicianSidebar from '@/components/technician/Sidebar';
-import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, OverlayView, DirectionsRenderer, Polyline } from '@react-google-maps/api';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 
 const LIBRARIES: ("geometry" | "places" | "visualization")[] = ["geometry", "places", "visualization"];
@@ -42,6 +42,20 @@ interface Booking {
   serviceStartedAt?: string;
 }
 
+const lightMapStyles = [
+  { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#4f46e5" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#4f46e5" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#f1f5f9" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#cbd5e1" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#e0f2fe" }] },
+];
+
 const darkMapStyles = [
   { elementType: "geometry", stylers: [{ color: "#020617" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#000000" }] },
@@ -64,12 +78,13 @@ export default function TechnicianServicePage() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [techLocation, setTechLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [isDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [liveAddress, setLiveAddress] = useState<string>('');
   const [addressParts, setAddressParts] = useState<{ street: string; area: string; zone: string; city: string }>({ street: '', area: '', zone: '', city: '' });
   const [localDistance, setLocalDistance] = useState<string>('');
   const [mapReady, setMapReady] = useState(false);
   const [eta, setEta] = useState<string>('Syncing...');
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: currentKey || '',
@@ -215,43 +230,43 @@ export default function TechnicianServicePage() {
     }
   }, [techLocation, booking?.customerLocation]);
 
-  // Map & Polyline Management
+  // Map & Route Management
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const polylineRef = useRef<google.maps.Polyline | null>(null);
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
-    const cLoc = booking?.customerLocation || ((booking as any)?.customerLat ? { lat: (booking as any).customerLat, lng: (booking as any).customerLng } : null);
-    if (!map || !window.google?.maps) return;
+    if (!window.google?.maps || !techLocation || !booking?.customerLocation) return;
     
-    if (!polylineRef.current) {
-      polylineRef.current = new window.google.maps.Polyline({
-        strokeColor: "#22d3ee",
-        strokeWeight: 4,
-        strokeOpacity: 0.8,
-        zIndex: 5,
-        map: map
-      });
+    if (!directionsServiceRef.current) {
+      directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
 
-    if (techLocation?.lat && techLocation?.lng && cLoc?.lat && cLoc?.lng) {
-      const path = [
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
-      ];
-      polylineRef.current.setPath(path);
-      polylineRef.current.setMap(map);
-      
+    const cLoc = booking.customerLocation;
+    
+    directionsServiceRef.current.route(
+      {
+        origin: techLocation,
+        destination: cLoc,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK && result) {
+          setDirections(result);
+          const route = result.routes[0].legs[0];
+          setLocalDistance(route.distance?.text || '');
+          setEta(route.duration?.text || '');
+        }
+      }
+    );
+  }, [techLocation, booking?.customerLocation]);
+
+  useEffect(() => {
+    if (map && techLocation && booking?.customerLocation) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
-      bounds.extend(cLoc);
+      bounds.extend(booking.customerLocation);
       map.fitBounds(bounds, { top: 100, right: 100, bottom: 200, left: 100 });
-    } else {
-      polylineRef.current.setMap(null);
     }
-
-    return () => {
-      if (polylineRef.current) polylineRef.current.setMap(null);
-    };
   }, [map, techLocation, booking?.customerLocation]);
 
   // Reverse Geocoding
@@ -527,10 +542,15 @@ export default function TechnicianServicePage() {
                 <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden h-full min-h-[500px] flex flex-col shadow-2xl">
                   <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/5">
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tactical Overlay</span>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-slate-900/50">
-                      <Moon className="size-3.5 text-cyan-400" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white">Midnight Mode</span>
-                    </div>
+                    <button 
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-white/5 transition-all"
+                    >
+                      {isDarkMode ? <Moon className="size-3.5 text-cyan-400" /> : <Sun className="size-3.5 text-amber-400" />}
+                      <span className="text-[9px] font-black uppercase tracking-widest text-white">
+                        {isDarkMode ? 'Midnight Mode' : 'Light Mode'}
+                      </span>
+                    </button>
                   </div>
                   <div className="relative flex-1">
                     {isLoaded && (
@@ -539,8 +559,41 @@ export default function TechnicianServicePage() {
                         center={techLocation || { lat: 28.6139, lng: 77.2090 }}
                         zoom={14}
                         onLoad={(m) => { setMap(m); setMapReady(true); }}
-                        options={{ disableDefaultUI: true, zoomControl: true, styles: darkMapStyles }}
+                        options={{ disableDefaultUI: true, zoomControl: true, styles: isDarkMode ? darkMapStyles : lightMapStyles }}
                       >
+                        {directions && (
+                          <DirectionsRenderer
+                            directions={directions}
+                            options={{
+                              suppressMarkers: true,
+                              polylineOptions: {
+                                strokeColor: isDarkMode ? "#22d3ee" : "#4f46e5",
+                                strokeWeight: 5,
+                                strokeOpacity: 0.8
+                              }
+                            }}
+                          />
+                        )}
+                        {techLocation && booking?.customerLocation && (
+                          <Polyline
+                            path={[techLocation, booking.customerLocation]}
+                            options={{
+                              strokeColor: "#ffffff",
+                              strokeOpacity: 0,
+                              icons: [{
+                                icon: {
+                                  path: 'M 0,-1 0,1',
+                                  strokeOpacity: 1,
+                                  scale: 3,
+                                  strokeColor: '#ffffff'
+                                },
+                                offset: '0',
+                                repeat: '20px'
+                              }],
+                              zIndex: 10
+                            }}
+                          />
+                        )}
                         {techLocation && (
                           <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2"><div className="size-10 bg-white rounded-full border-4 border-slate-900 shadow-xl flex items-center justify-center"><Wrench className="size-5 text-slate-900" /></div></div>

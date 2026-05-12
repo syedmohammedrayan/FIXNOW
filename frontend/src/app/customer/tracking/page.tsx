@@ -240,6 +240,34 @@ export default function TrackingPage() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [bookingId]);
 
+  // Map & Route Management
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
+  
+  useEffect(() => {
+    if (!window.google?.maps || !techLocation || !userLocation) return;
+    
+    if (!directionsServiceRef.current) {
+      directionsServiceRef.current = new window.google.maps.DirectionsService();
+    }
+
+    directionsServiceRef.current.route(
+      {
+        origin: techLocation,
+        destination: userLocation,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK && result) {
+          setDirections(result);
+          const route = result.routes[0].legs[0];
+          setLocalDistance(route.distance?.text || '');
+          setEta(route.duration?.text || '');
+        }
+      }
+    );
+  }, [techLocation, userLocation]);
+
   useEffect(() => {
     if (map && techLocation && userLocation && window.google?.maps && !hasInitiallyCentered.current) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -250,68 +278,11 @@ export default function TrackingPage() {
     }
   }, [map, techLocation, userLocation]);
 
+  // Direct Map Polyline Management (Dotted Line)
   useEffect(() => {
-    // We now rely on instant localDistance for the UI and ETA
-    if (!eta) setEta('Syncing...');
-  }, [techLocation, userLocation, eta]);
-
-  // Instant Local Distance Calculation (Zero Lag)
-  const [localDistance, setLocalDistance] = useState<string>('');
-  useEffect(() => {
-    if (techLocation && userLocation && window.google?.maps?.geometry?.spherical) {
-      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
-      );
-      if (meters < 100) {
-        setEta('Arrived');
-      }
-      
-      if (meters < 1000) {
-        setLocalDistance(`${Math.round(meters)}m`);
-        if (meters >= 100) {
-          const mins = Math.ceil(meters / 300);
-          setEta(`${mins} min`);
-        }
-      } else {
-        setLocalDistance(`${((meters / 1000).toFixed(1))}km`);
-        const mins = Math.ceil((meters / 1000) * 3);
-        setEta(`${mins} min`);
-      }
-    }
-  }, [techLocation, userLocation]);
-
-  // Direct Map Polyline Management (Resolves Phantom Lines)
-  const polylineRef = useRef<google.maps.Polyline | null>(null);
-  useEffect(() => {
-    if (!map || !window.google?.maps) return;
+    if (!map || !window.google?.maps || !techLocation || !userLocation) return;
     
-    // Create polyline if it doesn't exist
-    if (!polylineRef.current) {
-      polylineRef.current = new window.google.maps.Polyline({
-        strokeColor: "#ffffff",
-        strokeWeight: 4,
-        strokeOpacity: 0.6,
-        zIndex: 5,
-        map: map
-      });
-    }
-
-    // Update path strictly if both locations are valid numbers
-    if (techLocation?.lat && techLocation?.lng && userLocation?.lat && userLocation?.lng) {
-      const path = [
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
-      ];
-      polylineRef.current.setPath(path);
-      polylineRef.current.setMap(map);
-    } else {
-      polylineRef.current.setMap(null);
-    }
-
-    return () => {
-      if (polylineRef.current) polylineRef.current.setMap(null);
-    };
+    // We use @react-google-maps/api components in the render instead of manual Polyline management where possible
   }, [map, techLocation, userLocation]);
 
   return (
@@ -349,6 +320,41 @@ export default function TrackingPage() {
                 styles: isDarkMode ? darkMapStyles : lightMapStyles
               }}
             >
+              {directions && (
+                <DirectionsRenderer
+                  directions={directions}
+                  options={{
+                    suppressMarkers: true,
+                    polylineOptions: {
+                      strokeColor: isDarkMode ? "#818cf8" : "#4f46e5",
+                      strokeWeight: 5,
+                      strokeOpacity: 0.8
+                    }
+                  }}
+                />
+              )}
+
+              {techLocation && userLocation && (
+                <Polyline
+                  path={[techLocation, userLocation]}
+                  options={{
+                    strokeColor: "#ffffff",
+                    strokeOpacity: 0,
+                    icons: [{
+                      icon: {
+                        path: 'M 0,-1 0,1',
+                        strokeOpacity: 1,
+                        scale: 3,
+                        strokeColor: '#ffffff'
+                      },
+                      offset: '0',
+                      repeat: '20px'
+                    }],
+                    zIndex: 10
+                  }}
+                />
+              )}
+
               {techLocation && (
                 <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">

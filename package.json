@@ -12,6 +12,7 @@
     "@google/genai": "^1.50.1",
     "@google/generative-ai": "^0.24.1",
     "@insforge/sdk": "^1.2.5",
+    "@vercel/analytics": "^2.0.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
