@@ -16,28 +16,29 @@ export function StatCard({
   color: string;
 }) {
   const colors: Record<string, string> = {
-    cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 shadow-cyan-500/10",
-    emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10",
-    white: "text-white bg-white/10 border-white/20 shadow-white/5",
-    slate: "text-slate-400 bg-slate-500/10 border-slate-500/20 shadow-slate-500/10",
+    cyan: "text-indigo-600 bg-indigo-500/10 border-indigo-500/10 shadow-indigo-500/5",
+    emerald: "text-emerald-600 bg-emerald-500/10 border-emerald-500/10 shadow-emerald-500/5",
+    white: "text-slate-900 bg-slate-100 border-black/10 shadow-black/5",
+    slate: "text-slate-500 bg-slate-500/10 border-slate-500/10 shadow-slate-500/5",
   };
 
   const dotColors: Record<string, string> = {
-    cyan: "bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]",
-    emerald: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
-    white: "bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]",
+    cyan: "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]",
+    emerald: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]",
+    white: "bg-slate-900 shadow-[0_0_8px_rgba(15,23,42,0.6)]",
     slate: "bg-slate-400",
   };
 
   return (
-    <div className="bg-[#0B0F17]/90 backdrop-blur-[40px] p-4 sm:p-6 lg:p-7 border border-white/[0.08] rounded-[1.5rem] sm:rounded-[2rem] flex flex-col justify-between group hover:border-white/[0.15] hover:bg-[#0F141E]/90 overflow-hidden shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)] transition-all duration-500 aspect-[4/3] sm:aspect-auto sm:min-h-[180px] relative">
-      {/* Subtle Background Glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] blur-[40px] -mr-16 -mt-16 group-hover:bg-white/[0.04] transition-colors duration-500 pointer-events-none" />
+    <div className="bg-white/45 backdrop-blur-[50px] p-4 sm:p-6 lg:p-7 border border-black/5 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col justify-between group hover:border-black/10 hover:bg-white/60 overflow-hidden shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] transition-all duration-500 aspect-[4/3] sm:aspect-auto sm:min-h-[180px] relative">
+      {/* Cinematic Ambient Glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/[0.03] blur-[40px] -mr-16 -mt-16 group-hover:bg-indigo-500/[0.06] transition-all duration-700 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/[0.02] blur-[30px] -ml-12 -mb-12 group-hover:bg-emerald-500/[0.04] transition-all duration-700 pointer-events-none" />
 
       <div className="flex justify-between items-start relative z-10">
         <div
           className={cn(
-            "p-2.5 sm:p-4 rounded-xl border transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg",
+            "p-2.5 sm:p-4 rounded-xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
             colors[color] || colors.slate,
           )}
         >
@@ -45,26 +46,26 @@ export function StatCard({
         </div>
 
         {/* Live Indicator */}
-        <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.05] px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full backdrop-blur-md">
+        <div className="flex items-center gap-1.5 bg-black/[0.02] border border-black/[0.04] px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full backdrop-blur-md">
           <span className={cn("size-1.5 sm:size-2 rounded-full animate-pulse", dotColors[color] || dotColors.slate)} />
           <span className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Sync</span>
         </div>
       </div>
 
       <div className="relative z-10 mt-auto pt-4 sm:pt-6">
-        <p className="text-xl sm:text-2xl lg:text-4xl font-black text-white tracking-tighter truncate leading-none mb-1 sm:mb-1.5">
+        <p className="text-xl sm:text-2xl lg:text-4xl font-black text-slate-900 tracking-tighter truncate leading-none mb-1 sm:mb-1.5 italic">
           {value}
         </p>
-        <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mb-2 sm:mb-3">
+        <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest truncate mb-2 sm:mb-3 opacity-70">
           {label}
         </p>
 
         <div
           className={cn(
-            "inline-block text-[8px] sm:text-[9px] font-black px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border shadow-sm truncate max-w-full transition-colors",
-            trend.includes("+") || trend.includes("High") || trend.includes("Ready")
-              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 group-hover:bg-emerald-500/20"
-              : "text-slate-400 bg-slate-500/10 border-slate-500/20 group-hover:bg-slate-500/20",
+            "inline-block text-[8px] sm:text-[9px] font-black px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border shadow-sm truncate max-w-full transition-all",
+            trend.includes("+") || trend.includes("High") || trend.includes("Ready") || trend.includes("ONLINE")
+              ? "text-emerald-600 bg-emerald-500/10 border-emerald-500/10 group-hover:bg-emerald-500/20"
+              : "text-slate-600 bg-slate-500/5 border-black/5 group-hover:bg-slate-500/10",
           )}
         >
           {trend}
