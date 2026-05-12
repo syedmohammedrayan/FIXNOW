@@ -80,6 +80,7 @@ export default function TrackingPage() {
   const [localDistance, setLocalDistance] = useState<string>('---');
   const [status, setStatus] = useState<string>('Initializing');
   const [otp, setOtp] = useState<string>('----');
+  const [booking, setBooking] = useState<any>(null);
   const [techDetails, setTechDetails] = useState({
     name: 'Technician',
     avatar: '',
@@ -99,6 +100,10 @@ export default function TrackingPage() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  
+  const destinationLocation = userLocation || booking?.customerLocation || booking?.customer_location || 
+    (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
+     booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: currentKey || '',
@@ -140,6 +145,7 @@ export default function TrackingPage() {
     const unsubBooking = onSnapshot(doc(db, 'bookings', bookingId), (docSnap) => {
       if (docSnap.exists()) {
         const bData = docSnap.data();
+        setBooking(bData);
         
         // Handle both snake_case and camelCase for all critical fields
         if (bData.otp) setOtp(bData.otp);
@@ -244,9 +250,10 @@ export default function TrackingPage() {
   // Map & Route Management
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   useEffect(() => {
-    const destination = userLocation || booking?.customerLocation;
+    const destination = destinationLocation;
+    
     if (!window.google?.maps || !techLocation || !destination) {
-      console.log('Tracking: Waiting for components...', { techLocation, userLocation, bookingLoc: booking?.customerLocation });
+      console.log('Tracking: Waiting for components...', { techLocation, userLocation, destination });
       return;
     }
     
@@ -366,9 +373,9 @@ export default function TrackingPage() {
                 />
               )}
 
-              {techLocation && (userLocation || booking?.customerLocation) && (
+              {techLocation && destinationLocation && (
                 <Polyline
-                  path={[techLocation, userLocation || (booking?.customerLocation as any)]}
+                  path={[techLocation, destinationLocation]}
                   options={{
                     strokeColor: isDarkMode ? "#ffffff" : "#000000",
                     strokeOpacity: 0,
@@ -427,8 +434,8 @@ export default function TrackingPage() {
                 </OverlayView>
               )}
 
-              {(userLocation || booking?.customerLocation) && (
-                <OverlayView position={userLocation || (booking?.customerLocation as any)} mapPaneName="overlayMouseTarget">
+              {destinationLocation && (
+                <OverlayView position={destinationLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
                     <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl relative flex items-center justify-center">
                        <MapPin className="size-5 text-white" />
