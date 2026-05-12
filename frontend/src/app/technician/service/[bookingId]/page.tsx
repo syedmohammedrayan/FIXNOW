@@ -44,26 +44,30 @@ interface Booking {
 
 const lightMapStyles = [
   { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
   { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#4f46e5" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  { featureType: "road", stylers: [{ visibility: "off" }] },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#4f46e5" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#f1f5f9" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#cbd5e1" }] },
   { featureType: "water", elementType: "geometry", stylers: [{ color: "#e0f2fe" }] },
 ];
 
 const darkMapStyles = [
   { elementType: "geometry", stylers: [{ color: "#020617" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#000000" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#020617" }] },
   { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#38bdf8" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  { featureType: "road", stylers: [{ visibility: "off" }] },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0f172a" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#38bdf8" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#334155" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#334155" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#020617" }] },
 ];
 
 export default function TechnicianServicePage() {
