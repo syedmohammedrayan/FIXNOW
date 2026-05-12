@@ -212,8 +212,15 @@ export default function TechnicianServicePage() {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   
   useEffect(() => {
-    const cLoc = booking?.customerLocation || booking?.customer_location || 
-      (booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
+    // Strict extraction of customer location
+    let cLoc: google.maps.LatLngLiteral | null = null;
+    if (booking?.customerLocation?.lat != null && booking?.customerLocation?.lng != null) {
+      cLoc = { lat: Number(booking.customerLocation.lat), lng: Number(booking.customerLocation.lng) };
+    } else if (booking?.customer_location?.lat != null && booking?.customer_location?.lng != null) {
+      cLoc = { lat: Number(booking.customer_location.lat), lng: Number(booking.customer_location.lng) };
+    } else if (booking?.customer_lat != null && booking?.customer_lng != null) {
+      cLoc = { lat: Number(booking.customer_lat), lng: Number(booking.customer_lng) };
+    }
 
     if (!window.google?.maps || !techLocation || !cLoc) {
       return;
@@ -263,7 +270,7 @@ export default function TechnicianServicePage() {
         }
       }
     );
-  }, [techLocation, booking?.customerLocation, booking?.customer_location]);
+  }, [techLocation, booking?.customerLocation, booking?.customer_location, booking?.customer_lat, booking?.customer_lng]);
 
   useEffect(() => {
     if (map && techLocation && booking?.customerLocation) {
