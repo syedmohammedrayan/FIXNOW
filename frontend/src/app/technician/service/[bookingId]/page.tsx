@@ -797,11 +797,11 @@ export default function TechnicianServicePage() {
                                 {/* Main Technician Icon */}
                                 <div className="size-16 sm:size-20 bg-slate-900 rounded-[1.8rem] sm:rounded-[2rem] p-2 shadow-[0_0_40px_rgba(34,211,238,0.4)] border-2 border-cyan-400 relative z-10">
                                   <div className="w-full h-full bg-cyan-400 rounded-[1.4rem] sm:rounded-[1.6rem] flex items-center justify-center shadow-inner">
-                                    <Navigation className="size-8 sm:size-10 text-slate-950 fill-current" />
+                                    <span className="text-3xl sm:text-4xl">🛠️</span>
                                   </div>
                                 </div>
                                 <div className="mt-3 px-4 py-1.5 bg-cyan-400 text-[10px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-2xl flex items-center gap-1.5">
-                                  <span className="text-xs">🛠️</span> YOU • LIVE
+                                  YOU • LIVE
                                 </div>
                               </div>
                             </div>
@@ -813,11 +813,11 @@ export default function TechnicianServicePage() {
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="relative group flex flex-col items-center">
                                 <div className="size-14 sm:size-16 bg-emerald-500 rounded-[1.5rem] border-4 border-slate-950 shadow-2xl flex items-center justify-center relative z-10">
-                                  <MapPin className="size-7 sm:size-8 text-white" />
+                                  <span className="text-2xl sm:text-3xl">📍</span>
                                   <div className="absolute inset-0 bg-emerald-500 rounded-[1.5rem] animate-ping opacity-30" />
                                 </div>
                                 <div className="mt-2 px-3 py-1.5 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl flex items-center gap-1.5">
-                                  <span className="text-xs">📍</span> TARGET CUSTOMER
+                                  TARGET CUSTOMER
                                 </div>
                               </div>
                             </div>
