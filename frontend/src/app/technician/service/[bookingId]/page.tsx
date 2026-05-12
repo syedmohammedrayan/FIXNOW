@@ -211,25 +211,24 @@ export default function TechnicianServicePage() {
   // Map & Route Management
   const [map, setMap] = useState<google.maps.Map | null>(null);
   
-  useEffect(() => {
-    // Strict extraction of customer location
-    let cLoc: google.maps.LatLngLiteral | null = null;
-    if (booking?.customerLocation?.lat != null && booking?.customerLocation?.lng != null) {
-      cLoc = { lat: Number(booking.customerLocation.lat), lng: Number(booking.customerLocation.lng) };
-    } else if (booking?.customer_location?.lat != null && booking?.customer_location?.lng != null) {
-      cLoc = { lat: Number(booking.customer_location.lat), lng: Number(booking.customer_location.lng) };
-    } else if (booking?.customer_lat != null && booking?.customer_lng != null) {
-      cLoc = { lat: Number(booking.customer_lat), lng: Number(booking.customer_lng) };
-    }
+  // 1. Consolidated Location Resolver (Top Level)
+  const resolvedCustomerLoc = useMemo(() => {
+    if (!booking) return null;
+    const loc = booking.customerLocation || booking.customer_location;
+    if (loc?.lat && loc?.lng) return { lat: Number(loc.lat), lng: Number(loc.lng) };
+    if (booking.customer_lat && booking.customer_lng) return { lat: Number(booking.customer_lat), lng: Number(booking.customer_lng) };
+    if (booking.customerLat && booking.customerLng) return { lat: Number(booking.customerLat), lng: Number(booking.customerLng) };
+    return null;
+  }, [booking]);
 
-    if (!window.google?.maps || !techLocation || !cLoc) {
-      return;
-    }
+  // 2. Tactical Metrics Engine
+  useEffect(() => {
+    if (!window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
     
     if (window.google?.maps?.geometry?.spherical) {
       const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
         new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
+        new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
       );
       setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
       setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
@@ -237,49 +236,32 @@ export default function TechnicianServicePage() {
 
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
-      {
-        origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
-        destinations: [new window.google.maps.LatLng(cLoc.lat, cLoc.lng)],
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
+      { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
       (response, status) => {
-        if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
-          const element = response.rows[0].elements[0];
-          if (element.status === 'OK') {
-            const dText = element.distance?.text;
-            const eText = element.duration?.text;
-            if (dText) setLocalDistance(dText);
-            if (eText) setEta(eText);
-          }
+        if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
+          const el = response.rows[0].elements[0];
+          setLocalDistance(el.distance.text);
+          setEta(el.duration.text);
         }
       }
     );
 
-    if (!directionsServiceRef.current) {
-      directionsServiceRef.current = new window.google.maps.DirectionsService();
-    }
+    if (!directionsServiceRef.current) directionsServiceRef.current = new window.google.maps.DirectionsService();
     directionsServiceRef.current.route(
-      {
-        origin: techLocation,
-        destination: cLoc,
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK && result) {
-          setDirections(result);
-        }
-      }
+      { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
+      (result, status) => { if (status === 'OK') setDirections(result); }
     );
-  }, [techLocation, booking?.customerLocation, booking?.customer_location, booking?.customer_lat, booking?.customer_lng]);
+  }, [techLocation, resolvedCustomerLoc]);
 
+  // 3. Camera Management
   useEffect(() => {
-    if (map && techLocation && booking?.customerLocation) {
+    if (map && techLocation && resolvedCustomerLoc) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
-      bounds.extend(booking.customerLocation);
-      map.fitBounds(bounds, { top: 100, right: 100, bottom: 200, left: 100 });
+      bounds.extend(resolvedCustomerLoc);
+      map.fitBounds(bounds, { top: 80, right: 80, bottom: 250, left: 80 });
     }
-  }, [map, techLocation, booking?.customerLocation]);
+  }, [map, techLocation, resolvedCustomerLoc]);
 
   // Reverse Geocoding
   useEffect(() => {
@@ -635,12 +617,17 @@ export default function TechnicianServicePage() {
                     <GoogleMap
                       mapContainerClassName="w-full h-full min-h-[450px]"
                       mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
-                      center={techLocation || { lat: 28.6139, lng: 77.2090 }}
+                      center={techLocation || resolvedCustomerLoc}
                       zoom={15}
                       onLoad={(m) => { 
                         setMap(m); 
                         setMapReady(true);
-                        if (techLocation) m.panTo(techLocation);
+                        if (techLocation && resolvedCustomerLoc) {
+                          const b = new window.google.maps.LatLngBounds();
+                          b.extend(techLocation);
+                          b.extend(resolvedCustomerLoc);
+                          m.fitBounds(b, { top: 80, right: 80, bottom: 250, left: 80 });
+                        }
                       }}
                       options={{ 
                         disableDefaultUI: true, 
@@ -665,9 +652,9 @@ export default function TechnicianServicePage() {
                           />
                         )}
                         {/* Final robust check for Polyline path */}
-                        {techLocation && (booking?.customerLocation || booking?.customer_location) && (
+                        {techLocation && resolvedCustomerLoc && !directions && (
                           <Polyline
-                            path={[techLocation, (booking?.customerLocation || booking?.customer_location) as any]}
+                            path={[techLocation, resolvedCustomerLoc]}
                             options={{
                               strokeColor: isDarkMode ? "#ffffff" : "#000000",
                               strokeOpacity: 0,
@@ -719,8 +706,8 @@ export default function TechnicianServicePage() {
                           </OverlayView>
                         )}
 
-                        {booking?.customerLocation && (
-                          <OverlayView position={booking.customerLocation} mapPaneName="overlayMouseTarget">
+                        {resolvedCustomerLoc && (
+                          <OverlayView position={resolvedCustomerLoc} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl flex items-center justify-center relative group">
                                 <MapPin className="size-5 text-white" />
