@@ -87,17 +87,17 @@ export function MetricRow({
   return (
     <div className="group">
       <div className="flex justify-between items-center mb-3">
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">
+        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-slate-900 transition-colors">
           {label}
         </span>
-        <span className="text-xs font-black text-white">{value}</span>
+        <span className="text-xs font-black text-slate-900">{value}</span>
       </div>
-      <div className="h-2 bg-white/5 backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-white/10">
+      <div className="h-2 bg-slate-200 backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-black/5">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+          className="h-full bg-indigo-600 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.2)]"
         />
       </div>
     </div>
@@ -109,20 +109,20 @@ import Link from "next/link";
 
 export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }) {
   return (
-    <div className="glass-neon-card p-8 relative overflow-hidden group min-h-[340px] flex flex-col justify-between border-none glass-panel border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-slate-900/40">
+    <div className="glass-neon-card p-8 relative overflow-hidden group min-h-[340px] flex flex-col justify-between border border-black/5 rounded-[3rem] shadow-xl bg-white/45 backdrop-blur-[50px]">
       {/* Dynamic Background Accents */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.03] blur-[80px] -mr-32 -mt-32 group-hover:bg-white/[0.08] transition-all duration-700" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.03] blur-[80px] -mr-32 -mt-32 group-hover:bg-indigo-500/[0.08] transition-all duration-700" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/[0.02] blur-[60px] -ml-24 -mb-24 group-hover:bg-emerald-500/[0.05] transition-all duration-700" />
 
       <div className="relative z-10">
         <div className="flex justify-between items-start mb-8">
-          <div className="size-14 rounded-2xl glass-panel border-white/10 shadow-sm border border-white/5 flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+          <div className="size-14 rounded-2xl bg-white border border-black/10 shadow-sm flex items-center justify-center text-slate-900 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
             <Briefcase className="w-7 h-7" />
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+              <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">
                 Protocol Active
               </span>
             </div>
@@ -132,31 +132,31 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
           </div>
         </div>
 
-        <h3 className="text-2xl font-black text-white tracking-tight mb-2">
+        <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2 italic">
           Service Manifest
         </h3>
-        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-10 leading-relaxed max-w-[280px]">
+        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.15em] mb-10 leading-relaxed max-w-[280px]">
           Command center for mission critical assignments & field logistics.
         </p>
 
         {/* Micro-stats for richness */}
-        <div className="flex items-center gap-6 pb-6 border-b border-white/5">
+        <div className="flex items-center gap-6 pb-6 border-b border-black/5">
           <div className="space-y-1">
             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
               Active Jobs
             </p>
-            <p className="text-xl font-black text-white">
+            <p className="text-xl font-black text-slate-900">
               {activeJobsCount}
             </p>
           </div>
-          <div className="w-px h-8 bg-slate-800/40 backdrop-blur-md" />
+          <div className="w-px h-8 bg-black/[0.05] backdrop-blur-md" />
           <div className="space-y-1">
             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
               Avg. ETA
             </p>
-            <p className="text-xl font-black text-white">12m</p>
+            <p className="text-xl font-black text-slate-900">12m</p>
           </div>
-          <div className="w-px h-8 bg-slate-800/40 backdrop-blur-md" />
+          <div className="w-px h-8 bg-black/[0.05] backdrop-blur-md" />
           <div className="space-y-1">
             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
               Reliability
@@ -168,10 +168,10 @@ export function ServiceManifest({ activeJobsCount }: { activeJobsCount: number }
 
       <Link
         href="/technician/bookings"
-        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-white text-slate-900 pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95 shadow-xl shadow-white/10 group/btn"
+        className="relative z-10 w-full mt-8 inline-flex items-center justify-between bg-slate-900 text-white pl-8 pr-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-black/10 group/btn"
       >
         <span>Initialize Console</span>
-        <div className="size-8 rounded-xl glass-panel border-white/10 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">
+        <div className="size-8 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">
           <ChevronRight className="w-4 h-4" />
         </div>
       </Link>

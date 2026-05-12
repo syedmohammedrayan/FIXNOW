@@ -68,34 +68,34 @@ export default function TechnicianHeader({
     <header className="flex flex-col gap-6 mb-10 lg:mb-14 relative z-[100]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase italic">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tighter uppercase italic">
             Command Center
           </h1>
           <div className="flex items-center gap-3 mt-3 flex-wrap">
             {profile.online ? (
-              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)] animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 rounded-full border border-emerald-100 shadow-sm">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse" />
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em]">
                   Console Active
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 shadow-inner">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-600" />
+              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-slate-100 rounded-full border border-black/5 shadow-inner">
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Offline Node
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-slate-400 text-[11px] font-black uppercase tracking-widest opacity-60">
-              <span className="w-4 h-px bg-slate-800" />
+            <div className="flex items-center gap-2 text-slate-500 text-[11px] font-black uppercase tracking-widest opacity-80">
+              <span className="w-4 h-px bg-black/[0.05]" />
               Liaison: {profile.name}
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-3 sm:gap-6">
-          <div className="bg-white/[0.03] border border-white/[0.08] shadow-2xl backdrop-blur-3xl rounded-[1.5rem] p-1.5 flex shrink-0">
+          <div className="bg-black/[0.03] border border-black/[0.05] shadow-xl backdrop-blur-3xl rounded-[1.5rem] p-1.5 flex shrink-0">
             <button
               onClick={async () => {
                 setProfile({ ...profile, online: true });
@@ -111,8 +111,8 @@ export default function TechnicianHeader({
               className={cn(
                 "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
                 profile.online
-                  ? "bg-white text-slate-950 shadow-[0_10px_25px_rgba(255,255,255,0.2)] scale-105"
-                  : "text-slate-500 hover:text-white hover:bg-white/5",
+                  ? "bg-slate-900 text-white shadow-lg scale-105"
+                  : "text-slate-500 hover:text-slate-900 hover:bg-black/5",
               )}
             >
               Go Online
@@ -136,8 +136,8 @@ export default function TechnicianHeader({
               className={cn(
                 "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
                 !profile.online
-                  ? "bg-slate-800 text-white shadow-inner scale-105"
-                  : "text-slate-500 hover:text-white hover:bg-white/5",
+                  ? "bg-white text-slate-900 border border-black/5 shadow-md scale-105"
+                  : "text-slate-500 hover:text-slate-900 hover:bg-black/5",
               )}
             >
               Offline
@@ -148,11 +148,11 @@ export default function TechnicianHeader({
             <div className="relative shrink-0" ref={bellRef}>
               <button 
                 onClick={() => setBellMenuOpen(!bellMenuOpen)}
-                className="relative size-12 sm:size-14 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition-all group shadow-2xl backdrop-blur-3xl shrink-0 active:scale-95"
+                className="relative size-12 sm:size-14 bg-white border border-black/10 rounded-2xl flex items-center justify-center hover:border-black/20 hover:bg-slate-50 transition-all group shadow-xl backdrop-blur-3xl shrink-0 active:scale-95"
               >
-                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 group-hover:text-white group-hover:scale-110 transition-all duration-500" />
+                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 group-hover:text-slate-900 group-hover:scale-110 transition-all duration-500" />
                 {bellNotifications.filter(n => !n.read).length > 0 && (
-                  <span className="absolute top-3.5 right-3.5 size-3 bg-cyan-400 rounded-full border-2 border-slate-950 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+                  <span className="absolute top-3.5 right-3.5 size-3 bg-indigo-500 rounded-full border-2 border-white animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
                 )}
               </button>
               
@@ -217,7 +217,7 @@ export default function TechnicianHeader({
             <div className="relative shrink-0" ref={avatarRef}>
               <button
                 onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                className="size-12 sm:size-14 rounded-2xl overflow-hidden border border-white/20 hover:border-white/50 hover:scale-105 transition-all duration-500 shadow-2xl relative bg-white/5 backdrop-blur-3xl group active:scale-95"
+                className="size-12 sm:size-14 rounded-2xl overflow-hidden border border-black/10 hover:border-black/20 hover:scale-105 transition-all duration-500 shadow-xl relative bg-white backdrop-blur-3xl group active:scale-95"
               >
                 {uploadingAvatar && (
                   <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-10">
