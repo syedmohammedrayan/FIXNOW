@@ -320,10 +320,10 @@ export default function TechnicianServicePage() {
           return match?.long_name || '';
         };
 
-        let street = get('route') || get('street_number');
-        let area = get('sublocality_level_2') || get('sublocality_level_1') || get('sublocality') || get('neighborhood');
-        let zone = get('sublocality_level_1') || get('locality');
-        let city = get('administrative_area_level_2') || get('locality');
+        const street = get('route') || get('street_number');
+        const area = get('sublocality_level_2') || get('sublocality_level_1') || get('sublocality') || get('neighborhood');
+        const zone = get('sublocality_level_1') || get('locality');
+        const city = get('administrative_area_level_2') || get('locality');
 
         setAddressParts({
           street: street || 'Locating street...',
