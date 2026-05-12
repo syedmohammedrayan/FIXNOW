@@ -265,8 +265,19 @@ export default function TrackingPage() {
           const element = response.rows[0].elements[0];
           console.log('Tracking: Distance Matrix Element:', element);
           if (element.status === 'OK') {
-            setLocalDistance(element.distance.text);
-            setEta(element.duration.text);
+            const distText = element.distance?.text;
+            const distValue = element.distance?.value;
+            const durationText = element.duration?.text;
+
+            if (distText) {
+              setLocalDistance(distText);
+            } else if (typeof distValue === 'number') {
+              setLocalDistance(distValue > 1000 ? `${(distValue/1000).toFixed(1)}km` : `${Math.round(distValue)}m`);
+            }
+            
+            if (durationText) {
+              setEta(durationText);
+            }
           } else {
             console.error('Tracking: Distance Matrix Element Error:', element.status);
             // Fallback to simple calculation if matrix fails
@@ -275,7 +286,7 @@ export default function TrackingPage() {
               new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
             );
             setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-            setEta(`${Math.ceil(meters / 400)} min`);
+            setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
           }
         }
       }

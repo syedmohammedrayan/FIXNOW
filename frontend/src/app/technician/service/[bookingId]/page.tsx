@@ -206,30 +206,8 @@ export default function TechnicianServicePage() {
     return () => navigator.geolocation.clearWatch(wid);
   }, [bookingId, user?.uid]);
 
-  // Instant Local Distance Calculation
-  useEffect(() => {
-    const cLoc = booking?.customerLocation || ((booking as any)?.customerLat ? { lat: (booking as any).customerLat, lng: (booking as any).customerLng } : null);
-    if (techLocation && cLoc && window.google?.maps?.geometry?.spherical) {
-      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
-      );
-      
-      if (meters < 100) setEta('Arrived');
-      
-      if (meters < 1000) {
-        setLocalDistance(`${Math.round(meters)}m`);
-        if (meters >= 100) {
-          const mins = Math.ceil(meters / 300);
-          setEta(`${mins} min`);
-        }
-      } else {
-        setLocalDistance(`${((meters / 1000).toFixed(1))}km`);
-        const mins = Math.ceil((meters / 1000) * 3);
-        setEta(`${mins} min`);
-      }
-    }
-  }, [techLocation, booking?.customerLocation]);
+  // Redundant effect removed to prevent state fighting with Distance Matrix API logic below.
+  // Fallback is now integrated into the main Map & Route Management effect.
 
   // Map & Route Management
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -257,11 +235,30 @@ export default function TechnicianServicePage() {
           const element = response.rows[0].elements[0];
           console.log('TechService: Distance Matrix Element:', element);
           if (element.status === 'OK') {
-            setLocalDistance(element.distance.text);
-            setEta(element.duration.text);
+            const distText = element.distance?.text;
+            const distValue = element.distance?.value;
+            const durationText = element.duration?.text;
+
+            if (distText) {
+              setLocalDistance(distText);
+            } else if (typeof distValue === 'number') {
+              setLocalDistance(distValue > 1000 ? `${(distValue/1000).toFixed(1)}km` : `${Math.round(distValue)}m`);
+            }
+            
+            if (durationText) {
+              setEta(durationText);
+            }
           } else {
             console.error('TechService: Distance Matrix Element Error:', element.status);
-            // Fallback already exists in another effect, but let's sync it here too
+            // Fallback to simple calculation
+            if (window.google?.maps?.geometry?.spherical) {
+              const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+                new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+                new window.google.maps.LatLng(booking.customerLocation.lat, booking.customerLocation.lng)
+              );
+              setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+              setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
+            }
           }
         }
       }
