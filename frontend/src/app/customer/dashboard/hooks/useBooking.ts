@@ -51,13 +51,17 @@ export function useBooking({ userId, socketRef, coords, setCoords, userProfile }
   const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [customerName, setCustomerName] = useState('');
-  const [serviceTime, setServiceTime] = useState(new Date().toLocaleString('en-IN', { 
-    day: '2-digit', 
-    month: 'short', 
-    year: 'numeric', 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  }));
+  const [serviceTime, setServiceTime] = useState('');
+
+  useEffect(() => {
+    setServiceTime(new Date().toLocaleString('en-IN', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }));
+  }, []);
 
   useEffect(() => {
     if (userProfile?.name) {

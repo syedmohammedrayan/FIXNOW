@@ -12,6 +12,14 @@ interface MaintenanceLogsProps {
 }
 
 export default function MaintenanceLogs({ reminders, onBookUrgent }: MaintenanceLogsProps) {
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div
       className="bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative overflow-hidden mt-6 sm:mt-8 border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl"
@@ -22,7 +30,7 @@ export default function MaintenanceLogs({ reminders, onBookUrgent }: Maintenance
           <Bell className="size-5 sm:size-6 text-white" /> Maintenance Logs
         </h2>
       </div>
-      {reminders.length === 0 ? (
+      {(!Array.isArray(reminders) || reminders.length === 0) ? (
         <div className="text-center py-10 sm:py-12 px-4 sm:px-6 border-2 border-dashed border-white/[0.06] rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.02]">
           <Calendar className="size-8 sm:size-10 text-white/20 mx-auto mb-3 sm:mb-4" />
           <p className="text-white/50 font-black uppercase tracking-widest text-xs sm:text-sm">No Scheduled Protocols</p>

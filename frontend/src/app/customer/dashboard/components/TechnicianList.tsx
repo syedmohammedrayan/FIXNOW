@@ -22,7 +22,7 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
       </div>
       
       <div className="space-y-3 sm:space-y-4 max-h-[60vh] lg:max-h-[75vh] overflow-y-auto px-1 sm:px-2 pb-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        {technicians.length > 0 ? (
+        {Array.isArray(technicians) && technicians.length > 0 ? (
           technicians.map((tech, idx) => (
             <motion.div
               key={tech.id}

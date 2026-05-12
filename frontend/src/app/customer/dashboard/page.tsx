@@ -23,7 +23,7 @@ const StatusBanners = dynamic(() => import('./components/StatusBanners'), { ssr:
 
 import { SOCKET_URL } from '@/lib/config';
 import { io, Socket } from 'socket.io-client';
-import { Notification } from './types';
+import { Notification, Reminder } from './types';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 
 import { auth } from '@/lib/firebase';
@@ -132,17 +132,23 @@ export default function CustomerDashboard() {
     removeImage
   } = useBooking({ userId, socketRef, coords, setCoords, userProfile });
 
-  const getUrgentReminders = () => {
+  const [urgentReminders, setUrgentReminders] = useState<Reminder[]>([]);
+
+  useEffect(() => {
+    if (!Array.isArray(reminders)) {
+      setUrgentReminders([]);
+      return;
+    }
     const today = new Date();
-    return reminders.filter(r => {
+    const urgent = reminders.filter(r => {
       const diffTime = new Date(r.nextServiceDate).getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return diffDays <= 7 && diffDays >= -30;
     });
-  };
-  const urgentReminders = getUrgentReminders();
+    setUrgentReminders(urgent);
+  }, [reminders]);
 
-  const unreadNotifications = notifications.filter((n: Notification) => !n.read);
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: Notification) => !n.read) : [];
   const declineNotifications = unreadNotifications.filter((n: Notification) => n.type === 'booking_declined');
 
   useEffect(() => {

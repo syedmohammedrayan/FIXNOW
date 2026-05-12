@@ -77,6 +77,7 @@ export default function TrackingPage() {
   const [techLocation, setTechLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [eta, setEta] = useState<string>('Syncing...');
+  const [localDistance, setLocalDistance] = useState<string>('---');
   const [status, setStatus] = useState<string>('Initializing');
   const [otp, setOtp] = useState<string>('----');
   const [techDetails, setTechDetails] = useState({

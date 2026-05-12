@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { auth, db } from '@/lib/firebase';
 import { getDoc, doc } from 'firebase/firestore';
@@ -15,14 +15,15 @@ export function useDashboardData() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [activeJob, setActiveJob] = useState<any>(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const activeJobRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchReminders = async (uid: string) => {
       try {
         const response = await fetch(`${API_BASE}/api/bookings/reminders/${uid}`);
         const data = await response.json();
-        if (data.success) {
-          const list = data.reminders;
+        if (data.success && Array.isArray(data.reminders)) {
+          const list = [...data.reminders];
           list.sort((a: any, b: any) => new Date(a.nextServiceDate).getTime() - new Date(b.nextServiceDate).getTime());
           setReminders(list);
         }
@@ -77,7 +78,7 @@ export function useDashboardData() {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(`${API_BASE}/api/bookings/notifications/${userId}`);
-        if (res.data.success) {
+        if (res.data.success && Array.isArray(res.data.notifications)) {
           setNotifications(res.data.notifications);
         }
       } catch (err) {
@@ -95,8 +96,7 @@ export function useDashboardData() {
     const fetchActiveJob = async () => {
       try {
         const res = await axios.get(`${API_BASE}/api/bookings/customer/${userId}`);
-        if (res.data.success) {
-          const bookings = res.data.bookings;
+          const bookings = Array.isArray(res.data.bookings) ? res.data.bookings : [];
           const active = bookings.find((b: any) => 
             (['Accepted', 'On the Way', 'Arrived', 'In Progress'].includes(b.status) || 
             (b.status === 'Completed' && b.payment_status === 'Unpaid')) && 
@@ -104,12 +104,13 @@ export function useDashboardData() {
           );
           
           // Detect transition to completed & paid
-          if (!active && activeJob?.status === 'Completed' && activeJob?.payment_status === 'Unpaid') {
+          if (!active && activeJobRef.current?.status === 'Completed' && activeJobRef.current?.payment_status === 'Unpaid') {
              setShowPaymentSuccess(true);
              setTimeout(() => setShowPaymentSuccess(false), 8000);
           }
           
           setActiveJob(active || null);
+          activeJobRef.current = active || null;
         }
       } catch (err) {
         console.error('Failed to fetch active job:', err);
@@ -118,7 +119,7 @@ export function useDashboardData() {
     fetchActiveJob();
     const interval = setInterval(fetchActiveJob, 180000); // 3 minutes
     return () => clearInterval(interval);
-  }, [userId, activeJob]);
+  }, [userId]); // Removed activeJob from dependencies to prevent infinite loop
 
   const markNotifRead = async (notifId: string) => {
     try {
