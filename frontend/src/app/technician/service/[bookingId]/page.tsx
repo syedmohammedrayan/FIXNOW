@@ -236,26 +236,50 @@ export default function TechnicianServicePage() {
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
-    if (!window.google?.maps || !techLocation || !booking?.customerLocation) return;
+    if (!window.google?.maps || !techLocation || !booking?.customerLocation) {
+      console.log('TechService: Waiting for google maps or locations...', { techLocation, customerLocation: booking?.customerLocation });
+      return;
+    }
     
+    console.log('TechService: Requesting Distance Matrix...', { techLocation, customerLocation: booking.customerLocation });
+
+    // Distance Matrix for HUD
+    const service = new window.google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+      {
+        origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
+        destinations: [new window.google.maps.LatLng(booking.customerLocation.lat, booking.customerLocation.lng)],
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (response, status) => {
+        console.log('TechService: Distance Matrix Status:', status);
+        if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
+          const element = response.rows[0].elements[0];
+          console.log('TechService: Distance Matrix Element:', element);
+          if (element.status === 'OK') {
+            setLocalDistance(element.distance.text);
+            setEta(element.duration.text);
+          } else {
+            console.error('TechService: Distance Matrix Element Error:', element.status);
+            // Fallback already exists in another effect, but let's sync it here too
+          }
+        }
+      }
+    );
+
+    // Directions for visual route
     if (!directionsServiceRef.current) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
-
-    const cLoc = booking.customerLocation;
-    
     directionsServiceRef.current.route(
       {
         origin: techLocation,
-        destination: cLoc,
+        destination: booking.customerLocation,
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK && result) {
           setDirections(result);
-          const route = result.routes[0].legs[0];
-          setLocalDistance(route.distance?.text || '');
-          setEta(route.duration?.text || '');
         }
       }
     );
@@ -471,19 +495,23 @@ export default function TechnicianServicePage() {
                       </div>
                     </a>
                   )}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-[1.5rem] flex flex-col justify-center">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Distance</p>
-                      <div className="flex items-center gap-1.5">
-                        <Navigation className="size-4 text-cyan-400" />
-                        <span className="text-lg font-black text-white">{localDistance || 'Syncing...'}</span>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Distance Gap</p>
+                      <div className="flex items-center gap-2.5">
+                        <div className="size-8 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/20 group-hover/hud:scale-110 transition-transform">
+                          <Navigation className="size-4 text-cyan-400" />
+                        </div>
+                        <span className="text-xl font-black text-white italic tracking-tighter">{localDistance || '---'}</span>
                       </div>
                     </div>
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-[1.5rem] flex flex-col justify-center">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">ETA</p>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="size-4 text-amber-400" />
-                        <span className="text-lg font-black text-white">{eta}</span>
+                    <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Tactical ETA</p>
+                      <div className="flex items-center gap-2.5">
+                        <div className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-400/20 group-hover/hud:scale-110 transition-transform">
+                          <Clock className="size-4 text-amber-400" />
+                        </div>
+                        <span className={cn("text-xl font-black italic tracking-tighter", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
                       </div>
                     </div>
                   </div>
