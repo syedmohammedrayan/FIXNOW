@@ -315,7 +315,7 @@ export default function TrackingPage() {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(userLocation);
-      map.fitBounds(bounds, { top: 150, right: 100, bottom: 250, left: 100 });
+      map.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
       // We don't set hasInitiallyCentered here anymore, we rely on isMapInteracted
     }
   }, [map, techLocation, userLocation, isMapInteracted]);

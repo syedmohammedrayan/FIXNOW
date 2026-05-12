@@ -293,7 +293,7 @@ export default function TechnicianServicePage() {
         const bounds = new window.google.maps.LatLngBounds();
         bounds.extend(techLocation);
         bounds.extend(resolvedCustomerLoc);
-        map.fitBounds(bounds, { top: 80, right: 80, bottom: 250, left: 80 });
+        map.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
       } catch (e) {
         console.warn("Bounds fitting error:", e);
       }
@@ -693,7 +693,7 @@ export default function TechnicianServicePage() {
                             const b = new window.google.maps.LatLngBounds();
                             b.extend(techLocation);
                             b.extend(resolvedCustomerLoc);
-                            m.fitBounds(b, { top: 80, right: 80, bottom: 250, left: 80 });
+                            m.fitBounds(b, { top: 80, right: 80, bottom: 80, left: 80 });
                           } catch (e) {
                             console.warn("Map fitBounds failed:", e);
                           }
