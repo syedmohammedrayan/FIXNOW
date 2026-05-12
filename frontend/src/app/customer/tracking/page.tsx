@@ -163,21 +163,18 @@ export default function TrackingPage() {
           unsubTech = onSnapshot(doc(db, 'technicians', tId), (tSnap) => {
             if (tSnap.exists()) {
               const tData = tSnap.data();
-              
-              let avatarUrl = tData.avatar || bData.technician_avatar || bData.technicianAvatar || '';
-              if (avatarUrl && !avatarUrl.startsWith('http')) avatarUrl = `${API_BASE}${avatarUrl}`;
-
-              setTechDetails(prev => ({
+              setTechDetails((prev: any) => ({
                 ...prev,
-                name: tData.name || bData.technician_name || bData.technicianName || prev.name,
-                avatar: avatarUrl || prev.avatar,
-                service: bData.category || bData.service_category || prev.service,
-                phone: tData.phone || bData.technician_phone || bData.technicianPhone || prev.phone,
-                rating: tData.rating || bData.technician_rating || bData.technicianRating || 4.8
+                name: tData.fullName || tData.name || bData.technicianName || bData.technician_name || prev.name,
+                avatar: tData.profilePicture || tData.avatar || bData.technicianAvatar || bData.technician_avatar || prev.avatar,
+                service: tData.serviceCategory || bData.category || bData.service_category || prev.service,
+                phone: tData.phoneNumber || tData.phone || bData.technicianPhone || bData.technician_phone || prev.phone,
+                rating: tData.rating || bData.technicianRating || bData.technician_rating || 4.8
               }));
               
-              const tLoc = tData.location || tData.tech_location || 
+              const tLoc = tData.location || tData.current_location || tData.tech_location || 
                 (tData.lat ? { lat: tData.lat, lng: tData.lng } : 
+                 tData.latitude ? { lat: tData.latitude, lng: tData.longitude } : 
                  tData.tech_lat ? { lat: tData.tech_lat, lng: tData.tech_lng } : null);
               
               if (tLoc) setTechLocation(tLoc);
@@ -252,13 +249,19 @@ export default function TrackingPage() {
   useEffect(() => {
     const destination = destinationLocation;
     
-    if (!window.google?.maps || !techLocation || !destination) {
-      console.log('Tracking: Waiting for components...', { techLocation, userLocation, destination });
-      return;
+    if (!window.google?.maps || !techLocation || !destination) return;
+    
+    // 1. Proactive Geometric Calculation (INSTANT)
+    if (window.google?.maps?.geometry?.spherical) {
+      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+        new window.google.maps.LatLng(destination.lat, destination.lng)
+      );
+      setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+      setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
     }
-    
-    console.log('Tracking: Requesting Distance Matrix...', { techLocation, destination });
-    
+
+    // 2. Traffic-Aware Distance Matrix (REFINEMENT)
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
@@ -271,20 +274,9 @@ export default function TrackingPage() {
           const element = response.rows[0].elements[0];
           if (element.status === 'OK') {
             const dText = element.distance?.text;
-            const dVal = element.distance?.value;
             const eText = element.duration?.text;
-
             if (dText) setLocalDistance(dText);
-            else if (dVal !== undefined) setLocalDistance(dVal > 1000 ? `${(dVal/1000).toFixed(1)}km` : `${Math.round(dVal)}m`);
-            
             if (eText) setEta(eText);
-          } else {
-            const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-              new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-              new window.google.maps.LatLng(destination.lat, destination.lng)
-            );
-            setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-            setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
           }
         }
       }
