@@ -88,9 +88,11 @@ export default function TechnicianServicePage() {
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: currentKey || '',
+    googleMapsApiKey: currentKey || 'DUMMY_KEY',
     libraries: LIBRARIES
   });
+
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
 
   useEffect(() => {
     if (loadError) {
@@ -206,27 +208,17 @@ export default function TechnicianServicePage() {
     return () => navigator.geolocation.clearWatch(wid);
   }, [bookingId, user?.uid]);
 
-  // Redundant effect removed to prevent state fighting with Distance Matrix API logic below.
-  // Fallback is now integrated into the main Map & Route Management effect.
-
   // Map & Route Management
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
-    // Robust extraction of customer location
     const cLoc = booking?.customerLocation || booking?.customer_location || 
-      (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
-       booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
+      (booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
 
     if (!window.google?.maps || !techLocation || !cLoc) {
-      console.log('TechService: Waiting for components...', { techLocation, customerLocation: cLoc, googleLoaded: !!window.google?.maps });
       return;
     }
     
-    console.log('TechService: Requesting Distance Matrix...', { techLocation, cLoc });
-
-    // 1. Proactive Geometric Calculation (INSTANT)
     if (window.google?.maps?.geometry?.spherical) {
       const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
         new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
@@ -236,7 +228,6 @@ export default function TechnicianServicePage() {
       setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
     }
 
-    // 2. Traffic-Aware Distance Matrix (REFINEMENT)
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
@@ -257,7 +248,6 @@ export default function TechnicianServicePage() {
       }
     );
 
-    // Directions
     if (!directionsServiceRef.current) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
@@ -428,7 +418,7 @@ export default function TechnicianServicePage() {
         <div className="fixed bottom-0 left-0 w-[50vw] h-[50vw] bg-slate-500/[0.03] blur-[120px] rounded-full pointer-events-none -ml-[15vw] -mb-[15vw]" />
 
         <div className="p-4 lg:p-10 max-w-[1400px] mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10">
+          <div className="hidden sm:flex flex-col md:flex-row md:items-center gap-6 mb-10">
             <div className="flex items-center gap-5">
               <button onClick={() => router.back()} className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all active:scale-95 group">
                 <ArrowLeft className="size-5 group-hover:-translate-x-1 transition-transform" />
@@ -439,7 +429,7 @@ export default function TechnicianServicePage() {
                   <div className="px-3 py-1 bg-white/5 border border-white/10 text-slate-400 text-[10px] font-black rounded-lg uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</div>
                 </div>
                 <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
-                  <Activity className="size-3 text-cyan-400" />
+                  <span className="w-1 h-1 rounded-full bg-cyan-500" />
                   Service Control Center
                 </p>
               </div>
@@ -585,14 +575,30 @@ export default function TechnicianServicePage() {
             {/* Right Panel: Map Environment */}
             <div className={cn(
               "flex-1 order-1 lg:order-2 transition-all duration-700 z-10",
-              isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-[450px] sm:h-[500px] lg:h-full min-h-[450px] lg:min-h-0"
+              isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-[70vh] sm:h-[600px] lg:h-full min-h-[500px] lg:min-h-0"
             )}>
               {!serviceInProgress ? (
                 <div className={cn(
-                  "bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full w-full",
+                  "bg-slate-900 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative h-full w-full",
                   isMapFullscreen ? "rounded-none" : "rounded-[2.5rem] sm:rounded-[3rem]"
                 )}>
-                <div className="relative h-full w-full bg-slate-900/50">
+                  <div className="relative h-full w-full bg-slate-950">
+                  {/* Mobile-Only Tactical Overlay Headers */}
+                  <div className="absolute top-4 left-4 z-[60] sm:hidden flex flex-col gap-2">
+                    <div className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl">
+                      <h2 className="text-xs font-black text-white uppercase tracking-tighter">{booking?.category || 'Service'}</h2>
+                      <p className="text-[8px] text-slate-500 font-black uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</p>
+                    </div>
+                    <div className={cn(
+                      "px-4 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest text-center",
+                      booking?.status === 'Completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                      booking?.status === 'Cancelled' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
+                      "bg-cyan-500/10 border-cyan-500/20 text-cyan-400"
+                    )}>
+                      {booking?.status || 'Active'}
+                    </div>
+                  </div>
+
                   {/* Floating Map Controls - Tactical Style */}
                   <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] flex flex-col gap-3">
                     <button
