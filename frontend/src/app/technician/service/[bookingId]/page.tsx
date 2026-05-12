@@ -214,19 +214,20 @@ export default function TechnicianServicePage() {
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
-    if (!window.google?.maps || !techLocation || !booking?.customerLocation) {
-      console.log('TechService: Waiting for google maps or locations...', { techLocation, customerLocation: booking?.customerLocation });
+    const cLoc = booking?.customerLocation;
+    if (!window.google?.maps || !techLocation || !cLoc) {
+      console.log('TechService: Waiting for google maps or locations...', { techLocation, customerLocation: cLoc });
       return;
     }
     
-    console.log('TechService: Requesting Distance Matrix...', { techLocation, customerLocation: booking.customerLocation });
+    console.log('TechService: Requesting Distance Matrix...', { techLocation, customerLocation: cLoc });
 
     // Distance Matrix for HUD
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
         origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
-        destinations: [new window.google.maps.LatLng(booking.customerLocation.lat, booking.customerLocation.lng)],
+        destinations: [new window.google.maps.LatLng(cLoc.lat, cLoc.lng)],
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (response, status) => {
@@ -254,7 +255,7 @@ export default function TechnicianServicePage() {
             if (window.google?.maps?.geometry?.spherical) {
               const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
                 new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-                new window.google.maps.LatLng(booking.customerLocation.lat, booking.customerLocation.lng)
+                new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
               );
               setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
               setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
@@ -271,7 +272,7 @@ export default function TechnicianServicePage() {
     directionsServiceRef.current.route(
       {
         origin: techLocation,
-        destination: booking.customerLocation,
+        destination: cLoc,
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
