@@ -72,7 +72,7 @@ export default function TechnicianStore() {
              if (order.status === 'Approved') {
                setNotification({ message: `Order #${order.id.slice(-6)} has been APPROVED!`, type: 'success' });
              } else if (order.status === 'Rejected') {
-               setNotification({ message: `Order #${order.id.slice(-6)} has been REJECTED.`, type: 'error' });
+               setNotification({ message: "Checkout failed. Please check your credentials.", type: 'error' });
              }
           }
           if (prev && prev.paymentStatus !== order.paymentStatus && order.paymentStatus === 'Verified') {
@@ -178,7 +178,6 @@ export default function TechnicianStore() {
         }
       }
     } catch (err) {
-      console.error(err);
       setCheckoutStatus('error');
       setTimeout(() => setCheckoutStatus(null), 3000);
     }
@@ -220,8 +219,7 @@ export default function TechnicianStore() {
         "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-700 relative z-10 flex flex-col",
         isSidebarOpen ? "hidden md:block" : "block"
       )}>
-        <div className="flex-1 flex flex-col xl:flex-row w-full">
-          <div className="flex-1 p-5 sm:p-8 lg:p-12 xl:p-16">
+        <div className="flex-1 p-5 sm:p-8 lg:p-12 xl:p-16 xl:pr-[480px]">
           <header className="mb-12 lg:mb-20">
             <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter flex items-center gap-4 sm:gap-6 italic uppercase">
               Inventory <Cpu className="w-10 h-10 sm:w-14 sm:h-14 lg:w-20 lg:h-20 text-indigo-400" />
@@ -378,8 +376,13 @@ export default function TechnicianStore() {
           </section>
         </div>
 
-        <aside className="w-full xl:w-[480px] bg-[#0B0F1A]/80 backdrop-blur-3xl xl:border-l border-white/5 p-6 sm:p-10 lg:p-14 flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)] xl:order-last order-first xl:sticky xl:top-0 xl:h-screen relative z-20">
-          <div className="flex items-center justify-between mb-10 lg:mb-16">
+        {/* Manifest Sidebar - Fixed on Desktop, Flow on Mobile */}
+        <aside className={cn(
+          "bg-[#0B0F1A]/95 backdrop-blur-3xl xl:border-l border-white/5 flex flex-col shadow-[0_0_100px_rgba(0,0,0,1)] z-50 transition-all duration-500",
+          "w-full p-6 sm:p-10 lg:p-14 order-first xl:order-none",
+          "xl:fixed xl:right-0 xl:inset-y-0 xl:w-[480px] xl:h-screen"
+        )}>
+          <div className="flex items-center justify-between mb-10 lg:mb-16 shrink-0">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">Manifest <ShoppingCart className="w-8 h-8 lg:w-12 lg:h-12 text-indigo-400" /></h2>
             <div className="px-4 py-1.5 sm:px-6 sm:py-2.5 bg-indigo-600 rounded-xl sm:rounded-2xl shadow-[0_10px_40px_rgba(79,70,229,0.4)]">
               <span className="text-white font-black text-[9px] sm:text-[11px] uppercase tracking-widest italic">{cart.length + (customToolName ? 1 : 0)} Units</span>
