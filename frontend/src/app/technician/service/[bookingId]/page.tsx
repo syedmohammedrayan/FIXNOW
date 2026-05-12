@@ -730,16 +730,22 @@ export default function TechnicianServicePage() {
                             </div>
                           </OverlayView>
                         )}
+                      </GoogleMap>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
+                        <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
+                        {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
+                      </div>
                     )}
                   </div>
                 </div>
 
-              {/* Console Section - Shown below map on mobile when in progress */}
-              {serviceInProgress && !isMapFullscreen && (
-                <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
-                <div className="h-full flex flex-col gap-6">
-                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex-1 flex flex-col relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
+                {/* Console Section - Shown below map on mobile when in progress */}
+                {serviceInProgress && !isMapFullscreen && (
+                  <div className="mt-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
+                    <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
                     
                     <div className="flex items-center gap-4 mb-10">
                       <div className="size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
