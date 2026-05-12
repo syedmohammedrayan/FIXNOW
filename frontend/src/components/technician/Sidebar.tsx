@@ -137,6 +137,28 @@ export default function TechnicianSidebar({
 
   useEffect(() => {
     onOpenChange?.(isMobileMenuOpen);
+
+    // Hide chatbox on mobile when sidebar is open
+    const toggleChatbot = () => {
+      const chatbotContainer = document.querySelector('.chatbot-container');
+      if (chatbotContainer) {
+        if (isMobileMenuOpen && window.innerWidth < 768) {
+          (chatbotContainer as HTMLElement).style.display = 'none';
+        } else {
+          (chatbotContainer as HTMLElement).style.display = '';
+        }
+      }
+    };
+    
+    toggleChatbot();
+    
+    // Clean up to ensure it reappears if unmounted
+    return () => {
+      const chatbotContainer = document.querySelector('.chatbot-container');
+      if (chatbotContainer) {
+        (chatbotContainer as HTMLElement).style.display = '';
+      }
+    };
   }, [isMobileMenuOpen, onOpenChange]);
 
   const handleLogout = async () => {
@@ -329,6 +351,31 @@ export default function TechnicianSidebar({
                 </Link>
               );
             })}
+
+            {/* Mobile Logout Option */}
+            <div className="md:hidden pt-2">
+               <button onClick={handleLogout} className="w-full text-left">
+                  <div className="relative group/nav">
+                    <div className={cn(
+                      "relative flex items-center rounded-2xl transition-all duration-500 cursor-pointer overflow-hidden",
+                      effectiveCollapsed ? "p-4 mx-auto w-fit" : "px-5 py-4 mx-2",
+                      "hover:bg-rose-500/[0.05] border border-transparent hover:border-rose-500/10"
+                    )}>
+                      <div className={cn(
+                        "relative shrink-0 flex items-center justify-center transition-all duration-500 z-10",
+                        effectiveCollapsed ? "size-6" : "size-5"
+                      )}>
+                        <LogOut className="size-full transition-all duration-500 text-rose-500/70 group-hover/nav:text-rose-500 group-hover/nav:scale-110" />
+                      </div>
+                      {!effectiveCollapsed && (
+                        <span className="ml-4 text-[12px] font-black uppercase tracking-[0.15em] italic transition-all duration-500 text-rose-500/70 group-hover/nav:text-rose-500">
+                          Sign Out
+                        </span>
+                      )}
+                    </div>
+                  </div>
+               </button>
+            </div>
           </div>
         </nav>
 
