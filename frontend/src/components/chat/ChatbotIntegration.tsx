@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -10,6 +11,14 @@ export default function ChatbotIntegration() {
   const [role, setRole] = useState<'customer' | 'technician'>('customer');
   const [userId, setUserId] = useState<string>('anonymous');
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+
+  // Hide on map and dashboard pages
+  const isDashboardOrMapPage = 
+    pathname?.includes('/technician/service/') || 
+    pathname?.includes('/technician/dashboard') ||
+    pathname?.includes('/customer/dashboard') ||
+    pathname === '/customer/tracking';
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -39,7 +48,7 @@ export default function ChatbotIntegration() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return null;
+  if (loading || isDashboardOrMapPage) return null;
 
   return <FloatingChatbot role={role} userId={userId} />;
 }

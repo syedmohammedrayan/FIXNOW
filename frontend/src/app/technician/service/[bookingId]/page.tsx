@@ -430,7 +430,7 @@ export default function TechnicianServicePage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-cyan-500/30">
-      <TechnicianSidebar />
+      <TechnicianSidebar hideMobileToggle={true} />
       <main className="pl-0 md:pl-[78px] lg:pl-[280px] pt-16 md:pt-0 min-h-screen relative overflow-x-hidden">
         {/* Cinematic Background Accents */}
         <div className="fixed top-0 right-0 w-[60vw] h-[60vw] bg-cyan-500/[0.03] blur-[150px] rounded-full pointer-events-none -mr-[20vw] -mt-[20vw]" />

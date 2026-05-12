@@ -76,7 +76,15 @@ const mainMenuItems: MenuItem[] = [
 /*  Sidebar Component                            */
 /* ───────────────────────────────────────────── */
 
-export default function TechnicianSidebar({ profile, onOpenChange }: { profile?: any, onOpenChange?: (open: boolean) => void }) {
+export default function TechnicianSidebar({ 
+  profile, 
+  onOpenChange,
+  hideMobileToggle = false
+}: { 
+  profile?: any, 
+  onOpenChange?: (open: boolean) => void,
+  hideMobileToggle?: boolean 
+}) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -143,20 +151,22 @@ export default function TechnicianSidebar({ profile, onOpenChange }: { profile?:
   return (
     <React.Fragment>
       {/* Mobile hamburger menu button */}
-      <div className="fixed top-4 left-4 z-[60] md:hidden">
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-3 bg-slate-900 border border-white/10 rounded-2xl backdrop-blur-md hover:bg-slate-800 shadow-2xl text-white active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
-        >
-          {isMobileMenuOpen ? (
-            <ChevronLeft className="size-5" />
-          ) : (
-            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
-      </div>
+      {!hideMobileToggle && (
+        <div className="fixed top-4 left-4 z-[60] md:hidden">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-3 bg-slate-900 border border-white/10 rounded-2xl backdrop-blur-md hover:bg-slate-800 shadow-2xl text-white active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
+          >
+            {isMobileMenuOpen ? (
+              <ChevronLeft className="size-5" />
+            ) : (
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Mobile overlay */}
       <AnimatePresence>
