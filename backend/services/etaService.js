@@ -50,16 +50,6 @@ async function getRealETA(origin, destination) {
       const distanceValue = element.distance.value; // in meters
       const durationValue = element.duration_in_traffic ? element.duration_in_traffic.value : element.duration.value;
 
-      // Force 'Nearby' if extremely close (within 50m)
-      if (distanceValue < 50) {
-        return {
-          success: true,
-          distance: 'Nearby',
-          duration: '1 min',
-          durationValue: 60
-        };
-      }
-
       return {
         success: true,
         distance: element.distance.text,
@@ -139,18 +129,6 @@ function getFallbackETA(origin, destination) {
   const speedKmh = 30;
   const durationHours = distanceKm / speedKmh;
   
-  // If distance < 50m, return 'Nearby'
-  if (distanceKm < 0.05) {
-    return {
-      success: true,
-      distance: 'Nearby',
-      duration: '1 min',
-      durationValue: 60,
-      distanceValue: Math.round(distanceKm * 1000),
-      isFallback: true
-    };
-  }
-
   const durationMins = Math.max(1, Math.round(durationHours * 60));
 
   return {

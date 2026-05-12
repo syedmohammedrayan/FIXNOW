@@ -253,7 +253,7 @@ export default function TechnicianServicePage() {
         new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
       );
       setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-      setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
+      setEta(`${Math.ceil(meters / 400)} min`);
     }
 
     // Precise Matrix Calculation

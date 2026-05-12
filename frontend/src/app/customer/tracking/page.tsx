@@ -272,7 +272,7 @@ export default function TrackingPage() {
           new window.google.maps.LatLng(destination.lat, destination.lng)
         );
         setLocalDistance(meters > 1000 ? `${(meters / 1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-        setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
+        setEta(`${Math.ceil(meters / 400)} min`);
       }
 
       // 2. Traffic-Aware Distance Matrix
