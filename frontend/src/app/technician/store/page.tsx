@@ -448,6 +448,7 @@ export default function TechnicianStore() {
             </button>
           </div>
         </aside>
+        </div>
       </main>
 
 
