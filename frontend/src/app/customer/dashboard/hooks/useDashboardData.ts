@@ -96,6 +96,7 @@ export function useDashboardData() {
     const fetchActiveJob = async () => {
       try {
         const res = await axios.get(`${API_BASE}/api/bookings/customer/${userId}`);
+        if (res.data.success) {
           const bookings = Array.isArray(res.data.bookings) ? res.data.bookings : [];
           const active = bookings.find((b: any) => 
             (['Accepted', 'On the Way', 'Arrived', 'In Progress'].includes(b.status) || 
