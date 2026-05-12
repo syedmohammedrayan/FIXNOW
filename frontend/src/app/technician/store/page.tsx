@@ -220,21 +220,21 @@ export default function TechnicianStore() {
         "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-700 relative z-10 flex flex-col",
         isSidebarOpen ? "hidden md:block" : "block"
       )}>
-        <div className="flex-1 flex flex-col xl:flex-row max-w-[1900px] mx-auto w-full">
-        <div className="flex-1 p-4 sm:p-6 lg:p-10">
-          <header className="mb-10 lg:mb-16">
-            <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl sm:text-6xl font-black text-white tracking-tighter flex items-center gap-5 italic uppercase">
-              Inventory <Cpu className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-400" />
+        <div className="flex-1 flex flex-col xl:flex-row w-full">
+          <div className="flex-1 p-5 sm:p-8 lg:p-12 xl:p-16">
+          <header className="mb-12 lg:mb-20">
+            <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter flex items-center gap-4 sm:gap-6 italic uppercase">
+              Inventory <Cpu className="w-10 h-10 sm:w-14 sm:h-14 lg:w-20 lg:h-20 text-indigo-400" />
             </motion.h1>
-            <p className="text-slate-500 mt-5 font-black uppercase tracking-[0.4em] text-[10px] opacity-70">Sourcing high-grade components for professionals.</p>
+            <p className="text-slate-500 mt-6 font-black uppercase tracking-[0.5em] text-[9px] sm:text-[11px] opacity-70">Sourcing high-grade components for professionals.</p>
           </header>
 
-          <div className="flex flex-col sm:flex-row gap-5 mb-12 lg:mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-16 lg:mb-24">
             <div className="relative flex-1 group">
               <Search className="w-5 h-5 absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
-              <input type="text" placeholder="Search high-grade materials..." className="w-full bg-white/[0.03] border border-white/10 rounded-[1.5rem] pl-16 pr-8 py-5 text-white focus:outline-none focus:border-indigo-500/30 shadow-2xl transition-all font-bold placeholder:text-slate-600" />
+              <input type="text" placeholder="Search materials..." className="w-full bg-white/[0.03] border border-white/10 rounded-2xl sm:rounded-[1.5rem] pl-16 pr-8 py-5 text-white focus:outline-none focus:border-indigo-500/30 shadow-2xl transition-all font-bold placeholder:text-slate-700 text-sm sm:text-base" />
             </div>
-            <button className="px-10 py-5 bg-white/[0.03] border border-white/10 rounded-[1.5rem] text-slate-400 hover:text-white shadow-2xl transition-all flex items-center gap-3 font-black uppercase tracking-widest text-xs hover:bg-white/[0.08]"><Filter className="w-4 h-4" /> Filters</button>
+            <button className="px-10 py-5 bg-white/[0.03] border border-white/10 rounded-2xl sm:rounded-[1.5rem] text-slate-400 hover:text-white shadow-2xl transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-xs hover:bg-white/[0.08]"><Filter className="w-4 h-4" /> Filters</button>
           </div>
 
           {loading ? (
@@ -243,136 +243,131 @@ export default function TechnicianStore() {
               <p className="font-bold tracking-widest uppercase text-xs">Syncing Catalog...</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 2xl:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12">
               {products.map((product, i) => (
-                <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3.5rem] p-8 sm:p-10 hover:border-indigo-500/30 hover:bg-white/[0.05] transition-all duration-700 group flex flex-col relative overflow-hidden shadow-2xl">
-                  <div className="h-64 bg-black/20 border border-white/[0.04] rounded-[2.5rem] mb-10 overflow-hidden flex items-center justify-center relative shadow-inner">
+                <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] p-6 sm:p-8 lg:p-10 hover:border-indigo-500/30 hover:bg-white/[0.04] transition-all duration-700 group flex flex-col relative overflow-hidden shadow-2xl">
+                  <div className="aspect-[4/3] sm:h-64 bg-black/20 border border-white/[0.04] rounded-[2rem] mb-8 lg:mb-10 overflow-hidden flex items-center justify-center relative shadow-inner">
                     {product.image ? (
-                      <img src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80 group-hover:opacity-100" alt={product.name} />
+                      <img src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-70 group-hover:opacity-100" alt={product.name} />
                     ) : (
-                      <span className="text-8xl drop-shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-110 opacity-40 group-hover:opacity-100">{product.icon}</span>
+                      <span className="text-6xl sm:text-8xl drop-shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-110 opacity-30 group-hover:opacity-100">{product.icon}</span>
                     )}
-                    <div className="absolute top-5 right-5 bg-black/60 backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-2xl shadow-2xl">
-                      <p className="text-indigo-400 font-black text-base italic tracking-tighter">₹{(product.price * 80).toLocaleString()}</p>
+                    <div className="absolute top-4 right-4 sm:top-5 sm:right-5 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-2xl">
+                      <p className="text-indigo-400 font-black text-sm sm:text-base italic tracking-tighter">₹{(product.price * 80).toLocaleString()}</p>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white group-hover:text-indigo-400 transition-colors italic uppercase tracking-tight">{product.name}</h3>
-                  <p className="text-slate-500 text-[11px] mt-4 line-clamp-2 leading-relaxed h-12 font-bold uppercase tracking-wide opacity-60 group-hover:opacity-100 transition-opacity">{product.description}</p>
-                  <div className="mt-12 pt-10 border-t border-white/[0.04] flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.4)]" />
-                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] group-hover:text-slate-400 transition-colors">Deployment Ready</span>
+                  <h3 className="text-xl sm:text-2xl font-black text-white group-hover:text-indigo-400 transition-colors italic uppercase tracking-tight line-clamp-1">{product.name}</h3>
+                  <p className="text-slate-500 text-[10px] sm:text-[11px] mt-3 sm:mt-4 line-clamp-2 leading-relaxed h-10 sm:h-12 font-bold uppercase tracking-wide opacity-50 group-hover:opacity-100 transition-opacity">{product.description}</p>
+                  <div className="mt-8 sm:mt-12 pt-8 sm:pt-10 border-t border-white/[0.04] flex items-center justify-between">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="size-1.5 sm:size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.4)]" />
+                      <span className="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] sm:tracking-[0.3em] group-hover:text-slate-400 transition-colors">Stock Ready</span>
                     </div>
-                    <button onClick={() => addToCart(product)} className="px-10 py-4 bg-white text-slate-950 hover:bg-indigo-500 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all shadow-2xl active:scale-95 italic">Add to Manifest</button>
+                    <button onClick={() => addToCart(product)} className="px-6 py-3 sm:px-8 sm:py-4 bg-white text-slate-950 hover:bg-indigo-500 hover:text-white rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-95 italic">Add</button>
                   </div>
                 </motion.div>
               ))}
             </div>
           )}
 
-          <section className="mt-32">
-            <div className="flex justify-between items-center mb-14">
-              <h2 className="text-4xl font-black text-white flex items-center gap-5 italic uppercase tracking-tighter">
-                Requisition Tracking <Activity className="w-10 h-10 text-indigo-400" />
+          <section className="mt-32 lg:mt-48">
+            <div className="flex justify-between items-center mb-10 lg:mb-16">
+              <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">
+                Track <Activity className="w-10 h-10 lg:w-16 lg:h-16 text-indigo-400" />
               </h2>
             </div>
-            <div className="grid gap-10">
+            <div className="grid gap-6 sm:gap-10">
               {orderHistory.map(order => (
-                <div key={order.id} className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[4rem] p-10 sm:p-12 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-10 group hover:bg-white/[0.05] transition-all duration-700">
-                  <div className="flex gap-10 items-center">
-                    <div className={cn("w-24 h-24 rounded-[2.5rem] flex items-center justify-center text-white transition-all duration-700 group-hover:scale-110 group-hover:rotate-6",
-                      order.status === 'Approved' ? 'bg-emerald-500 shadow-2xl shadow-emerald-500/30' :
-                        order.status === 'Rejected' ? 'bg-rose-500 shadow-2xl shadow-rose-500/30' : 'bg-white/5 border border-white/10 text-slate-500')}>
-                      <Package className="w-12 h-12" />
+                <div key={order.id} className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[2.5rem] sm:rounded-[4rem] p-6 sm:p-10 lg:p-12 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-8 sm:gap-10 group hover:bg-white/[0.04] transition-all duration-700">
+                  <div className="flex gap-6 sm:gap-10 items-center">
+                    <div className={cn("w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-[2.5rem] flex items-center justify-center text-white transition-all duration-700 group-hover:scale-110",
+                      order.status === 'Approved' ? 'bg-emerald-500 shadow-2xl shadow-emerald-500/20' :
+                        order.status === 'Rejected' ? 'bg-rose-500 shadow-2xl shadow-rose-500/20' : 'bg-white/5 border border-white/10 text-slate-500')}>
+                      <Package className="w-8 h-8 sm:w-12 sm:h-12" />
                     </div>
                     <div>
-                      <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">Order #{order.id.slice(-6).toUpperCase()}</h4>
-                      <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mt-3">Status: <span className={cn("italic", order.status === 'Approved' ? 'text-emerald-400' : order.status === 'Rejected' ? 'text-rose-400' : 'text-amber-400')}>{order.status}</span></p>
+                      <h4 className="text-lg sm:text-2xl font-black text-white italic uppercase tracking-tight">Order #{order.id.slice(-6).toUpperCase()}</h4>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-2">Status: <span className={cn("italic", order.status === 'Approved' ? 'text-emerald-400' : order.status === 'Rejected' ? 'text-rose-400' : 'text-amber-400')}>{order.status}</span></p>
                     </div>
                   </div>
 
-                  <div className="flex-1 md:px-16 w-full">
-                    <div className="flex gap-12 mb-5">
+                  <div className="flex-1 md:px-8 lg:px-16 w-full">
+                    <div className="flex gap-8 sm:gap-12 mb-5 sm:mb-6">
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Protocol</span>
-                        <span className="text-xs font-black text-slate-300 capitalize mt-2 italic tracking-wide">{order.paymentMethod?.replace(/_/g, ' ') || 'Deduction'}</span>
+                        <span className="text-[8px] sm:text-[9px] font-black text-slate-600 uppercase tracking-widest">Protocol</span>
+                        <span className="text-[11px] sm:text-xs font-black text-slate-400 capitalize mt-1.5 italic tracking-wide">{order.paymentMethod?.replace(/_/g, ' ') || 'Deduction'}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Verification</span>
-                        <span className={cn("text-xs font-black mt-2 italic tracking-wide", order.paymentStatus === 'Verified' ? 'text-emerald-400' : 'text-amber-400')}>
-                          {order.paymentStatus || (order.paymentMethod === 'pay_now' ? 'Pending' : 'Approved')}
+                        <span className="text-[8px] sm:text-[9px] font-black text-slate-600 uppercase tracking-widest">Auth</span>
+                        <span className={cn("text-[11px] sm:text-xs font-black mt-1.5 italic tracking-wide", order.paymentStatus === 'Verified' ? 'text-emerald-400' : 'text-amber-400')}>
+                          {order.paymentStatus || (order.paymentMethod === 'pay_now' ? 'Pending' : 'Success')}
                         </span>
                       </div>
                     </div>
                     {order.status === 'Approved' && order.deliveryEstimate && (
-                      <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-[2rem] p-6 flex items-center gap-6 shadow-inner">
-                        <Clock className="w-8 h-8 text-emerald-400" />
+                      <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-4 sm:gap-6 shadow-inner">
+                        <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400" />
                         <div>
-                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest italic opacity-80">Inbound Delivery</p>
-                          <p className="text-base font-black text-emerald-50 mt-1">Scheduled within {order.deliveryEstimate}</p>
+                          <p className="text-[9px] sm:text-[10px] font-black text-emerald-400 uppercase tracking-widest italic opacity-70">Inbound ETA</p>
+                          <p className="text-sm sm:text-base font-black text-emerald-50 mt-0.5">{order.deliveryEstimate}</p>
                         </div>
                       </div>
                     )}
                     {order.status === 'Pending' && (
-                      <div className="flex items-center gap-3 py-2 px-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                        <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
-                        <p className="text-[11px] text-slate-500 italic font-black uppercase tracking-tight">Logistics node reviewing requisition payload...</p>
+                      <div className="flex items-center gap-2.5 py-2 px-4 rounded-xl bg-white/[0.01] border border-white/[0.05]">
+                        <div className="size-1 rounded-full bg-amber-500 animate-pulse" />
+                        <p className="text-[10px] text-slate-600 italic font-black uppercase tracking-tight">Reviewing requisition payload...</p>
                       </div>
                     )}
                   </div>
 
-                  <div className="text-left md:text-right border-t md:border-t-0 md:border-l border-white/[0.04] pt-8 md:pt-0 md:pl-12 w-full md:w-auto">
-                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">Order Total</p>
-                    <p className="text-4xl font-black text-white italic tracking-tighter shadow-sm">₹{parseFloat(order.totalAmount || 0).toLocaleString()}</p>
+                  <div className="text-left md:text-right border-t md:border-t-0 md:border-l border-white/[0.04] pt-6 md:pt-0 md:pl-8 lg:pl-12 w-full md:w-auto">
+                    <p className="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1.5">Amount</p>
+                    <p className="text-2xl sm:text-4xl font-black text-white italic tracking-tighter">₹{parseFloat(order.totalAmount || 0).toLocaleString()}</p>
                   </div>
                 </div>
               ))}
               {orderHistory.length === 0 && (
-                <div className="text-center py-32 bg-white/[0.01] backdrop-blur-md rounded-[5rem] border-2 border-dashed border-white/5 group hover:bg-white/[0.02] transition-colors duration-700">
-                  <div className="size-20 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-white/5 opacity-20 group-hover:opacity-100 transition-opacity">
-                    <Package className="size-10 text-slate-500" />
-                  </div>
-                  <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[10px] italic">No active requisitions detected</p>
+                <div className="text-center py-20 sm:py-32 bg-white/[0.01] backdrop-blur-md rounded-[3rem] sm:rounded-[5rem] border-2 border-dashed border-white/5 opacity-50">
+                  <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px] sm:text-[10px] italic">No active requisitions detected</p>
                 </div>
               )}
             </div>
           </section>
 
-          <section className="mt-32 mb-32">
-            <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[5rem] p-12 lg:p-20 relative overflow-hidden shadow-2xl">
+          <section className="mt-32 lg:mt-48 mb-32 lg:mb-48">
+            <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] sm:rounded-[5rem] p-8 sm:p-12 lg:p-20 relative overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-emerald-500/5 opacity-50" />
-              <div className="relative z-10 flex flex-col lg:flex-row gap-20">
+              <div className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-24">
                 <div className="flex-1">
-                  <h2 className="text-4xl font-black text-white flex items-center gap-6 italic uppercase tracking-tighter">Custom Sourcing <Camera className="w-10 h-10 text-indigo-400" /></h2>
-                  <p className="text-slate-500 mt-8 max-w-xl leading-relaxed font-black uppercase tracking-[0.05em] opacity-60 text-xs">Need specialized equipment? Our logistics network can source high-precision tools and components globally.</p>
-                  <div className="mt-16 space-y-10">
+                  <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">Sourcing <Camera className="w-10 h-10 lg:w-16 lg:h-16 text-indigo-400" /></h2>
+                  <p className="text-slate-500 mt-6 lg:mt-10 max-w-xl leading-relaxed font-black uppercase tracking-[0.05em] opacity-50 text-[10px] sm:text-xs">Need specialized equipment? Our logistics network can source high-precision tools and components globally.</p>
+                  <div className="mt-12 lg:mt-20 space-y-8 lg:space-y-12">
                     <div className="relative">
-                      <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic">Item Specification</label>
-                      <input type="text" placeholder="Model number or specific name..." value={customToolName} onChange={(e) => setCustomToolName(e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-[1.5rem] px-8 py-6 text-white focus:outline-none focus:border-indigo-500/30 transition-all font-black placeholder:text-slate-800 shadow-inner" />
+                      <label className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic">Specification</label>
+                      <input type="text" placeholder="Model number..." value={customToolName} onChange={(e) => setCustomToolName(e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-xl sm:rounded-[1.5rem] px-6 sm:px-8 py-5 sm:py-6 text-white focus:outline-none focus:border-indigo-500/30 transition-all font-black placeholder:text-slate-800 shadow-inner text-sm sm:text-base" />
                     </div>
                     <div className="relative">
-                      <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic">Requirement Details</label>
-                      <textarea placeholder="Explain your technical requirement..." value={customToolDesc} onChange={(e) => setCustomToolDesc(e.target.value)} className="w-full h-48 bg-black/40 border border-white/5 rounded-[1.5rem] px-8 py-6 text-white focus:outline-none focus:border-indigo-500/30 transition-all resize-none font-bold placeholder:text-slate-800 shadow-inner" />
+                      <label className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic">Requirement</label>
+                      <textarea placeholder="Technical details..." value={customToolDesc} onChange={(e) => setCustomToolDesc(e.target.value)} className="w-full h-40 sm:h-48 bg-black/40 border border-white/5 rounded-xl sm:rounded-[1.5rem] px-6 sm:px-8 py-5 sm:py-6 text-white focus:outline-none focus:border-indigo-500/30 transition-all resize-none font-bold placeholder:text-slate-800 shadow-inner text-sm sm:text-base" />
                     </div>
                   </div>
                 </div>
                 <div className="lg:w-[450px] shrink-0">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic text-center lg:text-left">Reference Capture</label>
-                  <div onClick={() => fileInputRef.current?.click()} className={cn("w-full aspect-square rounded-[4rem] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group bg-black/20 shadow-2xl", imagePreview ? "border-indigo-500/40" : "border-white/5 hover:border-indigo-500/30")}>
+                  <label className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 block px-2 italic text-center lg:text-left">Capture Reference</label>
+                  <div onClick={() => fileInputRef.current?.click()} className={cn("w-full aspect-square rounded-[2.5rem] sm:rounded-[4rem] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group bg-black/20 shadow-2xl", imagePreview ? "border-indigo-500/40" : "border-white/5 hover:border-indigo-500/30")}>
                     {imagePreview ? (
                       <>
                         <img src={imagePreview} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-100" alt="Preview" />
                         <div className="absolute inset-0 bg-indigo-950/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center">
-                          <p className="text-white font-black text-base uppercase tracking-[0.3em] italic shadow-2xl">Update Signal</p>
+                          <p className="text-white font-black text-xs sm:text-base uppercase tracking-[0.3em] italic">Update</p>
                         </div>
                       </>
                     ) : (
-                      <div className="text-center p-12">
-                        <div className="size-24 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:scale-110 transition-transform duration-700">
-                          <Upload className="size-10 text-white opacity-40 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <p className="text-white font-black uppercase tracking-[0.3em] text-[11px] italic">Upload Data</p>
-                        <p className="text-slate-600 text-[9px] font-black mt-4 uppercase tracking-[0.25em] leading-relaxed">Visual verification accelerates protocol.</p>
+                      <div className="text-center p-8 sm:p-12">
+                        <Upload className="size-10 sm:size-16 text-white opacity-20 group-hover:opacity-100 transition-all mb-6 sm:mb-8 mx-auto" />
+                        <p className="text-white font-black uppercase tracking-[0.3em] text-[9px] sm:text-[11px] italic">Upload Data</p>
+                        <p className="text-slate-600 text-[8px] sm:text-[9px] font-black mt-4 uppercase tracking-[0.2em] leading-relaxed">Visual verification protocol.</p>
                       </div>
                     )}
                     <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
@@ -383,14 +378,14 @@ export default function TechnicianStore() {
           </section>
         </div>
 
-        <aside className="w-full xl:w-[480px] bg-black/40 backdrop-blur-[100px] xl:border-l border-white/5 p-10 lg:p-14 flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)] xl:order-last order-first relative z-20 min-h-screen">
-          <div className="flex items-center justify-between mb-16">
-            <h2 className="text-3xl font-black text-white flex items-center gap-5 italic uppercase tracking-tighter">Manifest <ShoppingCart className="w-8 h-8 text-indigo-400" /></h2>
-            <div className="px-5 py-2 bg-indigo-500 rounded-2xl shadow-[0_10px_30px_rgba(99,102,241,0.3)]">
-              <span className="text-white font-black text-[10px] uppercase tracking-widest italic">{cart.length + (customToolName ? 1 : 0)} Units</span>
+        <aside className="w-full xl:w-[480px] bg-[#0B0F1A]/80 backdrop-blur-3xl xl:border-l border-white/5 p-6 sm:p-10 lg:p-14 flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)] xl:order-last order-first xl:sticky xl:top-0 xl:h-screen relative z-20">
+          <div className="flex items-center justify-between mb-10 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">Manifest <ShoppingCart className="w-8 h-8 lg:w-12 lg:h-12 text-indigo-400" /></h2>
+            <div className="px-4 py-1.5 sm:px-6 sm:py-2.5 bg-indigo-600 rounded-xl sm:rounded-2xl shadow-[0_10px_40px_rgba(79,70,229,0.4)]">
+              <span className="text-white font-black text-[9px] sm:text-[11px] uppercase tracking-widest italic">{cart.length + (customToolName ? 1 : 0)} Units</span>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-8 mb-12">
+          <div className="flex-1 overflow-y-auto pr-2 sm:pr-4 custom-scrollbar space-y-6 sm:space-y-8 mb-10 lg:mb-12">
             <AnimatePresence initial={false}>
               {cart.map(item => (
                 <motion.div key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-6 flex items-center gap-6 group shadow-2xl hover:bg-white/[0.06] transition-all duration-500 hover:border-indigo-500/30">
@@ -435,23 +430,23 @@ export default function TechnicianStore() {
               </div>
             )}
           </div>
-          <div className="mt-auto pt-14 border-t border-white/[0.04]">
-            <div className="flex justify-between items-center mb-12">
+          <div className="mt-auto pt-10 sm:pt-14 border-t border-white/[0.04]">
+            <div className="flex justify-between items-end mb-10 sm:mb-14">
               <div>
-                <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-3 px-2 italic">Total Payload</p>
-                <p className="text-5xl font-black text-white tracking-tighter italic shadow-2xl">₹{(cartTotal * 80).toLocaleString()}</p>
+                <p className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-2 sm:mb-4 px-2 italic">Total Payload</p>
+                <p className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter italic">₹{(cartTotal * 80).toLocaleString()}</p>
               </div>
               <div className="text-right">
-                <p className="text-indigo-400 font-black text-[10px] flex items-center justify-end gap-2 uppercase tracking-widest italic opacity-60"><Info className="w-4 h-4" /> Protocol Surcharge Included</p>
+                <p className="text-indigo-400 font-black text-[8px] sm:text-[10px] flex items-center justify-end gap-1.5 sm:gap-2 uppercase tracking-widest italic opacity-50 leading-none">Net Value</p>
               </div>
             </div>
-            <div className="space-y-5 mb-12">
-              <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-6 px-2 italic">Transaction Protocol</p>
+            <div className="space-y-4 sm:space-y-6 mb-10 sm:mb-16">
+              <p className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 sm:mb-8 px-2 italic">Select Protocol</p>
               <ProtocolOption active={paymentMethod === 'deduct_from_earnings'} onClick={() => setPaymentMethod('deduct_from_earnings')} label="Payout Deduction" desc="Charge to future earnings" />
-              <ProtocolOption active={paymentMethod === 'pay_now'} onClick={() => setPaymentMethod('pay_now')} label="Direct Transfer" desc="UPI / Corporate Card" />
+              <ProtocolOption active={paymentMethod === 'pay_now'} onClick={() => setPaymentMethod('pay_now')} label="Direct Transfer" desc="Instant verification" />
             </div>
-            <button onClick={handleCheckout} disabled={cart.length === 0 && !customToolName || checkoutStatus === 'processing'} className={cn("w-full py-7 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-[12px] transition-all shadow-2xl active:scale-[0.97] flex items-center justify-center gap-4 italic", checkoutStatus === 'success' ? "bg-emerald-600 text-white" : checkoutStatus === 'error' ? "bg-rose-600 text-white" : "bg-white text-slate-950 hover:bg-indigo-500 hover:text-white shadow-indigo-500/20")}>
-              {checkoutStatus === 'success' ? 'Protocol Executed' : checkoutStatus === 'processing' ? <div className="w-6 h-6 border-3 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : 'Execute Requisition'}
+            <button onClick={handleCheckout} disabled={cart.length === 0 && !customToolName || checkoutStatus === 'processing'} className={cn("w-full py-6 sm:py-8 rounded-2xl sm:rounded-[3rem] font-black uppercase tracking-[0.4em] text-[10px] sm:text-[13px] transition-all shadow-2xl active:scale-[0.96] flex items-center justify-center gap-4 italic", checkoutStatus === 'success' ? "bg-emerald-600 text-white shadow-emerald-500/20" : checkoutStatus === 'error' ? "bg-rose-600 text-white shadow-rose-500/20" : "bg-white text-slate-950 hover:bg-indigo-600 hover:text-white shadow-white/5")}>
+              {checkoutStatus === 'success' ? 'Protocol Executed' : checkoutStatus === 'processing' ? <div className="size-6 border-3 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : 'Execute Protocol'}
             </button>
           </div>
         </aside>
