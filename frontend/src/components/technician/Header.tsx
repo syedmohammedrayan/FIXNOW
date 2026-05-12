@@ -68,15 +68,9 @@ export default function TechnicianHeader({
     <header className="flex flex-col gap-6 mb-10 lg:mb-14 relative z-[100]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <div className="relative group/title inline-block mb-1">
-            <div className="absolute -inset-2 bg-gradient-to-r from-slate-300/20 to-transparent blur-2xl rounded-full opacity-50" />
-            <div className="relative bg-[#0B0F1A]/60 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-[1.2rem] px-5 py-2 sm:px-6 sm:py-2.5 overflow-hidden ring-1 ring-white/5">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-transparent opacity-0 group-hover/title:opacity-100 transition-opacity duration-1000" />
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tighter uppercase italic text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_4px_15px_rgba(255,255,255,0.2)]">
-                Command Center
-              </h1>
-            </div>
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tighter uppercase italic text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_4px_15px_rgba(255,255,255,0.2)]">
+            Command Center
+          </h1>
           <div className="flex items-center gap-3 mt-3 flex-wrap">
             {profile.online ? (
               <div className="flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 rounded-full border border-emerald-100 shadow-sm">
