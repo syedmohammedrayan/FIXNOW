@@ -141,6 +141,9 @@ export function LiveMapTab() {
                       )}>
                         <Wrench className={cn('size-5 -rotate-45', tech.online ? 'text-slate-900' : 'text-slate-500')} />
                       </div>
+                      <div className="absolute top-12 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/90 backdrop-blur-md text-white text-[6px] font-black rounded uppercase tracking-tighter whitespace-nowrap border border-white/10 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span>🛠️</span> {tech.name?.split(' ')[0] || 'TECH'}
+                      </div>
                     </div>
                   </MarkerContent>
                 </MapMarker>
@@ -157,6 +160,9 @@ export function LiveMapTab() {
                       <div className="absolute -inset-4 bg-emerald-500/20 rounded-full animate-pulse pointer-events-none" />
                       <div className="size-10 rounded-full bg-emerald-500 border-2 border-white shadow-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110">
                         <MapPin className="size-5 text-white" />
+                      </div>
+                      <div className="absolute top-12 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-emerald-500 text-white text-[6px] font-black rounded uppercase tracking-tighter whitespace-nowrap shadow-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span>📍</span> {booking.customerName?.split(' ')[0] || 'CLIENT'}
                       </div>
                     </div>
                   </MarkerContent>

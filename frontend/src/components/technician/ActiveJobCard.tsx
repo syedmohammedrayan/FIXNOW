@@ -361,6 +361,9 @@ export default function ActiveJobCard({
                           <div className="size-12 rounded-[1.25rem] bg-white border-2 border-slate-950 shadow-2xl flex items-center justify-center transform rotate-45 group-hover/marker:scale-110 transition-all duration-500">
                             <Wrench className="size-6 text-slate-950 -rotate-45" />
                           </div>
+                          <div className="absolute top-14 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-slate-900/90 backdrop-blur-md text-white text-[7px] font-black rounded uppercase tracking-wider whitespace-nowrap border border-white/10 flex items-center gap-1 shadow-2xl">
+                            <span className="text-[9px]">🛠️</span> YOU
+                          </div>
                         </div>
                       </MarkerContent>
                     </MapMarker>
@@ -371,6 +374,9 @@ export default function ActiveJobCard({
                             <div className="absolute -inset-4 bg-emerald-500/20 rounded-full animate-pulse" />
                             <div className="size-10 rounded-full bg-emerald-500 border-2 border-white shadow-2xl flex items-center justify-center transform hover:scale-110 transition-all duration-500">
                               <MapPin className="size-5 text-white" />
+                            </div>
+                            <div className="absolute top-12 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-emerald-500 text-white text-[7px] font-black rounded uppercase tracking-wider whitespace-nowrap shadow-2xl flex items-center gap-1">
+                              <span className="text-[9px]">📍</span> CUSTOMER
                             </div>
                           </div>
                         </MarkerContent>
