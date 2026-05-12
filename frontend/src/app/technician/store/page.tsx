@@ -219,7 +219,7 @@ export default function TechnicianStore() {
         "pl-0 md:pl-[78px] lg:pl-[280px] pt-20 md:pt-0 min-h-screen transition-all duration-700 relative z-10 flex flex-col",
         isSidebarOpen ? "hidden md:block" : "block"
       )}>
-        <div className="flex-1 p-5 sm:p-8 lg:p-12 xl:p-16 xl:pr-[480px]">
+        <div className="flex-1 p-5 sm:p-8 lg:p-12 xl:p-16">
           <header className="mb-12 lg:mb-20">
             <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter flex items-center gap-4 sm:gap-6 italic uppercase">
               Inventory <Cpu className="w-10 h-10 sm:w-14 sm:h-14 lg:w-20 lg:h-20 text-indigo-400" />
@@ -374,85 +374,102 @@ export default function TechnicianStore() {
               </div>
             </div>
           </section>
-        </div>
 
-        {/* Manifest Sidebar - Fixed on Desktop, Flow on Mobile */}
-        <aside className={cn(
-          "bg-[#0B0F1A]/95 backdrop-blur-3xl xl:border-l border-white/5 flex flex-col shadow-[0_0_100px_rgba(0,0,0,1)] z-50 transition-all duration-500",
-          "w-full p-6 sm:p-10 lg:p-14 order-first xl:order-none",
-          "xl:fixed xl:right-0 xl:inset-y-0 xl:w-[480px] xl:h-screen"
-        )}>
-          <div className="flex items-center justify-between mb-10 lg:mb-16 shrink-0">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">Manifest <ShoppingCart className="w-8 h-8 lg:w-12 lg:h-12 text-indigo-400" /></h2>
-            <div className="px-4 py-1.5 sm:px-6 sm:py-2.5 bg-indigo-600 rounded-xl sm:rounded-2xl shadow-[0_10px_40px_rgba(79,70,229,0.4)]">
-              <span className="text-white font-black text-[9px] sm:text-[11px] uppercase tracking-widest italic">{cart.length + (customToolName ? 1 : 0)} Units</span>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto pr-2 sm:pr-4 custom-scrollbar space-y-6 sm:space-y-8 mb-10 lg:mb-12">
-            <AnimatePresence initial={false}>
-              {cart.map(item => (
-                <motion.div key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-6 flex items-center gap-6 group shadow-2xl hover:bg-white/[0.06] transition-all duration-500 hover:border-indigo-500/30">
-                  <div className="w-20 h-20 bg-black/40 border border-white/[0.04] rounded-2xl flex items-center justify-center text-5xl shadow-inner group-hover:scale-105 transition-transform duration-500">{item.icon}</div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-[14px] font-black text-white truncate uppercase italic tracking-tight">{item.name}</h4>
-                    <p className="text-indigo-400 font-black text-xs mt-1.5 italic">₹{(item.price * 80).toLocaleString()}</p>
-                  </div>
-                  <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1.5">
-                    <button onClick={() => updateQty(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Minus className="w-4 h-4" /></button>
-                    <span className="w-10 text-center text-xs font-black text-white">{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Plus className="w-4 h-4" /></button>
-                  </div>
-                  <button onClick={() => removeFromCart(item.id)} className="w-10 h-10 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all rounded-2xl flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            {customToolName && (
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-indigo-500/10 border border-indigo-500/20 rounded-[2.5rem] p-6 shadow-2xl">
-                <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 bg-white/5 border border-indigo-500/20 rounded-2xl flex items-center justify-center shadow-2xl">
-                    <Camera className="w-8 h-8 text-indigo-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-[14px] font-black text-white uppercase italic tracking-tight">Custom Sourcing</h4>
-                    <p className="text-indigo-400 text-[10px] font-black mt-2 truncate uppercase tracking-widest opacity-60 italic">{customToolName}</p>
-                    <p className="text-slate-600 font-black text-[9px] mt-3 uppercase tracking-[0.3em] italic">Pricing Pending</p>
+          {/* Manifest Card Section - Now below Sourcing */}
+          <section id="manifest" className="mt-12 lg:mt-24 mb-32 lg:mb-48">
+            <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[3rem] sm:rounded-[5rem] p-8 sm:p-12 lg:p-20 shadow-2xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-emerald-500/5 opacity-50" />
+              
+              <div className="relative z-10">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12 lg:mb-20">
+                  <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white flex items-center gap-4 sm:gap-6 italic uppercase tracking-tighter">
+                    Manifest <ShoppingCart className="w-10 h-10 lg:w-16 lg:h-16 text-indigo-400" />
+                  </h2>
+                  <div className="px-6 py-3 bg-indigo-600 rounded-[2rem] shadow-[0_10px_40px_rgba(79,70,229,0.4)]">
+                    <span className="text-white font-black text-xs sm:text-sm uppercase tracking-widest italic">{cart.length + (customToolName ? 1 : 0)} Units Protocol</span>
                   </div>
                 </div>
-              </motion.div>
-            )}
-            {cart.length === 0 && !customToolName && (
-              <div className="h-[500px] flex flex-col items-center justify-center text-center px-12">
-                <div className="size-32 bg-white/[0.02] rounded-[3.5rem] flex items-center justify-center mb-10 border border-white/[0.05] relative group shadow-2xl">
-                  <Package className="size-12 text-slate-700 group-hover:scale-110 group-hover:text-slate-500 transition-all duration-1000" />
-                  <div className="absolute -top-1 -right-1 size-7 bg-black rounded-full border border-white/5 shadow-2xl flex items-center justify-center">
-                    <div className="size-2.5 rounded-full bg-slate-800 animate-pulse" />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+                  {/* Cart Items List */}
+                  <div className="space-y-6 sm:space-y-8 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                    <AnimatePresence initial={false}>
+                      {cart.map(item => (
+                        <motion.div key={item.id} layout initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-6 flex items-center gap-6 group shadow-2xl hover:bg-white/[0.06] transition-all duration-500">
+                          <div className="w-20 h-20 bg-black/40 border border-white/[0.04] rounded-2xl flex items-center justify-center text-5xl shadow-inner group-hover:scale-105 transition-transform duration-500">{item.icon}</div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-[14px] font-black text-white truncate uppercase italic tracking-tight">{item.name}</h4>
+                            <p className="text-indigo-400 font-black text-xs mt-1.5 italic">₹{(item.price * 80).toLocaleString()}</p>
+                          </div>
+                          <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1.5">
+                            <button onClick={() => updateQty(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Minus className="w-4 h-4" /></button>
+                            <span className="w-10 text-center text-xs font-black text-white">{item.qty}</span>
+                            <button onClick={() => updateQty(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Plus className="w-4 h-4" /></button>
+                          </div>
+                          <button onClick={() => removeFromCart(item.id)} className="w-10 h-10 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all rounded-2xl flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                    {customToolName && (
+                      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-indigo-500/10 border border-indigo-500/20 rounded-[2.5rem] p-6 shadow-2xl">
+                        <div className="flex items-center gap-6">
+                          <div className="w-20 h-20 bg-white/5 border border-indigo-500/20 rounded-2xl flex items-center justify-center shadow-2xl">
+                            <Camera className="w-8 h-8 text-indigo-400" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="text-[14px] font-black text-white uppercase italic tracking-tight">Custom Sourcing</h4>
+                            <p className="text-indigo-400 text-[10px] font-black mt-2 truncate uppercase tracking-widest opacity-60 italic">{customToolName}</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                    {cart.length === 0 && !customToolName && (
+                      <div className="h-[300px] flex flex-col items-center justify-center text-center px-12 bg-black/20 rounded-[3rem] border border-white/5">
+                        <Package className="size-12 text-slate-800 mb-6 opacity-30" />
+                        <p className="font-black uppercase tracking-[0.4em] text-[10px] text-slate-600 italic">No items in manifest</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Checkout Actions Card */}
+                  <div className="flex flex-col h-full bg-black/30 border border-white/5 rounded-[3rem] p-8 lg:p-12 shadow-inner">
+                    <div className="flex justify-between items-end mb-12 sm:mb-16 border-b border-white/[0.05] pb-10 sm:pb-12">
+                      <div>
+                        <p className="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 px-2 italic">Total Payload</p>
+                        <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter italic">₹{(cartTotal * 80).toLocaleString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-indigo-400 font-black text-[10px] flex items-center justify-end gap-2 uppercase tracking-widest italic opacity-50">Net Requisition Value</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-6 mb-12 sm:mb-16">
+                      <p className="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] mb-6 px-2 italic">Authentication Protocol</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <ProtocolOption active={paymentMethod === 'deduct_from_earnings'} onClick={() => setPaymentMethod('deduct_from_earnings')} label="Payout Deduction" desc="Charge to future earnings" />
+                        <ProtocolOption active={paymentMethod === 'pay_now'} onClick={() => setPaymentMethod('pay_now')} label="Direct Transfer" desc="Instant verification" />
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={handleCheckout} 
+                      disabled={cart.length === 0 && !customToolName || checkoutStatus === 'processing'} 
+                      className={cn(
+                        "w-full py-8 sm:py-10 rounded-[2.5rem] font-black uppercase tracking-[0.5em] text-[11px] sm:text-[14px] transition-all shadow-2xl active:scale-[0.98] flex items-center justify-center gap-4 italic mt-auto",
+                        checkoutStatus === 'success' ? "bg-emerald-600 text-white" : 
+                        checkoutStatus === 'error' ? "bg-rose-600 text-white" : 
+                        "bg-white text-slate-950 hover:bg-indigo-600 hover:text-white"
+                      )}
+                    >
+                      {checkoutStatus === 'success' ? 'Protocol Executed' : 
+                       checkoutStatus === 'processing' ? <div className="size-6 border-4 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : 
+                       'Execute Requisition'}
+                    </button>
                   </div>
                 </div>
-                <p className="font-black uppercase tracking-[0.5em] text-[11px] text-slate-500 italic">Manifest Empty</p>
-                <p className="text-[10px] text-slate-700 font-black uppercase tracking-[0.3em] mt-5 leading-relaxed opacity-40">Initiate requisition protocol via inventory selection.</p>
-              </div>
-            )}
-          </div>
-          <div className="mt-auto pt-10 sm:pt-14 border-t border-white/[0.04]">
-            <div className="flex justify-between items-end mb-10 sm:mb-14">
-              <div>
-                <p className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-2 sm:mb-4 px-2 italic">Total Payload</p>
-                <p className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tighter italic">₹{(cartTotal * 80).toLocaleString()}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-indigo-400 font-black text-[8px] sm:text-[10px] flex items-center justify-end gap-1.5 sm:gap-2 uppercase tracking-widest italic opacity-50 leading-none">Net Value</p>
               </div>
             </div>
-            <div className="space-y-4 sm:space-y-6 mb-10 sm:mb-16">
-              <p className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 sm:mb-8 px-2 italic">Select Protocol</p>
-              <ProtocolOption active={paymentMethod === 'deduct_from_earnings'} onClick={() => setPaymentMethod('deduct_from_earnings')} label="Payout Deduction" desc="Charge to future earnings" />
-              <ProtocolOption active={paymentMethod === 'pay_now'} onClick={() => setPaymentMethod('pay_now')} label="Direct Transfer" desc="Instant verification" />
-            </div>
-            <button onClick={handleCheckout} disabled={cart.length === 0 && !customToolName || checkoutStatus === 'processing'} className={cn("w-full py-6 sm:py-8 rounded-2xl sm:rounded-[3rem] font-black uppercase tracking-[0.4em] text-[10px] sm:text-[13px] transition-all shadow-2xl active:scale-[0.96] flex items-center justify-center gap-4 italic", checkoutStatus === 'success' ? "bg-emerald-600 text-white shadow-emerald-500/20" : checkoutStatus === 'error' ? "bg-rose-600 text-white shadow-rose-500/20" : "bg-white text-slate-950 hover:bg-indigo-600 hover:text-white shadow-white/5")}>
-              {checkoutStatus === 'success' ? 'Protocol Executed' : checkoutStatus === 'processing' ? <div className="size-6 border-3 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> : 'Execute Protocol'}
-            </button>
-          </div>
-        </aside>
+          </section>
       </main>
 
 
