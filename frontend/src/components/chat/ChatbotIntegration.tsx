@@ -13,12 +13,19 @@ export default function ChatbotIntegration() {
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
 
-  // Hide on map and dashboard pages
-  const isDashboardOrMapPage = 
-    pathname?.includes('/technician/service/') || 
-    pathname?.includes('/technician/dashboard') ||
-    pathname?.includes('/customer/dashboard') ||
-    pathname === '/customer/tracking';
+  const [hideForced, setHideForced] = useState(false);
+
+  useEffect(() => {
+    const checkForced = () => {
+      setHideForced(document.body.classList.contains('hide-chatbot'));
+    };
+    checkForced();
+    const observer = new MutationObserver(checkForced);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  const shouldHide = hideForced;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -48,7 +55,7 @@ export default function ChatbotIntegration() {
     return () => unsubscribe();
   }, []);
 
-  if (loading || isDashboardOrMapPage) return null;
+  if (loading || shouldHide) return null;
 
   return <FloatingChatbot role={role} userId={userId} />;
 }

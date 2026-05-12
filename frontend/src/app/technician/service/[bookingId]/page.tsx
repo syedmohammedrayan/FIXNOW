@@ -87,6 +87,12 @@ export default function TechnicianServicePage() {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
+  // Handle chatbot visibility - Hide for technician service map
+  useEffect(() => {
+    document.body.classList.add('hide-chatbot');
+    return () => document.body.classList.remove('hide-chatbot');
+  }, []);
+
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: currentKey || 'DUMMY_KEY',

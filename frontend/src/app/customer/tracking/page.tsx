@@ -100,6 +100,16 @@ export default function TrackingPage() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+
+  // Handle chatbot visibility in fullscreen
+  useEffect(() => {
+    if (isMapFullscreen) {
+      document.body.classList.add('hide-chatbot');
+    } else {
+      document.body.classList.remove('hide-chatbot');
+    }
+    return () => document.body.classList.remove('hide-chatbot');
+  }, [isMapFullscreen]);
   
   const destinationLocation = userLocation || booking?.customerLocation || booking?.customer_location || 
     (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
