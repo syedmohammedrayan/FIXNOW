@@ -241,7 +241,6 @@ export default function TrackingPage() {
   }, [bookingId]);
 
   // Map & Route Management
-  const [map, setMap] = useState<google.maps.Map | null>(null);
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
