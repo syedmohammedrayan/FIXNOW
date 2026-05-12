@@ -95,7 +95,13 @@ export default function TechnicianHeader({
         </div>
 
         <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-3 sm:gap-6">
-          <div className="bg-black/[0.03] border border-black/[0.05] shadow-xl backdrop-blur-3xl rounded-[1.5rem] p-1.5 flex shrink-0">
+          <div className="bg-[#0B0F1A]/80 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-3xl rounded-full p-1.5 flex shrink-0 relative overflow-hidden group/toggle">
+            {/* Ambient background glow based on state */}
+            <div className={cn(
+              "absolute inset-0 blur-2xl opacity-30 transition-all duration-1000",
+              profile.online ? "bg-emerald-500" : "bg-rose-500"
+            )} />
+
             <button
               onClick={async () => {
                 setProfile({ ...profile, online: true });
@@ -109,12 +115,18 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
+                "relative z-10 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-[10px] font-black transition-all duration-500 uppercase tracking-[0.2em] flex items-center gap-2.5",
                 profile.online
-                  ? "bg-slate-900 text-white shadow-lg scale-105"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-black/5",
+                  ? "bg-emerald-500 text-white shadow-[0_0_30px_rgba(16,185,129,0.5)] scale-105"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5",
               )}
             >
+              {profile.online && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+              )}
               Go Online
             </button>
             <button
@@ -134,12 +146,18 @@ export default function TechnicianHeader({
                 }
               }}
               className={cn(
-                "px-4 sm:px-7 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-[0.2em] italic",
+                "relative z-10 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-[10px] font-black transition-all duration-500 uppercase tracking-[0.2em] flex items-center gap-2.5",
                 !profile.online
-                  ? "bg-white text-slate-900 border border-black/5 shadow-md scale-105"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-black/5",
+                  ? "bg-rose-500 text-white shadow-[0_0_30px_rgba(244,63,94,0.5)] scale-105"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5",
               )}
             >
+              {!profile.online && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+              )}
               Offline
             </button>
           </div>

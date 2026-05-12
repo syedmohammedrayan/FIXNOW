@@ -290,7 +290,7 @@ export default function TechnicianStore() {
                   </div>
 
                   <div className="flex-1 md:px-8 lg:px-16 w-full">
-                    <div className="flex gap-8 sm:gap-12 mb-5 sm:mb-6">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-12 mb-5 sm:mb-6">
                       <div className="flex flex-col">
                         <span className="text-[8px] sm:text-[9px] font-black text-slate-600 uppercase tracking-widest">Protocol</span>
                         <span className="text-[11px] sm:text-xs font-black text-slate-400 capitalize mt-1.5 italic tracking-wide">{order.paymentMethod?.replace(/_/g, ' ') || 'Deduction'}</span>
@@ -395,30 +395,34 @@ export default function TechnicianStore() {
                   <div className="space-y-6 sm:space-y-8 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
                     <AnimatePresence initial={false}>
                       {cart.map(item => (
-                        <motion.div key={item.id} layout initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-6 flex items-center gap-6 group shadow-2xl hover:bg-white/[0.06] transition-all duration-500">
-                          <div className="w-20 h-20 bg-black/40 border border-white/[0.04] rounded-2xl flex items-center justify-center text-5xl shadow-inner group-hover:scale-105 transition-transform duration-500">{item.icon}</div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-[14px] font-black text-white truncate uppercase italic tracking-tight">{item.name}</h4>
-                            <p className="text-indigo-400 font-black text-xs mt-1.5 italic">₹{(item.price * 80).toLocaleString()}</p>
+                        <motion.div key={item.id} layout initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group shadow-2xl hover:bg-white/[0.06] transition-all duration-500">
+                          <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-black/40 border border-white/[0.04] rounded-2xl flex items-center justify-center text-4xl sm:text-5xl shadow-inner group-hover:scale-105 transition-transform duration-500 shrink-0">{item.icon}</div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[12px] sm:text-[14px] font-black text-white truncate uppercase italic tracking-tight">{item.name}</h4>
+                              <p className="text-indigo-400 font-black text-[10px] sm:text-xs mt-1.5 italic">₹{(item.price * 80).toLocaleString()}</p>
+                            </div>
                           </div>
-                          <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1.5">
-                            <button onClick={() => updateQty(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Minus className="w-4 h-4" /></button>
-                            <span className="w-10 text-center text-xs font-black text-white">{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Plus className="w-4 h-4" /></button>
+                          <div className="flex items-center justify-between w-full sm:w-auto sm:ml-auto">
+                            <div className="flex items-center bg-black/40 rounded-2xl border border-white/5 p-1 sm:p-1.5">
+                              <button onClick={() => updateQty(item.id, -1)} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Minus className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                              <span className="w-8 sm:w-10 text-center text-[10px] sm:text-xs font-black text-white">{item.qty}</span>
+                              <button onClick={() => updateQty(item.id, 1)} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 hover:text-white transition-colors"><Plus className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                            </div>
+                            <button onClick={() => removeFromCart(item.id)} className="w-10 h-10 sm:ml-4 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all rounded-xl sm:rounded-2xl flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
                           </div>
-                          <button onClick={() => removeFromCart(item.id)} className="w-10 h-10 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all rounded-2xl flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
                         </motion.div>
                       ))}
                     </AnimatePresence>
                     {customToolName && (
-                      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-indigo-500/10 border border-indigo-500/20 rounded-[2.5rem] p-6 shadow-2xl">
-                        <div className="flex items-center gap-6">
-                          <div className="w-20 h-20 bg-white/5 border border-indigo-500/20 rounded-2xl flex items-center justify-center shadow-2xl">
-                            <Camera className="w-8 h-8 text-indigo-400" />
+                      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-indigo-500/10 border border-indigo-500/20 rounded-[2.5rem] p-4 sm:p-6 shadow-2xl">
+                        <div className="flex items-center gap-4 sm:gap-6">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/5 border border-indigo-500/20 rounded-2xl flex items-center justify-center shadow-2xl shrink-0">
+                            <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-400" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="text-[14px] font-black text-white uppercase italic tracking-tight">Custom Sourcing</h4>
-                            <p className="text-indigo-400 text-[10px] font-black mt-2 truncate uppercase tracking-widest opacity-60 italic">{customToolName}</p>
+                            <h4 className="text-[12px] sm:text-[14px] font-black text-white uppercase italic tracking-tight">Custom Sourcing</h4>
+                            <p className="text-indigo-400 text-[9px] sm:text-[10px] font-black mt-1 sm:mt-2 truncate uppercase tracking-widest opacity-60 italic">{customToolName}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -432,14 +436,14 @@ export default function TechnicianStore() {
                   </div>
 
                   {/* Checkout Actions Card */}
-                  <div className="flex flex-col h-full bg-black/30 border border-white/5 rounded-[3rem] p-8 lg:p-12 shadow-inner">
-                    <div className="flex justify-between items-end mb-12 sm:mb-16 border-b border-white/[0.05] pb-10 sm:pb-12">
+                  <div className="flex flex-col h-full bg-black/30 border border-white/5 rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-8 lg:p-12 shadow-inner">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0 mb-10 sm:mb-16 border-b border-white/[0.05] pb-8 sm:pb-12">
                       <div>
-                        <p className="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 px-2 italic">Total Payload</p>
-                        <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter italic">₹{(cartTotal * 80).toLocaleString()}</p>
+                        <p className="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] mb-2 sm:mb-4 px-2 italic">Total Payload</p>
+                        <p className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter italic">₹{(cartTotal * 80).toLocaleString()}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-indigo-400 font-black text-[10px] flex items-center justify-end gap-2 uppercase tracking-widest italic opacity-50">Net Requisition Value</p>
+                      <div className="sm:text-right w-full sm:w-auto px-2 sm:px-0">
+                        <p className="text-indigo-400 font-black text-[9px] sm:text-[10px] flex items-center justify-start sm:justify-end gap-2 uppercase tracking-widest italic opacity-50">Net Requisition Value</p>
                       </div>
                     </div>
                     
@@ -535,8 +539,8 @@ export default function TechnicianStore() {
 
 function ProtocolOption({ active, onClick, label, desc }: { active: boolean, onClick: () => void, label: string, desc: string }) {
   return (
-    <button onClick={onClick} className={cn("w-full p-6 rounded-[2rem] border flex items-center gap-6 transition-all duration-500 text-left group", active ? "bg-white/[0.08] border-indigo-500/50 shadow-2xl scale-[1.03]" : "bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]")}>
-      <div className={cn("w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-700", active ? "border-indigo-500 bg-indigo-500" : "border-slate-800")}>
+    <button onClick={onClick} className={cn("w-full p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border flex items-center gap-4 sm:gap-6 transition-all duration-500 text-left group", active ? "bg-white/[0.08] border-indigo-500/50 shadow-2xl scale-[1.03]" : "bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]")}>
+      <div className={cn("w-6 h-6 sm:w-7 sm:h-7 shrink-0 rounded-full border-2 flex items-center justify-center transition-all duration-700", active ? "border-indigo-500 bg-indigo-500" : "border-slate-800")}>
         {active && <div className="w-3 h-3 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,1)]" />}
       </div>
       <div>
