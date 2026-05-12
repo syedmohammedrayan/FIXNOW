@@ -243,7 +243,9 @@ export default function TrackingPage() {
 
   // Map & Route Management
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
-  
+  useEffect(() => {
+    if (!window.google?.maps || !techLocation || !userLocation) return;
+    
     // Distance Matrix for HUD (More precise and as requested)
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
