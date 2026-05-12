@@ -214,15 +214,29 @@ export default function TechnicianServicePage() {
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
   useEffect(() => {
-    const cLoc = booking?.customerLocation;
+    // Robust extraction of customer location
+    const cLoc = booking?.customerLocation || booking?.customer_location || 
+      (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
+       booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
+
     if (!window.google?.maps || !techLocation || !cLoc) {
-      console.log('TechService: Waiting for google maps or locations...', { techLocation, customerLocation: cLoc });
+      console.log('TechService: Waiting for components...', { techLocation, customerLocation: cLoc, googleLoaded: !!window.google?.maps });
       return;
     }
     
-    console.log('TechService: Requesting Distance Matrix...', { techLocation, customerLocation: cLoc });
+    console.log('TechService: Requesting Distance Matrix...', { techLocation, cLoc });
 
-    // Distance Matrix for HUD
+    // 1. Proactive Geometric Calculation (INSTANT)
+    if (window.google?.maps?.geometry?.spherical) {
+      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+        new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
+      );
+      setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+      setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
+    }
+
+    // 2. Traffic-Aware Distance Matrix (REFINEMENT)
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
@@ -231,41 +245,19 @@ export default function TechnicianServicePage() {
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (response, status) => {
-        console.log('TechService: Distance Matrix Status:', status);
         if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
           const element = response.rows[0].elements[0];
-          console.log('TechService: Distance Matrix Element:', element);
           if (element.status === 'OK') {
-            const distText = element.distance?.text;
-            const distValue = element.distance?.value;
-            const durationText = element.duration?.text;
-
-            if (distText) {
-              setLocalDistance(distText);
-            } else if (typeof distValue === 'number') {
-              setLocalDistance(distValue > 1000 ? `${(distValue/1000).toFixed(1)}km` : `${Math.round(distValue)}m`);
-            }
-            
-            if (durationText) {
-              setEta(durationText);
-            }
-          } else {
-            console.error('TechService: Distance Matrix Element Error:', element.status);
-            // Fallback to simple calculation
-            if (window.google?.maps?.geometry?.spherical) {
-              const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-                new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-                new window.google.maps.LatLng(cLoc.lat, cLoc.lng)
-              );
-              setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-              setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
-            }
+            const dText = element.distance?.text;
+            const eText = element.duration?.text;
+            if (dText) setLocalDistance(dText);
+            if (eText) setEta(eText);
           }
         }
       }
     );
 
-    // Directions for visual route
+    // Directions
     if (!directionsServiceRef.current) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
@@ -281,7 +273,7 @@ export default function TechnicianServicePage() {
         }
       }
     );
-  }, [techLocation, booking?.customerLocation]);
+  }, [techLocation, booking?.customerLocation, booking?.customer_location]);
 
   useEffect(() => {
     if (map && techLocation && booking?.customerLocation) {
@@ -626,22 +618,29 @@ export default function TechnicianServicePage() {
                     )}
                   </div>
 
-                  {isLoaded && (
+                  {isLoaded ? (
                     <GoogleMap
-                      mapContainerStyle={{ width: '100%', height: '100%' }}
+                      mapContainerClassName="w-full h-full min-h-[450px]"
+                      mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
                       center={techLocation || { lat: 28.6139, lng: 77.2090 }}
-                      zoom={14}
-                      onLoad={(m) => { setMap(m); setMapReady(true); }}
+                      zoom={15}
+                      onLoad={(m) => { 
+                        setMap(m); 
+                        setMapReady(true);
+                        if (techLocation) m.panTo(techLocation);
+                      }}
                       options={{ 
                         disableDefaultUI: true, 
                         zoomControl: true, 
                         styles: isDarkMode ? darkMapStyles : lightMapStyles,
-                        gestureHandling: 'greedy'
+                        gestureHandling: 'greedy',
+                        backgroundColor: '#020617'
                       }}
                     >
-                        {techLocation && booking?.customerLocation && (
+                        {/* Final robust check for Polyline path */}
+                        {techLocation && (booking?.customerLocation || booking?.customer_location) && (
                           <Polyline
-                            path={[techLocation, booking.customerLocation]}
+                            path={[techLocation, (booking?.customerLocation || booking?.customer_location) as any]}
                             options={{
                               strokeColor: isDarkMode ? "#ffffff" : "#000000",
                               strokeOpacity: 0,
@@ -705,6 +704,12 @@ export default function TechnicianServicePage() {
                           </OverlayView>
                         )}
                       </GoogleMap>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
+                        <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
+                        {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
+                      </div>
                     )}
                   </div>
                 </div>
