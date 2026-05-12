@@ -616,7 +616,7 @@ export default function TechnicianServicePage() {
                     <GoogleMap
                       mapContainerClassName="w-full h-full min-h-[450px]"
                       mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
-                      center={techLocation || resolvedCustomerLoc}
+                      center={techLocation || resolvedCustomerLoc || { lat: 20.5937, lng: 78.9629 }}
                       zoom={15}
                       onLoad={(m) => { 
                         setMap(m); 
