@@ -609,18 +609,62 @@ export default function TechnicianServicePage() {
                       >
                         <Zap className="size-5 sm:size-6 text-emerald-400" />
                       </button>
-                    )}
-                  </div>
+                  <div className={cn(
+                    "bg-slate-950 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative",
+                    isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[500px] sm:h-[600px] lg:h-full rounded-[2.5rem] sm:rounded-[3rem]"
+                  )}>
+                    <div className="relative h-full w-full bg-slate-950">
+                      {/* Mobile-Only Tactical Overlay Headers */}
+                      <div className="absolute top-4 left-4 z-[60] sm:hidden flex flex-col gap-2">
+                        <div className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl">
+                          <h2 className="text-xs font-black text-white uppercase tracking-tighter">{booking?.category || 'Service'}</h2>
+                          <p className="text-[8px] text-slate-500 font-black uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</p>
+                        </div>
+                        <div className={cn(
+                          "px-4 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest text-center",
+                          booking?.status === 'Completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                          booking?.status === 'Cancelled' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
+                          "bg-cyan-500/10 border-cyan-500/20 text-cyan-400"
+                        )}>
+                          {booking?.status || 'Active'}
+                        </div>
+                      </div>
+
+                      {/* Floating Map Controls - Tactical Style */}
+                      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] flex flex-col gap-3">
+                        <button
+                          onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                          className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                          title={isMapFullscreen ? "Exit HUD" : "Tactical HUD"}
+                        >
+                          {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6 text-cyan-400" /> : <Maximize2 className="size-5 sm:size-6" />}
+                        </button>
+                        <button
+                          onClick={() => setIsDarkMode(!isDarkMode)}
+                          className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                        >
+                          {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-5 sm:size-6" />}
+                        </button>
+                        {techLocation && (
+                          <button
+                            onClick={() => map?.panTo(techLocation)}
+                            className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
+                          >
+                            <Zap className="size-5 sm:size-6 text-emerald-400" />
+                          </button>
+                        )}
+                      </div>
 
                   {isLoaded ? (
                     <GoogleMap
-                      mapContainerClassName="w-full h-full min-h-[450px]"
+                      mapContainerClassName="w-full h-full"
                       mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
                       center={techLocation || resolvedCustomerLoc || { lat: 20.5937, lng: 78.9629 }}
-                      zoom={15}
+                      zoom={14}
                       onLoad={(m) => { 
                         setMap(m); 
                         setMapReady(true);
+                        // Force initial Tactical Fit
                         if (techLocation && resolvedCustomerLoc) {
                           const b = new window.google.maps.LatLngBounds();
                           b.extend(techLocation);
@@ -636,33 +680,19 @@ export default function TechnicianServicePage() {
                         backgroundColor: '#020617'
                       }}
                     >
-                        {directions && (
-                          <DirectionsRenderer
-                            directions={directions}
-                            options={{
-                              suppressMarkers: true,
-                              polylineOptions: {
-                                strokeColor: "#22d3ee",
-                                strokeWeight: 6,
-                                strokeOpacity: 0.9,
-                                zIndex: 50
-                              }
-                            }}
-                          />
-                        )}
-                        {/* Final robust check for Polyline path */}
-                        {techLocation && resolvedCustomerLoc && !directions && (
+                        {/* THE DOTTED TACTICAL PATH (Primary) */}
+                        {techLocation && resolvedCustomerLoc && (
                           <Polyline
                             path={[techLocation, resolvedCustomerLoc]}
                             options={{
-                              strokeColor: isDarkMode ? "#ffffff" : "#000000",
+                              strokeColor: "#22d3ee",
                               strokeOpacity: 0,
                               icons: [{
                                 icon: {
                                   path: 'M 0,-1 0,1',
                                   strokeOpacity: 1,
-                                  scale: 3,
-                                  strokeColor: isDarkMode ? '#ffffff' : '#000000'
+                                  scale: 4,
+                                  strokeColor: '#22d3ee'
                                 },
                                 offset: '0',
                                 repeat: '20px'
@@ -676,30 +706,32 @@ export default function TechnicianServicePage() {
                           <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="relative group flex flex-col items-center">
-                                {/* Tactical Pulse */}
-                                <div className="absolute inset-0 bg-cyan-500/20 rounded-full animate-ping scale-150" />
+                                {/* Intense Pulse */}
+                                <div className="absolute inset-0 bg-cyan-400/30 rounded-full animate-ping scale-[2.5]" />
+                                <div className="absolute inset-0 bg-cyan-400/10 rounded-full animate-pulse scale-[4]" />
                                 
-                                {/* Tactical Label */}
-                                <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-30">
-                                  <div className="px-4 py-2 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] whitespace-nowrap flex items-center gap-3">
-                                    <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
-                                      <Clock className="size-3.5 text-amber-400" />
-                                      <span className="text-[11px] font-black text-white uppercase tracking-tighter">{eta}</span>
+                                {/* Status HUD Overlay */}
+                                <div className="absolute -top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-30">
+                                  <div className="px-5 py-2.5 bg-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.6)] whitespace-nowrap flex items-center gap-4">
+                                    <div className="flex items-center gap-2 border-r border-white/10 pr-4">
+                                      <Clock className="size-4 text-amber-400" />
+                                      <span className="text-[12px] font-black text-white uppercase tracking-tighter">{eta || '---'}</span>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                      <Navigation className="size-3.5 text-cyan-400" />
-                                      <span className="text-[11px] font-black text-white uppercase tracking-tighter">{localDistance}</span>
+                                    <div className="flex items-center gap-2">
+                                      <Navigation className="size-4 text-cyan-400" />
+                                      <span className="text-[12px] font-black text-white uppercase tracking-tighter">{localDistance || '---'}</span>
                                     </div>
                                   </div>
-                                  <div className="w-0.5 h-4 bg-gradient-to-b from-white/30 to-transparent" />
+                                  <div className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-transparent opacity-50" />
                                 </div>
 
-                                <div className="size-14 bg-slate-900 rounded-[1.5rem] p-1 shadow-2xl border border-white/20 relative z-10">
-                                  <div className="w-full h-full bg-cyan-500 rounded-[1.3rem] flex items-center justify-center">
-                                    <Navigation className="size-6 text-slate-950 fill-current" />
+                                {/* Main Technician Icon */}
+                                <div className="size-16 bg-slate-900 rounded-[1.8rem] p-1.5 shadow-[0_0_30px_rgba(34,211,238,0.3)] border-2 border-cyan-400 relative z-10">
+                                  <div className="w-full h-full bg-cyan-400 rounded-[1.4rem] flex items-center justify-center shadow-inner">
+                                    <Navigation className="size-8 text-slate-950 fill-current" />
                                   </div>
                                 </div>
-                                <div className="mt-2 px-2.5 py-0.5 bg-slate-900/90 backdrop-blur-md text-[8px] font-black text-white rounded-full border border-white/10 uppercase tracking-widest shadow-xl">TECH • LIVE</div>
+                                <div className="mt-3 px-4 py-1 bg-cyan-400 text-[9px] font-black text-slate-950 rounded-full border border-cyan-500 uppercase tracking-widest shadow-xl">TECH • LIVE</div>
                               </div>
                             </div>
                           </OverlayView>
@@ -708,10 +740,12 @@ export default function TechnicianServicePage() {
                         {resolvedCustomerLoc && (
                           <OverlayView position={resolvedCustomerLoc} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
-                              <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl flex items-center justify-center relative group">
-                                <MapPin className="size-5 text-white" />
-                                <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
-                                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-500 text-[9px] font-black text-white uppercase tracking-widest rounded-xl shadow-2xl whitespace-nowrap">Target Location</div>
+                              <div className="relative group flex flex-col items-center">
+                                <div className="size-12 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl flex items-center justify-center relative z-10">
+                                  <MapPin className="size-6 text-white" />
+                                  <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-30" />
+                                </div>
+                                <div className="mt-2 px-3 py-1 bg-emerald-500 text-[8px] font-black text-white uppercase tracking-widest rounded-lg shadow-xl">TARGET CUSTOMER</div>
                               </div>
                             </div>
                           </OverlayView>
