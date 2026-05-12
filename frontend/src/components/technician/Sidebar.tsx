@@ -177,7 +177,7 @@ export default function TechnicianSidebar({
         <div className="fixed top-4 left-4 z-[60] md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-3 bg-slate-900 border border-white/10 rounded-2xl backdrop-blur-md hover:bg-slate-800 shadow-2xl text-white active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
+            className="p-3 bg-white/80 border border-black/10 rounded-2xl backdrop-blur-xl hover:bg-white shadow-xl text-slate-900 active:scale-95 transition-all duration-300 flex items-center justify-center shrink-0"
           >
             {isMobileMenuOpen ? (
               <ChevronLeft className="size-5" />
@@ -198,7 +198,7 @@ export default function TechnicianSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-40 md:hidden"
           />
         )}
       </AnimatePresence>
@@ -210,22 +210,22 @@ export default function TechnicianSidebar({
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
         style={{
-          background: 'rgba(2, 6, 23, 0.75)',
-          borderRight: '1px solid rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(40px) saturate(200%)',
+          background: 'rgba(255, 255, 255, 0.45)',
+          borderRight: '1px solid rgba(0, 0, 0, 0.08)',
+          backdropFilter: 'blur(50px) saturate(180%)',
         }}
       >
-        {/* Ambient tactical glows */}
-        <div className="absolute top-0 left-0 w-full h-64 pointer-events-none opacity-20 z-0"
-          style={{ background: 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 70%)' }}
+        {/* Ambient cinematic glows */}
+        <div className="absolute top-0 left-0 w-full h-64 pointer-events-none opacity-40 z-0"
+          style={{ background: 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 70%)' }}
         />
-        <div className="absolute bottom-0 left-0 w-full h-48 pointer-events-none opacity-10 z-0"
-          style={{ background: 'radial-gradient(circle at 50% 100%, rgba(34, 211, 238, 0.1) 0%, transparent 70%)' }}
+        <div className="absolute bottom-0 left-0 w-full h-48 pointer-events-none opacity-30 z-0"
+          style={{ background: 'radial-gradient(circle at 50% 100%, rgba(34, 211, 238, 0.08) 0%, transparent 70%)' }}
         />
 
         {/* Brand Section */}
         <div className={cn(
-          "relative flex items-center border-b border-white/5 transition-all duration-700 z-10",
+          "relative flex items-center border-b border-black/[0.05] transition-all duration-700 z-10",
           effectiveCollapsed ? "h-[88px] justify-center px-0" : "h-[100px] px-8"
         )}>
           {effectiveCollapsed ? (
@@ -243,13 +243,13 @@ export default function TechnicianSidebar({
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-5 group"
             >
-              <Logo iconClassName="w-28" />
+              <Logo iconClassName="w-28 filter invert-[0.1]" />
               <div className="flex flex-col min-w-0">
-                <span className="text-[16px] font-black tracking-tighter text-white uppercase leading-none italic">
+                <span className="text-[16px] font-black tracking-tighter text-slate-900 uppercase leading-none italic">
                   FixNow
                 </span>
-                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-cyan-400 mt-1.5 flex items-center gap-1.5">
-                  <div className="size-1 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-indigo-600 mt-1.5 flex items-center gap-1.5">
+                  <div className="size-1 rounded-full bg-indigo-500 animate-pulse" />
                   Technician
                 </span>
               </div>
@@ -263,9 +263,9 @@ export default function TechnicianSidebar({
           className={cn(
             "hidden md:flex absolute z-30 items-center justify-center transition-all duration-500 group",
             "w-7 h-7 rounded-full",
-            "bg-slate-950 border border-white/10 hover:border-cyan-500/30",
-            "hover:bg-slate-900 active:scale-90",
-            "shadow-2xl shadow-black",
+            "bg-white border border-black/10 hover:border-indigo-500/30",
+            "hover:bg-slate-50 active:scale-90",
+            "shadow-xl shadow-black/5",
             "top-[36px] -right-3.5"
           )}
         >
@@ -285,19 +285,19 @@ export default function TechnicianSidebar({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden z-10"
             >
-              <div className="mx-5 mt-8 p-4 rounded-[1.5rem] relative overflow-hidden group cursor-default border border-white/[0.03] bg-white/[0.02] shadow-2xl">
-                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none opacity-20"
-                  style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.05), transparent)' }}
+              <div className="mx-5 mt-8 p-4 rounded-[1.5rem] relative overflow-hidden group cursor-default border border-black/[0.04] bg-white/40 shadow-xl backdrop-blur-xl">
+                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none opacity-40"
+                  style={{ background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent)' }}
                 />
                 <div className="flex items-center gap-4">
                   <div className="relative shrink-0">
-                    <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center shadow-2xl border border-white/5">
-                      <Zap className="size-4 text-white group-hover:text-cyan-400 transition-colors" />
+                    <div className="size-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shadow-lg border border-indigo-500/10">
+                      <Zap className="size-4 text-indigo-600 group-hover:text-indigo-500 transition-colors" />
                     </div>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950 shadow-lg" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-lg" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-black text-white uppercase tracking-widest italic">Synchronized</p>
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest italic">Synchronized</p>
                     <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mt-0.5">{currentTime || '...'}</p>
                   </div>
                   <div className="shrink-0">
@@ -326,22 +326,22 @@ export default function TechnicianSidebar({
                       "relative flex items-center rounded-2xl transition-all duration-500 cursor-pointer overflow-hidden",
                       effectiveCollapsed ? "p-4 mx-auto w-fit" : "px-5 py-4 mx-2",
                       isActive 
-                        ? "bg-white/[0.05] shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] border border-white/10" 
-                        : "hover:bg-white/[0.03] border border-transparent hover:border-white/5"
+                        ? "bg-white shadow-[0_10px_30px_rgba(99,102,241,0.08)] border border-black/5 scale-[1.02]" 
+                        : "hover:bg-white/40 border border-transparent hover:border-black/5"
                     )}>
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full shadow-[0_0_20px_2px_rgba(255,255,255,0.4)]" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-600 rounded-r-full shadow-[0_0_20px_2px_rgba(99,102,241,0.4)]" />
                       )}
                       <div className={cn(
                         "relative shrink-0 flex items-center justify-center transition-all duration-500 z-10",
                         effectiveCollapsed ? "size-6" : "size-5"
                       )}>
-                        <item.icon className={cn("size-full transition-all duration-500", isActive ? "text-white scale-110" : "text-slate-500 group-hover/nav:text-white group-hover/nav:scale-110")} />
+                        <item.icon className={cn("size-full transition-all duration-500", isActive ? "text-indigo-600 scale-110" : "text-slate-400 group-hover/nav:text-slate-900 group-hover/nav:scale-110")} />
                       </div>
                       {!effectiveCollapsed && (
                         <span className={cn(
                           "ml-4 text-[12px] font-black uppercase tracking-[0.15em] italic transition-all duration-500",
-                          isActive ? "text-white" : "text-slate-500 group-hover/nav:text-white"
+                          isActive ? "text-slate-900" : "text-slate-400 group-hover/nav:text-slate-900"
                         )}>
                           {item.label}
                         </span>
@@ -365,10 +365,10 @@ export default function TechnicianSidebar({
                         "relative shrink-0 flex items-center justify-center transition-all duration-500 z-10",
                         effectiveCollapsed ? "size-6" : "size-5"
                       )}>
-                        <LogOut className="size-full transition-all duration-500 text-rose-500/70 group-hover/nav:text-rose-500 group-hover/nav:scale-110" />
+                        <LogOut className="size-full transition-all duration-500 text-rose-600/80 group-hover/nav:text-rose-600 group-hover/nav:scale-110" />
                       </div>
                       {!effectiveCollapsed && (
-                        <span className="ml-4 text-[12px] font-black uppercase tracking-[0.15em] italic transition-all duration-500 text-rose-500/70 group-hover/nav:text-rose-500">
+                        <span className="ml-4 text-[12px] font-black uppercase tracking-[0.15em] italic transition-all duration-500 text-rose-600/80 group-hover/nav:text-rose-600">
                           Sign Out
                         </span>
                       )}
@@ -381,7 +381,7 @@ export default function TechnicianSidebar({
 
         {/* Profile Section */}
         <div className={cn(
-          "border-t border-white/5 p-6 pb-10 sm:pb-8 bg-slate-950/20 z-10",
+          "border-t border-black/5 p-6 pb-10 sm:pb-8 bg-white/10 z-10",
           effectiveCollapsed ? "flex flex-col items-center gap-4" : ""
         )}>
           <AnimatePresence>
@@ -390,7 +390,7 @@ export default function TechnicianSidebar({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="p-4 rounded-[1.5rem] transition-all duration-500 flex items-center justify-between gap-4 border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10"
+                className="p-4 rounded-[1.5rem] transition-all duration-500 flex items-center justify-between gap-4 border border-black/[0.04] bg-white/20 hover:bg-white/40 hover:border-black/10 shadow-sm"
               >
                 <Link 
                   href="/technician/dashboard#profile" 
@@ -398,19 +398,19 @@ export default function TechnicianSidebar({
                   className="flex items-center gap-4 flex-1 min-w-0 group cursor-pointer"
                 >
                   <div className="relative shrink-0">
-                    <div className="size-11 rounded-[1.125rem] bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                    <div className="size-11 rounded-[1.125rem] bg-white border border-black/10 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-indigo-500/50 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.1)]">
                         {(profile?.avatar || userAvatar) ? (
                           <img src={getAvatarUrl(profile?.avatar || userAvatar)!} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Profile" />
                         ) : (
-                          <User className="size-5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                          <User className="size-5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
                         )}
                     </div>
-                    <div className="absolute -bottom-1 -right-1 size-4 bg-slate-950 rounded-full flex items-center justify-center border border-white/5">
-                      <Settings className="size-2.5 text-cyan-400 animate-[spin_4s_linear_infinite]" />
+                    <div className="absolute -bottom-1 -right-1 size-4 bg-white rounded-full flex items-center justify-center border border-black/5 shadow-sm">
+                      <Settings className="size-2.5 text-indigo-600 animate-[spin_4s_linear_infinite]" />
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-black text-white truncate uppercase tracking-tighter italic group-hover:text-cyan-400 transition-colors leading-tight">{userName}</p>
+                    <p className="text-[12px] font-black text-slate-900 truncate uppercase tracking-tighter italic group-hover:text-indigo-600 transition-colors leading-tight">{userName}</p>
                     <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest truncate mt-0.5 opacity-60">Identity Verified</p>
                   </div>
                 </Link>
@@ -432,16 +432,16 @@ export default function TechnicianSidebar({
                   <Link 
                     href="/technician/dashboard#profile" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="relative size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500/50 hover:shadow-[0_0_25px_rgba(34,211,238,0.3)] transition-all group"
+                    className="relative size-12 rounded-2xl bg-white border border-black/10 flex items-center justify-center overflow-hidden cursor-pointer hover:border-indigo-500/50 hover:shadow-[0_0_25px_rgba(99,102,241,0.2)] transition-all group"
                     title="Profile Settings"
                   >
                     {(profile?.avatar || userAvatar) ? (
                       <img src={getAvatarUrl(profile?.avatar || userAvatar)!} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Profile" />
                     ) : (
-                      <User className="size-6 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                      <User className="size-6 text-slate-400 group-hover:text-indigo-600 transition-colors" />
                     )}
-                    <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                      <Settings className="size-5 text-white animate-spin-slow" />
+                    <div className="absolute inset-0 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                      <Settings className="size-5 text-indigo-600 animate-spin-slow" />
                     </div>
                   </Link>
 
