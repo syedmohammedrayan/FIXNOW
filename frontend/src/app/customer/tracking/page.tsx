@@ -366,9 +366,9 @@ export default function TrackingPage() {
                 />
               )}
 
-              {techLocation && userLocation && (
+              {techLocation && (userLocation || booking?.customerLocation) && (
                 <Polyline
-                  path={[techLocation, userLocation]}
+                  path={[techLocation, userLocation || (booking?.customerLocation as any)]}
                   options={{
                     strokeColor: isDarkMode ? "#ffffff" : "#000000",
                     strokeOpacity: 0,
@@ -390,20 +390,36 @@ export default function TrackingPage() {
               {techLocation && (
                 <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
-                    <div className="relative group">
-                      <div className="absolute -inset-4 bg-white/10 rounded-full blur-xl animate-pulse" />
-                      <div className="size-14 bg-slate-900 rounded-full p-1 shadow-2xl border border-white/20 relative">
-                        <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
-                          <Wrench className="size-6 text-slate-900" />
+                    <div className="relative group flex flex-col items-center">
+                      {/* Pulse effect */}
+                      <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping scale-150" />
+                      
+                      {/* Tactical HUD Label */}
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-30">
+                        <div className="px-4 py-2 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)] whitespace-nowrap flex items-center gap-3">
+                          <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
+                            <Clock className="size-3.5 text-amber-400" />
+                            <span className="text-[11px] font-black text-white uppercase tracking-tighter">{eta}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Navigation className="size-3.5 text-cyan-400" />
+                            <span className="text-[11px] font-black text-white uppercase tracking-tighter">{localDistance}</span>
+                          </div>
+                        </div>
+                        <div className="w-0.5 h-4 bg-gradient-to-b from-white/30 to-transparent" />
+                      </div>
+
+                      <div className="size-14 sm:size-16 bg-slate-900 rounded-[2rem] p-1 shadow-2xl border border-white/20 relative z-10 transition-transform group-hover:scale-110 duration-500">
+                        <div className="w-full h-full bg-white rounded-[1.8rem] flex items-center justify-center overflow-hidden">
+                          {techDetails.avatar ? (
+                            <img src={techDetails.avatar} className="size-full object-cover" alt="Tech" />
+                          ) : (
+                            <Wrench className="size-7 text-slate-900" />
+                          )}
                         </div>
                       </div>
                       
-                      <div className="absolute top-0 left-full ml-3 px-3 py-1.5 bg-white text-slate-900 text-[9px] font-black rounded-xl uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20 flex items-center gap-2">
-                        <Clock className="size-3" />
-                        {eta}
-                      </div>
-
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-2xl border border-white/20">
+                      <div className="absolute top-16 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] font-black rounded-lg uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10">
                         {techDetails.name} • LIVE
                       </div>
                     </div>
@@ -411,15 +427,13 @@ export default function TrackingPage() {
                 </OverlayView>
               )}
 
-              {userLocation && (
-                <OverlayView position={userLocation} mapPaneName="overlayMouseTarget">
+              {(userLocation || booking?.customerLocation) && (
+                <OverlayView position={userLocation || (booking?.customerLocation as any)} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
-                    <div className="size-10 bg-emerald-500 rounded-full border-4 border-slate-900 shadow-2xl relative flex items-center justify-center">
+                    <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl relative flex items-center justify-center">
                        <MapPin className="size-5 text-white" />
-                       <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-25" />
-                    </div>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-emerald-400 text-[8px] font-black rounded-lg uppercase tracking-widest whitespace-nowrap shadow-xl border border-white/10">
-                      DESTINATION
+                       <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
+                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-emerald-500 text-[8px] font-black text-white uppercase tracking-widest rounded shadow-lg whitespace-nowrap">Destination</div>
                     </div>
                   </div>
                 </OverlayView>
