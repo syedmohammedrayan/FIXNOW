@@ -226,6 +226,10 @@ export default function TechnicianServicePage() {
   // Map & Route Management
   const [map, setMap] = useState<google.maps.Map | null>(null);
   
+  // Stable map states to prevent snapping loops
+  const [mapZoom, setMapZoom] = useState(14);
+  const [mapCenter, setMapCenter] = useState({ lat: 20.5937, lng: 78.9629 });
+  
   // 1. Consolidated Location Resolver (Top Level)
   const resolvedCustomerLoc = useMemo(() => {
     if (!booking) return null;
@@ -654,13 +658,21 @@ export default function TechnicianServicePage() {
                     {/* Custom Tactical Zoom Controls */}
                     <div className="flex flex-col gap-3 mt-2">
                       <button
-                        onClick={() => map?.setZoom((map.getZoom() || 14) + 1)}
+                        onClick={() => {
+                          const newZoom = (map?.getZoom() || 14) + 1;
+                          map?.setZoom(newZoom);
+                          setMapZoom(newZoom);
+                        }}
                         className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90 font-black text-xl"
                       >
                         <Plus className="size-6" />
                       </button>
                       <button
-                        onClick={() => map?.setZoom((map.getZoom() || 14) - 1)}
+                        onClick={() => {
+                          const newZoom = (map?.getZoom() || 14) - 1;
+                          map?.setZoom(newZoom);
+                          setMapZoom(newZoom);
+                        }}
                         className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90 font-black text-xl"
                       >
                         <Minus className="size-6" />
@@ -669,8 +681,24 @@ export default function TechnicianServicePage() {
 
                     {techLocation && (
                       <button
-                        onClick={() => map?.panTo(techLocation)}
+                        onClick={() => {
+                          setIsMapInteracted(false);
+                          const m = map;
+                          if (m && techLocation && resolvedCustomerLoc) {
+                            try {
+                              const b = new window.google.maps.LatLngBounds();
+                              b.extend(techLocation);
+                              b.extend(resolvedCustomerLoc);
+                              m.fitBounds(b, { top: 80, right: 80, bottom: 80, left: 80 });
+                            } catch (e) {
+                              console.warn("Map fitBounds failed:", e);
+                            }
+                          } else if (m && techLocation) {
+                             m.panTo(techLocation);
+                          }
+                        }}
                         className="size-14 sm:size-16 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.8)] group active:scale-90"
+                        title="Re-center Tracking"
                       >
                         <Zap className="size-6 text-emerald-400" />
                       </button>
@@ -681,8 +709,8 @@ export default function TechnicianServicePage() {
                     <GoogleMap
                       mapContainerClassName="w-full h-full"
                       mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
-                      center={techLocation || resolvedCustomerLoc || { lat: 20.5937, lng: 78.9629 }}
-                      zoom={14}
+                      center={mapCenter}
+                      zoom={mapZoom}
                       onLoad={(m) => { 
                         if (!window.google?.maps) return;
                         setMap(m); 
@@ -700,7 +728,17 @@ export default function TechnicianServicePage() {
                         }
                       }}
                       onDragStart={() => setIsMapInteracted(true)}
+                      onDragEnd={() => {
+                        if (map) {
+                          const c = map.getCenter();
+                          if (c) setMapCenter({ lat: c.lat(), lng: c.lng() });
+                        }
+                      }}
                       onZoomChanged={() => {
+                        if (map) {
+                          const z = map.getZoom();
+                          if (z !== undefined) setMapZoom(z);
+                        }
                         if (mapReady) setIsMapInteracted(true);
                       }}
                       options={{ 

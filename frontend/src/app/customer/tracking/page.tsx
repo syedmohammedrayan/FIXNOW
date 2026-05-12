@@ -98,6 +98,10 @@ export default function TrackingPage() {
   const [hasFitBounds, setHasFitBounds] = useState(false);
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [isMapInteracted, setIsMapInteracted] = useState(false);
+  
+  // Stable map states to prevent snapping loops
+  const [mapZoom, setMapZoom] = useState(14);
+  const [mapCenter, setMapCenter] = useState({ lat: 28.6139, lng: 77.2090 });
 
   // Cancellation states
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -353,11 +357,21 @@ export default function TrackingPage() {
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={{ width: '100%', height: '100%' }}
-              center={techLocation || userLocation || { lat: 28.6139, lng: 77.2090 }}
-              zoom={14}
+              center={mapCenter}
+              zoom={mapZoom}
               onLoad={onLoad}
               onDragStart={() => setIsMapInteracted(true)}
+              onDragEnd={() => {
+                if (map) {
+                  const c = map.getCenter();
+                  if (c) setMapCenter({ lat: c.lat(), lng: c.lng() });
+                }
+              }}
               onZoomChanged={() => {
+                if (map) {
+                  const z = map.getZoom();
+                  if (z !== undefined) setMapZoom(z);
+                }
                 if (isLoaded) setIsMapInteracted(true);
               }}
               options={{ 
@@ -428,13 +442,13 @@ export default function TrackingPage() {
                           {techDetails.avatar ? (
                             <img src={techDetails.avatar} className="size-full object-cover" alt="Tech" />
                           ) : (
-                            <Wrench className="size-7 text-slate-900" />
+                            <span className="text-3xl sm:text-4xl">🛠️</span>
                           )}
                         </div>
                       </div>
                       
                       <div className="absolute top-16 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] sm:text-[9px] font-black rounded-lg uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10 flex items-center gap-1.5">
-                        <span className="text-[10px] sm:text-xs">🛠️</span> {techDetails.name} • LIVE
+                        {techDetails.name} • LIVE
                       </div>
                     </div>
                   </div>
@@ -445,10 +459,10 @@ export default function TrackingPage() {
                 <OverlayView position={destinationLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
                     <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl relative flex items-center justify-center">
-                       <MapPin className="size-5 text-white" />
+                       <span className="text-xl">📍</span>
                        <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-emerald-500 text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest rounded shadow-lg whitespace-nowrap flex items-center gap-1">
-                         <span className="text-[10px] sm:text-xs">📍</span> YOU
+                         YOU
                        </div>
                     </div>
                   </div>
@@ -482,16 +496,40 @@ export default function TrackingPage() {
               {/* Custom Tactical Zoom Controls */}
               <div className="flex flex-col gap-2 mt-2">
                 <button
-                  onClick={() => map?.setZoom((map.getZoom() || 14) + 1)}
+                  onClick={() => {
+                    const newZoom = (map?.getZoom() || 14) + 1;
+                    map?.setZoom(newZoom);
+                    setMapZoom(newZoom);
+                  }}
                   className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center font-black text-xl active:scale-90"
                 >
                   <Plus className="size-5 sm:size-6" />
                 </button>
                 <button
-                  onClick={() => map?.setZoom((map.getZoom() || 14) - 1)}
+                  onClick={() => {
+                    const newZoom = (map?.getZoom() || 14) - 1;
+                    map?.setZoom(newZoom);
+                    setMapZoom(newZoom);
+                  }}
                   className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center font-black text-xl active:scale-90"
                 >
                   <Minus className="size-5 sm:size-6" />
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setIsMapInteracted(false);
+                    if (map && techLocation && userLocation) {
+                      const bounds = new window.google.maps.LatLngBounds();
+                      bounds.extend(techLocation);
+                      bounds.extend(userLocation);
+                      map.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
+                    }
+                  }}
+                  className="size-12 sm:size-16 rounded-2xl shadow-2xl bg-slate-900/90 backdrop-blur-xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center font-black text-xl active:scale-90 mt-2"
+                  title="Re-center Tracking"
+                >
+                  <LocateFixed className="size-5 sm:size-6" />
                 </button>
               </div>
             </div>
