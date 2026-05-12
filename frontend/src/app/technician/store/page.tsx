@@ -470,6 +470,7 @@ export default function TechnicianStore() {
               </div>
             </div>
           </section>
+        </div>
       </main>
 
 
