@@ -405,70 +405,71 @@ export default function TechnicianServicePage() {
         <div className="fixed top-0 right-0 w-[60vw] h-[60vw] bg-cyan-500/[0.03] blur-[150px] rounded-full pointer-events-none -mr-[20vw] -mt-[20vw]" />
         <div className="fixed bottom-0 left-0 w-[50vw] h-[50vw] bg-slate-500/[0.03] blur-[120px] rounded-full pointer-events-none -ml-[15vw] -mb-[15vw]" />
 
-        <div className="p-4 lg:p-10 max-w-[1400px] mx-auto relative z-10">
-          <div className="hidden sm:flex flex-col md:flex-row md:items-center gap-6 mb-10">
-            <div className="flex items-center gap-5">
-              <button onClick={() => router.back()} className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all active:scale-95 group">
+        <div className="p-3 sm:p-4 lg:p-10 max-w-[1400px] mx-auto relative z-10">
+          {/* Header — always visible */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 mb-4 sm:mb-10">
+            <div className="flex items-center gap-3 sm:gap-5">
+              <button onClick={() => router.back()} className="p-3 sm:p-3.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all active:scale-95 group">
                 <ArrowLeft className="size-5 group-hover:-translate-x-1 transition-transform" />
               </button>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl sm:text-3xl font-black text-white tracking-tighter uppercase">{booking?.category || 'Service'}</h1>
-                  <div className="px-3 py-1 bg-white/5 border border-white/10 text-slate-400 text-[10px] font-black rounded-lg uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-lg sm:text-3xl font-black text-white tracking-tighter uppercase">{booking?.category || 'Service'}</h1>
+                  <div className="px-2 py-0.5 bg-white/5 border border-white/10 text-slate-400 text-[9px] sm:text-[10px] font-black rounded-lg uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</div>
                 </div>
-                <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+                <p className="text-slate-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-cyan-500" />
                   Service Control Center
                 </p>
               </div>
             </div>
-            <div className="md:ml-auto flex items-center gap-4">
-              <div className="flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl">
+            <div className="sm:ml-auto flex items-center gap-2 sm:gap-4">
+              <div className="hidden sm:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl">
                 <div className="flex -space-x-2">
                    <div className="size-6 rounded-full bg-cyan-500 border-2 border-slate-900" />
                    <div className="size-6 rounded-full bg-white border-2 border-slate-900" />
                 </div>
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Live Sync Active</span>
               </div>
-              <div className="flex items-center gap-3 px-6 py-2.5 bg-cyan-400/10 border border-cyan-400/20 rounded-2xl">
+              <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-2.5 bg-cyan-400/10 border border-cyan-400/20 rounded-2xl">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="text-cyan-400 text-xs font-black uppercase tracking-[0.15em]">{booking?.status || 'On The Way'}</span>
+                <span className="text-cyan-400 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em]">{booking?.status || 'On The Way'}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-220px)] lg:min-h-[600px]">
-            {/* Left Panel: Job Controls */}
-            <div className="w-full lg:w-[420px] shrink-0 space-y-6 lg:overflow-y-auto lg:pr-2 scrollbar-hide pb-20 lg:pb-0 order-2 lg:order-1">
-              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-6 sm:p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-6 h-auto lg:h-[calc(100vh-220px)] lg:min-h-[600px]">
+            {/* Left Panel: Job Controls — appears BELOW map on mobile */}
+            <div className="w-full lg:w-[420px] shrink-0 space-y-3 sm:space-y-6 lg:overflow-y-auto lg:pr-2 scrollbar-hide pb-4 lg:pb-0 order-2 lg:order-1">
+              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-4 sm:p-6 lg:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all duration-500">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
                 
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 sm:mb-8 flex items-center gap-2">
                   <span className="w-8 h-px bg-slate-800" />
                   Tactical Parameters
                 </p>
 
-                <div className="space-y-5">
-                  <div className="flex items-start gap-4 p-5 bg-white/[0.03] border border-white/[0.05] rounded-[2rem] group/item hover:bg-white/[0.05] transition-all">
-                    <div className="size-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 shrink-0 group-hover/item:scale-110 transition-transform">
-                      <MapPin className="size-6" />
+                <div className="space-y-3 sm:space-y-5">
+                  <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-5 bg-white/[0.03] border border-white/[0.05] rounded-[1.5rem] sm:rounded-[2rem] group/item hover:bg-white/[0.05] transition-all">
+                    <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 shrink-0 group-hover/item:scale-110 transition-transform">
+                      <MapPin className="size-4 sm:size-6" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Target Coordinate</p>
-                      <p className="text-sm text-white font-black leading-tight line-clamp-2 italic tracking-tight">
+                      <p className="text-xs sm:text-sm text-white font-black leading-tight line-clamp-2 italic tracking-tight">
                         {liveAddress || booking?.address || "ACQUIRING..."}
                       </p>
                     </div>
                   </div>
 
                   {booking?.contactNumber && (
-                    <a href={`tel:${booking.contactNumber}`} className="flex items-center gap-4 w-full p-5 bg-white/[0.03] border border-white/[0.05] rounded-[2rem] hover:bg-white/[0.08] transition-all group/item">
-                      <div className="size-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover/item:scale-110 transition-transform">
-                        <Phone className="size-6" />
+                    <a href={`tel:${booking.contactNumber}`} className="flex items-center gap-3 sm:gap-4 w-full p-3 sm:p-5 bg-white/[0.03] border border-white/[0.05] rounded-[1.5rem] sm:rounded-[2rem] hover:bg-white/[0.08] transition-all group/item">
+                      <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover/item:scale-110 transition-transform">
+                        <Phone className="size-4 sm:size-6" />
                       </div>
                       <div className="flex-1">
                         <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Communication Link</p>
-                        <span className="text-base text-white font-black tracking-tighter">{booking.contactNumber}</span>
+                        <span className="text-sm sm:text-base text-white font-black tracking-tighter">{booking.contactNumber}</span>
                       </div>
                       <div className="size-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity">
                         <ArrowLeft className="size-4 rotate-180 text-white" />
@@ -476,31 +477,31 @@ export default function TechnicianServicePage() {
                     </a>
                   )}
 
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Distance Gap</p>
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                    <div className="p-3 sm:p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.2rem] sm:rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
+                      <p className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Distance Gap</p>
                       <div className="flex items-center gap-2.5">
-                        <div className="size-8 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/20 group-hover/hud:scale-110 transition-transform">
-                          <Navigation className="size-4 text-cyan-400" />
+                        <div className="size-7 sm:size-8 rounded-lg sm:rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-400/20 group-hover/hud:scale-110 transition-transform">
+                          <Navigation className="size-3.5 sm:size-4 text-cyan-400" />
                         </div>
-                        <span className="text-xl font-black text-white italic tracking-tighter">{localDistance || '---'}</span>
+                        <span className="text-base sm:text-xl font-black text-white italic tracking-tighter">{localDistance || '---'}</span>
                       </div>
                     </div>
                     <div className="p-5 bg-white/[0.03] border border-white/[0.08] rounded-[1.8rem] flex flex-col justify-center shadow-xl group/hud hover:border-white/20 transition-all">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Tactical ETA</p>
+                      <p className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">ETA</p>
                       <div className="flex items-center gap-2.5">
-                        <div className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-400/20 group-hover/hud:scale-110 transition-transform">
-                          <Clock className="size-4 text-amber-400" />
+                        <div className="size-7 sm:size-8 rounded-lg sm:rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-400/20 group-hover/hud:scale-110 transition-transform">
+                          <Clock className="size-3.5 sm:size-4 text-amber-400" />
                         </div>
-                        <span className={cn("text-xl font-black italic tracking-tighter", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
+                        <span className={cn("text-base sm:text-xl font-black italic tracking-tighter", eta === 'Syncing...' ? "text-slate-500 animate-pulse" : "text-white")}>{eta}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+              <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 sm:mb-8 flex items-center gap-2">
                   <span className="w-8 h-px bg-slate-800" />
                   Verification Logic
                 </p>
@@ -549,7 +550,7 @@ export default function TechnicianServicePage() {
 
               {serviceInProgress && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                  <button onClick={handleComplete} disabled={completing} className="w-full py-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black rounded-[2rem] transition-all shadow-[0_20px_50px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 text-sm uppercase tracking-[0.3em]">
+                  <button onClick={handleComplete} disabled={completing} className="w-full py-4 sm:py-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black rounded-[1.5rem] sm:rounded-[2rem] transition-all shadow-[0_20px_50px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 text-sm uppercase tracking-[0.3em]">
                     {completing ? <Loader2 className="size-6 animate-spin" /> : <CheckCircle2 className="size-6" />} Complete Protocol
                   </button>
                   <div className="grid grid-cols-2 gap-4">
@@ -562,28 +563,35 @@ export default function TechnicianServicePage() {
 
             {/* Right Panel: Map & Console Environment */}
             <div className={cn(
-              "flex-1 order-1 lg:order-2 transition-all duration-700 z-20 flex flex-col gap-6",
+              "flex-1 order-1 lg:order-2 transition-all duration-700 z-20 flex flex-col gap-3 sm:gap-6",
               isMapFullscreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-auto lg:h-full"
             )}>
-              {/* Map Section - Always visible or primary */}
+              {/* Map Section */}
               <div className={cn(
                 "bg-slate-950 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative",
-                isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[500px] sm:h-[600px] lg:h-full rounded-[2.5rem] sm:rounded-[3rem]"
+                isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[58vh] sm:h-[65vh] lg:h-full rounded-[1.5rem] sm:rounded-[2.5rem] lg:rounded-[3rem]"
               )}>
                 <div className="relative h-full w-full bg-slate-950">
-                  {/* Mobile-Only Tactical Overlay Headers */}
-                  <div className="absolute top-4 left-4 z-[60] sm:hidden flex flex-col gap-2">
-                    <div className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl">
-                      <h2 className="text-xs font-black text-white uppercase tracking-tighter">{booking?.category || 'Service'}</h2>
-                      <p className="text-[8px] text-slate-500 font-black uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</p>
-                    </div>
-                    <div className={cn(
-                      "px-4 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest text-center",
-                      booking?.status === 'Completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                      booking?.status === 'Cancelled' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
-                      "bg-cyan-500/10 border-cyan-500/20 text-cyan-400"
-                    )}>
-                      {booking?.status || 'Active'}
+                  {/* Mobile Map Top Info Strip */}
+                  <div className="absolute top-3 left-3 right-16 z-[60] lg:hidden">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full shrink-0",
+                          booking?.status === 'Completed' ? "bg-emerald-400" :
+                          booking?.status === 'Cancelled' ? "bg-rose-400" : "bg-cyan-400 animate-pulse"
+                        )} />
+                        <span className="text-[9px] font-black text-white uppercase tracking-wider truncate">{booking?.status || 'On The Way'}</span>
+                      </div>
+                      {(localDistance || eta) && (
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl">
+                          <Navigation className="size-3 text-cyan-400 shrink-0" />
+                          <span className="text-[9px] font-black text-cyan-300">{localDistance || '---'}</span>
+                          <span className="text-white/20">·</span>
+                          <Clock className="size-3 text-amber-400 shrink-0" />
+                          <span className="text-[9px] font-black text-amber-300">{eta || '---'}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -721,21 +729,21 @@ export default function TechnicianServicePage() {
               {/* Console Section - Shown below map on mobile when in progress */}
               {serviceInProgress && !isMapFullscreen && (
                 <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
-                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden">
+                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
                     
-                    <div className="flex items-center gap-4 mb-10">
-                      <div className="size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-10">
+                      <div className="size-10 sm:size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-400 shrink-0">
                         <Zap className="size-7" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-black text-white tracking-tighter italic">LIVE OPERATION HUD</h2>
+                        <h2 className="text-base sm:text-2xl font-black text-white tracking-tighter italic">LIVE OPERATION HUD</h2>
                         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Satellite Link Synchronized</p>
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-5 gap-8 flex-1 overflow-hidden">
-                      <div className="md:col-span-3 space-y-6 overflow-y-auto pr-2 scrollbar-hide">
+                    <div className="flex flex-col md:grid md:grid-cols-5 gap-4 sm:gap-8 flex-1">
+                      <div className="md:col-span-3 space-y-4 sm:space-y-6">
                         <div className="p-6 bg-white/[0.03] border border-white/[0.05] rounded-3xl">
                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Inventory Control</p>
                           <div className="space-y-3">
@@ -752,9 +760,9 @@ export default function TechnicianServicePage() {
                           
                           <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
                             <div className="flex gap-3">
-                              <input type="text" placeholder="Component Name" value={newAccName} onChange={(e) => setNewAccName(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white transition-all" />
-                              <input type="number" placeholder="₹" value={newAccPrice} onChange={(e) => setNewAccPrice(e.target.value)} className="w-28 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white font-bold outline-none focus:border-white transition-all" />
-                              <button onClick={addAccessory} className="p-4 bg-white text-slate-950 rounded-2xl transition active:scale-95 hover:bg-slate-100 shadow-lg"><Plus className="size-5" /></button>
+                              <input type="text" placeholder="Component Name" value={newAccName} onChange={(e) => setNewAccName(e.target.value)} className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl px-3 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm text-white font-bold outline-none focus:border-white transition-all" />
+                              <input type="number" placeholder="₹" value={newAccPrice} onChange={(e) => setNewAccPrice(e.target.value)} className="w-16 sm:w-28 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl px-2 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm text-white font-bold outline-none focus:border-white transition-all" />
+                              <button onClick={addAccessory} className="p-3 sm:p-4 bg-white text-slate-950 rounded-xl sm:rounded-2xl transition active:scale-95 hover:bg-slate-100 shadow-lg shrink-0"><Plus className="size-4 sm:size-5" /></button>
                             </div>
                           </div>
                         </div>

@@ -12,7 +12,7 @@ export default function NotFound() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-md flex flex-col items-center"
       >
-        <Logo showText className="mb-12" />
+        <Logo className="mb-12" />
         <div className="text-8xl font-black glow-heading-gradient mb-4 animate-float">404</div>
         <h2 className="text-2xl font-bold text-slate-300 mb-3">Protocol Interrupted</h2>
         <p className="text-slate-400 mb-8">The requested node is currently inaccessible or has been purged from the network.</p>

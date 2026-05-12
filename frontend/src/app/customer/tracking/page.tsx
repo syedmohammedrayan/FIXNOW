@@ -105,9 +105,13 @@ export default function TrackingPage() {
     (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
      booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
 
+  // Only initialise the loader once we have a real key — an empty string causes Google Maps to throw
+  const mapsKey = currentKey || '';
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: currentKey || '',
-    libraries: LIBRARIES
+    googleMapsApiKey: mapsKey,
+    libraries: LIBRARIES,
+    // Prevent double-loading if key rotates
+    id: 'fixnow-maps-loader'
   });
 
   // Handle load error by rotating key
@@ -248,56 +252,50 @@ export default function TrackingPage() {
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   useEffect(() => {
     const destination = destinationLocation;
-    
-    if (!window.google?.maps || !techLocation || !destination) return;
-    
-    // 1. Proactive Geometric Calculation (INSTANT)
-    if (window.google?.maps?.geometry?.spherical) {
-      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(destination.lat, destination.lng)
-      );
-      setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-      setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
-    }
+    if (!isLoaded || !window.google?.maps || !techLocation || !destination) return;
 
-    // 2. Traffic-Aware Distance Matrix (REFINEMENT)
-    const service = new window.google.maps.DistanceMatrixService();
-    service.getDistanceMatrix(
-      {
-        origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
-        destinations: [new window.google.maps.LatLng(destination.lat, destination.lng)],
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
-      (response, status) => {
-        if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
-          const element = response.rows[0].elements[0];
-          if (element.status === 'OK') {
-            const dText = element.distance?.text;
-            const eText = element.duration?.text;
-            if (dText) setLocalDistance(dText);
-            if (eText) setEta(eText);
+    try {
+      // 1. Geometric Calculation (instant, no API quota)
+      if (window.google.maps.geometry?.spherical) {
+        const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+          new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+          new window.google.maps.LatLng(destination.lat, destination.lng)
+        );
+        setLocalDistance(meters > 1000 ? `${(meters / 1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+        setEta(meters < 50 ? 'Arrived' : `${Math.ceil(meters / 400)} min`);
+      }
+
+      // 2. Traffic-Aware Distance Matrix
+      const dmService = new window.google.maps.DistanceMatrixService();
+      dmService.getDistanceMatrix(
+        {
+          origins: [new window.google.maps.LatLng(techLocation.lat, techLocation.lng)],
+          destinations: [new window.google.maps.LatLng(destination.lat, destination.lng)],
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (response, status) => {
+          if (status === 'OK' && response?.rows?.[0]?.elements?.[0]?.status === 'OK') {
+            const el = response.rows[0].elements[0];
+            if (el.distance?.text) setLocalDistance(el.distance.text);
+            if (el.duration?.text) setEta(el.duration.text);
           }
         }
-      }
-    );
+      );
 
-    if (!directionsServiceRef.current) {
-      directionsServiceRef.current = new window.google.maps.DirectionsService();
-    }
-    directionsServiceRef.current.route(
-      {
-        origin: techLocation,
-        destination: destination,
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK && result) {
-          setDirections(result);
-        }
+      // 3. Directions Route (for road-snapped polyline)
+      if (!directionsServiceRef.current) {
+        directionsServiceRef.current = new window.google.maps.DirectionsService();
       }
-    );
-  }, [techLocation, userLocation, booking?.customerLocation]);
+      directionsServiceRef.current.route(
+        { origin: techLocation, destination, travelMode: window.google.maps.TravelMode.DRIVING },
+        (result, status) => {
+          if (status === 'OK' && result) setDirections(result);
+        }
+      );
+    } catch (err) {
+      console.warn('[FIXNOW/Tracking] Maps calculation error:', err);
+    }
+  }, [isLoaded, techLocation, userLocation, booking?.customerLocation]);
 
   useEffect(() => {
     if (map && techLocation && userLocation && window.google?.maps && !hasInitiallyCentered.current) {
@@ -322,10 +320,10 @@ export default function TrackingPage() {
         
         {/* MAP SECTION */}
         <section className={cn(
-          "relative overflow-hidden bg-slate-900 transition-all duration-500",
+          "relative overflow-hidden bg-slate-900 transition-all duration-500 flex-shrink-0",
           isMapFullscreen 
             ? "fixed inset-0 z-[150] h-full w-full" 
-            : "h-[35vh] sm:h-[45vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-white/10"
+            : "h-[52vh] sm:h-[55vh] lg:h-full lg:flex-1 border-b lg:border-b-0 border-white/10"
         )}>
           {!isLoaded && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-xl z-10">
@@ -463,20 +461,15 @@ export default function TrackingPage() {
               </button>
             </div>
 
-          {/* FLOATING INTELLIGENCE HUD - TOP ON MOBILE, LEFT ON DESKTOP */}
-          <div className="absolute top-3 sm:top-4 lg:top-32 left-3 sm:left-4 lg:left-8 w-[calc(100%-5rem)] sm:w-[calc(100%-8rem)] lg:w-auto flex flex-row lg:flex-col gap-2 sm:gap-3 lg:gap-5 pointer-events-none z-20">
-             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="bg-slate-900/90 backdrop-blur-2xl p-2.5 sm:p-3 lg:p-5 rounded-xl sm:rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-2 sm:gap-3 lg:gap-5 pointer-events-auto flex-1 min-w-0">
-                <div className="size-8 sm:size-10 lg:size-14 bg-white/5 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0 shadow-inner">
-                   <Clock className={cn("size-4 sm:size-5 lg:size-7 text-white", eta === 'Syncing...' && "animate-spin")} />
+          {/* FLOATING HUD - top-left on mobile (below buttons strip), left panel on desktop */}
+          <div className="absolute top-3 left-3 right-16 z-20 flex flex-row lg:flex-col gap-2 lg:gap-5 pointer-events-none lg:top-32 lg:left-8 lg:right-auto lg:w-auto">
+             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="bg-slate-900/95 backdrop-blur-2xl px-3 py-2 lg:p-5 rounded-xl lg:rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-2 lg:gap-5 pointer-events-auto flex-1 min-w-0">
+                <div className="size-7 lg:size-14 bg-white/5 rounded-lg lg:rounded-3xl flex items-center justify-center border border-white/10 shrink-0">
+                   <Clock className={cn("size-3.5 lg:size-7 text-white", eta === 'Syncing...' && "animate-spin")} />
                 </div>
                 <div className="min-w-0">
-                   <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1">
-                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate">ETA</p>
-                      <span className="flex size-1 sm:size-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
-                   </div>
-                   <p className={cn("text-xs sm:text-sm lg:text-2xl font-black text-white truncate leading-none tracking-tight", eta === 'Syncing...' && "text-slate-500 animate-pulse")}>
-                      {eta}
-                   </p>
+                   <p className="text-[7px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">ETA</p>
+                   <p className={cn("text-xs lg:text-2xl font-black text-white truncate leading-none tracking-tight", eta === 'Syncing...' && "text-slate-500 animate-pulse")}>{eta}</p>
                 </div>
              </motion.div>
 
@@ -494,18 +487,18 @@ export default function TrackingPage() {
         </section>
 
         {/* SIDEBAR — GLASSMORPHIC CINEMATIC HUD */}
-        <aside className="w-full lg:w-[400px] xl:w-[460px] flex-1 lg:flex-none lg:h-full flex flex-col border-t lg:border-t-0 lg:border-l border-white/[0.07] relative z-10 overflow-hidden"
-          style={{ background: 'linear-gradient(160deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.92) 100%)', backdropFilter: 'blur(40px)' }}>
+        <aside className="w-full lg:w-[400px] xl:w-[460px] flex-1 lg:flex-none lg:h-full flex flex-col border-t lg:border-t-0 lg:border-l border-white/[0.07] relative z-10 overflow-hidden min-h-0"
+          style={{ background: 'linear-gradient(160deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.99) 100%)', backdropFilter: 'blur(40px)' }}>
 
           {/* Ambient glow layers */}
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-indigo-500/[0.06] rounded-full blur-[80px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-cyan-500/[0.05] rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/[0.025] via-transparent to-transparent pointer-events-none" />
 
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide p-5 sm:p-7 lg:p-8 pb-20 lg:pb-8 relative z-10">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide p-4 sm:p-6 lg:p-8 pb-6 lg:pb-8 relative z-10">
 
             {/* ── Header Row ── */}
-            <div className="flex items-center justify-between mb-7">
+            <div className="flex items-center justify-between mb-4 sm:mb-7">
               <button
                 onClick={() => router.push('/customer/dashboard')}
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.09] transition-all group"
@@ -521,7 +514,7 @@ export default function TrackingPage() {
             </div>
 
             {/* ── Live Status Badge ── */}
-            <div className="flex items-center gap-3 mb-6 px-4 py-3 rounded-2xl border border-white/[0.06]"
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-white/[0.06]"
               style={{ background: 'rgba(255,255,255,0.03)' }}>
               <span className="relative flex size-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60" />
@@ -539,20 +532,20 @@ export default function TrackingPage() {
             </div>
 
             {/* ── ETA + Distance Metric Row ── */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-1.5" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                <div className="flex items-center gap-2">
-                  <Clock className="size-3.5 text-amber-400" />
-                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">ETA</span>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <div className="rounded-xl sm:rounded-2xl border border-white/[0.07] p-3 sm:p-4 flex flex-col gap-1" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="size-3 sm:size-3.5 text-amber-400" />
+                  <span className="text-[7px] sm:text-[8px] font-black text-slate-500 uppercase tracking-widest">ETA</span>
                 </div>
-                <p className="text-lg font-black text-white tracking-tight leading-none">{eta}</p>
+                <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">{eta}</p>
               </div>
-              <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-1.5" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                <div className="flex items-center gap-2">
-                  <Navigation className="size-3.5 text-cyan-400" />
-                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Distance</span>
+              <div className="rounded-xl sm:rounded-2xl border border-white/[0.07] p-3 sm:p-4 flex flex-col gap-1" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex items-center gap-1.5">
+                  <Navigation className="size-3 sm:size-3.5 text-cyan-400" />
+                  <span className="text-[7px] sm:text-[8px] font-black text-slate-500 uppercase tracking-widest">Distance</span>
                 </div>
-                <p className="text-lg font-black text-white tracking-tight leading-none">{localDistance}</p>
+                <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">{localDistance}</p>
               </div>
             </div>
 
@@ -562,9 +555,9 @@ export default function TrackingPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.06] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
               {/* Avatar + name row */}
-              <div className="flex items-center gap-4 p-5 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 lg:p-6">
                 <div className="relative shrink-0">
-                  <div className="size-16 sm:size-20 rounded-[1.5rem] overflow-hidden border border-white/[0.1] shadow-xl bg-slate-800">
+                  <div className="size-14 sm:size-16 lg:size-20 rounded-[1.2rem] sm:rounded-[1.5rem] overflow-hidden border border-white/[0.1] shadow-xl bg-slate-800">
                     {techDetails.avatar ? (
                       <img src={techDetails.avatar} className="w-full h-full object-cover" alt="Tech" />
                     ) : (
