@@ -11,7 +11,7 @@ import axios from 'axios';
 import {
   ArrowLeft, MapPin, Phone, Navigation, CheckCircle2,
   XCircle, Loader2, ShieldCheck, AlertTriangle, Activity,
-  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Trash2, CreditCard, Printer, Moon, Sun
+  DollarSign, Clock, RefreshCw, Zap, Wrench, Plus, Trash2, CreditCard, Printer, Moon, Sun, Maximize2, Minimize2
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
@@ -85,6 +85,7 @@ export default function TechnicianServicePage() {
   const [mapReady, setMapReady] = useState(false);
   const [eta, setEta] = useState<string>('Syncing...');
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: currentKey || '',
@@ -539,20 +540,29 @@ export default function TechnicianServicePage() {
 
             <div className="lg:col-span-3">
               {!serviceInProgress ? (
-                <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden h-full min-h-[500px] flex flex-col shadow-2xl">
-                  <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/5">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tactical Overlay</span>
-                    <button 
-                      onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-white/5 transition-all"
-                    >
-                      {isDarkMode ? <Moon className="size-3.5 text-cyan-400" /> : <Sun className="size-3.5 text-amber-400" />}
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white">
-                        {isDarkMode ? 'Midnight Mode' : 'Light Mode'}
-                      </span>
-                    </button>
-                  </div>
+                <div className={cn(
+                  "bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl",
+                  isMapFullscreen ? "fixed inset-0 z-[100] rounded-0 h-screen w-screen" : "h-full min-h-[500px] flex flex-col"
+                )}>
                   <div className="relative flex-1">
+                    {/* Floating Map Controls */}
+                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+                      <button
+                        onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                        className="p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl"
+                        title={isMapFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
+                      >
+                        {isMapFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+                      </button>
+                      <button
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        className="p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-2xl"
+                        title={isDarkMode ? "Switch to Light Mode" : "Switch to Midnight Mode"}
+                      >
+                        {isDarkMode ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
+                      </button>
+                    </div>
+
                     {isLoaded && (
                       <GoogleMap
                         mapContainerStyle={{ width: '100%', height: '100%' }}
