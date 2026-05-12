@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
@@ -217,7 +217,6 @@ export default function TechnicianServicePage() {
     const loc = booking.customerLocation || booking.customer_location;
     if (loc?.lat && loc?.lng) return { lat: Number(loc.lat), lng: Number(loc.lng) };
     if (booking.customer_lat && booking.customer_lng) return { lat: Number(booking.customer_lat), lng: Number(booking.customer_lng) };
-    if (booking.customerLat && booking.customerLng) return { lat: Number(booking.customerLat), lng: Number(booking.customerLng) };
     return null;
   }, [booking]);
 
