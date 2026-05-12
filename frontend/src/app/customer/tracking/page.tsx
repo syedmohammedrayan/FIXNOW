@@ -95,6 +95,7 @@ export default function TrackingPage() {
   const socketRef = useRef<any>(null);
   const [hasFitBounds, setHasFitBounds] = useState(false);
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const [isMapInteracted, setIsMapInteracted] = useState(false);
 
   // Cancellation states
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -308,14 +309,14 @@ export default function TrackingPage() {
   }, [isLoaded, techLocation, userLocation, booking?.customerLocation]);
 
   useEffect(() => {
-    if (map && techLocation && userLocation && window.google?.maps && !hasInitiallyCentered.current) {
+    if (map && techLocation && userLocation && window.google?.maps && !isMapInteracted) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(userLocation);
       map.fitBounds(bounds, { top: 150, right: 100, bottom: 250, left: 100 });
-      hasInitiallyCentered.current = true;
+      // We don't set hasInitiallyCentered here anymore, we rely on isMapInteracted
     }
-  }, [map, techLocation, userLocation]);
+  }, [map, techLocation, userLocation, isMapInteracted]);
 
   // Direct Map Polyline Management (Dotted Line)
   useEffect(() => {
@@ -353,6 +354,10 @@ export default function TrackingPage() {
               center={techLocation || userLocation || { lat: 28.6139, lng: 77.2090 }}
               zoom={14}
               onLoad={onLoad}
+              onDragStart={() => setIsMapInteracted(true)}
+              onZoomChanged={() => {
+                if (isLoaded) setIsMapInteracted(true);
+              }}
               options={{ 
                 disableDefaultUI: true, 
                 zoomControl: true,

@@ -86,6 +86,7 @@ export default function TechnicianServicePage() {
   const [eta, setEta] = useState<string>('Syncing...');
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const [isMapInteracted, setIsMapInteracted] = useState(false);
 
   // Handle chatbot visibility - Hide for technician service map
   useEffect(() => {
@@ -287,7 +288,7 @@ export default function TechnicianServicePage() {
 
   // 3. Camera Management
   useEffect(() => {
-    if (map && techLocation && resolvedCustomerLoc && window.google?.maps?.LatLngBounds) {
+    if (map && techLocation && resolvedCustomerLoc && window.google?.maps?.LatLngBounds && !isMapInteracted) {
       try {
         const bounds = new window.google.maps.LatLngBounds();
         bounds.extend(techLocation);
@@ -297,7 +298,7 @@ export default function TechnicianServicePage() {
         console.warn("Bounds fitting error:", e);
       }
     }
-  }, [map, techLocation, resolvedCustomerLoc]);
+  }, [map, techLocation, resolvedCustomerLoc, isMapInteracted]);
 
   // Reverse Geocoding
   useEffect(() => {
@@ -680,6 +681,10 @@ export default function TechnicianServicePage() {
                             console.warn("Map fitBounds failed:", e);
                           }
                         }
+                      }}
+                      onDragStart={() => setIsMapInteracted(true)}
+                      onZoomChanged={() => {
+                        if (mapReady) setIsMapInteracted(true);
                       }}
                       options={{ 
                         disableDefaultUI: true, 
