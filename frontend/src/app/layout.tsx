@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import DynamicBackground from "@/components/DynamicBackground";
 import ChatbotIntegration from "@/components/chat/ChatbotIntegration";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -71,6 +72,7 @@ export default function RootLayout({
           src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" 
           strategy="lazyOnload" 
         />
+        <Analytics />
       </body>
     </html>
   );
