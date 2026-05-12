@@ -244,13 +244,29 @@ export default function TrackingPage() {
   // Map & Route Management
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
   
-  useEffect(() => {
-    if (!window.google?.maps || !techLocation || !userLocation) return;
-    
+    // Distance Matrix for HUD (More precise and as requested)
+    const service = new window.google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+      {
+        origins: [techLocation],
+        destinations: [userLocation],
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (response, status) => {
+        if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
+          const element = response.rows[0].elements[0];
+          if (element.status === 'OK') {
+            setLocalDistance(element.distance.text);
+            setEta(element.duration.text);
+          }
+        }
+      }
+    );
+
+    // Directions for visual route
     if (!directionsServiceRef.current) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
     }
-
     directionsServiceRef.current.route(
       {
         origin: techLocation,
@@ -260,9 +276,6 @@ export default function TrackingPage() {
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK && result) {
           setDirections(result);
-          const route = result.routes[0].legs[0];
-          setLocalDistance(route.distance?.text || '');
-          setEta(route.duration?.text || '');
         }
       }
     );
@@ -338,14 +351,14 @@ export default function TrackingPage() {
                 <Polyline
                   path={[techLocation, userLocation]}
                   options={{
-                    strokeColor: "#ffffff",
+                    strokeColor: isDarkMode ? "#ffffff" : "#000000",
                     strokeOpacity: 0,
                     icons: [{
                       icon: {
                         path: 'M 0,-1 0,1',
                         strokeOpacity: 1,
                         scale: 3,
-                        strokeColor: '#ffffff'
+                        strokeColor: isDarkMode ? '#ffffff' : '#000000'
                       },
                       offset: '0',
                       repeat: '20px'
@@ -448,87 +461,90 @@ export default function TrackingPage() {
           </div>
         </section>
 
-        {/* SIDEBAR */}
-        <aside className="w-full lg:w-[400px] xl:w-[450px] flex-1 lg:flex-none lg:h-full bg-slate-950 flex flex-col border-l border-white/10 relative z-10 overflow-hidden">
-          <div className="flex-1 min-h-0 overflow-y-scroll p-4 sm:p-6 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
-            {/* TACTICAL BACK BUTTON - UPPER RIGHT */}
-            <div className="absolute top-4 sm:top-6 lg:top-10 right-4 sm:right-6 lg:right-10 z-30">
+        {/* SIDEBAR - REIMAGINED CINEMATIC HUD */}
+        <aside className="w-full lg:w-[420px] xl:w-[480px] flex-1 lg:flex-none lg:h-full bg-slate-950/40 backdrop-blur-3xl lg:bg-slate-950 flex flex-col border-t lg:border-t-0 lg:border-l border-white/10 relative z-10 overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+          
+          <div className="flex-1 min-h-0 overflow-y-scroll p-6 sm:p-8 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
+            {/* TACTICAL BACK BUTTON */}
+            <div className="flex justify-between items-center mb-8 lg:mb-12">
               <button 
                 onClick={() => router.push('/customer/dashboard')}
-                className="size-10 sm:size-12 lg:size-14 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-2xl group"
+                className="size-10 sm:size-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all group"
               >
-                <ArrowLeft className="size-5 sm:size-6 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="size-5 group-hover:-translate-x-1 transition-transform" />
               </button>
+              <div className="flex flex-col items-end">
+                <p className="text-white font-black text-xs sm:text-sm tracking-tight italic">{techDetails.service}</p>
+                <p className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1">ID: {bookingId?.slice(-6).toUpperCase()}</p>
+              </div>
             </div>
 
-            <div className="mb-8 sm:mb-10 lg:mb-14 pt-10 sm:pt-12 lg:pt-0">
-              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-none tracking-tighter mb-3 sm:mb-4 pr-14 sm:pr-16 italic">{techDetails.service}</h1>
-              <p className="text-slate-500 text-[9px] sm:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] sm:tracking-[0.4em]">DEPLOYMENT ID: {bookingId?.slice(-6).toUpperCase()}</p>
-            </div>
-
-            <div className="space-y-6 sm:space-y-10">
-              {/* Tech Profile Card */}
-              <div className="bg-white/[0.04] rounded-[2rem] sm:rounded-[3rem] p-5 sm:p-7 lg:p-10 border border-white/[0.08] relative overflow-hidden group shadow-2xl" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.04)' }}>
-                 <div className="flex items-center gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8 lg:mb-10">
-                    <div className="relative">
-                      <div className="size-16 sm:size-20 lg:size-24 rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative">
+            <div className="space-y-6 sm:space-y-8">
+              {/* Tech Profile Card - Glassmorphism v2 */}
+              <div className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/[0.08] shadow-2xl overflow-hidden group" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)' }}>
+                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                 
+                 <div className="relative flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                      <div className="size-20 sm:size-28 rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative group-hover:scale-105 transition-transform duration-500">
                         {techDetails.avatar ? (
                           <div className="relative size-full">
                             <img src={techDetails.avatar} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
                           </div>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-slate-900 text-white font-black text-3xl">{techDetails.name.charAt(0)}</div>
+                          <div className="w-full h-full flex items-center justify-center bg-slate-900 text-white font-black text-4xl">{techDetails.name.charAt(0)}</div>
                         )}
-                        <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
                       </div>
-                      <div className="absolute -bottom-1.5 sm:-bottom-2 -right-1.5 sm:-right-2 size-7 sm:size-8 lg:size-10 bg-emerald-500 rounded-full border-3 sm:border-4 border-slate-900 flex items-center justify-center shadow-2xl">
-                        <CheckCircle2 className="size-4 sm:size-5 text-white" />
+                      <div className="absolute -bottom-2 -right-2 size-8 sm:size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 flex items-center justify-center shadow-2xl">
+                        <ShieldCheck className="size-4 sm:size-5 text-white" />
                       </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter italic">{techDetails.name}</h3>
-                      <div className="flex items-center gap-2.5 mt-2">
-                        <div className="flex text-amber-400">
-                          {[...Array(5)].map((_, i) => <Star key={i} className="size-4 fill-current" />)}
+
+                    <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tighter italic mb-1">{techDetails.name}</h3>
+                    <div className="flex items-center gap-2 mb-8">
+                      <div className="flex text-amber-400 gap-0.5">
+                        {[...Array(5)].map((_, i) => <Star key={i} className={cn("size-3.5", i < Math.floor(techDetails.rating) ? "fill-current" : "opacity-30")} />)}
+                      </div>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{techDetails.rating}</span>
+                    </div>
+                    
+                    <div className="w-full grid grid-cols-2 gap-3 sm:gap-4">
+                        <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-4 sm:py-5 bg-white rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-xl active:scale-[0.98]">
+                          <Phone className="size-4 sm:size-5 text-slate-900" />
+                          <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Call Tech</span>
+                        </a>
+                        <div className="flex flex-col items-center justify-center py-3 bg-white/[0.04] backdrop-blur-xl text-white rounded-3xl border border-white/[0.1] shadow-inner group/otp">
+                          <span className="text-[7px] font-black uppercase tracking-[0.3em] text-white/30 mb-0.5">Access Protocol</span>
+                          <span className="text-xl sm:text-2xl font-black tracking-[0.3em] text-emerald-400 group-hover:scale-110 transition-transform">{otp}</span>
                         </div>
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">{techDetails.rating}</span>
-                      </div>
                     </div>
-                 </div>
-                 
-                 <div className="grid grid-cols-2 gap-3 sm:gap-5">
-                     <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-5 bg-white rounded-xl sm:rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-2xl">
-                       <Phone className="size-4 sm:size-6 text-slate-900" />
-                       <span className="text-[9px] sm:text-[11px] font-black text-slate-900 uppercase tracking-widest">Call</span>
-                     </a>
-                     <div className="flex flex-col items-center justify-center py-2 sm:py-3 bg-white/[0.04] backdrop-blur-md text-white rounded-xl sm:rounded-3xl border border-white/[0.08] shadow-inner">
-                       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 mb-0.5 sm:mb-1">Access OTP</span>
-                       <span className="text-lg sm:text-2xl font-black tracking-[0.2em] sm:tracking-[0.3em]">{otp}</span>
-                     </div>
                  </div>
 
-                 {/* Cancel Booking Option */}
+                 {/* Cancel Action - Integrated subtly */}
                  {status !== 'In Progress' && status !== 'Completed' && status !== 'Cancelled' && (
                    <button 
                      onClick={() => setShowCancelModal(true)}
-                     className="w-full mt-4 flex items-center justify-center gap-2 py-3 bg-rose-50/50 hover:bg-rose-50 text-rose-500 rounded-2xl border border-rose-100 hover:border-rose-200 transition-all text-[10px] font-black uppercase tracking-widest active:scale-95"
+                     className="w-full mt-6 py-4 bg-white/[0.02] hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 rounded-2xl border border-white/[0.05] hover:border-rose-500/20 transition-all text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
                    >
                      <XCircle className="size-3.5" />
-                     Cancel Booking
+                     Abort Booking Protocol
                    </button>
                  )}
               </div>
 
-              {/* Timeline */}
-              <div className="space-y-8 sm:space-y-12 pb-8 sm:pb-12">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-black text-slate-500 uppercase tracking-[0.5em]">Protocol Status</span>
+              {/* Status Timeline - Cinematic Style */}
+              <div className="relative py-4 px-2">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Live Protocol Sequence</span>
                 </div>
-                <div className="space-y-6">
-                  <TimelineItem active={true} completed={true} title="Authentication" desc="Satellite link encrypted" />
-                  <TimelineItem active={true} completed={status === 'Arrived'} title="Tactical Tracking" desc={`ETA: ${eta}`} icon={<Navigation className="size-6" />} />
-                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Service Execution" desc="Specialist working on site" icon={<Zap className="size-6" />} isLast={true} />
+                
+                <div className="space-y-2">
+                  <TimelineItem active={true} completed={true} title="Deployment Initialized" desc="Satellite link encrypted & synced" />
+                  <TimelineItem active={true} completed={status === 'Arrived' || status === 'In Progress'} title="Specialist En-Route" desc={`${eta} • ${localDistance}`} icon={<Navigation className="size-6" />} />
+                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Active Execution" desc="On-site maintenance in progress" icon={<Zap className="size-6" />} isLast={true} />
                 </div>
               </div>
             </div>
