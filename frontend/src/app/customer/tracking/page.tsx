@@ -493,93 +493,158 @@ export default function TrackingPage() {
           </div>
         </section>
 
-        {/* SIDEBAR - REIMAGINED CINEMATIC HUD */}
-        <aside className="w-full lg:w-[420px] xl:w-[480px] flex-1 lg:flex-none lg:h-full bg-slate-950/40 backdrop-blur-3xl lg:bg-slate-950 flex flex-col border-t lg:border-t-0 lg:border-l border-white/10 relative z-10 overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-          
-          <div className="flex-1 min-h-0 overflow-y-scroll p-6 sm:p-8 lg:p-10 pb-24 lg:pb-10 custom-scrollbar relative">
-            {/* TACTICAL BACK BUTTON */}
-            <div className="flex justify-between items-center mb-8 lg:mb-12">
-              <button 
+        {/* SIDEBAR — GLASSMORPHIC CINEMATIC HUD */}
+        <aside className="w-full lg:w-[400px] xl:w-[460px] flex-1 lg:flex-none lg:h-full flex flex-col border-t lg:border-t-0 lg:border-l border-white/[0.07] relative z-10 overflow-hidden"
+          style={{ background: 'linear-gradient(160deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.92) 100%)', backdropFilter: 'blur(40px)' }}>
+
+          {/* Ambient glow layers */}
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-indigo-500/[0.06] rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-cyan-500/[0.05] rounded-full blur-[60px] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.025] via-transparent to-transparent pointer-events-none" />
+
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide p-5 sm:p-7 lg:p-8 pb-20 lg:pb-8 relative z-10">
+
+            {/* ── Header Row ── */}
+            <div className="flex items-center justify-between mb-7">
+              <button
                 onClick={() => router.push('/customer/dashboard')}
-                className="size-10 sm:size-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all group"
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.09] transition-all group"
               >
-                <ArrowLeft className="size-5 group-hover:-translate-x-1 transition-transform" />
+                <ArrowLeft className="size-4 group-hover:-translate-x-0.5 transition-transform" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
               </button>
-              <div className="flex flex-col items-end">
-                <p className="text-white font-black text-xs sm:text-sm tracking-tight italic">{techDetails.service}</p>
-                <p className="text-[8px] sm:text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1">ID: {bookingId?.slice(-6).toUpperCase()}</p>
+
+              <div className="flex flex-col items-end gap-0.5">
+                <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">{techDetails.service}</span>
+                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.25em]">#{bookingId?.slice(-6).toUpperCase()}</span>
               </div>
             </div>
 
-            <div className="space-y-6 sm:space-y-8">
-              {/* Tech Profile Card - Glassmorphism v2 */}
-              <div className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/[0.08] shadow-2xl overflow-hidden group" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)' }}>
-                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                 
-                 <div className="relative flex flex-col items-center text-center">
-                    <div className="relative mb-6">
-                      <div className="size-20 sm:size-28 rounded-[2.5rem] bg-slate-900 border border-white/10 overflow-hidden shadow-2xl relative group-hover:scale-105 transition-transform duration-500">
-                        {techDetails.avatar ? (
-                          <div className="relative size-full">
-                            <img src={techDetails.avatar} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-slate-900 text-white font-black text-4xl">{techDetails.name.charAt(0)}</div>
-                        )}
-                      </div>
-                      <div className="absolute -bottom-2 -right-2 size-8 sm:size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 flex items-center justify-center shadow-2xl">
-                        <ShieldCheck className="size-4 sm:size-5 text-white" />
-                      </div>
-                    </div>
+            {/* ── Live Status Badge ── */}
+            <div className="flex items-center gap-3 mb-6 px-4 py-3 rounded-2xl border border-white/[0.06]"
+              style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <span className="relative flex size-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60" />
+                <span className="relative inline-flex rounded-full size-2.5 bg-cyan-400" />
+              </span>
+              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Live Satellite Link</span>
+              <span className="ml-auto text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-xl border"
+                style={{
+                  color: status === 'Completed' ? '#34d399' : status === 'Cancelled' ? '#f87171' : '#818cf8',
+                  borderColor: status === 'Completed' ? 'rgba(52,211,153,0.2)' : status === 'Cancelled' ? 'rgba(248,113,113,0.2)' : 'rgba(129,140,248,0.2)',
+                  background: status === 'Completed' ? 'rgba(52,211,153,0.08)' : status === 'Cancelled' ? 'rgba(248,113,113,0.08)' : 'rgba(129,140,248,0.08)'
+                }}>
+                {status}
+              </span>
+            </div>
 
-                    <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tighter italic mb-1">{techDetails.name}</h3>
-                    <div className="flex items-center gap-2 mb-8">
-                      <div className="flex text-amber-400 gap-0.5">
-                        {[...Array(5)].map((_, i) => <Star key={i} className={cn("size-3.5", i < Math.floor(techDetails.rating) ? "fill-current" : "opacity-30")} />)}
-                      </div>
-                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{techDetails.rating}</span>
-                    </div>
-                    
-                    <div className="w-full grid grid-cols-2 gap-3 sm:gap-4">
-                        <a href={`tel:${techDetails.phone}`} className="flex items-center justify-center gap-3 py-4 sm:py-5 bg-white rounded-3xl border border-white/10 hover:bg-slate-100 transition-all group/btn shadow-xl active:scale-[0.98]">
-                          <Phone className="size-4 sm:size-5 text-slate-900" />
-                          <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Call Tech</span>
-                        </a>
-                        <div className="flex flex-col items-center justify-center py-3 bg-white/[0.04] backdrop-blur-xl text-white rounded-3xl border border-white/[0.1] shadow-inner group/otp">
-                          <span className="text-[7px] font-black uppercase tracking-[0.3em] text-white/30 mb-0.5">Access Protocol</span>
-                          <span className="text-xl sm:text-2xl font-black tracking-[0.3em] text-emerald-400 group-hover:scale-110 transition-transform">{otp}</span>
-                        </div>
-                    </div>
-                 </div>
-
-                 {/* Cancel Action - Integrated subtly */}
-                 {status !== 'In Progress' && status !== 'Completed' && status !== 'Cancelled' && (
-                   <button 
-                     onClick={() => setShowCancelModal(true)}
-                     className="w-full mt-6 py-4 bg-white/[0.02] hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 rounded-2xl border border-white/[0.05] hover:border-rose-500/20 transition-all text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                   >
-                     <XCircle className="size-3.5" />
-                     Abort Booking Protocol
-                   </button>
-                 )}
+            {/* ── ETA + Distance Metric Row ── */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-1.5" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex items-center gap-2">
+                  <Clock className="size-3.5 text-amber-400" />
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">ETA</span>
+                </div>
+                <p className="text-lg font-black text-white tracking-tight leading-none">{eta}</p>
               </div>
-
-              {/* Status Timeline - Cinematic Style */}
-              <div className="relative py-4 px-2">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Live Protocol Sequence</span>
+              <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-1.5" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex items-center gap-2">
+                  <Navigation className="size-3.5 text-cyan-400" />
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Distance</span>
                 </div>
-                
-                <div className="space-y-2">
-                  <TimelineItem active={true} completed={true} title="Deployment Initialized" desc="Satellite link encrypted & synced" />
-                  <TimelineItem active={true} completed={status === 'Arrived' || status === 'In Progress'} title="Specialist En-Route" desc={`${eta} • ${localDistance}`} icon={<Navigation className="size-6" />} />
-                  <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Active Execution" desc="On-site maintenance in progress" icon={<Zap className="size-6" />} isLast={true} />
-                </div>
+                <p className="text-lg font-black text-white tracking-tight leading-none">{localDistance}</p>
               </div>
             </div>
+
+            {/* ── Technician Profile Card ── */}
+            <div className="rounded-[2rem] border border-white/[0.07] overflow-hidden mb-6 relative group"
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)' }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.06] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+              {/* Avatar + name row */}
+              <div className="flex items-center gap-4 p-5 sm:p-6">
+                <div className="relative shrink-0">
+                  <div className="size-16 sm:size-20 rounded-[1.5rem] overflow-hidden border border-white/[0.1] shadow-xl bg-slate-800">
+                    {techDetails.avatar ? (
+                      <img src={techDetails.avatar} className="w-full h-full object-cover" alt="Tech" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white font-black text-2xl">
+                        {techDetails.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1.5 -right-1.5 size-6 bg-emerald-500 rounded-xl border-2 border-slate-900 flex items-center justify-center shadow-lg">
+                    <ShieldCheck className="size-3.5 text-white" />
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg sm:text-xl font-black text-white tracking-tight truncate">{techDetails.name}</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mt-0.5">{techDetails.service}</p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <div className="flex text-amber-400 gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={cn("size-3", i < Math.floor(techDetails.rating) ? "fill-current" : "opacity-25")} />
+                      ))}
+                    </div>
+                    <span className="text-[9px] font-black text-slate-500">{techDetails.rating}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-white/[0.06] mx-5" />
+
+              {/* OTP + Call row */}
+              <div className="grid grid-cols-2 gap-3 p-5 sm:p-6">
+                {/* OTP */}
+                <div className="flex flex-col items-center justify-center gap-1.5 py-4 rounded-2xl border border-emerald-500/20"
+                  style={{ background: 'rgba(52,211,153,0.06)' }}>
+                  <span className="text-[7px] font-black uppercase tracking-[0.3em] text-emerald-400/60">Access OTP</span>
+                  <span className="text-2xl font-black tracking-[0.25em] text-emerald-400">{otp}</span>
+                </div>
+
+                {/* Call button */}
+                <a href={`tel:${techDetails.phone}`}
+                  className="flex flex-col items-center justify-center gap-1.5 py-4 rounded-2xl border border-white/[0.08] hover:border-white/20 transition-all group/call active:scale-95"
+                  style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <Phone className="size-5 text-white group-hover/call:text-cyan-400 transition-colors" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover/call:text-white transition-colors">Call Now</span>
+                </a>
+              </div>
+
+              {/* Abort button */}
+              {status !== 'In Progress' && status !== 'Completed' && status !== 'Cancelled' && (
+                <div className="px-5 sm:px-6 pb-5">
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="w-full py-3.5 rounded-2xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-rose-500/[0.15] text-slate-500 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/[0.06] transition-all"
+                  >
+                    <XCircle className="size-3.5" />
+                    Abort Booking Protocol
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ── Live Protocol Timeline ── */}
+            <div className="rounded-[2rem] border border-white/[0.07] p-5 sm:p-6"
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%)' }}>
+              <div className="flex items-center gap-2.5 mb-6">
+                <span className="relative flex size-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full size-2 bg-cyan-400" />
+                </span>
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.35em]">Live Protocol Sequence</span>
+              </div>
+
+              <div className="space-y-2">
+                <TimelineItem active={true} completed={true} title="Deployment Initialized" desc="Satellite link encrypted & synced" />
+                <TimelineItem active={true} completed={status === 'Arrived' || status === 'In Progress'} title="Specialist En-Route" desc={`${eta} • ${localDistance}`} icon={<Navigation className="size-6" />} />
+                <TimelineItem active={status === 'In Progress'} completed={status === 'Completed'} title="Active Execution" desc="On-site maintenance in progress" icon={<Zap className="size-6" />} isLast={true} />
+              </div>
+            </div>
+
           </div>
         </aside>
 
