@@ -437,14 +437,8 @@ export default function TrackingPage() {
                         <div className="w-0.5 h-4 bg-gradient-to-b from-white/30 to-transparent" />
                       </div>
 
-                      <div className="size-14 sm:size-16 bg-slate-900 rounded-[2rem] p-1 shadow-2xl border border-white/20 relative z-10 transition-transform group-hover:scale-110 duration-500">
-                        <div className="w-full h-full bg-white rounded-[1.8rem] flex items-center justify-center overflow-hidden">
-                          {techDetails.avatar ? (
-                            <img src={techDetails.avatar} className="size-full object-cover" alt="Tech" />
-                          ) : (
-                            <span className="text-3xl sm:text-4xl">🛠️</span>
-                          )}
-                        </div>
+                      <div className="relative z-10">
+                        <span className="text-4xl sm:text-5xl drop-shadow-[0_10px_15px_rgba(34,211,238,0.4)] hover:scale-110 transition-transform block">🛠️</span>
                       </div>
                       
                       <div className="absolute top-16 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-white text-[8px] sm:text-[9px] font-black rounded-lg uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10 flex items-center gap-1.5">
@@ -458,12 +452,13 @@ export default function TrackingPage() {
               {destinationLocation && (
                 <OverlayView position={destinationLocation} mapPaneName="overlayMouseTarget">
                   <div className="relative -translate-x-1/2 -translate-y-1/2">
-                    <div className="size-10 bg-emerald-500 rounded-2xl border-4 border-slate-950 shadow-2xl relative flex items-center justify-center">
-                       <span className="text-xl">📍</span>
-                       <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-ping opacity-25" />
-                       <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-emerald-500 text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest rounded shadow-lg whitespace-nowrap flex items-center gap-1">
-                         YOU
-                       </div>
+                    <div className="relative z-10 flex flex-col items-center">
+                      <span className="text-4xl sm:text-5xl drop-shadow-[0_10px_15px_rgba(52,211,153,0.4)] hover:scale-110 transition-transform block">📍</span>
+                      <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-30 pointer-events-none scale-150" />
+                      <div className="mt-2 px-3 py-1 bg-slate-900/90 backdrop-blur-md text-[8px] sm:text-[9px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap shadow-2xl border border-white/10 flex items-center gap-1.5 rounded-lg">
+                        <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        YOU • LIVE
+                      </div>
                     </div>
                   </div>
                 </OverlayView>
