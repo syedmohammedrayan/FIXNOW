@@ -609,51 +609,8 @@ export default function TechnicianServicePage() {
                       >
                         <Zap className="size-5 sm:size-6 text-emerald-400" />
                       </button>
-                  <div className={cn(
-                    "bg-slate-950 border border-white/[0.08] overflow-hidden transition-all duration-700 shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative",
-                    isMapFullscreen ? "h-screen w-screen rounded-none" : "h-[500px] sm:h-[600px] lg:h-full rounded-[2.5rem] sm:rounded-[3rem]"
-                  )}>
-                    <div className="relative h-full w-full bg-slate-950">
-                      {/* Mobile-Only Tactical Overlay Headers */}
-                      <div className="absolute top-4 left-4 z-[60] sm:hidden flex flex-col gap-2">
-                        <div className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl">
-                          <h2 className="text-xs font-black text-white uppercase tracking-tighter">{booking?.category || 'Service'}</h2>
-                          <p className="text-[8px] text-slate-500 font-black uppercase tracking-widest">#{bookingId?.slice(-8).toUpperCase()}</p>
-                        </div>
-                        <div className={cn(
-                          "px-4 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest text-center",
-                          booking?.status === 'Completed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                          booking?.status === 'Cancelled' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
-                          "bg-cyan-500/10 border-cyan-500/20 text-cyan-400"
-                        )}>
-                          {booking?.status || 'Active'}
-                        </div>
-                      </div>
-
-                      {/* Floating Map Controls - Tactical Style */}
-                      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] flex flex-col gap-3">
-                        <button
-                          onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                          className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
-                          title={isMapFullscreen ? "Exit HUD" : "Tactical HUD"}
-                        >
-                          {isMapFullscreen ? <Minimize2 className="size-5 sm:size-6 text-cyan-400" /> : <Maximize2 className="size-5 sm:size-6" />}
-                        </button>
-                        <button
-                          onClick={() => setIsDarkMode(!isDarkMode)}
-                          className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
-                        >
-                          {isDarkMode ? <Sun className="size-5 sm:size-6 text-amber-400 animate-spin-slow" /> : <Moon className="size-5 sm:size-6" />}
-                        </button>
-                        {techLocation && (
-                          <button
-                            onClick={() => map?.panTo(techLocation)}
-                            className="size-12 sm:size-14 rounded-[1.2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/20 text-white hover:bg-white/10 transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] group active:scale-90"
-                          >
-                            <Zap className="size-5 sm:size-6 text-emerald-400" />
-                          </button>
-                        )}
-                      </div>
+                    )}
+                  </div>
 
                   {isLoaded ? (
                     <GoogleMap
@@ -750,22 +707,22 @@ export default function TechnicianServicePage() {
                             </div>
                           </OverlayView>
                         )}
-                      </GoogleMap>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
-                        <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
-                        {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
-                      </div>
-                    )}
-                  </div>
+                    </GoogleMap>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 gap-4">
+                      <div className="w-12 h-12 border-4 border-white/10 border-t-cyan-400 rounded-full animate-spin" />
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Synchronizing Satellite Feed...</p>
+                      {loadError && <p className="text-rose-500 text-[8px] font-bold">{loadError.message}</p>}
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                {/* Console Section - Shown below map on mobile when in progress */}
-                {serviceInProgress && !isMapFullscreen && (
-                  <div className="mt-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
-                    <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
+              {/* Console Section - Shown below map on mobile when in progress */}
+              {serviceInProgress && !isMapFullscreen && (
+                <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
+                  <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] p-8 rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-5"><Activity className="size-32" /></div>
                     
                     <div className="flex items-center gap-4 mb-10">
                       <div className="size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
