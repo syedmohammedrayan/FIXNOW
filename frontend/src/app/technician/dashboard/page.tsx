@@ -528,10 +528,34 @@ export default function TechnicianDashboard() {
             <>
               {/* Stats Section — Improved Depth */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
-                <StatCard icon={<DollarSign className="w-5 h-5" />} label="Gross Earnings" value={`₹${profile.earnings.toLocaleString()}`} trend="+12% from last week" color="cyan" />
-                <StatCard icon={<Star className="w-5 h-5" />} label="Service Rating" value={`${profile.rating.toFixed(1)}`} trend="Highly Rated" color="emerald" />
-                <StatCard icon={<Briefcase className="w-5 h-5" />} label="Total Tasks" value={profile.totalJobs.toString()} trend="+3 completed today" color="slate" />
-                <StatCard icon={<Clock className="w-5 h-5" />} label="Current Availability" value={profile.online ? "ONLINE" : "OFFLINE"} trend={profile.online ? "Ready for assignments" : "Not accepting jobs"} color={profile.online ? "emerald" : "slate"} />
+                <StatCard 
+                  icon={<DollarSign className="w-5 h-5" />} 
+                  label="Gross Earnings" 
+                  value={`₹${(profile.earnings || 0).toLocaleString()}`} 
+                  trend={profile.earnings > 0 ? "Verified Revenue" : "No earnings yet"} 
+                  color="cyan" 
+                />
+                <StatCard 
+                  icon={<Star className="w-5 h-5" />} 
+                  label="Service Rating" 
+                  value={`${(profile.rating || 5.0).toFixed(1)}`} 
+                  trend="Verified Profile" 
+                  color="emerald" 
+                />
+                <StatCard 
+                  icon={<Briefcase className="w-5 h-5" />} 
+                  label="Total Tasks" 
+                  value={(profile.totalJobs || 0).toString()} 
+                  trend="Total Completed" 
+                  color="slate" 
+                />
+                <StatCard 
+                  icon={<Clock className="w-5 h-5" />} 
+                  label="Current Availability" 
+                  value={profile.online ? "ONLINE" : "OFFLINE"} 
+                  trend={profile.online ? "Ready for jobs" : "Duty Paused"} 
+                  color={profile.online ? "emerald" : "slate"} 
+                />
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8">

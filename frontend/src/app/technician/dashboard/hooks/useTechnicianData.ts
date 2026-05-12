@@ -206,8 +206,10 @@ export function useTechnicianData() {
           }, 0);
           
           setProfile((prev: any) => {
-            // Priority: Stats API (Exact) > Manual Transactions > Profile Field
-            const finalEarnings = Math.max(grossEarnings, dbEarnings, prev.earnings || 0);
+            // Priority: Stats API (Exact) > Manual Transactions. 
+            // We NO LONGER fallback to prev.earnings to ensure mock data from Firestore doesn't persist.
+            const finalEarnings = statsData.success ? (parseFloat(statsData.stats.totalEarnings) || 0) : grossEarnings;
+            
             const updatedProfile = { 
               ...prev, 
               earnings: finalEarnings, 
@@ -220,7 +222,8 @@ export function useTechnicianData() {
           });
         } else {
           setProfile((prev: any) => {
-            const finalEarnings = Math.max(dbEarnings, prev.earnings || 0);
+            // Strictly use DB earnings, no fallback to previous potentially mock state
+            const finalEarnings = dbEarnings;
             const updatedProfile = { ...prev, earnings: finalEarnings };
             fetchActiveBroadcasts(updatedProfile);
             return updatedProfile;
