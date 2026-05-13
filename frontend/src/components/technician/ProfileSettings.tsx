@@ -35,7 +35,7 @@ import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 import { getAvatarUrl } from '@/lib/image-utils';
 import { useJsApiLoader } from '@react-google-maps/api';
 
-const LIBRARIES: ("places" | "geometry" | "visualization")[] = ["places"];
+const LIBRARIES: ("places" | "geometry" | "visualization")[] = ["places", "geometry", "visualization"];
 
 interface ProfileProps {
   user: any;
@@ -82,7 +82,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
   }, [profile, isEditing]);
 
   const { isLoaded: googleReady } = useJsApiLoader({
-    id: 'google-maps-script',
+    id: 'fixnow-google-maps-script',
     googleMapsApiKey: currentKey,
     libraries: LIBRARIES,
   });

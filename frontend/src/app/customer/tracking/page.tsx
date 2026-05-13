@@ -141,8 +141,7 @@ export default function TrackingPage() {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: mapsKey,
     libraries: LIBRARIES,
-    // Prevent double-loading if key rotates
-    id: 'fixnow-maps-loader'
+    id: 'fixnow-google-maps-script'
   });
 
   // Handle load error by rotating key
@@ -363,13 +362,30 @@ export default function TrackingPage() {
         )}>
           {!isLoaded && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-xl z-10">
-              <div className="relative">
-                <div className="size-20 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
-                  <Navigation className="size-8 text-white/40" />
+              {loadError ? (
+                <div className="max-w-sm text-center px-8">
+                  <div className="size-16 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(244,63,94,0.2)]">
+                    <AlertTriangle className="size-8 text-rose-500" />
+                  </div>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tighter italic mb-4">Satellite Signal Lost</h3>
+                  <p className="text-slate-400 text-xs font-bold leading-relaxed uppercase tracking-widest mb-8">
+                    {loadError.message.includes('Billing') || loadError.message.includes('REQUEST_DENIED')
+                      ? "API Configuration Error: Access denied. Please ensure the Google Cloud project has an active billing account linked to these coordinates."
+                      : loadError.message}
+                  </p>
+                  <button onClick={() => window.location.reload()} className="px-10 py-4 bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-600 transition-all active:scale-95 shadow-xl shadow-rose-500/20">Retry Uplink</button>
                 </div>
-                <div className="absolute inset-0 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-              </div>
-              <p className="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">Synchronizing Tactical Overlay...</p>
+              ) : (
+                <>
+                  <div className="relative">
+                    <div className="size-20 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
+                      <Navigation className="size-8 text-white/40" />
+                    </div>
+                    <div className="absolute inset-0 border-4 border-white/10 border-t-white rounded-full animate-spin" />
+                  </div>
+                  <p className="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">Synchronizing Tactical Overlay...</p>
+                </>
+              )}
             </div>
           )}
 

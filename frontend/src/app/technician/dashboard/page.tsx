@@ -161,7 +161,7 @@ export default function TechnicianDashboard() {
   }, [profile.online, socket, user, currentJob?.id, setTechLocation]);
 
   const { isLoaded: googleReady } = useJsApiLoader({
-    id: 'google-maps-script',
+    id: 'fixnow-google-maps-script',
     googleMapsApiKey: currentKey,
     libraries: LIBRARIES,
   });

@@ -95,7 +95,7 @@ export default function TechnicianServicePage() {
   }, []);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
+    id: 'fixnow-google-maps-script',
     googleMapsApiKey: currentKey || 'DUMMY_KEY',
     libraries: LIBRARIES
   });
@@ -275,47 +275,92 @@ export default function TechnicianServicePage() {
     }
   }, [map, techLocation, resolvedCustomerLoc, isMapInteracted]);
 
-  // 2. Tactical Metrics Engine
-  useEffect(() => {
-    if (!isLoaded || !mapReady || !window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
-    
-    // Fallback static calculation
-    if (window.google?.maps?.geometry?.spherical) {
-      const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-        new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
-      );
-      setLocalDistance(meters > 1000 ? `${(meters/1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-      setEta(`${Math.ceil(meters / 400)} min`);
-    }
+    // Tactical Metrics Engine (Refactored for Routes API Compatibility)
+    const runMetrics = async () => {
+      if (!isLoaded || !mapReady || !window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
 
-    // Precise Matrix Calculation
-    try {
-      const service = new window.google.maps.DistanceMatrixService();
-      service.getDistanceMatrix(
-        { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
-        (response, status) => {
-          if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
-            const el = response.rows[0].elements[0];
-            setLocalDistance(el.distance.text);
-            setEta(el.duration.text);
-          }
+      // 1. Fallback static calculation (Geometry library remains stable)
+      if (window.google.maps.geometry?.spherical) {
+        const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+          new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+          new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
+        );
+        setLocalDistance(meters > 1000 ? `${(meters / 1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+        setEta(`${Math.ceil(meters / 400)} min`);
+      }
+
+      // 2. Precise Matrix Calculation (Migrating to RouteMatrix if available)
+      try {
+        const origins = [{ location: { lat: techLocation.lat, lng: techLocation.lng } }];
+        const destinations = [{ location: { lat: resolvedCustomerLoc.lat, lng: resolvedCustomerLoc.lng } }];
+        
+        // Check for new RouteMatrix API (v3.56+)
+        if ((window.google.maps as any).routes?.RouteMatrix) {
+          const matrixService = new (window.google.maps as any).routes.RouteMatrix();
+          matrixService.computeRouteMatrix({
+            origins,
+            destinations,
+            travelMode: 'DRIVE',
+            routingPreference: 'TRAFFIC_AWARE'
+          }).then((response: any) => {
+            const el = response[0];
+            if (el?.duration) setEta(el.duration);
+            if (el?.distanceMeters) setLocalDistance(el.distanceMeters > 1000 ? `${(el.distanceMeters/1000).toFixed(1)}km` : `${el.distanceMeters}m`);
+          }).catch(() => fallbackMatrix());
+        } else {
+          fallbackMatrix();
         }
-      );
-    } catch (e) {
-      console.error("DistanceMatrix failed:", e);
-    }
 
-    // Directions Routing
-    if (!directionsServiceRef.current) directionsServiceRef.current = new window.google.maps.DirectionsService();
-    try {
-      directionsServiceRef.current.route(
-        { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
-        (result, status) => { if (status === 'OK') setDirections(result); }
-      );
-    } catch (e) {
-      console.error("DirectionsService failed:", e);
-    }
+        function fallbackMatrix() {
+          const service = new window.google.maps.DistanceMatrixService();
+          service.getDistanceMatrix(
+            { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
+            (response, status) => {
+              if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
+                const el = response.rows[0].elements[0];
+                setLocalDistance(el.distance.text);
+                setEta(el.duration.text);
+              } else if (status === 'REQUEST_DENIED') {
+                console.error("Distance Matrix Access Denied: Check Billing/API Config");
+              }
+            }
+          );
+        }
+      } catch (e) {
+        console.error("DistanceMatrix logic failed:", e);
+      }
+
+      // 3. Directions Routing (Migrating to Routes API if available)
+      try {
+        if ((window.google.maps as any).routes?.Route) {
+          // Note: Routes API returns different result types than DirectionsRenderer expects
+          // For now, we continue using DirectionsService for the visual renderer compatibility
+          // but we can compute routes for data if needed.
+          // Fallback to DirectionsService for Renderer compatibility
+          runDirectionsFallback();
+        } else {
+          runDirectionsFallback();
+        }
+
+        function runDirectionsFallback() {
+          if (!directionsServiceRef.current) directionsServiceRef.current = new window.google.maps.DirectionsService();
+          directionsServiceRef.current.route(
+            { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
+            (result, status) => { 
+              if (status === 'OK') {
+                setDirections(result); 
+              } else if (status === 'REQUEST_DENIED') {
+                console.error("Directions Access Denied: Check Billing/API Config");
+              }
+            }
+          );
+        }
+      } catch (e) {
+        console.error("DirectionsService logic failed:", e);
+      }
+    };
+
+    runMetrics();
   }, [isLoaded, mapReady, techLocation, resolvedCustomerLoc]);
 
   // 3. Camera Management
@@ -841,7 +886,17 @@ export default function TechnicianServicePage() {
                         <p className="text-[12px] font-black text-white uppercase tracking-[0.3em] italic mb-2">Synchronizing Satellite Feed</p>
                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Awaiting Uplink Confirmation...</p>
                       </div>
-                      {loadError && <p className="text-rose-500 text-[10px] font-black px-8 text-center uppercase tracking-widest">{loadError.message}</p>}
+                      {loadError && (
+                        <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl max-w-sm mx-auto">
+                          <p className="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center">Satellite Uplink Failure</p>
+                          <p className="text-white/60 text-[9px] mt-2 text-center leading-relaxed">
+                            {loadError.message.includes('Billing') || loadError.message.includes('REQUEST_DENIED') 
+                              ? "API Configuration Error: Access denied. Please ensure the Google Cloud project has an active billing account linked to these coordinates." 
+                              : loadError.message}
+                          </p>
+                          <button onClick={() => window.location.reload()} className="mt-3 w-full py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-500 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all">Retry Uplink</button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
