@@ -99,6 +99,7 @@ router.post('/signup', async (req, res) => {
       // Store in pending collection ONLY
       const pendingData = {
         name, email, phone, role, category,
+        skills: skills || [],
         password,
         gov_id_url: govIdUrl || null,
         password_hint: passwordHint || '',
@@ -475,6 +476,7 @@ router.post('/techs/verify-action', async (req, res) => {
         email: pendingData.email,
         phone: pendingData.phone,
         category: pendingData.category,
+        skills: pendingData.skills || [],
         password_hint: pendingData.password_hint || '',
         gov_id_url: pendingData.gov_id_url,
         approved: true,
@@ -646,7 +648,6 @@ router.post('/:id/update-profile', async (req, res) => {
     const body = { ...req.body };
     
     // Clean dangerous fields
-    delete body.skills; 
     delete body.specialityTagline; 
 
     // Convert camelCase to snake_case for DB
