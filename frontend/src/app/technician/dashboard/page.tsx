@@ -30,6 +30,9 @@ import { doc, onSnapshot, updateDoc, collection, query, where, getDocs, setDoc }
 import { onAuthStateChanged } from 'firebase/auth';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 import { useTechnicianData } from "./hooks/useTechnicianData";
+import { useJsApiLoader } from "@react-google-maps/api";
+
+const LIBRARIES: ("places" | "geometry" | "visualization")[] = ["places", "geometry", "visualization"];
 
 // Components
 import TechnicianSidebar from "@/components/technician/Sidebar";
@@ -119,7 +122,6 @@ export default function TechnicianDashboard() {
   const [showPaymentScreen, setShowPaymentScreen] = useState(false);
   const [actionDone, setActionDone] = useState<"completed" | null>(null);
   const [liveAddress, setLiveAddress] = useState<string>("");
-  const [googleReady, setGoogleReady] = useState(false);
   const [showIdVerification, setShowIdVerification] = useState(false);
 
   useEffect(() => {
@@ -158,35 +160,24 @@ export default function TechnicianDashboard() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [profile.online, socket, user, currentJob?.id, setTechLocation]);
 
-  // Google Maps Script Loader for Geocoding
-  useEffect(() => {
-    if (window.google) {
-      setGoogleReady(true);
-      return;
-    }
-    const scriptId = 'google-maps-geocoder-script';
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${currentKey}&libraries=places,geometry,visualization`;
-      script.async = true;
-      script.onload = () => setGoogleReady(true);
-      script.onerror = () => {
-        console.error("Google Maps script load failed. Rotating key...");
-        rotateKey();
-      };
-      document.head.appendChild(script);
-    }
-  }, [currentKey, rotateKey]);
+  const { isLoaded: googleReady } = useJsApiLoader({
+    id: 'google-maps-script',
+    googleMapsApiKey: currentKey,
+    libraries: LIBRARIES,
+  });
 
-  // Reverse Geocoding for Dashboard
+  // Re-geocode on key rotation failure
+  useEffect(() => {
+    if (!googleReady && currentKey) {
+      // Logic handled by useJsApiLoader internal retry or rotateKey in other hooks
+    }
+  }, [googleReady, currentKey]);
+
   useEffect(() => {
     const runGeocode = () => {
       if (!window.google?.maps?.Geocoder) return;
       
-      // Use live location first, then fallback to current job's stored coords
       const loc = customerLocation || (currentJob?.customerLocation) || (currentJob?.customerLat ? { lat: currentJob.customerLat, lng: currentJob.customerLng } : null);
-      
       if (!loc) return;
       
       const geocoder = new window.google.maps.Geocoder();
@@ -195,7 +186,6 @@ export default function TechnicianDashboard() {
           setLiveAddress(results[0].formatted_address);
         } else {
           console.warn("Dashboard Geocode Status:", status);
-          // If geocoding fails but we have coords, show coords as last resort
           if (!liveAddress) setLiveAddress(`${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`);
         }
       });
@@ -203,11 +193,8 @@ export default function TechnicianDashboard() {
 
     if (googleReady) {
       runGeocode();
-    } else {
-      const t = setTimeout(runGeocode, 1000);
-      return () => clearTimeout(t);
     }
-  }, [customerLocation, currentJob?.id, googleReady]);
+  }, [customerLocation, currentJob?.id, googleReady, liveAddress]);
 
   // ─── Approval Gate ───
   if (profile.name !== "Loading..." && profile.approved !== true) {

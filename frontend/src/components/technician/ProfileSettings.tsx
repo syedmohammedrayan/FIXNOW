@@ -33,6 +33,9 @@ import { cn } from '@/lib/utils';
 import { ALL_SERVICES } from '@/lib/services';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 import { getAvatarUrl } from '@/lib/image-utils';
+import { useJsApiLoader } from '@react-google-maps/api';
+
+const LIBRARIES: ("places" | "geometry" | "visualization")[] = ["places"];
 
 interface ProfileProps {
   user: any;
@@ -78,23 +81,14 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
     }
   }, [profile, isEditing]);
 
+  const { isLoaded: googleReady } = useJsApiLoader({
+    id: 'google-maps-script',
+    googleMapsApiKey: currentKey,
+    libraries: LIBRARIES,
+  });
+
   useEffect(() => {
-    // Load Google Maps script if not already present
-    if (typeof window !== 'undefined' && !(window as any).google) {
-      if (!document.getElementById('google-maps-script')) {
-        const script = document.createElement('script');
-        script.id = 'google-maps-script';
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${currentKey}&libraries=places`;
-        script.async = true;
-        script.defer = true;
-        script.onload = () => initAutocomplete();
-        script.onerror = () => {
-          console.error("Google Maps script load failed in Profile. Rotating...");
-          rotateKey();
-        };
-        document.head.appendChild(script);
-      }
-    } else if (typeof window !== 'undefined' && (window as any).google) {
+    if (googleReady) {
       initAutocomplete();
     }
 
@@ -102,7 +96,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
       if (addressInputRef.current && window.google?.maps?.places?.Autocomplete) {
         autocompleteRef.current = new window.google.maps.places.Autocomplete(addressInputRef.current, {
           types: ['(regions)'],
-          componentRestrictions: { country: 'in' } // Focus on India for FIXNOW
+          componentRestrictions: { country: 'in' }
         });
         autocompleteRef.current.addListener('place_changed', () => {
           const place = autocompleteRef.current.getPlace();
@@ -113,7 +107,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
         });
       }
     }
-  }, [currentKey, rotateKey]);
+  }, [googleReady]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setIsEditing(true);
