@@ -159,6 +159,7 @@ router.post('/signup', async (req, res) => {
       role: role || 'customer',
       phone: phone || '',
       address: address || '',
+      password: password || '',
       password_hint: passwordHint || '',
       updated_at: new Date().toISOString(),
       created_at: new Date().toISOString()
@@ -391,6 +392,15 @@ router.post('/reset-password', async (req, res) => {
       }
     } catch (authErr) {
       console.warn('Auth password reset warning:', authErr.message);
+    }
+
+    if (user) {
+      await db.collection('users').doc(user.id).update({ password: newPassword });
+      const techDoc = await db.collection('technicians').doc(user.id).get();
+      if (techDoc.exists) {
+        await db.collection('technicians').doc(user.id).update({ password: newPassword });
+      }
+      accountUpdated = true;
     }
 
     if (pendingDocId) {
