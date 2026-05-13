@@ -71,31 +71,23 @@ export default function TechnicianHeader({
           <h1 className="text-3xl sm:text-4xl font-black tracking-tighter uppercase italic text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_4px_15px_rgba(255,255,255,0.2)]">
             Command Center
           </h1>
-          <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 group/tech-id">
-            <div className="flex items-center gap-3 px-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl backdrop-blur-2xl shadow-2xl transition-all duration-500 group-hover/tech-id:bg-white/[0.05] group-hover/tech-id:border-white/20">
-              <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></span>
-              </div>
-              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] italic">Operational Node</span>
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mt-6 flex items-center gap-4 group/tech-profile"
+          >
+            <div className="w-1 sm:w-1.5 h-7 sm:h-10 bg-gradient-to-b from-white to-slate-800 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all duration-500 group-hover/tech-profile:h-12 group-hover/tech-profile:shadow-[0_0_30px_rgba(255,255,255,0.3)]" />
+            <div className="flex flex-col justify-center">
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-0.5 opacity-60">Verified Identity</p>
+              <h2 className="text-lg sm:text-3xl font-black text-white tracking-tighter uppercase italic flex items-center gap-3 sm:gap-4">
+                <span className="text-slate-400 font-bold tracking-[0.1em] text-xs sm:text-sm normal-case not-italic opacity-80">Technician:</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-500 drop-shadow-[0_10px_20px_rgba(255,255,255,0.1)] group-hover/tech-profile:text-white transition-all duration-500">
+                  {profile.name}
+                </span>
+              </h2>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:block w-8 h-px bg-gradient-to-r from-white/20 to-transparent" />
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Authorized Personnel</span>
-                  <div className="size-1 rounded-full bg-slate-800" />
-                </div>
-                <h2 className="text-sm sm:text-lg font-black text-white uppercase tracking-tighter sm:tracking-tight flex items-center gap-3 mt-0.5">
-                  <span className="text-slate-400/80 font-bold tracking-[0.1em] text-[11px] sm:text-xs">Technician:</span>
-                  <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400 drop-shadow-2xl">
-                    {profile.name}
-                  </span>
-                </h2>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
 
         <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-3 sm:gap-6">
