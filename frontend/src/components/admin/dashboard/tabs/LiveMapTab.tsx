@@ -25,18 +25,35 @@ const Map          = dynamic(() => import('@/components/ui/map').then(mod => mod
 const MapMarker    = dynamic(() => import('@/components/ui/map').then(mod => mod.MapMarker),    { ssr: false });
 const MarkerContent = dynamic(() => import('@/components/ui/map').then(mod => mod.MarkerContent), { ssr: false });
 const MapPopup     = dynamic(() => import('@/components/ui/map').then(mod => mod.MapPopup),     { ssr: false });
+import { isValidCoordinate } from '@/components/ui/map';
 
 export function LiveMapTab() {
   const [mapTheme,       setMapTheme]       = useState<'dark' | 'light'>('dark');
   const [techs,          setTechs]          = useState<any[]>([]);
   const [bookings,       setBookings]       = useState<any[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
-  const [mapCenter,      setMapCenter]      = useState<[number, number]>([77.2090, 28.6139]);
+  const [mapCenter,      setMapCenter]      = useState<[number, number]>([0, 0]);
   const [loading,        setLoading]        = useState(true);
+
+  // Initial Contextual Centering
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (mapCenter[0] === 0) setMapCenter([pos.coords.longitude, pos.coords.latitude]);
+        },
+        () => {}
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const unsubTechs = onSnapshot(collection(db, 'technicians'), snap => {
-      const techData = snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any)).filter(t => t.location?.lat || t.lat);
+      const techData = snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any))
+        .filter(t => {
+          const loc = t.location || { lat: t.lat, lng: t.lng };
+          return isValidCoordinate(loc);
+        });
       setTechs(techData);
       
       // Dynamically center map on the fleet
@@ -46,7 +63,7 @@ export function LiveMapTab() {
         let count = 0;
         techData.forEach(t => {
           const loc = t.location || { lat: t.lat, lng: t.lng };
-          if (loc && typeof loc.lat === 'number' && typeof loc.lng === 'number') {
+          if (isValidCoordinate(loc)) {
             sumLat += loc.lat;
             sumLng += loc.lng;
             count++;
@@ -62,7 +79,11 @@ export function LiveMapTab() {
 
     const q = query(collection(db, 'bookings'), where('status', 'in', ['Accepted', 'On the Way', 'Arrived', 'In Progress']));
     const unsubBookings = onSnapshot(q, snap => {
-      setBookings(snap.docs.map(d => ({ id: d.id, type: 'customer', ...d.data() } as any)).filter(b => b.customerLocation?.lat || b.customerLat));
+      setBookings(snap.docs.map(d => ({ id: d.id, type: 'customer', ...d.data() } as any))
+        .filter(b => {
+          const loc = b.customerLocation || { lat: b.customerLat, lng: b.customerLng };
+          return isValidCoordinate(loc);
+        }));
     });
 
     return () => { unsubTechs(); unsubBookings(); };

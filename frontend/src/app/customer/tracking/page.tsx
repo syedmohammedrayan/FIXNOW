@@ -101,7 +101,21 @@ export default function TrackingPage() {
   
   // Stable map states to prevent snapping loops
   const [mapZoom, setMapZoom] = useState(14);
-  const [mapCenter, setMapCenter] = useState({ lat: 28.6139, lng: 77.2090 });
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral | null>(null);
+
+  // Initial Contextual Centering (Localize before live data)
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (!mapCenter) setMapCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        () => {
+          // Fallback if denied, but don't show New Delhi immediately
+        }
+      );
+    }
+  }, []);
 
   // Cancellation states
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -315,12 +329,17 @@ export default function TrackingPage() {
   }, [isLoaded, techLocation, userLocation, booking?.customerLocation]);
 
   useEffect(() => {
-    if (map && techLocation && userLocation && window.google?.maps && !isMapInteracted) {
+    if (!map || !window.google?.maps || isMapInteracted) return;
+
+    if (techLocation && userLocation) {
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(techLocation);
       bounds.extend(userLocation);
       map.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
-      // We don't set hasInitiallyCentered here anymore, we rely on isMapInteracted
+    } else if (techLocation) {
+      map.panTo(techLocation);
+    } else if (userLocation) {
+      map.panTo(userLocation);
     }
   }, [map, techLocation, userLocation, isMapInteracted]);
 
@@ -357,27 +376,21 @@ export default function TrackingPage() {
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={{ width: '100%', height: '100%' }}
-              center={mapCenter}
+              center={mapCenter || { lat: 0, lng: 0 }}
               zoom={mapZoom}
               onLoad={onLoad}
               onDragStart={() => setIsMapInteracted(true)}
-              onDragEnd={() => {
-                if (map) {
-                  const c = map.getCenter();
-                  if (c) setMapCenter({ lat: c.lat(), lng: c.lng() });
-                }
-              }}
               onZoomChanged={() => {
                 if (map) {
                   const z = map.getZoom();
-                  if (z !== undefined) setMapZoom(z);
+                  if (z) setMapZoom(z);
                 }
-                if (isLoaded) setIsMapInteracted(true);
               }}
-              options={{ 
-                disableDefaultUI: true, 
+              options={{
+                disableDefaultUI: true,
+                styles: isDarkMode ? darkMapStyles : lightMapStyles,
                 zoomControl: false,
-                styles: isDarkMode ? darkMapStyles : lightMapStyles
+                gestureHandling: 'greedy'
               }}
             >
               {directions && (

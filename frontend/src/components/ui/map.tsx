@@ -77,6 +77,27 @@ const DEFAULT_STYLES = {
   dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
 };
 
+// --- Helpers ---
+export function isValidCoordinate(coord: any): boolean {
+  if (!coord) return false;
+  let lat, lng;
+  if (Array.isArray(coord)) {
+    lng = coord[0];
+    lat = coord[1];
+  } else {
+    lat = coord.lat;
+    lng = coord.lng;
+  }
+  return (
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    lat !== 0 &&
+    lng !== 0 &&
+    Math.abs(lat) <= 90 &&
+    Math.abs(lng) <= 180
+  );
+}
+
 // --- Components ---
 export function Map({
   center = [0, 0],
@@ -106,8 +127,8 @@ export function Map({
     const mapInstance = new MapLibreGL.Map({
       container: containerRef.current,
       style: currentStyle || DEFAULT_STYLES.light,
-      center,
-      zoom,
+      center: isValidCoordinate(center) ? center : [0, 0],
+      zoom: isValidCoordinate(center) ? zoom : 1,
     });
 
     mapInstance.on("load", () => {
@@ -130,8 +151,8 @@ export function Map({
 
   // Update center dynamically
   useEffect(() => {
-    if (map && center) {
-      map.flyTo({ center, speed: 1.2 });
+    if (map && isValidCoordinate(center)) {
+      map.flyTo({ center, speed: 1.2, essential: true });
     }
   }, [map, center[0], center[1]]);
 
@@ -160,7 +181,7 @@ export function MapMarker({
   const [element, setElement] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !isValidCoordinate([longitude, latitude])) return;
 
     const el = document.createElement("div");
     setElement(el);
@@ -191,7 +212,7 @@ export function MapMarker({
   }, [map]);
 
   useEffect(() => {
-    if (markerRef.current) {
+    if (markerRef.current && isValidCoordinate([longitude, latitude])) {
       markerRef.current.setLngLat([longitude, latitude]);
     }
   }, [longitude, latitude]);
@@ -216,7 +237,7 @@ export function MapPopup({
   const [element, setElement] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !isValidCoordinate([longitude, latitude])) return;
 
     const el = document.createElement("div");
     setElement(el);
@@ -244,7 +265,7 @@ export function MapPopup({
   }, [map]);
 
   useEffect(() => {
-    if (popupRef.current) {
+    if (popupRef.current && isValidCoordinate([longitude, latitude])) {
       popupRef.current.setLngLat([longitude, latitude]);
     }
   }, [longitude, latitude]);

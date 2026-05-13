@@ -228,8 +228,20 @@ export default function TechnicianServicePage() {
   
   // Stable map states to prevent snapping loops
   const [mapZoom, setMapZoom] = useState(14);
-  const [mapCenter, setMapCenter] = useState({ lat: 20.5937, lng: 78.9629 });
-  
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral | null>(null);
+
+  // Initial Contextual Centering (Localize before live data)
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (!mapCenter) setMapCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        () => {}
+      );
+    }
+  }, []);
+
   // 1. Consolidated Location Resolver (Top Level)
   const resolvedCustomerLoc = useMemo(() => {
     if (!booking) return null;
@@ -246,6 +258,22 @@ export default function TechnicianServicePage() {
     }
     return null;
   }, [booking]);
+
+  // 1. Tactical Centering Engine
+  useEffect(() => {
+    if (!map || !window.google?.maps || isMapInteracted) return;
+
+    if (techLocation && resolvedCustomerLoc) {
+      const b = new window.google.maps.LatLngBounds();
+      b.extend(techLocation);
+      b.extend(resolvedCustomerLoc);
+      map.fitBounds(b, { top: 80, right: 80, bottom: 80, left: 80 });
+    } else if (techLocation) {
+      map.panTo(techLocation);
+    } else if (resolvedCustomerLoc) {
+      map.panTo(resolvedCustomerLoc);
+    }
+  }, [map, techLocation, resolvedCustomerLoc, isMapInteracted]);
 
   // 2. Tactical Metrics Engine
   useEffect(() => {
@@ -709,37 +737,19 @@ export default function TechnicianServicePage() {
                     <GoogleMap
                       mapContainerClassName="w-full h-full"
                       mapContainerStyle={{ width: '100%', height: '100%', position: 'absolute' }}
-                      center={mapCenter}
+                      center={mapCenter || { lat: 0, lng: 0 }}
                       zoom={mapZoom}
                       onLoad={(m) => { 
                         if (!window.google?.maps) return;
                         setMap(m); 
                         setMapReady(true);
-                        // Force initial Tactical Fit
-                        if (techLocation && resolvedCustomerLoc && window.google.maps.LatLngBounds) {
-                          try {
-                            const b = new window.google.maps.LatLngBounds();
-                            b.extend(techLocation);
-                            b.extend(resolvedCustomerLoc);
-                            m.fitBounds(b, { top: 80, right: 80, bottom: 80, left: 80 });
-                          } catch (e) {
-                            console.warn("Map fitBounds failed:", e);
-                          }
-                        }
                       }}
                       onDragStart={() => setIsMapInteracted(true)}
-                      onDragEnd={() => {
-                        if (map) {
-                          const c = map.getCenter();
-                          if (c) setMapCenter({ lat: c.lat(), lng: c.lng() });
-                        }
-                      }}
                       onZoomChanged={() => {
                         if (map) {
                           const z = map.getZoom();
                           if (z !== undefined) setMapZoom(z);
                         }
-                        if (mapReady) setIsMapInteracted(true);
                       }}
                       options={{ 
                         disableDefaultUI: true, 
