@@ -95,70 +95,64 @@ export default function TechnicianHeader({
         </div>
 
         <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-3 sm:gap-6">
-          <div className="bg-[#0B0F1A]/80 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-3xl rounded-full p-1.5 flex shrink-0 relative overflow-hidden group/toggle">
-            {/* Ambient background glow based on state */}
-            <div className={cn(
-              "absolute inset-0 blur-2xl opacity-30 transition-all duration-1000",
-              profile.online ? "bg-emerald-500" : "bg-rose-500"
-            )} />
-
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end mr-1">
+              <span className={cn(
+                "text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500",
+                profile.online ? "text-emerald-500" : "text-slate-500"
+              )}>
+                {profile.online ? "Status: Online" : "Status: Offline"}
+              </span>
+              <span className="text-[8px] text-slate-600 font-bold uppercase tracking-widest mt-0.5">
+                {profile.online ? "Ready for jobs" : "Standby Mode"}
+              </span>
+            </div>
+            
             <button
               onClick={async () => {
-                setProfile({ ...profile, online: true });
-                if (user) {
-                  try {
-                    const axios = (await import('axios')).default;
-                    await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { online: true });
-                  } catch (e) {
-                    console.error("Online sync failed:", e);
-                  }
-                }
-              }}
-              className={cn(
-                "relative z-10 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-[10px] font-black transition-all duration-500 uppercase tracking-[0.2em] flex items-center gap-2.5",
-                profile.online
-                  ? "bg-emerald-500 text-white shadow-[0_0_30px_rgba(16,185,129,0.5)] scale-105"
-                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5",
-              )}
-            >
-              {profile.online && (
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-              )}
-              Go Online
-            </button>
-            <button
-              onClick={async () => {
-                if (currentJob) {
+                const nextState = !profile.online;
+                if (!nextState && currentJob) {
                   alert("⚠️ ACTIVE PROTOCOL: Booking or service in progress. You cannot go offline until the current assignment is complete.");
                   return;
                 }
-                setProfile({ ...profile, online: false });
+                
+                setProfile({ ...profile, online: nextState });
                 if (user) {
                   try {
                     const axios = (await import('axios')).default;
-                    await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { online: false });
+                    await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { online: nextState });
                   } catch (e) {
-                    console.error("Offline sync failed:", e);
+                    console.error("Status sync failed:", e);
                   }
                 }
               }}
               className={cn(
-                "relative z-10 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-[10px] font-black transition-all duration-500 uppercase tracking-[0.2em] flex items-center gap-2.5",
-                !profile.online
-                  ? "bg-rose-500 text-white shadow-[0_0_30px_rgba(244,63,94,0.5)] scale-105"
-                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5",
+                "relative w-[68px] h-9 rounded-full transition-all duration-500 p-1.5 flex items-center cursor-pointer group/switch",
+                profile.online 
+                  ? "bg-[#10B981] shadow-[0_0_25px_rgba(16,185,129,0.5)]" 
+                  : "bg-slate-800 border border-white/10"
               )}
             >
-              {!profile.online && (
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-              )}
-              Offline
+              {/* Sliding Handle */}
+              <motion.div
+                initial={false}
+                animate={{ 
+                  x: profile.online ? 32 : 0,
+                  backgroundColor: "#ffffff",
+                }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 30 
+                }}
+                className="size-6 rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.3)] z-10 flex items-center justify-center"
+              />
+              
+              {/* Background Indicators */}
+              <div className="absolute inset-0 flex items-center justify-between px-3 text-[8px] font-black text-white/20 uppercase tracking-tighter pointer-events-none">
+                <span className={cn("transition-opacity duration-500", profile.online ? "opacity-0" : "opacity-100")}>OFF</span>
+                <span className={cn("transition-opacity duration-500", profile.online ? "opacity-100" : "opacity-0")}>ON</span>
+              </div>
             </button>
           </div>
 
