@@ -159,6 +159,7 @@ router.post('/signup', async (req, res) => {
       role: role || 'customer',
       phone: phone || '',
       address: address || '',
+      password_hint: passwordHint || '',
       updated_at: new Date().toISOString(),
       created_at: new Date().toISOString()
     };

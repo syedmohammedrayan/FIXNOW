@@ -46,7 +46,7 @@ export default function CustomerAccount() {
               address: data.address || '',
               emergencyContact: data.emergencyContact || '',
               avatar: data.avatar || '',
-              passwordHint: data.passwordHint || ''
+              passwordHint: data.passwordHint || data.password_hint || ''
             });
           }
         } catch (error) {

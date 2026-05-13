@@ -50,7 +50,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
     category: profile.category || '',
     address: profile.address || '',
     bio: profile.bio || '',
-    passwordHint: profile.passwordHint || ''
+    passwordHint: profile.passwordHint || profile.password_hint || ''
   });
   const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set(profile.skills || []));
   const [showServiceSelector, setShowServiceSelector] = useState(false);
@@ -75,7 +75,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
         category: profile.category || '',
         address: profile.address || '',
         bio: profile.bio || '',
-        passwordHint: profile.passwordHint || ''
+        passwordHint: profile.passwordHint || profile.password_hint || ''
       });
       setSelectedServices(new Set(profile.skills || []));
     }

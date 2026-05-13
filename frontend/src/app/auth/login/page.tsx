@@ -18,6 +18,7 @@ const googleProvider = new GoogleAuthProvider();
 import { Logo } from '@/components/ui/Logo';
 import { BackgroundParticles, FloatingOrbs } from '@/components/ui/BackgroundParticles';
 import { API_BASE } from '@/lib/config';
+import axios from 'axios';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [view, setView] = useState<'login' | 'reset'>('login');
+  const [resetData, setResetData] = useState({ email: '', hint: '', newPassword: '' });
+  const [resetStep, setResetStep] = useState<1 | 2>(1);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -111,6 +116,51 @@ export default function LoginPage() {
     } catch (err: any) {
       setError('Google authentication failed.');
       setLoading(false);
+    }
+  };
+  
+  const handleVerifyHint = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setError('');
+    try {
+      const res = await axios.post(`${API_BASE}/api/users/verify-hint`, {
+        email: resetData.email,
+        hint: resetData.hint
+      });
+      if (res.data.success) {
+        setResetStep(2);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Verification failed. Please check your details.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setError('');
+    try {
+      const res = await axios.post(`${API_BASE}/api/users/reset-password`, {
+        email: resetData.email,
+        hint: resetData.hint,
+        newPassword: resetData.newPassword
+      });
+      if (res.data.success) {
+        setResetSuccess('Password reset successfully! Redirecting to login...');
+        setTimeout(() => {
+          setView('login');
+          setResetStep(1);
+          setResetData({ email: '', hint: '', newPassword: '' });
+          setResetSuccess('');
+        }, 3000);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Reset failed. Please try again.');
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -408,10 +458,112 @@ export default function LoginPage() {
                       </p>
                     </motion.div>
                   ) : (
-                    <motion.div key="reset" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                      <h3 className="text-xl font-black text-white uppercase tracking-tighter italic">Reset Terminal Passkey</h3>
-                      <Input type="text" placeholder="Password Reset Hint (e.g. Favorite Color)" className="bg-white/5 border-white/10 rounded-2xl h-13 px-5 text-white font-bold placeholder:text-slate-600 focus:border-cyan-500/30 transition-all" />
-                      <Button onClick={() => setView('login')} className="w-full h-13 bg-white text-slate-950 font-black uppercase rounded-2xl">Return to Terminal</Button>
+                    <motion.div key="reset" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5 relative z-10">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter italic">Password Recovery</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                          Step {resetStep} of 2: {resetStep === 1 ? 'Verification' : 'Authorization'}
+                        </p>
+                      </div>
+
+                      {error && (
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3 text-rose-400 text-sm font-bold mb-4">
+                          <AlertCircle className="size-4 shrink-0" /> {error}
+                        </motion.div>
+                      )}
+
+                      {resetSuccess && (
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-3 text-emerald-400 text-sm font-bold mb-4">
+                          <Sparkles className="size-4 shrink-0" /> {resetSuccess}
+                        </motion.div>
+                      )}
+
+                      <AnimatePresence mode="wait">
+                        {resetStep === 1 ? (
+                          <motion.form 
+                            key="step1"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            onSubmit={handleVerifyHint} 
+                            className="space-y-4"
+                          >
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Account Email</Label>
+                              <div className="relative group/input">
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within/input:text-white transition-colors" />
+                                <Input 
+                                  type="email" 
+                                  placeholder="your@email.com" 
+                                  className="bg-white/10 border-white/20 rounded-2xl h-13 pl-12 text-white font-bold text-sm focus:border-white/40 transition-all placeholder:text-slate-500"
+                                  value={resetData.email}
+                                  onChange={(e) => setResetData({...resetData, email: e.target.value})}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">Your Secret Hint</Label>
+                              <div className="relative group/input">
+                                <Sparkles className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within/input:text-white transition-colors" />
+                                <Input 
+                                  type="text" 
+                                  placeholder="Enter your security hint" 
+                                  className="bg-white/10 border-white/20 rounded-2xl h-13 pl-12 text-white font-bold text-sm focus:border-white/40 transition-all placeholder:text-slate-500"
+                                  value={resetData.hint}
+                                  onChange={(e) => setResetData({...resetData, hint: e.target.value})}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <Button type="submit" disabled={resetLoading} className="w-full h-13 bg-white text-slate-950 font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-100 transition-all shadow-xl">
+                              {resetLoading ? <Loader2 className="size-5 animate-spin" /> : 'Verify Identity'}
+                            </Button>
+                          </motion.form>
+                        ) : (
+                          <motion.form 
+                            key="step2"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            onSubmit={handleResetPassword} 
+                            className="space-y-4"
+                          >
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] ml-4">New Master Passkey</Label>
+                              <div className="relative group/input">
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within/input:text-white transition-colors" />
+                                <Input 
+                                  type={showPassword ? "text" : "password"} 
+                                  placeholder="Enter new password" 
+                                  className="bg-white/10 border-white/20 rounded-2xl h-13 pl-12 pr-12 text-white font-bold text-sm focus:border-white/40 transition-all placeholder:text-slate-500"
+                                  value={resetData.newPassword}
+                                  onChange={(e) => setResetData({...resetData, newPassword: e.target.value})}
+                                  required
+                                  minLength={6}
+                                />
+                                <button 
+                                  type="button" 
+                                  onClick={() => setShowPassword(!showPassword)}
+                                  className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                                >
+                                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                                </button>
+                              </div>
+                            </div>
+                            <Button type="submit" disabled={resetLoading} className="w-full h-13 bg-cyan-500 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-cyan-600 transition-all shadow-xl shadow-cyan-500/20">
+                              {resetLoading ? <Loader2 className="size-5 animate-spin" /> : 'Update Password'}
+                            </Button>
+                          </motion.form>
+                        )}
+                      </AnimatePresence>
+
+                      <button 
+                        onClick={() => { setView('login'); setResetStep(1); setError(''); }} 
+                        className="w-full h-13 bg-white/5 border border-white/10 text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/10 transition-all"
+                      >
+                        Return to Terminal
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
