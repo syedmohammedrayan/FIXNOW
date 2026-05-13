@@ -276,45 +276,25 @@ export default function TechnicianServicePage() {
   }, [map, techLocation, resolvedCustomerLoc, isMapInteracted]);
 
     // Tactical Metrics Engine (Refactored for Routes API Compatibility)
-    const runMetrics = async () => {
-      if (!isLoaded || !mapReady || !window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
+    useEffect(() => {
+      const runMetrics = async () => {
+        if (!isLoaded || !mapReady || !window.google?.maps || !techLocation || !resolvedCustomerLoc) return;
 
-      // 1. Fallback static calculation (Geometry library remains stable)
-      if (window.google.maps.geometry?.spherical) {
-        const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
-          new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
-          new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
-        );
-        setLocalDistance(meters > 1000 ? `${(meters / 1000).toFixed(1)}km` : `${Math.round(meters)}m`);
-        setEta(`${Math.ceil(meters / 400)} min`);
-      }
-
-      // 2. Precise Matrix Calculation (Migrating to RouteMatrix if available)
-      try {
-        const origins = [{ location: { lat: techLocation.lat, lng: techLocation.lng } }];
-        const destinations = [{ location: { lat: resolvedCustomerLoc.lat, lng: resolvedCustomerLoc.lng } }];
-        
-        // Check for new RouteMatrix API (v3.56+)
-        if ((window.google.maps as any).routes?.RouteMatrix) {
-          const matrixService = new (window.google.maps as any).routes.RouteMatrix();
-          matrixService.computeRouteMatrix({
-            origins,
-            destinations,
-            travelMode: 'DRIVE',
-            routingPreference: 'TRAFFIC_AWARE'
-          }).then((response: any) => {
-            const el = response[0];
-            if (el?.duration) setEta(el.duration);
-            if (el?.distanceMeters) setLocalDistance(el.distanceMeters > 1000 ? `${(el.distanceMeters/1000).toFixed(1)}km` : `${el.distanceMeters}m`);
-          }).catch(() => fallbackMatrix());
-        } else {
-          fallbackMatrix();
+        // 1. Fallback static calculation (Geometry library remains stable)
+        if (window.google.maps.geometry?.spherical) {
+          const meters = window.google.maps.geometry.spherical.computeDistanceBetween(
+            new window.google.maps.LatLng(techLocation.lat, techLocation.lng),
+            new window.google.maps.LatLng(resolvedCustomerLoc.lat, resolvedCustomerLoc.lng)
+          );
+          setLocalDistance(meters > 1000 ? `${(meters / 1000).toFixed(1)}km` : `${Math.round(meters)}m`);
+          setEta(`${Math.ceil(meters / 400)} min`);
         }
 
-        function fallbackMatrix() {
+        // 2. Precise Matrix Calculation (Migrating to RouteMatrix if available)
+        const fallbackMatrix = () => {
           const service = new window.google.maps.DistanceMatrixService();
           service.getDistanceMatrix(
-            { origins: [techLocation], destinations: [resolvedCustomerLoc], travelMode: window.google.maps.TravelMode.DRIVING },
+            { origins: [techLocation!], destinations: [resolvedCustomerLoc!], travelMode: window.google.maps.TravelMode.DRIVING },
             (response, status) => {
               if (status === 'OK' && response?.rows[0]?.elements[0]?.status === 'OK') {
                 const el = response.rows[0].elements[0];
@@ -325,27 +305,37 @@ export default function TechnicianServicePage() {
               }
             }
           );
-        }
-      } catch (e) {
-        console.error("DistanceMatrix logic failed:", e);
-      }
+        };
 
-      // 3. Directions Routing (Migrating to Routes API if available)
-      try {
-        if ((window.google.maps as any).routes?.Route) {
-          // Note: Routes API returns different result types than DirectionsRenderer expects
-          // For now, we continue using DirectionsService for the visual renderer compatibility
-          // but we can compute routes for data if needed.
-          // Fallback to DirectionsService for Renderer compatibility
-          runDirectionsFallback();
-        } else {
-          runDirectionsFallback();
+        try {
+          const origins = [{ location: { lat: techLocation.lat, lng: techLocation.lng } }];
+          const destinations = [{ location: { lat: resolvedCustomerLoc.lat, lng: resolvedCustomerLoc.lng } }];
+          
+          // Check for new RouteMatrix API (v3.56+)
+          if ((window.google.maps as any).routes?.RouteMatrix) {
+            const matrixService = new (window.google.maps as any).routes.RouteMatrix();
+            matrixService.computeRouteMatrix({
+              origins,
+              destinations,
+              travelMode: 'DRIVE',
+              routingPreference: 'TRAFFIC_AWARE'
+            }).then((response: any) => {
+              const el = response[0];
+              if (el?.duration) setEta(el.duration);
+              if (el?.distanceMeters) setLocalDistance(el.distanceMeters > 1000 ? `${(el.distanceMeters/1000).toFixed(1)}km` : `${el.distanceMeters}m`);
+            }).catch(() => fallbackMatrix());
+          } else {
+            fallbackMatrix();
+          }
+        } catch (e) {
+          console.error("DistanceMatrix logic failed:", e);
         }
 
-        function runDirectionsFallback() {
+        // 3. Directions Routing (Migrating to Routes API if available)
+        const runDirectionsFallback = () => {
           if (!directionsServiceRef.current) directionsServiceRef.current = new window.google.maps.DirectionsService();
           directionsServiceRef.current.route(
-            { origin: techLocation, destination: resolvedCustomerLoc, travelMode: window.google.maps.TravelMode.DRIVING },
+            { origin: techLocation!, destination: resolvedCustomerLoc!, travelMode: window.google.maps.TravelMode.DRIVING },
             (result, status) => { 
               if (status === 'OK') {
                 setDirections(result); 
@@ -354,14 +344,25 @@ export default function TechnicianServicePage() {
               }
             }
           );
-        }
-      } catch (e) {
-        console.error("DirectionsService logic failed:", e);
-      }
-    };
+        };
 
-    runMetrics();
-  }, [isLoaded, mapReady, techLocation, resolvedCustomerLoc]);
+        try {
+          if ((window.google.maps as any).routes?.Route) {
+            // Note: Routes API returns different result types than DirectionsRenderer expects
+            // For now, we continue using DirectionsService for the visual renderer compatibility
+            // but we can compute routes for data if needed.
+            // Fallback to DirectionsService for Renderer compatibility
+            runDirectionsFallback();
+          } else {
+            runDirectionsFallback();
+          }
+        } catch (e) {
+          console.error("DirectionsService logic failed:", e);
+        }
+      };
+
+      runMetrics();
+    }, [isLoaded, mapReady, techLocation, resolvedCustomerLoc]);
 
   // 3. Camera Management
   useEffect(() => {
@@ -451,7 +452,7 @@ export default function TechnicianServicePage() {
 
   const calculateTotal = () => {
     const base = parseFloat(baseAmount || booking?.estimatedCostRange?.split('-')[0] || '0');
-    const extra = accessories.reduce((sum, acc) => sum + acc.price, 0);
+    const extra = accessories.reduce((sum: number, acc: {price: number}) => sum + acc.price, 0);
     return base + extra;
   };
 
@@ -488,7 +489,7 @@ export default function TechnicianServicePage() {
   };
 
   const removeAccessory = (index: number) => {
-    setAccessories(accessories.filter((_, i) => i !== index));
+    setAccessories(accessories.filter((_: any, i: number) => i !== index));
   };
 
   const handleRefuse = async () => {
