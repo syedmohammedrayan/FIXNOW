@@ -71,25 +71,29 @@ export default function TechnicianHeader({
           <h1 className="text-3xl sm:text-4xl font-black tracking-tighter uppercase italic text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_4px_15px_rgba(255,255,255,0.2)]">
             Command Center
           </h1>
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
-            {profile.online ? (
-              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 rounded-full border border-emerald-100 shadow-sm">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em]">
-                  Console Active
-                </span>
+          <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 group/tech-id">
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl backdrop-blur-2xl shadow-2xl transition-all duration-500 group-hover/tech-id:bg-white/[0.05] group-hover/tech-id:border-white/20">
+              <div className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></span>
               </div>
-            ) : (
-              <div className="flex items-center gap-2.5 px-4 py-1.5 bg-slate-100 rounded-full border border-black/5 shadow-inner">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Offline Node
-                </span>
+              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] italic">Operational Node</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:block w-8 h-px bg-gradient-to-r from-white/20 to-transparent" />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Authorized Personnel</span>
+                  <div className="size-1 rounded-full bg-slate-800" />
+                </div>
+                <h2 className="text-sm sm:text-lg font-black text-white uppercase tracking-tighter sm:tracking-tight flex items-center gap-3 mt-0.5">
+                  <span className="text-slate-400/80 font-bold tracking-[0.1em] text-[11px] sm:text-xs">Technician:</span>
+                  <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400 drop-shadow-2xl">
+                    {profile.name}
+                  </span>
+                </h2>
               </div>
-            )}
-            <div className="flex items-center gap-2 text-slate-500 text-[11px] font-black uppercase tracking-widest opacity-80">
-              <span className="w-4 h-px bg-black/[0.05]" />
-              Liaison: {profile.name}
             </div>
           </div>
         </div>
