@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserPlus, Eye, Trash2, Users } from 'lucide-react';
+import { UserPlus, Eye, Trash2, Users, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { getAvatarUrl } from '@/lib/image-utils';
 
@@ -76,7 +76,15 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                     {t.completedJobs || t.completed_jobs || 0} jobs
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium truncate mb-3">{t.email}</p>
+                <div className="space-y-1 mb-3">
+                  <p className="text-[10px] text-slate-500 font-medium truncate">{t.email}</p>
+                  {t.address && (
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="size-3 text-slate-500" />
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight truncate">{t.address}</p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-3 border-t border-white/[0.05]">
@@ -105,7 +113,7 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                   <tr>
                     <th className="px-6 py-4">Technician</th>
                     <th className="px-6 py-4">Specialization</th>
-                    <th className="px-6 py-4">Email</th>
+                    <th className="px-6 py-4">Contact & Address</th>
                     <th className="px-6 py-4 text-center">Jobs</th>
                     <th className="px-6 py-4 text-center">Status</th>
                     <th className="px-6 py-4 text-right">Actions</th>
@@ -131,7 +139,15 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                       <td className="px-6 py-4">
                         <span className="px-2.5 py-1 bg-white/[0.06] text-white/60 rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/[0.08]">{t.category}</span>
                       </td>
-                      <td className="px-6 py-4 text-slate-500 font-medium text-xs">{t.email}</td>
+                      <td className="px-6 py-4">
+                        <div className="text-slate-400 font-medium text-xs">{t.email}</div>
+                        {t.address && (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <MapPin className="size-2.5 text-slate-600" />
+                            <div className="text-[9px] text-slate-500 font-black uppercase tracking-widest truncate max-w-[150px]">{t.address}</div>
+                          </div>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-center font-black text-white">{t.completedJobs || t.completed_jobs || 0}</td>
                       <td className="px-6 py-4 text-center">
                         <div className={`w-2.5 h-2.5 rounded-full mx-auto ${t.online ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-slate-700'}`} />

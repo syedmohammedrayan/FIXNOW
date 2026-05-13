@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Package, FileText, ExternalLink, X, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { ShieldCheck, Package, FileText, ExternalLink, X, Eye, CheckCircle2, XCircle, MapPin } from 'lucide-react';
 import { ToolOrderCard } from '../shared/ToolOrderCard';
 import { getAvatarUrl } from '@/lib/image-utils';
 import { API_BASE } from '@/lib/config';
@@ -146,6 +146,12 @@ export function ApprovalsTab({
                     <h3 className="text-sm sm:text-base font-black text-white truncate">{tech.name}</h3>
                     <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate mt-0.5">{tech.email}</p>
                     {tech.phone && <p className="text-[10px] text-slate-600 font-medium mt-0.5">{tech.phone}</p>}
+                    {tech.address && (
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        <MapPin className="size-3 text-slate-500" />
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight truncate">{tech.address}</p>
+                      </div>
+                    )}
                     <div className="flex flex-wrap gap-2 mt-2">
                       <span className="px-2.5 py-1 bg-white/[0.06] text-white/70 rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/[0.08]">
                         {tech.category}

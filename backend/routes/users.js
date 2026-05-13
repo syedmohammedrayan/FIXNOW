@@ -58,7 +58,7 @@ const performPermanentDeletion = async (id) => {
 // Create or Update User Profile
 router.post('/signup', async (req, res) => {
   try {
-    const { id, name, email, role, phone, skills, password, passwordHint, category, govIdUrl } = req.body;
+    const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl } = req.body;
 
     // Check if user already exists in DB
     const s = await db.collection('users').where('email', '==', email).limit(1).get(); const existingUser = s.empty ? null : s.docs[0].data();
@@ -98,7 +98,7 @@ router.post('/signup', async (req, res) => {
 
       // Store in pending collection ONLY
       const pendingData = {
-        name, email, phone, role, category,
+        name, email, phone, address, role, category,
         skills: skills || [],
         password,
         gov_id_url: govIdUrl || null,
@@ -158,6 +158,7 @@ router.post('/signup', async (req, res) => {
       email: email || '',
       role: role || 'customer',
       phone: phone || '',
+      address: address || '',
       updated_at: new Date().toISOString(),
       created_at: new Date().toISOString()
     };
@@ -465,6 +466,7 @@ router.post('/techs/verify-action', async (req, res) => {
         name: pendingData.name,
         email: pendingData.email,
         phone: pendingData.phone,
+        address: pendingData.address || '',
         role: 'technician',
         updated_at: new Date().toISOString(),
         created_at: pendingData.created_at
@@ -475,6 +477,7 @@ router.post('/techs/verify-action', async (req, res) => {
         name: pendingData.name,
         email: pendingData.email,
         phone: pendingData.phone,
+        address: pendingData.address || '',
         category: pendingData.category,
         skills: pendingData.skills || [],
         password_hint: pendingData.password_hint || '',
