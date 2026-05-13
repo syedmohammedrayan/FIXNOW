@@ -137,9 +137,9 @@ export default function DynamicBackground() {
           willChange: 'transform',
         }}
       >
-        {BACKGROUND_IMAGES.map((src, i) => (
+        {BACKGROUND_IMAGES.map((src) => (
           <div
-            key={i}
+            key={src}
             className="bg-slide"
             style={{
               position: 'absolute',

@@ -66,7 +66,7 @@ export function useTechnicianData() {
     });
 
     s.on("booking_cancelled", (data) => {
-      console.log("⚠️ Received booking_cancelled event:", data);
+      // console.log("⚠️ Received booking_cancelled event:", data);
       setCancelledBooking({
         bookingId: data.bookingId,
         customerName: data.customerName || "A customer",
@@ -101,19 +101,19 @@ export function useTechnicianData() {
     if (!socket) return;
     
     const handleNewBroadcast = (data: any) => {
-      console.log("📡 Received new broadcast event:", data);
+      // console.log("📡 Received new broadcast event:", data);
       
       const techCategory = profile?.category || 'general';
       const techSkills = profile?.skills || [];
       const requestCategory = data.category || 'general';
       
-      console.log(`🔍 Checking match: Tech(${techCategory}), Skills(${techSkills.join(', ')}) vs Request(${requestCategory})`);
+      // console.log(`🔍 Checking match: Tech(${techCategory}), Skills(${techSkills.join(', ')}) vs Request(${requestCategory})`);
       
       const isMatch = isCategoryMatch(techCategory, requestCategory) || 
                       techSkills.some((skill: string) => isCategoryMatch(skill, requestCategory));
 
       if (isMatch) {
-        console.log("✅ Match found! Adding to queue.");
+        // console.log("✅ Match found! Adding to queue.");
         // Add to available broadcasts
         setAvailableBroadcasts((prev) => {
           if (prev.find(b => b.id === data.bookingId)) return prev;
@@ -126,7 +126,7 @@ export function useTechnicianData() {
           type: 'info'
         });
       } else {
-        console.log("❌ No category match.");
+        // console.log("❌ No category match.");
       }
     };
 

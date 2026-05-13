@@ -110,7 +110,7 @@ export default function WorkDocumentation({
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      key={i}
+                      key={`${acc.name}-${i}`}
                       className="flex justify-between items-center p-4 bg-white/5 border border-white/10 rounded-2xl group"
                     >
                       <div className="flex items-center gap-3">
@@ -166,7 +166,7 @@ export default function WorkDocumentation({
                 </div>
                 {accessories.map((acc, i) => (
                   <motion.div
-                    key={i}
+                    key={`ledger-${acc.name}-${i}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="flex justify-between items-center"

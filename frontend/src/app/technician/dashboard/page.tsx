@@ -30,7 +30,7 @@ import { doc, onSnapshot, updateDoc, collection, query, where, getDocs, setDoc }
 import { onAuthStateChanged } from 'firebase/auth';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 import { useTechnicianData } from "./hooks/useTechnicianData";
-import { useJsApiLoader } from "@react-google-maps/api";
+import { useGoogleMaps } from "@/components/GoogleMapsProvider";
 
 const LIBRARIES: ("places" | "geometry" | "visualization")[] = ["places", "geometry", "visualization"];
 
@@ -160,11 +160,7 @@ export default function TechnicianDashboard() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [profile.online, socket, user, currentJob?.id, setTechLocation]);
 
-  const { isLoaded: googleReady } = useJsApiLoader({
-    id: 'fixnow-google-maps-script',
-    googleMapsApiKey: currentKey,
-    libraries: LIBRARIES,
-  });
+  const { isLoaded: googleReady } = useGoogleMaps();
 
   // Re-geocode on key rotation failure
   useEffect(() => {

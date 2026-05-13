@@ -85,7 +85,7 @@ export function useBooking({ userId, socketRef, coords, setCoords, userProfile }
 
     const handleBroadcastAccepted = (data: any) => {
       if (broadcastBookingId && data.bookingId === broadcastBookingId) {
-        console.log('✅ Broadcast accepted by tech:', data.technicianName);
+        // console.log('✅ Broadcast accepted by tech:', data.technicianName);
         
         // Clear the timeout timer
         if (broadcastTimeoutRef.current) {

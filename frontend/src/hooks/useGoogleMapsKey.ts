@@ -5,13 +5,16 @@ import { useState, useEffect, useCallback } from 'react';
 const GOOGLE_MAPS_KEYS = (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEYS || '').split(',').filter(Boolean);
 
 export function useGoogleMapsKey() {
-  const [keyIndex, setKeyIndex] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('google_maps_key_index');
-      return saved ? parseInt(saved, 10) : 0;
+  const [keyIndex, setKeyIndex] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem('google_maps_key_index');
+    if (saved) {
+      setKeyIndex(parseInt(saved, 10));
     }
-    return 0;
-  });
+  }, []);
 
   const [currentKey, setCurrentKey] = useState(GOOGLE_MAPS_KEYS[keyIndex] || '');
 

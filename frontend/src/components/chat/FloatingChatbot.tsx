@@ -196,7 +196,7 @@ export default function FloatingChatbot({
                 <div className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
                   {messages.map((msg, i) => (
                     <motion.div 
-                      key={i} 
+                      key={`${msg.sender}-${msg.timestamp.getTime()}-${i}`} 
                       initial={{ opacity: 0, x: msg.sender === 'user' ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       className={cn("flex flex-col", msg.sender === 'user' ? 'items-end' : 'items-start')}
@@ -242,7 +242,7 @@ export default function FloatingChatbot({
                 <div className="px-6 py-3 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-white/5">
                   {quickActions.map((action, i) => (
                     <button
-                      key={i}
+                      key={`${action.label}-${i}`}
                       onClick={() => handleSend(undefined, action.label)}
                       className="whitespace-nowrap flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all active:scale-95"
                     >

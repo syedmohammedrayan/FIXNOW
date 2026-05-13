@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import DynamicBackground from "@/components/DynamicBackground";
 import ChatbotIntegration from "@/components/chat/ChatbotIntegration";
 import Script from "next/script";
+import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +32,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <GoogleMapsProvider>
+            {children}
+          </GoogleMapsProvider>
         </ThemeProvider>
         <div className="chatbot-container">
           <ChatbotIntegration />

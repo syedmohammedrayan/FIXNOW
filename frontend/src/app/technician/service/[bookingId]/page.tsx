@@ -17,8 +17,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
 import { io, Socket } from 'socket.io-client';
 import TechnicianSidebar from '@/components/technician/Sidebar';
-import { GoogleMap, useJsApiLoader, OverlayView, DirectionsRenderer, Polyline } from '@react-google-maps/api';
+import { GoogleMap, OverlayViewF, DirectionsRenderer, Polyline } from '@react-google-maps/api';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
+import { useGoogleMaps } from '@/components/GoogleMapsProvider';
 
 const LIBRARIES: ("geometry" | "places" | "visualization")[] = ["geometry", "places", "visualization"];
 
@@ -94,11 +95,7 @@ export default function TechnicianServicePage() {
     return () => document.body.classList.remove('hide-chatbot');
   }, []);
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'fixnow-google-maps-script',
-    googleMapsApiKey: currentKey || 'DUMMY_KEY',
-    libraries: LIBRARIES
-  });
+  const { isLoaded, loadError } = useGoogleMaps();
 
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
 
@@ -828,7 +825,7 @@ export default function TechnicianServicePage() {
                         )}
 
                         {techLocation && (
-                          <OverlayView position={techLocation} mapPaneName="overlayMouseTarget">
+                          <OverlayViewF position={techLocation} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="relative group flex flex-col items-center">
                                 {/* Intense Pulse */}
@@ -860,11 +857,11 @@ export default function TechnicianServicePage() {
                                 </div>
                               </div>
                             </div>
-                          </OverlayView>
+                          </OverlayViewF>
                         )}
 
                         {resolvedCustomerLoc && (
-                          <OverlayView position={resolvedCustomerLoc} mapPaneName="overlayMouseTarget">
+                          <OverlayViewF position={resolvedCustomerLoc} mapPaneName="overlayMouseTarget">
                             <div className="relative -translate-x-1/2 -translate-y-1/2">
                               <div className="relative group flex flex-col items-center">
                                 <div className="relative z-10">
@@ -877,7 +874,7 @@ export default function TechnicianServicePage() {
                                 </div>
                               </div>
                             </div>
-                          </OverlayView>
+                          </OverlayViewF>
                         )}
                     </GoogleMap>
                   ) : (
@@ -925,7 +922,7 @@ export default function TechnicianServicePage() {
                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Inventory Control</p>
                           <div className="space-y-3">
                             {accessories.map((acc, i) => (
-                              <div key={i} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/[0.05] rounded-2xl group/item">
+                              <div key={`${acc.name}-${i}`} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/[0.05] rounded-2xl group/item">
                                 <span className="text-sm font-bold text-slate-300">{acc.name}</span>
                                 <div className="flex items-center gap-4">
                                   <span className="text-sm font-black text-white italic tracking-tight">₹{acc.price}</span>
@@ -955,7 +952,7 @@ export default function TechnicianServicePage() {
                           <h3 className="text-lg font-black tracking-tighter uppercase text-center mb-8 italic">Service Ledger</h3>
                           <div className="space-y-4 mb-10 text-[10px] font-black uppercase tracking-widest text-slate-500 flex-1 overflow-y-auto pr-2 scrollbar-hide">
                             <div className="flex justify-between border-b border-white/5 pb-3"><span>Base Protocol</span><span className="text-white text-sm font-black">₹{baseAmount || '0'}</span></div>
-                            {accessories.map((acc, i) => <div key={i} className="flex justify-between border-b border-white/5 pb-3"><span>{acc.name}</span><span className="text-cyan-400 text-sm font-black">+ ₹{acc.price}</span></div>)}
+                            {accessories.map((acc, i) => <div key={`ledger-${acc.name}-${i}`} className="flex justify-between border-b border-white/5 pb-3"><span>{acc.name}</span><span className="text-cyan-400 text-sm font-black">+ ₹{acc.price}</span></div>)}
                           </div>
                           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center mt-auto">
                             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Final Settlement</p>
