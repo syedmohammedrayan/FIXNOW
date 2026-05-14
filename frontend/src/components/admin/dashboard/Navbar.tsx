@@ -23,6 +23,7 @@ const TAB_LABELS: Record<string, string> = {
   'tools':          'Store & Logistics',
   'transactions':   'Transactions',
   'notifications':  'Notifications',
+  'complaints':     'Complaint Matrix',
 };
 
 export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, fetchData, setShowAddModal, techsCount, toolOrdersCount, handleSignOut }: NavbarProps) {
@@ -34,6 +35,7 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
     { icon: <ClipboardList className="w-5 h-5" />,   label: 'Bookings',      tab: 'bookings' },
     { icon: <ShoppingCart className="w-5 h-5" />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
     { icon: <DollarSign className="w-5 h-5" />,      label: 'Transactions',  tab: 'transactions' },
+    { icon: <AlertTriangle className="w-5 h-5" />,   label: 'Complaints',    tab: 'complaints' },
     { icon: <Bell className="w-5 h-5" />,            label: 'Notifications', tab: 'notifications' },
   ];
 
