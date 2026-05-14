@@ -4,6 +4,7 @@ import React from 'react';
 import { Package, CheckCircle2, XCircle, CreditCard, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { statusColor } from './utils';
+import { getImageUrl } from '@/lib/image-utils';
 
 interface ToolOrderCardProps {
   order: any;
@@ -80,7 +81,7 @@ export function ToolOrderCard({ order, onUpdate, onVerify, setSelectedOrder }: T
           )}
           {order.customTool.image && (
             <div className="mt-3 relative w-20 h-20 overflow-hidden rounded-xl border border-white/10">
-              <img src={order.customTool.image} alt="Custom Tool" className="w-full h-full object-cover" />
+              <img src={getImageUrl(order.customTool.image, 'avatar')!} alt="Custom Tool" className="w-full h-full object-cover" />
             </div>
           )}
         </div>

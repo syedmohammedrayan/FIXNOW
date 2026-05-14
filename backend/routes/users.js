@@ -4,6 +4,7 @@ const { db, admin } = require('../config/firebaseAdmin');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
 
 const avatarsDir = path.join(__dirname, '..', 'uploads', 'avatars');
 const idsDir = path.join(__dirname, '..', 'uploads', 'ids');
@@ -42,13 +43,13 @@ const performPermanentDeletion = async (id) => {
   const cleanupPromises = [
     db.collection('users').doc(id).delete(),
     db.collection('technicians').doc(id).delete(),
-    db.collection('notifications').where('user_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('bookings').where('customer_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('bookings').where('technician_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('transactions').where('technician_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('tool_orders').where('technician_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('reminders').where('user_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
-    db.collection('notification_logs').where('user_id', '==', id).get().then(s => { const b=db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('notifications').where('user_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('bookings').where('customer_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('bookings').where('technician_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('transactions').where('technician_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('tool_orders').where('technician_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('reminders').where('user_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
+    db.collection('notification_logs').where('user_id', '==', id).get().then(s => { const b = db.batch(); s.forEach(d => b.delete(d.ref)); return b.commit(); }),
   ];
 
   await Promise.allSettled(cleanupPromises);
@@ -62,12 +63,12 @@ router.post('/signup', async (req, res) => {
 
     // Check if user already exists in DB
     const s = await db.collection('users').where('email', '==', email).limit(1).get(); const existingUser = s.empty ? null : s.docs[0].data();
-    
+
     // Check if user exists in Auth
     let existingInAuth = null;
     try {
       existingInAuth = await admin.auth().getUserByEmail(email);
-    } catch(e) {}
+    } catch (e) { }
 
     if (existingUser && existingInAuth) {
       return res.status(409).json({ error: 'This email is already registered and active.' });
@@ -107,22 +108,22 @@ router.post('/signup', async (req, res) => {
         approved: false,
         created_at: new Date().toISOString()
       };
-      
+
       const ref = await db.collection('pending_technicians').add(pendingData); const inserted = { id: ref.id }; const insertErr = null;
-      
+
       if (insertErr) throw insertErr;
 
-      return res.status(201).json({ 
-        success: true, 
+      return res.status(201).json({
+        success: true,
         message: 'Registration request submitted. Please wait for admin approval.',
         id: inserted.id,
-        isPending: true 
+        isPending: true
       });
     }
 
     // Standard signup for customers/admins
     let finalId = id;
-    
+
     // If id is missing, it means the frontend hit a rate limit or skipped Auth creation.
     // we use the admin client to create the user directly.
     if (!finalId && email && password) {
@@ -136,7 +137,7 @@ router.post('/signup', async (req, res) => {
             displayName: name
           });
           finalId = newUser.uid;
-        } catch(e) {
+        } catch (e) {
           if (e.code === 'auth/email-already-exists') {
             const existing = await admin.auth().getUserByEmail(email);
             if (existing) finalId = existing.uid;
@@ -146,7 +147,7 @@ router.post('/signup', async (req, res) => {
             throw authErr;
           }
         }
-      } catch(err) {
+      } catch (err) {
         console.error('Backend Auth Creation Error:', err.message);
         return res.status(500).json({ error: 'Authentication service limit reached. Please try again later or contact support.' });
       }
@@ -165,9 +166,9 @@ router.post('/signup', async (req, res) => {
       created_at: new Date().toISOString()
     };
 
-    await db.collection('users').doc(userData.id).set(userData, {merge: true}); const error = null;
+    await db.collection('users').doc(userData.id).set(userData, { merge: true }); const error = null;
     if (error) throw error;
-    
+
     res.status(201).json({ success: true, user: userData });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -178,10 +179,10 @@ router.post('/signup', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // 1. Try primary 'users' table
     const uDoc = await db.collection('users').doc(id).get(); const user = uDoc.exists ? uDoc.data() : null;
-    
+
     if (user) {
       if (user.role === 'technician') {
         const tDoc = await db.collection('technicians').doc(id).get(); const tech = tDoc.exists ? tDoc.data() : null;
@@ -194,11 +195,11 @@ router.get('/:id', async (req, res) => {
 
     // 2. Fallback to technicians table directly
     const tfDoc = await db.collection('technicians').doc(id).get(); const techFallback = tfDoc.exists ? tfDoc.data() : null;
-    
+
     if (techFallback) {
       return res.json({ success: true, user: { ...techFallback, role: 'technician' } });
     }
-    
+
     res.status(404).json({ error: 'User profile not found in any sector.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -208,7 +209,7 @@ router.get('/:id', async (req, res) => {
 // Get All Technicians (Approved)
 router.get('/techs/all', async (req, res) => {
   try {
-    const snap = await db.collection('technicians').limit(500).get(); const data = snap.docs.map(d=>d.data()); const error = null;
+    const snap = await db.collection('technicians').limit(500).get(); const data = snap.docs.map(d => d.data()); const error = null;
     if (error) throw error;
     res.json({ success: true, technicians: data || [] });
   } catch (err) {
@@ -219,9 +220,9 @@ router.get('/techs/all', async (req, res) => {
 // Get All Pending Technicians
 router.get('/techs/pending', async (req, res) => {
   try {
-    const snap = await db.collection('pending_technicians').get(); const data = snap.docs.map(d=>({id: d.id, ...d.data()})); const error = null;
+    const snap = await db.collection('pending_technicians').get(); const data = snap.docs.map(d => ({ id: d.id, ...d.data() })); const error = null;
     if (error) throw error;
-    
+
     // Map snake_case to camelCase for frontend compatibility
     const mappedData = (data || []).map(tech => ({
       ...tech,
@@ -246,12 +247,12 @@ router.get('/techs/:id/stats', async (req, res) => {
       return res.status(404).json({ error: 'Technician not found' });
     }
 
-    const bSnap = await db.collection('bookings').where('technician_id', '==', id).get(); const bookings = bSnap.docs.map(d=>d.data());
-    
+    const bSnap = await db.collection('bookings').where('technician_id', '==', id).get(); const bookings = bSnap.docs.map(d => d.data());
+
     const allBookings = bookings || [];
     const completed = allBookings.filter(b => b.status === 'Completed');
     const cancelled = allBookings.filter(b => b.status === 'Cancelled' || b.status === 'Refused').length;
-    
+
     const totalEarnings = completed.reduce((sum, b) => {
       // Prioritize actual paid amount, fallback to estimated range upper bound
       const actualAmount = parseFloat(b.total_amount || b.totalAmount || b.finalAmount || 0);
@@ -283,21 +284,21 @@ router.get('/techs/:id/stats', async (req, res) => {
 router.get('/admin/last', async (req, res) => {
   try {
     const aSnap = await db.collection('users').where('role', '==', 'admin').get();
-    const admins = aSnap.docs.map(d=>d.data()).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')).slice(0, 1);
-      
+    const admins = aSnap.docs.map(d => d.data()).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')).slice(0, 1);
+
     if (admins && admins.length > 0) {
       return res.json({ success: true, admin: admins[0] });
     }
-    
-    res.json({ 
-      success: true, 
-      admin: { 
+
+    res.json({
+      success: true,
+      admin: {
         name: 'System Admin',
         company: 'FIXNOW Technologies',
         address: '123 Tech Park, Silicon Valley, CA 94025',
         phone: '+1 (800) 555-0199',
         email: 'admin@fixnow.app'
-      } 
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -310,13 +311,13 @@ router.get('/check-status', async (req, res) => {
     const { email } = req.query;
 
     const ptDoc = await db.collection('pending_technicians').where('email', '==', email).limit(1).get(); const pending = ptDoc.empty ? null : ptDoc.docs[0].data();
-    
+
     if (pending) {
-      return res.json({ 
-        success: true, 
-        isPending: true, 
+      return res.json({
+        success: true,
+        isPending: true,
         status: pending.verification_status,
-        reason: pending.rejection_reason 
+        reason: pending.rejection_reason
       });
     }
 
@@ -331,7 +332,7 @@ router.post('/verify-hint', async (req, res) => {
   try {
     const { email, hint } = req.body;
     if (!email || !hint) return res.status(400).json({ error: 'Email and hint are required' });
-    
+
     let storedHint = null;
 
     const uDoc = await db.collection('users').where('email', '==', email).limit(1).get(); const user = uDoc.empty ? null : uDoc.docs[0].data();
@@ -366,11 +367,11 @@ router.post('/reset-password', async (req, res) => {
     let storedHint = null;
     let pendingDocId = null;
 
-    const uDoc3 = await db.collection('users').where('email', '==', email).limit(1).get(); const user = uDoc3.empty ? null : {id: uDoc3.docs[0].id, ...uDoc3.docs[0].data()};
+    const uDoc3 = await db.collection('users').where('email', '==', email).limit(1).get(); const user = uDoc3.empty ? null : { id: uDoc3.docs[0].id, ...uDoc3.docs[0].data() };
     if (user) {
       storedHint = user.password_hint;
     } else {
-      const ptDoc3 = await db.collection('pending_technicians').where('email', '==', email).limit(1).get(); const pending = ptDoc3.empty ? null : {id: ptDoc3.docs[0].id, ...ptDoc3.docs[0].data()};
+      const ptDoc3 = await db.collection('pending_technicians').where('email', '==', email).limit(1).get(); const pending = ptDoc3.empty ? null : { id: ptDoc3.docs[0].id, ...ptDoc3.docs[0].data() };
       if (pending) {
         storedHint = pending.password_hint;
         pendingDocId = pending.id;
@@ -423,7 +424,7 @@ router.post('/techs/verify-action', async (req, res) => {
   try {
     const { id, action, reason } = req.body;
     console.log(`🔍 Tech Verification Action: ${action} for ID: ${id}`);
-    
+
     if (!id) return res.status(400).json({ error: 'Missing technician ID' });
 
     const ptDoc4 = await db.collection('pending_technicians').doc(id).get(); const pendingData = ptDoc4.exists ? ptDoc4.data() : null; const fetchErr = null;
@@ -443,7 +444,7 @@ router.post('/techs/verify-action', async (req, res) => {
       await db.collection('pending_technicians').doc(id).delete(); const deleteErr = null;
 
       if (deleteErr) throw deleteErr;
-      
+
       return res.json({ success: true, message: 'Technician request declined successfully.' });
     }
 
@@ -504,8 +505,8 @@ router.post('/techs/verify-action', async (req, res) => {
       };
 
       // Save to official tables
-      await db.collection('users').doc(commonData.id).set(commonData, {merge: true});
-      await db.collection('technicians').doc(techData.id).set(techData, {merge: true});
+      await db.collection('users').doc(commonData.id).set(commonData, { merge: true });
+      await db.collection('technicians').doc(techData.id).set(techData, { merge: true });
 
       // Delete from pending
       await db.collection('pending_technicians').doc(id).delete();
@@ -521,52 +522,57 @@ router.post('/techs/verify-action', async (req, res) => {
   }
 });
 
-// Temporary ID Upload (During Signup)
+// Temporary ID Upload (During Signup) - Using Cloudinary
 router.post('/upload-temp-id', upload.single('govId'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No document uploaded' });
     }
-    
-    const file = req.file;
-    const fileExt = path.extname(file.originalname);
-    const fileName = `temp_${Date.now()}${fileExt}`;
-    const filePath = `temp/${fileName}`;
 
-    const publicUrl = `/uploads/ids/${file.filename}`;
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'fixnow/ids/temp'
+    });
 
-    res.json({ success: true, govIdUrl: publicUrl });
+    // Cleanup local temp file
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+    res.json({ success: true, govIdUrl: result.secure_url });
   } catch (err) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     console.error('Temp ID upload error:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Gov ID Upload (For existing users)
+// Gov ID Upload (For existing users) - Using Cloudinary
 router.post('/:id/upload-id', upload.single('govId'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No document uploaded' });
     }
     const { id } = req.params;
-    const file = req.file;
-    const fileExt = path.extname(file.originalname);
-    const fileName = `${id}_${Date.now()}${fileExt}`;
-    const filePath = `${id}/${fileName}`;
 
-    const publicUrl = `/uploads/ids/${file.filename}`;
-    
-    const update = { 
-      gov_id_url: publicUrl, 
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: `fixnow/ids/${id}`
+    });
+
+    // Cleanup local temp file
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+    const publicUrl = result.secure_url;
+
+    const update = {
+      gov_id_url: publicUrl,
       verification_status: 'uploaded',
-      updated_at: new Date().toISOString() 
+      updated_at: new Date().toISOString()
     };
 
-    await db.collection('users').doc(id).set(update, {merge: true});
-    try { await db.collection('technicians').doc(id).update(update); } catch(e){}
+    await db.collection('users').doc(id).set(update, { merge: true });
+    try { await db.collection('technicians').doc(id).update(update); } catch (e) { }
 
     res.json({ success: true, govIdUrl: publicUrl });
   } catch (err) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     console.error('ID upload error:', err);
     res.status(500).json({ error: err.message });
   }
@@ -598,9 +604,9 @@ router.get('/view-id', async (req, res) => {
 
     const fileLoc = path.join(__dirname, '..', 'uploads', 'ids', cleanPath.split('/').pop());
     if (fs.existsSync(fileLoc)) {
-       res.sendFile(fileLoc);
+      res.sendFile(fileLoc);
     } else {
-       res.status(404).send('Document not found');
+      res.status(404).send('Document not found');
     }
   } catch (err) {
     console.error('ID Proxy Error:', err);
@@ -620,7 +626,7 @@ router.get('/admin-bypass', async (req, res) => {
     try {
       const link = await admin.auth().generateSignInWithEmailLink(adminEmail, actionCodeSettings);
       res.redirect(link);
-    } catch(error) {
+    } catch (error) {
       console.error('❌ Bypass Link Generation Error:', error);
       return res.status(500).json({ error: 'Failed to generate bypass link: ' + error.message });
     }
@@ -630,26 +636,30 @@ router.get('/admin-bypass', async (req, res) => {
   }
 });
 
-// Avatar upload
+// Avatar upload - Using Cloudinary
 router.post('/:id/avatar', upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
     const { id } = req.params;
-    const file = req.file;
-    const fileExt = path.extname(file.originalname);
-    const fileName = `${id}_${Date.now()}${fileExt}`;
-    const filePath = `${id}/${fileName}`;
 
-    const publicUrl = `/uploads/avatars/${file.filename}`;
-    
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: `fixnow/avatars/${id}`
+    });
+
+    // Cleanup local temp file
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+    const publicUrl = result.secure_url;
+
     const update = { avatar: publicUrl, updated_at: new Date().toISOString() };
-    await db.collection('users').doc(id).set({ id, ...update }, {merge: true});
-    try { await db.collection('technicians').doc(id).update(update); } catch(e){}
+    await db.collection('users').doc(id).set({ id, ...update }, { merge: true });
+    try { await db.collection('technicians').doc(id).update(update); } catch (e) { }
 
     res.json({ success: true, localUrl: publicUrl, avatar: publicUrl });
   } catch (err) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     console.error('Avatar save error:', err);
     res.status(500).json({ error: err.message });
   }
@@ -660,9 +670,9 @@ router.post('/:id/update-profile', async (req, res) => {
   try {
     const { id } = req.params;
     const body = { ...req.body };
-    
+
     // Clean dangerous fields
-    delete body.specialityTagline; 
+    delete body.specialityTagline;
 
     // Convert camelCase to snake_case for DB
     const update = {};
@@ -672,14 +682,14 @@ router.post('/:id/update-profile', async (req, res) => {
     }
     update.updated_at = new Date().toISOString();
 
-    await db.collection('users').doc(id).set(update, {merge: true});
+    await db.collection('users').doc(id).set(update, { merge: true });
     const tDoc = await db.collection('technicians').doc(id).get();
     if (tDoc.exists) {
       await db.collection('technicians').doc(id).update(update);
     } else {
       const uDoc = await db.collection('users').doc(id).get();
       if (uDoc.exists && uDoc.data().role === 'technician') {
-        await db.collection('technicians').doc(id).set({ id, ...update }, {merge: true});
+        await db.collection('technicians').doc(id).set({ id, ...update }, { merge: true });
       }
     }
 

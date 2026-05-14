@@ -31,11 +31,12 @@ const { getRealETA } = require('./services/etaService');
 const { notifyUser } = require('./services/notifications');
 const { runReminderEngine } = require('./services/reminderEngine');
 const { db } = require('./config/firebaseAdmin');
-
+const uploadRoute = require('./routes/upload');
 app.use('/api/ai', aiRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/tools', toolsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/upload', uploadRoute);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -62,10 +63,10 @@ io.on('connection', (socket) => {
   socket.on('tech_join_category', (data) => {
     const { techId, category, categories } = data || {};
     if (!techId) return;
-    
+
     // Store technician info for this socket
     connectedTechnicians.set(socket.id, { techId, category, categories: categories || [category] });
-    
+
     // Join category-specific rooms
     const cats = categories || [category];
     cats.forEach(cat => {
@@ -75,13 +76,13 @@ io.on('connection', (socket) => {
         console.log(`🏷️ Tech ${techId} joined category room: ${catRoom}`);
       }
     });
-    
+
     // Also join a general technicians room
     socket.join('technicians_online');
-    
+
     // Join a private technician room for targeted notifications
     socket.join(`tech_${techId}`);
-    
+
     console.log(`🟢 Tech ${techId} registered online with categories: ${cats.join(', ')}`);
   });
 
@@ -102,10 +103,10 @@ io.on('connection', (socket) => {
     if (techId) {
       const now = Date.now();
       const lastUpdate = lastLocationUpdates.get(techId) || 0;
-      
+
       if (now - lastUpdate > 10000) { // Update DB only every 10s
         lastLocationUpdates.set(techId, now);
-        
+
         try {
           await db.collection('technicians').doc(techId).update({
             location,
@@ -120,24 +121,24 @@ io.on('connection', (socket) => {
         } catch (err) {
           console.error('Tech Location Update Error:', err.message);
         }
-        
+
         // Also update booking if active
         if (room && bookingId) {
-           try {
+          try {
             const docRef = await db.collection('bookings').doc(bookingId).get();
             const bookingDoc = docRef.exists ? { id: docRef.id, ...docRef.data() } : null;
-            
+
             if (bookingDoc) {
               // Robust check for both snake_case and camelCase
               const cLoc = bookingDoc.customer_location || bookingDoc.customerLocation ||
-                (bookingDoc.customer_lat ? { lat: bookingDoc.customer_lat, lng: bookingDoc.customer_lng } : 
-                 bookingDoc.customerLat ? { lat: bookingDoc.customerLat, lng: bookingDoc.customerLng } : null);
-              
+                (bookingDoc.customer_lat ? { lat: bookingDoc.customer_lat, lng: bookingDoc.customer_lng } :
+                  bookingDoc.customerLat ? { lat: bookingDoc.customerLat, lng: bookingDoc.customerLng } : null);
+
               if (cLoc) {
                 const eta = await getRealETA(location, cLoc);
                 io.to(room).emit('eta_update', eta);
                 runReminderEngine(bookingDoc, eta);
-                
+
                 await db.collection('bookings').doc(bookingId).update({
                   tech_location: location,
                   techLocation: location, // CamelCase fallback
@@ -153,20 +154,20 @@ io.on('connection', (socket) => {
     }
   });
 
-// Customer sends manual location update
-socket.on('customer_update_location', async (data) => {
-  const { bookingId, location, customerId } = data || {};
-  if (!bookingId) return;
-  const room = `booking_${bookingId}`;
-  io.to(room).emit('customer_location_update', location);
-  
-  // Also persist customer location in booking document (THROTTLED)
-  const idKey = customerId || bookingId;
-  const now = Date.now();
-  const lastUpdate = lastLocationUpdates.get(idKey) || 0;
-  
-  if (now - lastUpdate > 10000) {
-    lastLocationUpdates.set(idKey, now);
+  // Customer sends manual location update
+  socket.on('customer_update_location', async (data) => {
+    const { bookingId, location, customerId } = data || {};
+    if (!bookingId) return;
+    const room = `booking_${bookingId}`;
+    io.to(room).emit('customer_location_update', location);
+
+    // Also persist customer location in booking document (THROTTLED)
+    const idKey = customerId || bookingId;
+    const now = Date.now();
+    const lastUpdate = lastLocationUpdates.get(idKey) || 0;
+
+    if (now - lastUpdate > 10000) {
+      lastLocationUpdates.set(idKey, now);
       try {
         await db.collection('bookings').doc(bookingId).update({
           customer_location: location,
@@ -192,7 +193,7 @@ socket.on('customer_update_location', async (data) => {
   socket.on('broadcast_booking', (data) => {
     // data contains { bookingId, category, customerLocation, address, urgency, estimatedCostRange, customerName, issueDescription }
     console.log(`📡 Broadcasting new booking request: ${data.bookingId} for category ${data.category}`);
-    
+
     // Broadcast to ALL connected clients — technician client-side filters by category
     io.emit('new_broadcast', data);
   });
@@ -201,13 +202,13 @@ socket.on('customer_update_location', async (data) => {
   socket.on('broadcast_accepted', (data) => {
     // data contains { bookingId, technicianId, technicianName, technicianAvatar, technicianPhone, technicianRating }
     console.log(`✅ Broadcast ${data.bookingId} accepted by tech ${data.technicianId} (${data.technicianName})`);
-    
+
     // 1. Emit to the booking room so the customer gets notified immediately
     const room = `booking_${data.bookingId}`;
     io.to(room).emit('broadcast_accepted', data);
-    
+
     // 2. Notify ALL clients that this broadcast is closed (other technicians remove it + show "missed")
-    io.emit('broadcast_closed', { 
+    io.emit('broadcast_closed', {
       bookingId: data.bookingId,
       acceptedBy: data.technicianName,
       acceptedByTechId: data.technicianId
@@ -271,7 +272,7 @@ if (require.main === module) {
       console.log('✅ Server closed. Releasing Port ' + PORT);
       process.exit(0);
     });
-    
+
     // Force close if it takes too long (e.g. stalled database connections)
     setTimeout(() => {
       console.error('⚠️ Could not close connections in time, forcefully shutting down');

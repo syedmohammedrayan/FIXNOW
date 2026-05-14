@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, CheckCircle2, FileText, AlertCircle, Loader2, Trash2 } from "lucide-react";
 import axios from "axios";
+import { getImageUrl } from "@/lib/image-utils";
 import { API_BASE } from "@/lib/config";
 
 interface IdVerificationBoxProps {
@@ -16,7 +17,7 @@ interface IdVerificationBoxProps {
 
 export default function IdVerificationBox({ userId, onSuccess, onUploadComplete, existingIdUrl, isSignup }: IdVerificationBoxProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(existingIdUrl || null);
+  const [preview, setPreview] = useState<string | null>(getImageUrl(existingIdUrl, 'id') || null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);

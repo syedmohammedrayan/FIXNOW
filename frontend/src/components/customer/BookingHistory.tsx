@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
+import { getAvatarUrl } from '@/lib/image-utils';
 
 interface BookingTech {
   name: string;
@@ -309,7 +310,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                          <div className="flex items-center gap-3">
                             <div className="size-10 rounded-2xl overflow-hidden border border-white/10 flex-shrink-0 bg-slate-800">
                                {booking.technician.avatar ? (
-                                 <img src={booking.technician.avatar} className="size-full object-cover" />
+                                 <img src={getAvatarUrl(booking.technician.avatar)!} className="size-full object-cover" />
                                ) : (
                                  <div className="size-full flex items-center justify-center text-lg">👷</div>
                                )}
@@ -438,7 +439,7 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                         </div>
                         <div className="size-14 rounded-2xl overflow-hidden border-2 border-white/10 flex-shrink-0 bg-slate-800 shadow-2xl relative z-10">
                            {selectedBooking.technician.avatar ? (
-                             <img src={selectedBooking.technician.avatar} className="size-full object-cover" />
+                             <img src={getAvatarUrl(selectedBooking.technician.avatar)!} className="size-full object-cover" />
                            ) : (
                              <div className="size-full flex items-center justify-center text-2xl">👷</div>
                            )}
