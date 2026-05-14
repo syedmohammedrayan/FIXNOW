@@ -7,8 +7,8 @@ import { API_BASE } from './config';
  * 2. Local uploads (prefixed with API_BASE)
  * 3. ID view proxy (for local private files)
  */
-export const getImageUrl = (path: string | null | undefined, type: 'avatar' | 'id' = 'avatar'): string | null => {
-  if (!path || path === '') return null;
+export const getImageUrl = (path: string | null | undefined, type: 'avatar' | 'id' = 'avatar'): string | undefined => {
+  if (!path || path === '' || typeof path !== 'string') return undefined;
   
   // 1. Handle full URLs (Cloudinary, data URIs, etc)
   if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) {

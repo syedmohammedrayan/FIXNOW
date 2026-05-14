@@ -54,10 +54,13 @@ export default function TechnicianComplaintsPage() {
   };
 
   useEffect(() => {
+    let unsubProfile: (() => void) | undefined;
+    let unsubComplaints: (() => void) | undefined;
+
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Fetch profile from technicians collection (standard for this role)
-        const unsubProfile = onSnapshot(doc(db, 'technicians', user.uid), (docSnap) => {
+        // Fetch profile
+        unsubProfile = onSnapshot(doc(db, 'technicians', user.uid), (docSnap) => {
           if (docSnap.exists()) setProfile(docSnap.data());
         });
 
@@ -65,31 +68,43 @@ export default function TechnicianComplaintsPage() {
         const q = query(
           collection(db, 'complaints'),
           where('technicianId', '==', user.uid)
-          // Removed orderBy here to prevent "missing index" error on production
-          // Client-side sorting is used instead for maximum reliability
         );
 
-        const unsubComplaints = onSnapshot(q, (snapshot) => {
+        unsubComplaints = onSnapshot(q, (snapshot) => {
           const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
-          // Client-side sort by createdAt desc
           docs.sort((a, b) => {
-            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 
+                        (a.createdAt instanceof Date ? a.createdAt.getTime() : 0);
+            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 
+                        (b.createdAt instanceof Date ? b.createdAt.getTime() : 0);
             return timeB - timeA;
           });
           setComplaints(docs);
           setLoading(false);
         });
-
-        return () => {
-          unsubProfile();
-          unsubComplaints();
-        };
+      } else {
+        setLoading(false);
       }
     });
 
-    return () => unsubAuth();
+    return () => {
+      unsubAuth();
+      if (unsubProfile) unsubProfile();
+      if (unsubComplaints) unsubComplaints();
+    };
   }, []);
+
+  const formatProtocolDate = (createdAt: any) => {
+    try {
+      if (!createdAt) return 'TIMESTAMP REDACTED';
+      const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
+      return date.toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    } catch (e) {
+      return 'DATA CORRUPT';
+    }
+  };
 
   const filteredComplaints = complaints.filter(c => 
     c.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||

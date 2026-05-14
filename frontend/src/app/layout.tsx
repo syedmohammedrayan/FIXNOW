@@ -24,7 +24,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="https://ik.imagekit.io/smr2007/fixnow-logo.png" />
       </head>
-      <body className={`${inter.className} bg-slate-950`}>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <DynamicBackground />
         <ThemeProvider
           attribute="class"
@@ -36,11 +36,12 @@ export default function RootLayout({
             {children}
           </GoogleMapsProvider>
         </ThemeProvider>
+        
         <div className="chatbot-container">
           <ChatbotIntegration />
         </div>
 
-        {/* Google Translate Integration */}
+        {/* ── Google Translate & Mobile Overrides ── */}
         <div id="google_translate_element" style={{ display: 'none' }}></div>
         <Script id="google-translate-config" strategy="afterInteractive">
           {`
@@ -49,25 +50,27 @@ export default function RootLayout({
                 new window.google.translate.TranslateElement({
                   pageLanguage: 'en',
                   includedLanguages: 'en,hi,te,ta,or,ml,kn,ur,as,bn',
+                  layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
                   autoDisplay: false
                 }, 'google_translate_element');
               }
+            };
+
+            // Safe MutationObserver for mobile
+            if (typeof document !== 'undefined' && document.body) {
+              const observer = new MutationObserver((mutations) => {
+                const banner = document.querySelector('.goog-te-banner-frame');
+                if (banner) {
+                  banner.remove();
+                  document.body.style.top = '0';
+                }
+                const popup = document.querySelector('.goog-te-menu-value');
+                if (popup) {
+                  // Keep it hidden or style it for Midnight Glass
+                }
+              });
+              observer.observe(document.body, { childList: true, subtree: true });
             }
-
-            // MutationObserver to strictly remove the Google Translate banner
-            const observer = new MutationObserver((mutations) => {
-              const banner = document.querySelector('.goog-te-banner-frame');
-              if (banner) {
-                banner.remove();
-                document.body.style.top = '0px';
-                document.documentElement.style.top = '0px';
-              }
-              // Also hide tooltips
-              const tooltips = document.querySelectorAll('.goog-tooltip, .goog-te-balloon-frame, #goog-gt-tt');
-              tooltips.forEach(t => t.style.display = 'none');
-            });
-
-            observer.observe(document.body, { childList: true, subtree: true });
           `}
         </Script>
         <Script 

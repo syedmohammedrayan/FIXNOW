@@ -36,46 +36,34 @@ export default function DynamicBackground() {
   const scrollY = useRef(0);
   const animFrameId = useRef<number>(0);
   const currentSlide = useRef(0);
-  const slideTimer = useRef<ReturnType<typeof setTimeout>>();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mousePos.current = { x: e.clientX, y: e.clientY };
-    };
-    const handleScroll = () => {
-      scrollY.current = window.scrollY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const advanceSlide = useCallback(() => {
     const slider = sliderRef.current;
     if (!slider) return;
 
+    currentSlide.current = (currentSlide.current + 1) % BACKGROUND_IMAGES.length;
+    
+    // Manual DOM manipulation for the crossfade to keep it super performant
     const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
-    const current = currentSlide.current;
-    const next = (current + 1) % BACKGROUND_IMAGES.length;
-
-    const currentEl = slides[current];
-    if (currentEl) {
-      currentEl.style.opacity = '0';
-      // Animate toward a slightly larger scale for a subtle "zoom in" effect
-      currentEl.style.transform = 'scale(var(--bg-scale-end))';
-    }
-
-    const nextEl = slides[next];
-    if (nextEl) {
-      nextEl.style.opacity = '1';
-      // Start at the base "zoomed out" scale
-      nextEl.style.transform = 'scale(var(--bg-scale-start))';
-    }
-
-    currentSlide.current = next;
+    slides.forEach((slide, index) => {
+      if (index === currentSlide.current) {
+        slide.style.opacity = '1';
+        slide.style.transform = 'scale(var(--bg-scale-start))';
+        slide.style.zIndex = '1';
+      } else {
+        slide.style.opacity = '0';
+        slide.style.zIndex = '0';
+        slide.style.transform = 'scale(var(--bg-scale-end))';
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -85,25 +73,27 @@ export default function DynamicBackground() {
       if (slides[0]) {
         slides[0].style.opacity = '1';
         slides[0].style.transform = 'scale(var(--bg-scale-start))';
+        slides[0].style.zIndex = '1';
       }
     }
-    slideTimer.current = setInterval(advanceSlide, SLIDE_DURATION);
-    return () => {
-      if (slideTimer.current) clearInterval(slideTimer.current);
-    };
+    const interval = setInterval(advanceSlide, SLIDE_DURATION);
+    return () => clearInterval(interval);
   }, [advanceSlide]);
 
   useEffect(() => {
     const animate = () => {
-      smoothMouse.current.x += (mousePos.current.x - smoothMouse.current.x) * LERP_FACTOR;
-      smoothMouse.current.y += (mousePos.current.y - smoothMouse.current.y) * LERP_FACTOR;
+      // Disable mouse following on mobile to save GPU
+      if (!isMobile) {
+        smoothMouse.current.x += (mousePos.current.x - smoothMouse.current.x) * LERP_FACTOR;
+        smoothMouse.current.y += (mousePos.current.y - smoothMouse.current.y) * LERP_FACTOR;
 
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${smoothMouse.current.x - 300}px, ${smoothMouse.current.y - 300}px, 0)`;
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate3d(${smoothMouse.current.x - 300}px, ${smoothMouse.current.y - 300}px, 0)`;
+        }
       }
 
       const sy = scrollY.current;
-      if (sliderRef.current) {
+      if (sliderRef.current && !isMobile) {
         const parallaxY = sy * -0.05;
         sliderRef.current.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
       }
@@ -111,7 +101,7 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 1200;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 1.5 + scrollRatio * 3.5; // 1.5px -> 5px (refined cinematic range)
+        const blur = 1.5 + scrollRatio * 3.5;
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
       }
@@ -121,7 +111,7 @@ export default function DynamicBackground() {
 
     animFrameId.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animFrameId.current);
-  }, []);
+  }, [isMobile]);
 
   return (
     <>
@@ -134,10 +124,11 @@ export default function DynamicBackground() {
           inset: 0,
           zIndex: -2,
           overflow: 'hidden',
-          willChange: 'transform',
+          willChange: isMobile ? 'auto' : 'transform',
         }}
       >
-        {BACKGROUND_IMAGES.map((src) => (
+        {/* On mobile, we only render a subset of images to save RAM */}
+        {(isMobile ? BACKGROUND_IMAGES.slice(0, 8) : BACKGROUND_IMAGES).map((src, index) => (
           <div
             key={src}
             className="bg-slide"
@@ -146,12 +137,13 @@ export default function DynamicBackground() {
               inset: 0,
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'var(--bg-position)',
+              backgroundPosition: 'center',
               opacity: 0,
-              transform: 'scale(var(--bg-scale-start))',
-              filter: 'brightness(0.92) saturate(1.1)',
+              transform: 'scale(1)',
+              filter: 'brightness(0.9) saturate(1.1)',
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
-              willChange: 'opacity, transform',
+              willChange: 'opacity',
+              zIndex: 0,
             }}
           />
         ))}
