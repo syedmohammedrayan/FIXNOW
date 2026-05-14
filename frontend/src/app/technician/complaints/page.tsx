@@ -252,10 +252,8 @@ export default function TechnicianComplaintsPage() {
                            <div className="space-y-2">
                               <div className="flex items-center gap-3 text-cyan-400/60">
                                  <Clock className="size-3.5 sm:size-4" />
-                                 <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em]">
-                                    {complaint.createdAt?.toDate().toLocaleDateString('en-IN', {
-                                      day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                                    })}
+                                 <span className="text-[10px] font-black uppercase tracking-[0.25em]">
+                                    {formatProtocolDate(complaint.createdAt)}
                                  </span>
                               </div>
                               <h3 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter italic group-hover:text-rose-500 transition-colors duration-500">

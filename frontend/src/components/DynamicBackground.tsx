@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // ─── Image URLs (Using high-quality technician imagery) ───
 const BACKGROUND_IMAGES = [
