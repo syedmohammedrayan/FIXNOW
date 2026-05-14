@@ -12,6 +12,11 @@ export const getImageUrl = (path: string | null | undefined, type: 'avatar' | 'i
   
   // 1. Handle full URLs (Cloudinary, data URIs, etc)
   if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) {
+    // If it's a legacy localhost URL but we are in production, normalize it
+    if (path.includes('localhost:5050') && !API_BASE.includes('localhost')) {
+      const relativePath = path.split('localhost:5050')[1];
+      return `${API_BASE}${relativePath}`;
+    }
     return path;
   }
   

@@ -89,7 +89,7 @@ interface Props {
   onBack: () => void;
 }
 
-export default function BookingHistory({ userId, onTrack, onBack }: Props) {
+export default function BookingHistory({ userId, userProfile, onTrack, onBack }: Props) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'active' | 'past'>('active');

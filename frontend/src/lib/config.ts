@@ -5,6 +5,10 @@ const getApiUrl = (): string => {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
+  // Production fallback for Vercel/Render deployments if env is missing
+  if (typeof window !== 'undefined' && (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('onrender.com'))) {
+    return 'https://fixnow-backend.onrender.com';
+  }
   // Local dev fallback
   return 'http://localhost:5050';
 };
