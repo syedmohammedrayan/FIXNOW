@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, RefreshCw, LayoutDashboard, Activity, ShieldCheck, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut } from 'lucide-react';
+import { Menu, RefreshCw, LayoutDashboard, Activity, ShieldCheck, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut, AlertTriangle } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 
 interface NavbarProps {
