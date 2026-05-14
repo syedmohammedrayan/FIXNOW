@@ -25,6 +25,31 @@ export default function TechnicianComplaintsPage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const handleStatusUpdate = async (complaintId: string, newStatus: string) => {
+    try {
+      setUpdatingId(complaintId);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/update-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          complaintId,
+          status: newStatus,
+          technicianName: profile?.name || 'Your Technician'
+        })
+      });
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      
+    } catch (error: any) {
+      console.error('Failed to update status:', error);
+      alert('Error updating status: ' + error.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
@@ -244,14 +269,42 @@ export default function TechnicianComplaintsPage() {
                               </div>
                            </div>
 
-                           <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
-                              <button className="w-full sm:flex-1 py-5 bg-white/[0.04] border border-white/[0.1] rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-white/[0.08] hover:border-white/20 transition-all active:scale-95 shadow-xl">
-                                 Initiate Review
+                            <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
+                              <button 
+                                onClick={() => handleStatusUpdate(complaint.id, 'In Review')}
+                                disabled={updatingId === complaint.id || complaint.status === 'In Review'}
+                                className={cn(
+                                  "w-full sm:flex-1 py-5 border rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl flex items-center justify-center gap-2",
+                                  complaint.status === 'In Review' 
+                                    ? "bg-amber-500/20 border-amber-500/30 text-amber-400 cursor-not-allowed" 
+                                    : "bg-white/[0.04] border-white/[0.1] text-white hover:bg-white/[0.08] hover:border-white/20"
+                                )}
+                              >
+                                {updatingId === complaint.id ? (
+                                  <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                  <Clock className="size-4" />
+                                )}
+                                {complaint.status === 'In Review' ? 'Review Active' : 'Initiate Review'}
                               </button>
-                              <button className="w-full sm:flex-1 py-5 bg-rose-500 text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-rose-400 transition-all active:scale-95 shadow-[0_10px_40px_rgba(244,63,94,0.3)]">
-                                 Resolve Protocol
+                              <button 
+                                onClick={() => handleStatusUpdate(complaint.id, 'Resolved')}
+                                disabled={updatingId === complaint.id || complaint.status === 'Resolved'}
+                                className={cn(
+                                  "w-full sm:flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl flex items-center justify-center gap-2",
+                                  complaint.status === 'Resolved'
+                                    ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 cursor-not-allowed"
+                                    : "bg-rose-500 text-slate-950 hover:bg-rose-400"
+                                )}
+                              >
+                                {updatingId === complaint.id ? (
+                                  <div className="size-4 border-2 border-slate-950/20 border-t-slate-950 rounded-full animate-spin" />
+                                ) : (
+                                  <CheckCircle2 className="size-4" />
+                                )}
+                                {complaint.status === 'Resolved' ? 'Protocol Completed' : 'Resolve Protocol'}
                               </button>
-                           </div>
+                            </div>
                         </div>
                      </div>
                    </motion.div>

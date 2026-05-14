@@ -54,6 +54,16 @@ const templates = {
     sms: `FIXNOW: Your booking #${(data.id || '').slice(-6).toUpperCase()} has been cancelled.`,
     whatsapp: `Your booking *#${(data.id || '').slice(-6).toUpperCase()}* has been cancelled. ⚠️`,
     push: { title: 'Booking Cancelled', body: 'The service booking was cancelled.' }
+  }),
+  complaintReview: (data) => ({
+    sms: `FIXNOW: Technician ${data.technicianName} will check for the complaint to resolve it soon.`,
+    whatsapp: `Technician *${data.technicianName}* will check for the complaint to resolve it soon. 🛠️`,
+    push: { title: 'Complaint Under Review', body: `${data.technicianName} is reviewing your complaint.` }
+  }),
+  complaintResolved: (data) => ({
+    sms: `FIXNOW: Your complaint for booking #${(data.id || '').slice(-6).toUpperCase()} has been resolved by ${data.technicianName}. Thank you for your patience!`,
+    whatsapp: `Your complaint for booking *#${(data.id || '').slice(-6).toUpperCase()}* has been resolved by *${data.technicianName}*. ✅ Thank you for your patience!`,
+    push: { title: 'Complaint Resolved', body: `Technician ${data.technicianName} has resolved your complaint.` }
   })
 };
 

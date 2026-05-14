@@ -13,7 +13,9 @@ import {
   ExternalLink,
   ShieldAlert,
   ArrowRight,
-  Filter
+  Filter,
+  Trash2,
+  Calendar
 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
@@ -40,11 +42,39 @@ export function ComplaintsTab() {
     return () => unsubscribe();
   }, []);
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, status: string, technicianName?: string) => {
     try {
-      await updateDoc(doc(db, 'complaints', id), { status });
-    } catch (err) {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/update-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          complaintId: id,
+          status,
+          technicianName: technicianName || 'Admin'
+        })
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+    } catch (err: any) {
       console.error('Error updating status:', err);
+      alert('Failed to update status: ' + err.message);
+    }
+  };
+
+  const handleFinalize = async (id: string) => {
+    if (!confirm('Are you sure you want to finalize and remove this complaint from the database?')) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/finalize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ complaintId: id })
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      alert('Complaint finalized and removed.');
+    } catch (err: any) {
+      console.error('Error finalizing complaint:', err);
+      alert('Failed to finalize: ' + err.message);
     }
   };
 
@@ -152,7 +182,7 @@ export function ComplaintsTab() {
                                </span>
                             </div>
                          </div>
-                         <div className="flex items-center gap-2">
+                         <div className="flex items-center gap-4">
                             <span className={cn(
                               "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
                               c.status === 'Open' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
@@ -161,6 +191,14 @@ export function ComplaintsTab() {
                             )}>
                               {c.status}
                             </span>
+                            {c.status === 'Resolved' && c.updatedAt && (
+                               <div className="flex items-center gap-2 text-emerald-500/60 bg-emerald-500/5 px-3 py-1 rounded-full border border-emerald-500/10">
+                                 <Calendar className="size-3" />
+                                 <span className="text-[8px] font-black uppercase tracking-widest">
+                                   RESOLVED: {new Date(c.updatedAt).toLocaleString()}
+                                 </span>
+                               </div>
+                            )}
                          </div>
                       </div>
 
@@ -207,11 +245,26 @@ export function ComplaintsTab() {
                          Review
                       </button>
                       <button 
-                        onClick={() => handleUpdateStatus(c.id, 'Resolved')}
-                        className="flex-1 lg:w-full p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/20 transition-all"
+                        onClick={() => handleUpdateStatus(c.id, 'Resolved', c.technicianName)}
+                        disabled={c.status === 'Resolved'}
+                        className={cn(
+                          "flex-1 lg:w-full p-4 border rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
+                          c.status === 'Resolved' 
+                            ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-500/40 cursor-not-allowed"
+                            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                        )}
                       >
                          Resolve
                       </button>
+                      {c.status === 'Resolved' && (
+                        <button 
+                          onClick={() => handleFinalize(c.id)}
+                          className="flex-1 lg:w-full p-4 bg-rose-500 text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-400 transition-all flex items-center justify-center gap-2"
+                        >
+                           <Trash2 className="size-3" />
+                           Finalize
+                        </button>
+                      )}
                    </div>
                 </div>
              </div>
