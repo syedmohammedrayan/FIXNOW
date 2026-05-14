@@ -43,7 +43,7 @@ export default function LandingPage() {
                 <span className="relative inline-flex rounded-full size-2 bg-cyan-500" />
               </span>
               <span className="text-[10px] font-black uppercase tracking-[0.28em] text-white/90">
-                Premium Service Logistics
+                Top-Rated Home Care
               </span>
               <Sparkles className="w-3 h-3 text-cyan-400 opacity-80" />
             </motion.div>
@@ -78,7 +78,7 @@ export default function LandingPage() {
               transition={{ delay: 0.58, duration: 0.6 }}
               className="text-sm sm:text-base text-white/55 font-semibold max-w-md mx-auto leading-relaxed tracking-[0.12em] uppercase"
             >
-              High-Precision Home Service Ecosystem
+              Reliable Home Repairs & Maintenance
             </motion.p>
 
             {/* ── CTA Buttons ── */}
@@ -132,7 +132,7 @@ export default function LandingPage() {
             className="flex flex-col items-center mb-16 sm:mb-20"
           >
             <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40 drop-shadow-2xl tracking-[-0.05em] mb-4 uppercase italic text-center">
-              Operational Protocol
+              How It Works
             </h2>
             <div className="w-24 sm:w-40 h-1.5 sm:h-2 bg-gradient-to-r from-transparent via-white/60 to-transparent rounded-full" />
           </motion.div>
@@ -140,20 +140,20 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
             <StepCard
               icon={<Search className="w-10 h-10" />}
-              title="Issue Detection"
-              desc="Pinpoint your service requirements via our AI-assisted terminal. Verification happens in real-time."
+              title="Describe Issue"
+              desc="Describe your problem and get matched with the right technician instantly through our AI assistant."
               delay={0}
             />
             <StepCard
               icon={<Zap className="w-10 h-10" />}
-              title="Expert Dispatch"
-              desc="Proprietary logistics assign the top-tier local specialist to your exact geolocation instantly."
+              title="Get Matched"
+              desc="We'll send the best verified professional in your area to your doorstep without the wait."
               delay={0.15}
             />
             <StepCard
               icon={<MapPin className="w-10 h-10" />}
-              title="Live Execution"
-              desc="Monitor your technician with sub-meter accuracy and verify completion with secure OTP authentication."
+              title="Track & Pay"
+              desc="See your technician's location in real-time and confirm completion with a secure OTP."
               delay={0.3}
             />
           </div>
@@ -163,13 +163,13 @@ export default function LandingPage() {
         <section className="mt-16 sm:mt-32 mb-24 sm:mb-36 w-full max-w-6xl mx-auto flex flex-col items-center text-center px-4">
           <div className="space-y-8 max-w-4xl">
             <h2 className="text-[3rem] sm:text-6xl md:text-[8rem] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40 drop-shadow-2xl tracking-[-0.06em] leading-[0.92] uppercase italic">
-              Premium <br /> Logistics <br />{' '}
+              Trusted <br /> Service <br />{' '}
               <span className="relative text-cyan-400 [text-shadow:0_0_24px_rgba(6,182,212,0.4)]">
-                Infrastructure.
+                Network.
               </span>
             </h2>
             <p className="text-lg text-slate-300 font-bold uppercase tracking-[0.1em] opacity-80">
-              Proprietary Architecture for High-Stake Execution.
+              Reliable infrastructure for every home repair.
             </p>
           </div>
         </section>

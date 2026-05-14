@@ -38,6 +38,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
+import ComplaintModal from '@/components/customer/ComplaintModal';
+import FeedbackModal from '@/components/customer/FeedbackModal';
 
 const LIBRARIES: ("geometry" | "places" | "visualization")[] = ["geometry", "places", "visualization"];
 
@@ -121,6 +123,13 @@ export default function TrackingPage() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+
+  // Complaint state
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  
+  // Feedback state
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackShown, setFeedbackShown] = useState(false);
 
   // Handle chatbot visibility in fullscreen
   useEffect(() => {
@@ -248,6 +257,14 @@ export default function TrackingPage() {
       s.disconnect();
     };
   }, [bookingId]);
+
+  // Trigger Feedback Modal when completed
+  useEffect(() => {
+    if (status === 'Completed' && !feedbackShown && booking && !booking.feedbackSubmitted) {
+      setShowFeedbackModal(true);
+      setFeedbackShown(true);
+    }
+  }, [status, feedbackShown, booking]);
 
   // Live Customer GPS Tracking
   useEffect(() => {
@@ -715,6 +732,19 @@ export default function TrackingPage() {
                   </button>
                 </div>
               )}
+
+              {/* Raise Complaint Button */}
+              {(status === 'Arrived' || status === 'In Progress' || status === 'Completed') && (
+                <div className="px-5 sm:px-6 pb-5">
+                  <button
+                    onClick={() => setShowComplaintModal(true)}
+                    className="w-full py-3.5 rounded-2xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-cyan-500/20 text-cyan-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all shadow-[0_0_15px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                  >
+                    <AlertTriangle className="size-3.5" />
+                    Raise Service Complaint
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* ── Live Protocol Timeline ── */}
@@ -821,6 +851,36 @@ export default function TrackingPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* COMPLAINT MODAL */}
+      {booking && (
+        <ComplaintModal
+          isOpen={showComplaintModal}
+          onClose={() => setShowComplaintModal(false)}
+          booking={{
+            id: bookingId || '',
+            technician_id: booking.technicianId || booking.technician_id || '',
+            technician_name: techDetails.name,
+            customer_id: booking.customerId || booking.customer_id || '',
+            customer_name: booking.customerName || booking.customer_name || 'Customer',
+            category: booking.category || 'Service'
+          }}
+        />
+      )}
+
+      {/* FEEDBACK MODAL */}
+      {booking && (
+        <FeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(false)}
+          booking={{
+            id: bookingId || '',
+            technicianId: booking.technicianId || booking.technician_id || '',
+            technicianName: techDetails.name,
+            category: booking.category || 'Service'
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -7,6 +7,8 @@ export type Testimonial = {
   image: string;
   name: string;
   role: string;
+  city?: string;
+  category?: string;
 };
 
 export const TestimonialsColumn = (props: {
@@ -31,7 +33,7 @@ export const TestimonialsColumn = (props: {
         {[
           ...new Array(2).fill(0).map((_, index) => (
             <React.Fragment key={index}>
-              {props.testimonials.map(({ text, image, name, role }, i) => (
+              {props.testimonials.map(({ text, image, name, role, city, category }, i) => (
                 <div 
                   className="p-10 rounded-[2.5rem] border border-white/60 shadow-xl max-w-xs w-full bg-white/40 backdrop-blur-3xl hover:bg-white/60 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 group" 
                   key={i}
@@ -49,7 +51,10 @@ export const TestimonialsColumn = (props: {
                     </div>
                     <div className="flex flex-col">
                       <div className="font-black text-slate-950 tracking-tighter uppercase text-sm">{name}</div>
-                      <div className="text-cyan-700 text-[10px] font-black uppercase tracking-widest mt-0.5">{role}</div>
+                      <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                        <div className="text-cyan-700 text-[9px] font-black uppercase tracking-widest">{category || role}</div>
+                        {city && <div className="text-slate-500 text-[9px] font-bold uppercase tracking-widest opacity-60">• {city}</div>}
+                      </div>
                     </div>
                   </div>
                 </div>

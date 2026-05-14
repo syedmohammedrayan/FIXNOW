@@ -6,64 +6,58 @@ import { motion } from "framer-motion";
 
 const testimonials = [
   {
-    text: "This ecosystem revolutionized our operations, connecting us with top technicians. The glassmorphic interface is stunning and professional.",
+    text: "Got my AC fixed within 2 hours of raising a complaint. The technician was professional and the live tracking was incredibly accurate.",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=faces",
-    name: "Briana Patton",
-    role: "Operations Manager",
+    name: "Priya Sharma",
+    role: "Homeowner",
+    city: "Mumbai",
+    category: "HVAC / AC"
   },
   {
-    text: "Implementation was seamless. The high-contrast UI made team adoption effortless. Truly a premium experience.",
+    text: "The best part about FixNow is the transparency. I knew exactly how much I'd pay before the electrician even arrived. No hidden costs.",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=faces",
-    name: "Bilal Ahmed",
-    role: "IT Manager",
+    name: "Arjun Mehta",
+    role: "Apartment Resident",
+    city: "Bangalore",
+    category: "Electrician"
   },
   {
-    text: "The AI integration is exceptional, providing real-time assistance and ensuring our complete satisfaction.",
+    text: "Raised a complaint for a leaky pipe late at night. A plumber was at my doorstep by 8 AM the next morning. Exceptional service!",
     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=faces",
-    name: "Saman Malik",
-    role: "Customer Support Lead",
+    name: "Sneha Reddy",
+    role: "Working Professional",
+    city: "Hyderabad",
+    category: "Plumbing"
   },
   {
-    text: "This platform's lucid design enhanced our business efficiency. Highly recommend for its intuitive terminal-style interface.",
+    text: "Very intuitive app. I could send photos of my broken washing machine directly to the tech. He came prepared with the right parts.",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces",
-    name: "Omar Raza",
-    role: "CEO",
+    name: "Rahul Verma",
+    role: "Small Business Owner",
+    city: "Delhi",
+    category: "Appliances"
   },
   {
-    text: "Robust features and quick support have transformed our workflow, making our technicians significantly more efficient.",
+    text: "Used FixNow for pest control. The process was seamless from booking to feedback. Highly recommend for any home service.",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces",
-    name: "Zainab Hussain",
-    role: "Project Manager",
+    name: "Ananya Iyer",
+    role: "Tech Professional",
+    city: "Chennai",
+    category: "Pest Control"
   },
   {
-    text: "Exceeded expectations. It streamlined matching processes, improving overall business performance through precision logistics.",
+    text: "The technician was very skilled and polite. The app's interface makes it so easy to manage multiple service requests.",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=faces",
-    name: "Aliza Khan",
-    role: "Business Analyst",
-  },
-  {
-    text: "Our business functions improved with a user-friendly design and glowing customer feedback across all nodes.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces",
-    name: "Farhan Siddiqui",
-    role: "Marketing Director",
-  },
-  {
-    text: "They delivered a solution that perfectly predicts our needs and enhances our operations through smart routing.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=faces",
-    name: "Sana Sheikh",
-    role: "Sales Manager",
-  },
-  {
-    text: "Online presence and repair conversions significantly improved, boosting business performance via the White Glass identity.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=faces",
-    name: "Hassan Ali",
-    role: "Logistics Manager",
-  },
+    name: "Vikram Singh",
+    role: "Retired Officer",
+    city: "Pune",
+    category: "Carpentry"
+  }
 ];
 
 const firstColumn = testimonials.slice(0, 3);
 const secondColumn = testimonials.slice(3, 6);
-const thirdColumn = testimonials.slice(6, 9);
+const thirdColumn = testimonials.slice(0, 3); // Fallback for third column if needed, or remove it
 
 export const Testimonials = () => {
   return (

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck, LayoutDashboard, Users, ClipboardList,
   ShoppingCart, DollarSign, Bell, LogOut, Activity,
-  ChevronLeft, ChevronRight, X
+  ChevronLeft, ChevronRight, X, AlertTriangle
 } from 'lucide-react';
 import { SidebarLink } from './shared/SidebarLink';
 import { cn } from '@/lib/utils';
@@ -43,6 +43,7 @@ export function Sidebar({
     { icon: <ClipboardList />,   label: 'Bookings',      tab: 'bookings' },
     { icon: <ShoppingCart />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
     { icon: <DollarSign />,      label: 'Transactions',  tab: 'transactions' },
+    { icon: <AlertTriangle />,   label: 'Complaints',    tab: 'complaints' },
     { icon: <Bell />,            label: 'Notifications', tab: 'notifications' },
   ];
 

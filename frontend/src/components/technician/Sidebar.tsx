@@ -16,7 +16,8 @@ import {
   Zap,
   Crown,
   Circle,
-  Settings
+  Settings,
+  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
@@ -69,6 +70,12 @@ const mainMenuItems: MenuItem[] = [
     label: 'Service Store', 
     href: '/technician/store',
     description: 'Browse services',
+  },
+  { 
+    icon: AlertCircle, 
+    label: 'Complaints', 
+    href: '/technician/complaints',
+    description: 'Customer feedback',
   },
 ];
 
