@@ -20,6 +20,8 @@ import {
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
+import { API_BASE } from '@/lib/config';
+import { getImageUrl } from '@/lib/image-utils';
 
 export function ComplaintsTab() {
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -44,7 +46,7 @@ export function ComplaintsTab() {
 
   const handleUpdateStatus = async (id: string, status: string, technicianName?: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/update-status`, {
+      const response = await fetch(`${API_BASE}/api/complaints/update-status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -64,7 +66,7 @@ export function ComplaintsTab() {
   const handleFinalize = async (id: string) => {
     if (!confirm('Are you sure you want to finalize and remove this complaint from the database?')) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/finalize`, {
+      const response = await fetch(`${API_BASE}/api/complaints/finalize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ complaintId: id })
@@ -192,7 +194,7 @@ export function ComplaintsTab() {
                      <div className="size-40 sm:size-52 rounded-[2.5rem] overflow-hidden border border-white/10 shrink-0 bg-slate-950 flex items-center justify-center shadow-2xl group/img relative">
                         {c.imageUrl ? (
                           <>
-                            <img src={c.imageUrl} alt="Proof" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
+                            <img src={getImageUrl(c.imageUrl)} alt="Proof" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
                             <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
                           </>
                         ) : (

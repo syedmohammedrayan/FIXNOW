@@ -109,8 +109,8 @@ export default function TechnicianSidebar({
         setUserName(user.displayName || 'Technician');
         setUserEmail(user.email || '');
         
-        // Real-time profile sync for avatar
-        const unsubProfile = onSnapshot(doc(db, 'users', user.uid), (docSnap: any) => {
+        // Real-time profile sync for avatar (Technicians are stored in the 'technicians' collection)
+        const unsubProfile = onSnapshot(doc(db, 'technicians', user.uid), (docSnap: any) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
             if (data.avatar) setUserAvatar(data.avatar);

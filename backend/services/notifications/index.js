@@ -140,10 +140,16 @@ async function notifyUser(userId, type, data) {
     }
   }
 
-  // Fallback for demo if still missing
-  recipientPhone = normalizePhone(recipientPhone || '6305097299'); 
+  // Validation for production: ensure we have a phone number
+  if (!recipientPhone) {
+    console.warn(`⚠️ Notification abort: No phone number found for user ${userId || 'anonymous'}`);
+    // Only continue if we have a push token as an alternative
+    if (!pushToken) return [];
+  }
 
-  console.log(`🔔 Sending ${type} notifications to user ${userId} (${recipientPhone})...`);
+  recipientPhone = normalizePhone(recipientPhone); 
+
+  console.log(`🔔 Sending ${type} notifications to user ${userId} (${recipientPhone || 'PUSH ONLY'})...`);
 
   const results = await Promise.allSettled([
     sendSMS(recipientPhone, template.sms),

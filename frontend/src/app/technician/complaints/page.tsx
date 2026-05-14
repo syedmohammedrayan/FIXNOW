@@ -15,10 +15,12 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { db, auth } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import TechnicianSidebar from "@/components/technician/Sidebar";
 import { cn } from '@/lib/utils';
+import { API_BASE } from '@/lib/config';
+import { getImageUrl } from '@/lib/image-utils';
 
 export default function TechnicianComplaintsPage() {
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -30,7 +32,7 @@ export default function TechnicianComplaintsPage() {
   const handleStatusUpdate = async (complaintId: string, newStatus: string) => {
     try {
       setUpdatingId(complaintId);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/complaints/update-status`, {
+      const response = await fetch(`${API_BASE}/api/complaints/update-status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -54,8 +56,8 @@ export default function TechnicianComplaintsPage() {
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Fetch profile
-        const unsubProfile = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+        // Fetch profile from technicians collection (standard for this role)
+        const unsubProfile = onSnapshot(doc(db, 'technicians', user.uid), (docSnap) => {
           if (docSnap.exists()) setProfile(docSnap.data());
         });
 
@@ -197,10 +199,10 @@ export default function TechnicianComplaintsPage() {
                         <div className="w-full lg:w-80 xl:w-96 shrink-0">
                            {complaint.imageUrl ? (
                              <div className="relative aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 group-hover:border-white/20 transition-all shadow-2xl group/img">
-                                <img src={complaint.imageUrl} alt="Evidence" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
+                                <img src={getImageUrl(complaint.imageUrl)} alt="Evidence" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end p-8 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500">
                                    <button 
-                                     onClick={() => window.open(complaint.imageUrl, '_blank')}
+                                     onClick={() => window.open(getImageUrl(complaint.imageUrl) || '', '_blank')}
                                      className="flex items-center gap-3 text-white/70 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all"
                                    >
                                       <div className="size-8 rounded-lg bg-white/10 flex items-center justify-center">
@@ -333,6 +335,3 @@ export default function TechnicianComplaintsPage() {
     </div>
   );
 }
-
-// Helper: Firestore doc reference needs to be imported or available
-import { doc } from 'firebase/firestore';
