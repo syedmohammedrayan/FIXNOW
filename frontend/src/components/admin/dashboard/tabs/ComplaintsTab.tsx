@@ -289,15 +289,16 @@ export function ComplaintsTab() {
 
                      {/* Tactical Actions */}
                      <div className="flex lg:flex-col gap-4 shrink-0 justify-center">
-                        {c.imageUrl && (
-                          <button 
-                            onClick={() => window.open(c.imageUrl, '_blank')}
-                            className="group/action flex-1 lg:w-16 p-5 bg-white/[0.04] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all shadow-xl active:scale-90"
-                            title="Expand Intel"
-                          >
-                             <ExternalLink className="size-6 transition-transform group-hover/action:scale-110" />
-                          </button>
-                        )}
+                         <button 
+                           onClick={() => {
+                             const url = getImageUrl(c.imageUrl);
+                             if (url) window.open(url, '_blank');
+                           }}
+                           className="group/action flex-1 lg:w-16 p-5 bg-white/[0.04] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all shadow-xl active:scale-90"
+                           title="Expand Intel"
+                         >
+                            <ExternalLink className="size-6 transition-transform group-hover/action:scale-110" />
+                         </button>
                         <button 
                           onClick={() => handleUpdateStatus(c.id, 'In Review')}
                           className="flex-1 lg:w-16 p-5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400 hover:bg-amber-500/20 transition-all shadow-xl active:scale-90 flex items-center justify-center"

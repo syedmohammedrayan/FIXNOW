@@ -64,12 +64,19 @@ export default function TechnicianComplaintsPage() {
         // Fetch complaints
         const q = query(
           collection(db, 'complaints'),
-          where('technicianId', '==', user.uid),
-          orderBy('createdAt', 'desc')
+          where('technicianId', '==', user.uid)
+          // Removed orderBy here to prevent "missing index" error on production
+          // Client-side sorting is used instead for maximum reliability
         );
 
         const unsubComplaints = onSnapshot(q, (snapshot) => {
-          const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+          // Client-side sort by createdAt desc
+          docs.sort((a, b) => {
+            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return timeB - timeA;
+          });
           setComplaints(docs);
           setLoading(false);
         });
@@ -202,7 +209,10 @@ export default function TechnicianComplaintsPage() {
                                 <img src={getImageUrl(complaint.imageUrl)} alt="Evidence" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end p-8 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500">
                                    <button 
-                                     onClick={() => window.open(getImageUrl(complaint.imageUrl) || '', '_blank')}
+                                     onClick={() => {
+                                       const url = getImageUrl(complaint.imageUrl);
+                                       if (url) window.open(url, '_blank');
+                                     }}
                                      className="flex items-center gap-3 text-white/70 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all"
                                    >
                                       <div className="size-8 rounded-lg bg-white/10 flex items-center justify-center">
