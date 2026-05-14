@@ -37,6 +37,7 @@
   /* Reduce high-intensity blurs on mobile to prevent GPU crashes */
   .backdrop-blur-[32px], 
   .backdrop-blur-[40px], 
+  .backdrop-blur-[50px],
   .navbar-glass-scrolled,
   .glass-panel-strong {
     backdrop-filter: blur(12px) saturate(180%) !important;
@@ -56,6 +57,9 @@ body {
   min-height: 100vh;
   position: relative;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  /* Prevent horizontal scroll on mobile due to animations */
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Ensure all direct body children (except background layers and chatbot) sit above z-index: 0 */

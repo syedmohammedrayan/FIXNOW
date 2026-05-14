@@ -122,14 +122,23 @@ export function ComplaintsTab() {
 
         <div className="flex flex-col md:flex-row gap-5 items-center w-full lg:w-auto">
           <div className="relative w-full md:w-72 group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-500 group-focus-within:text-white transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-500 group-focus-within:text-white transition-colors pointer-events-none" />
             <input 
               type="text"
               placeholder="SEARCH INCIDENTS..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 bg-[#0a0f1d]/40 border border-white/[0.08] rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-white/20 focus:bg-[#0a0f1d]/60 backdrop-blur-xl transition-all shadow-2xl"
+              className="w-full pl-14 pr-12 py-4 bg-[#0a0f1d]/40 border border-white/[0.08] rounded-[1.25rem] text-base md:text-[10px] font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-white/20 focus:bg-[#0a0f1d]/60 backdrop-blur-xl transition-all shadow-2xl appearance-none"
+              style={{ fontSize: '16px' }} /* Prevents iOS auto-zoom */
             />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-white transition-colors"
+              >
+                <Trash2 className="size-3.5" />
+              </button>
+            )}
           </div>
 
           <div className="flex w-full md:w-auto bg-[#0a0f1d]/40 p-1.5 rounded-[1.25rem] border border-white/[0.08] backdrop-blur-xl shadow-2xl overflow-x-auto no-scrollbar">

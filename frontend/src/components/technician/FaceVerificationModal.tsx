@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef, useState, useCallback } from "react";
-import Webcam from "react-webcam";
+import dynamic from "next/dynamic";
+const Webcam = dynamic(() => import("react-webcam"), { ssr: false });
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, X, RefreshCw, CheckCircle2, ShieldCheck, Loader2, CameraOff } from "lucide-react";
 import axios from "axios";

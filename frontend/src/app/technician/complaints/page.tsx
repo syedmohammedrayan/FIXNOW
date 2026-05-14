@@ -145,14 +145,23 @@ export default function TechnicianComplaintsPage() {
             <div className="relative w-full xl:w-[400px] group">
               <div className="absolute inset-0 bg-white/[0.02] blur-xl rounded-3xl group-hover:bg-rose-500/[0.02] transition-colors" />
               <div className="relative">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-500 group-focus-within:text-white transition-colors" />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-500 group-focus-within:text-white transition-colors pointer-events-none" />
                 <input 
                   type="text"
                   placeholder="FILTER BY BOOKING, CUSTOMER OR INTEL..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 sm:py-5 bg-[#0a0f1d]/40 border border-white/[0.08] rounded-[1.25rem] sm:rounded-[1.5rem] text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-white/20 focus:bg-[#0a0f1d]/60 backdrop-blur-xl transition-all shadow-2xl"
+                  className="w-full pl-14 pr-12 py-4 sm:py-5 bg-[#0a0f1d]/40 border border-white/[0.08] rounded-[1.25rem] sm:rounded-[1.5rem] text-base sm:text-[10px] font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-white/20 focus:bg-[#0a0f1d]/60 backdrop-blur-xl transition-all shadow-2xl appearance-none"
+                  style={{ fontSize: '16px' }}
                 />
+                {searchTerm && (
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-white transition-colors"
+                  >
+                    <AlertCircle className="size-3.5 rotate-45" />
+                  </button>
+                )}
               </div>
             </div>
           </div>

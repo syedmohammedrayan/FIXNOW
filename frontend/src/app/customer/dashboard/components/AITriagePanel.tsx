@@ -230,7 +230,7 @@ export default function AITriagePanel({
         </div>
 
         <textarea
-          className="w-full h-28 sm:h-36 rounded-[1.25rem] sm:rounded-[1.75rem] border border-white/[0.08] bg-white/[0.03] px-5 sm:px-8 py-4 sm:py-6 text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition text-sm sm:text-md leading-relaxed font-medium resize-none"
+          className="w-full h-28 sm:h-36 rounded-[1.25rem] sm:rounded-[1.75rem] border border-white/[0.08] bg-white/[0.03] px-5 sm:px-8 py-4 sm:py-6 text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition text-[16px] md:text-sm leading-relaxed font-medium resize-none"
           style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}
           placeholder="Describe your micro-service or problem manually..."
           value={issueText}

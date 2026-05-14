@@ -56,7 +56,7 @@ export default function ServiceCatalog({
           value={serviceSearch}
           onChange={(e) => setServiceSearch(e.target.value)}
           placeholder="Search services... (e.g. Split AC, Refrigerator)"
-          className="w-full pl-11 sm:pl-16 pr-12 sm:pr-14 py-4 sm:py-5 rounded-xl sm:rounded-2xl border border-white/[0.08] bg-white/[0.03] text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition font-medium text-sm shadow-sm"
+          className="w-full pl-11 sm:pl-16 pr-12 sm:pr-14 py-4 sm:py-5 rounded-xl sm:rounded-2xl border border-white/[0.08] bg-white/[0.03] text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition font-medium text-[16px] shadow-sm md:text-sm"
           style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}
         />
         {serviceSearch && (
