@@ -19,7 +19,9 @@ import { Logo } from '@/components/ui/Logo';
 import { BackgroundParticles, FloatingOrbs } from '@/components/ui/BackgroundParticles';
 import { API_BASE } from '@/lib/config';
 import { ALL_SERVICES } from '@/lib/services';
-import IdVerificationBox from "@/components/technician/IdVerificationBox";
+import IdUploadCard from "@/components/technician/IdUploadCard";
+import FaceVerificationCard from "@/components/technician/FaceVerificationCard";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,8 +58,10 @@ function SignupInner() {
     passwordHint: '', 
     skills: '', 
     category: '', 
-    govIdUrl: '' 
+    govIdUrl: '',
+    selfieUrl: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -144,6 +148,19 @@ function SignupInner() {
     }
     setLoading(true);
     setError('');
+
+    if (role === 'technician') {
+      if (!formData.govIdUrl) {
+        setError('Identity Document (Aadhar/Gov ID) is required.');
+        setLoading(false);
+        return;
+      }
+      if (!formData.selfieUrl) {
+        setError('Face Verification (Biometric Selfie) is required.');
+        setLoading(false);
+        return;
+      }
+    }
     
     try {
       let user: any = null;
@@ -173,8 +190,10 @@ function SignupInner() {
         payload.skills = formData.skills;
         payload.category = formData.category;
         payload.govIdUrl = formData.govIdUrl;
+        payload.selfieUrl = formData.selfieUrl;
         payload.approved = false;
       }
+
 
       const res = await fetch(`${API_BASE}/api/users/signup`, {
         method: 'POST',
@@ -477,17 +496,30 @@ function SignupInner() {
                             <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 size-5 text-slate-500 pointer-events-none" />
                           </div>
 
-                          <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] space-y-4">
-                            <div className="flex items-center gap-3 mb-2">
+                          <div className="space-y-6 pt-2">
+                            <div className="flex items-center gap-3 mb-2 px-2">
                               <Shield className="size-5 text-cyan-500" />
-                              <p className="text-[10px] font-black text-white uppercase tracking-widest">Identify Verification (Aadhar/PAN)</p>
+                              <h3 className="text-sm font-black text-white uppercase tracking-widest italic">Identity Verification</h3>
                             </div>
-                            <IdVerificationBox 
-                              userId={auth.currentUser?.uid || "temp"} 
-                              onSuccess={(url) => setFormData({...formData, govIdUrl: url})}
-                              existingIdUrl={formData.govIdUrl}
-                            />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <IdUploadCard 
+                                onSuccess={(url) => setFormData({...formData, govIdUrl: url})}
+                                existingIdUrl={formData.govIdUrl}
+                              />
+                              <FaceVerificationCard 
+                                onSuccess={(url) => setFormData({...formData, selfieUrl: url})}
+                                existingSelfieUrl={formData.selfieUrl}
+                              />
+                            </div>
+
+                            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed text-center">
+                                Your data is protected by high-grade encryption. Verification typically takes 2-4 hours.
+                              </p>
+                            </div>
                           </div>
+
                         </motion.div>
                       )}
 

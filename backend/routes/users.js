@@ -59,7 +59,8 @@ const performPermanentDeletion = async (id) => {
 // Create or Update User Profile
 router.post('/signup', async (req, res) => {
   try {
-    const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl } = req.body;
+    const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl, selfieUrl } = req.body;
+
 
     // Check if user already exists in DB
     const s = await db.collection('users').where('email', '==', email).limit(1).get(); const existingUser = s.empty ? null : s.docs[0].data();
@@ -103,8 +104,10 @@ router.post('/signup', async (req, res) => {
         skills: skills || [],
         password,
         gov_id_url: govIdUrl || null,
+        selfie_url: selfieUrl || null,
         password_hint: passwordHint || '',
-        verification_status: govIdUrl ? 'uploaded' : 'pending',
+        verification_status: (govIdUrl && selfieUrl) ? 'uploaded' : 'pending',
+
         approved: false,
         created_at: new Date().toISOString()
       };
@@ -227,8 +230,10 @@ router.get('/techs/pending', async (req, res) => {
     const mappedData = (data || []).map(tech => ({
       ...tech,
       govIdUrl: tech.gov_id_url,
+      selfieUrl: tech.selfie_url,
       verificationStatus: tech.verification_status,
       passwordHint: tech.password_hint
+
     }));
 
     res.json({ success: true, technicians: mappedData });
@@ -494,6 +499,8 @@ router.post('/techs/verify-action', async (req, res) => {
         skills: pendingData.skills || [],
         password_hint: pendingData.password_hint || '',
         gov_id_url: pendingData.gov_id_url,
+        selfie_url: pendingData.selfie_url,
+
         approved: true,
         verification_status: 'verified',
         rating: 5.0,
@@ -700,4 +707,39 @@ router.post('/:id/update-profile', async (req, res) => {
   }
 });
 
+// Update verification status (for re-uploads)
+router.post('/update-verification-status', async (req, res) => {
+  try {
+    const { id, status, govIdUrl, selfieUrl } = req.body;
+    if (!id) return res.status(400).json({ error: 'User ID required' });
+
+    const updateData = {
+      verification_status: status,
+      updated_at: new Date().toISOString()
+    };
+    if (govIdUrl) updateData.gov_id_url = govIdUrl;
+    if (selfieUrl) updateData.selfie_url = selfieUrl;
+
+    // Check users collection
+    const userRef = db.collection('users').doc(id);
+    const userDoc = await userRef.get();
+    if (userDoc.exists) {
+      await userRef.update(updateData);
+    }
+
+    // Check technicians collection
+    const techRef = db.collection('technicians').doc(id);
+    const techDoc = await techRef.get();
+    if (techDoc.exists) {
+      await techRef.update(updateData);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Update status error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
+

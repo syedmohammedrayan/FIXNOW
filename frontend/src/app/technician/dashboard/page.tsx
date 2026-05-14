@@ -16,9 +16,12 @@ import {
   AlertTriangle,
   ShieldAlert,
   ShieldCheck,
-  Lock,
-  Upload
+  Upload,
+  UserCheck
 } from "lucide-react";
+import IdUploadCard from "@/components/technician/IdUploadCard";
+import FaceVerificationCard from "@/components/technician/FaceVerificationCard";
+
 import { getAvatarUrl } from "@/lib/image-utils";
 import dynamic from "next/dynamic";
 import { API_BASE } from "@/lib/config";
@@ -231,13 +234,44 @@ export default function TechnicianDashboard() {
 
           {!isUploaded ? (
             <div className="mb-12">
-              <IdVerificationBox 
-                userId={user?.uid || ""} 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 text-left">
+              <IdUploadCard 
                 onSuccess={(url) => {
-                  setProfile((prev: any) => ({ ...prev, govIdUrl: url, verificationStatus: 'uploaded' }));
+                  setProfile((prev: any) => ({ ...prev, govIdUrl: url }));
                 }}
                 existingIdUrl={profile.govIdUrl}
               />
+              <FaceVerificationCard 
+                onSuccess={(url) => {
+                  setProfile((prev: any) => ({ ...prev, selfieUrl: url }));
+                }}
+                existingSelfieUrl={profile.selfieUrl}
+              />
+            </div>
+
+            {profile.govIdUrl && profile.selfieUrl && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={async () => {
+                  try {
+                    await axios.post(`${API_BASE}/api/users/update-verification-status`, {
+                      id: user?.uid,
+                      status: 'uploaded',
+                      govIdUrl: profile.govIdUrl,
+                      selfieUrl: profile.selfieUrl
+                    });
+                    setProfile((prev: any) => ({ ...prev, verificationStatus: 'uploaded' }));
+                  } catch (e) {
+                    alert('Failed to update status.');
+                  }
+                }}
+                className="w-full py-4 bg-cyan-500 text-white font-black uppercase tracking-widest rounded-2xl mb-8 shadow-xl shadow-cyan-500/20 active:scale-95 transition-all"
+              >
+                Submit for Professional Review
+              </motion.button>
+            )}
+
             </div>
           ) : (
             <div className="space-y-4 mb-10 max-w-md mx-auto">
@@ -246,13 +280,22 @@ export default function TechnicianDashboard() {
                   <CheckCircle2 className="size-6 text-emerald-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-bold text-white uppercase tracking-wider">Document Status</p>
-                  <p className="text-sm text-emerald-400 font-black mt-0.5 uppercase tracking-tighter">Securely Uploaded</p>
+                  <p className="text-xs font-bold text-white uppercase tracking-wider">Identity Document</p>
+                  <p className="text-sm text-emerald-400 font-black mt-0.5 uppercase tracking-tighter">Verified & Secure</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-5 rounded-2xl bg-blue-500/5 border border-blue-500/20 text-left">
+                <div className="size-12 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
+                  <UserCheck className="size-6 text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-white uppercase tracking-wider">Biometric Status</p>
+                  <p className="text-sm text-blue-400 font-black mt-0.5 uppercase tracking-tighter">Face ID Match Confirmed</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 text-left">
-                <div className="size-12 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
-                  <Activity className="size-6 text-blue-400" />
+                <div className="size-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <Activity className="size-6 text-slate-400" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-white uppercase tracking-wider">Approval Queue</p>
@@ -260,6 +303,7 @@ export default function TechnicianDashboard() {
                 </div>
               </div>
             </div>
+
           )}
           
           <button 

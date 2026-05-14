@@ -25,7 +25,8 @@ export function ApprovalsTab({
   handleVerifyPayment,
   setSelectedOrder
 }: ApprovalsTabProps) {
-  const [selectedIdUrl, setSelectedIdUrl] = React.useState<string | null>(null);
+  const [selectedUrls, setSelectedUrls] = React.useState<{ id?: string, selfie?: string } | null>(null);
+
   const [imageLoading, setImageLoading] = React.useState(true);
 
   const getValidImageUrl = (url: string, type: 'avatar' | 'id' = 'id') => {
@@ -42,74 +43,91 @@ export function ApprovalsTab({
     >
       {/* ── ID Viewer Modal ── */}
       <AnimatePresence>
-        {selectedIdUrl && (
+        {selectedUrls && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-slate-950/90 backdrop-blur-md"
-            onClick={() => { setSelectedIdUrl(null); setImageLoading(true); }}
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-slate-950/95 backdrop-blur-xl"
+            onClick={() => { setSelectedUrls(null); setImageLoading(true); }}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 40 }}
-              className="relative w-full sm:max-w-4xl bg-slate-900 rounded-t-[2.5rem] sm:rounded-[2rem] overflow-hidden border border-white/[0.08] shadow-2xl"
+              className="relative w-full sm:max-w-6xl bg-slate-900 rounded-t-[2.5rem] sm:rounded-[3rem] overflow-hidden border border-white/[0.08] shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
-              {/* Handle bar (mobile) */}
-              <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mt-3 mb-1" />
-
               {/* Close button */}
               <button
-                onClick={() => { setSelectedIdUrl(null); setImageLoading(true); }}
-                className="absolute top-4 right-4 z-20 p-2.5 bg-white/10 hover:bg-rose-500/20 text-white hover:text-rose-400 rounded-full transition border border-white/[0.08]"
+                onClick={() => { setSelectedUrls(null); setImageLoading(true); }}
+                className="absolute top-6 right-6 z-20 p-3 bg-white/10 hover:bg-rose-500/20 text-white hover:text-rose-400 rounded-full transition border border-white/[0.08] backdrop-blur-md"
               >
-                <X className="size-5" />
+                <X className="size-6" />
               </button>
 
-              {/* Image area */}
-              <div className="relative p-4 bg-black/40 min-h-[50vh] sm:min-h-[65vh] flex items-center justify-center">
-                {imageLoading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <div className="size-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-                    <p className="text-white font-bold text-xs uppercase tracking-widest animate-pulse">Scanning Document...</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5">
+                {/* ID Image Section */}
+                <div className="relative p-6 sm:p-10 bg-slate-900/50 min-h-[40vh] sm:min-h-[60vh] flex flex-col items-center justify-center border-r border-white/5">
+                  <div className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                    <FileText className="size-3.5 text-cyan-400" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Gov ID Document</span>
                   </div>
-                )}
-                <img
-                  src={getValidImageUrl(selectedIdUrl)}
-                  alt="Government ID"
-                  className={`max-w-full max-h-[60vh] object-contain shadow-2xl transition-all duration-700 ${imageLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
-                  onLoad={() => setImageLoading(false)}
-                  onError={e => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x500?text=ID+Not+Found';
-                    setImageLoading(false);
-                  }}
-                />
+                  <img
+                    src={getValidImageUrl(selectedUrls.id || '')}
+                    alt="Government ID"
+                    className="max-w-full max-h-[50vh] object-contain shadow-2xl rounded-xl transition-all duration-700"
+                    onLoad={() => setImageLoading(false)}
+                    onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x500?text=ID+Not+Found'; }}
+                  />
+                </div>
+
+                {/* Selfie Image Section */}
+                <div className="relative p-6 sm:p-10 bg-slate-900/50 min-h-[40vh] sm:min-h-[60vh] flex flex-col items-center justify-center">
+                  <div className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                    <CheckCircle2 className="size-3.5 text-blue-400" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Biometric Selfie</span>
+                  </div>
+                  <img
+                    src={getValidImageUrl(selectedUrls.selfie || '')}
+                    alt="Biometric Selfie"
+                    className="max-w-full max-h-[50vh] object-contain shadow-2xl rounded-xl transition-all duration-700"
+                    onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x500?text=Selfie+Not+Found'; }}
+                  />
+                </div>
               </div>
 
               {/* Footer */}
-              <div className="px-5 sm:px-8 py-4 sm:py-5 bg-slate-900/80 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-white/[0.05] flex items-center justify-center border border-white/[0.08]">
-                    <FileText className="size-4 text-white" />
+              <div className="px-8 py-6 bg-slate-950 border-t border-white/[0.06] flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="size-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                    <ShieldCheck className="size-5 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-white font-black text-xs uppercase tracking-wider">Verified Identity Protocol</p>
-                    <p className="text-slate-500 text-[10px] font-medium">Encrypted Document Transfer Active</p>
+                    <p className="text-white font-black text-xs uppercase tracking-widest italic">Identity Verification Protocol</p>
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-tight">Cross-referencing biometrics with legal documentation</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => window.open(getValidImageUrl(selectedIdUrl), '_blank')}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl transition border border-white/[0.08] font-bold text-xs w-full sm:w-auto justify-center"
-                >
-                  <ExternalLink className="size-3.5" /> Open Original
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => window.open(getValidImageUrl(selectedUrls.id || ''), '_blank')}
+                    className="px-6 py-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl transition border border-white/[0.08] font-black text-[10px] uppercase tracking-widest"
+                  >
+                    Download ID
+                  </button>
+                  <button
+                    onClick={() => window.open(getValidImageUrl(selectedUrls.selfie || ''), '_blank')}
+                    className="px-6 py-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl transition border border-white/[0.08] font-black text-[10px] uppercase tracking-widest"
+                  >
+                    Download Selfie
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
 
       {/* ── Pending Technician Registrations ── */}
       <div className="space-y-4">
@@ -152,27 +170,36 @@ export function ApprovalsTab({
                         {tech.category}
                       </span>
                       {tech.verificationStatus === 'uploaded' && (
-                        <span className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 rounded-lg text-[9px] font-black uppercase tracking-widest border border-cyan-500/20 flex items-center gap-1">
-                          <FileText className="size-2.5" /> ID Uploaded
-                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 rounded-lg text-[9px] font-black uppercase tracking-widest border border-cyan-500/20 flex items-center gap-1">
+                            <FileText className="size-2.5" /> ID Uploaded
+                          </span>
+                          <span className="px-2.5 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-widest border border-blue-500/20 flex items-center gap-1">
+                            <CheckCircle2 className="size-2.5" /> Face Verified
+                          </span>
+                        </div>
                       )}
+
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-white/[0.05]">
-                  {(tech.govIdUrl || tech.gov_id_url) && (
+                  {(tech.govIdUrl || tech.gov_id_url || tech.selfieUrl || tech.selfie_url) && (
                     <button
                       onClick={() => {
-                        const url = tech.govIdUrl || tech.gov_id_url;
-                        if (url) setSelectedIdUrl(url);
+                        setSelectedUrls({
+                          id: tech.govIdUrl || tech.gov_id_url,
+                          selfie: tech.selfieUrl || tech.selfie_url
+                        });
                       }}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 font-bold text-[10px] uppercase tracking-widest transition border border-white/[0.07] active:scale-95"
                     >
-                      <Eye className="size-3.5" /> View ID
+                      <Eye className="size-3.5" /> Verify Identity
                     </button>
                   )}
+
                   <button
                     onClick={() => handleApprove(tech.id)}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-black text-[10px] uppercase tracking-widest transition shadow-lg active:scale-95"

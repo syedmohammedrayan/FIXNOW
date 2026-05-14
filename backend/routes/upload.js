@@ -1,6 +1,8 @@
 const express = require('express')
 const multer = require('multer')
+const fs = require('fs')
 const cloudinary = require('../config/cloudinary')
+
 
 const router = express.Router()
 
