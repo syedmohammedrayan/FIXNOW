@@ -11,6 +11,8 @@ import axios from 'axios';
 import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { getAvatarUrl } from '@/lib/image-utils';
+import ComplaintModal from '@/components/customer/ComplaintModal';
+import { AlertTriangle } from 'lucide-react';
 
 interface BookingTech {
   name: string;
@@ -82,6 +84,7 @@ function isBroadcastPending(booking: Booking) {
 
 interface Props {
   userId: string;
+  userProfile?: any;
   onTrack: (bookingId: string) => void;
   onBack: () => void;
 }
@@ -91,6 +94,8 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'active' | 'past'>('active');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [complaintBooking, setComplaintBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -335,14 +340,26 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
                      </div>
 
                      <div className="flex items-center gap-3 w-full sm:w-auto">
-                        {isCompleted(booking.status) && (
-                          <button 
-                            onClick={() => setSelectedBooking(booking)}
-                            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
-                          >
-                            <History className="size-3.5" />
-                            Details
-                          </button>
+                        {!live && (
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => setSelectedBooking(booking)}
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                            >
+                              <History className="size-3.5" />
+                              Details
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setComplaintBooking(booking);
+                                setShowComplaintModal(true);
+                              }}
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-2xl text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                            >
+                              <AlertTriangle className="size-3.5" />
+                              Complaint
+                            </button>
+                          </div>
                         )}
                         
                         {live && booking.status !== 'Pending' && (
@@ -575,6 +592,22 @@ export default function BookingHistory({ userId, onTrack, onBack }: Props) {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Complaint Modal */}
+      {complaintBooking && (
+        <ComplaintModal
+          isOpen={showComplaintModal}
+          onClose={() => setShowComplaintModal(false)}
+          booking={{
+            id: complaintBooking.id,
+            technician_id: complaintBooking.technicianId || '',
+            technician_name: complaintBooking.technician?.name || 'Assigned Tech',
+            customer_id: userId,
+            customer_name: userProfile?.name || 'Verified Customer',
+            category: complaintBooking.category || 'Service'
+          }}
+        />
+      )}
     </motion.div>
   );
 }

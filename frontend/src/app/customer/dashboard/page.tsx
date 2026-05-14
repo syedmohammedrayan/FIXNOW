@@ -329,6 +329,7 @@ export default function CustomerDashboard() {
       <div className="min-h-screen bg-slate-950 text-white pt-20 sm:pt-24 pb-16 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto overflow-x-hidden">
         <BookingHistory 
           userId={userId} 
+          userProfile={userProfile}
           onTrack={(bookingId) => router.push(`/customer/tracking?id=${bookingId}`)} 
           onBack={() => setShowHistory(false)} 
         />
