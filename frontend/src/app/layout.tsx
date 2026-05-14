@@ -42,32 +42,38 @@ export default function RootLayout({
         </div>
 
         {/* ── Google Translate & Mobile Overrides ── */}
-        <div id="google_translate_element" style={{ display: 'none' }}></div>
+        <div id="google_translate_element" style={{ visibility: 'hidden', position: 'absolute', pointerEvents: 'none' }}></div>
         <Script id="google-translate-config" strategy="afterInteractive">
           {`
             window.googleTranslateElementInit = function() {
-              if (window.google && window.google.translate) {
-                new window.google.translate.TranslateElement({
-                  pageLanguage: 'en',
-                  includedLanguages: 'en,hi,te,ta,or,ml,kn,ur,as,bn',
-                  layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-                  autoDisplay: false
-                }, 'google_translate_element');
+              try {
+                if (window.google && window.google.translate) {
+                  new window.google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,hi,te,ta,or,ml,kn,ur,as,bn',
+                    layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false
+                  }, 'google_translate_element');
+                }
+              } catch (e) {
+                console.error('Translate Init Error:', e);
               }
             };
 
             // Safe MutationObserver for mobile
             if (typeof document !== 'undefined' && document.body) {
               const observer = new MutationObserver((mutations) => {
-                const banner = document.querySelector('.goog-te-banner-frame');
-                if (banner) {
-                  banner.remove();
-                  document.body.style.top = '0';
-                }
-                const popup = document.querySelector('.goog-te-menu-value');
-                if (popup) {
-                  // Keep it hidden or style it for Midnight Glass
-                }
+                try {
+                  const banner = document.querySelector('.goog-te-banner-frame');
+                  if (banner) {
+                    banner.remove();
+                    document.body.style.top = '0';
+                  }
+                  const popup = document.querySelector('.goog-te-menu-value');
+                  if (popup) {
+                    // Keep it hidden or style it for Midnight Glass
+                  }
+                } catch (e) {}
               });
               observer.observe(document.body, { childList: true, subtree: true });
             }

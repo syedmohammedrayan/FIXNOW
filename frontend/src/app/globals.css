@@ -33,6 +33,21 @@
     --bg-scale-end: 1.02;
     --bg-position: center;
   }
+  
+  /* Reduce high-intensity blurs on mobile to prevent GPU crashes */
+  .backdrop-blur-[32px], 
+  .backdrop-blur-[40px], 
+  .navbar-glass-scrolled,
+  .glass-panel-strong {
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  }
+
+  .backdrop-blur-2xl,
+  .glass-neon-card {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
 }
 
 body {

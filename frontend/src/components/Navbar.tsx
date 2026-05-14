@@ -270,7 +270,7 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col backdrop-blur-[40px]"
+              className="lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm z-[120] flex flex-col backdrop-blur-2xl"
               style={{
                 background: 'linear-gradient(170deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.92) 100%)',
                 borderLeft: '1px solid rgba(255, 255, 255, 0.12)',

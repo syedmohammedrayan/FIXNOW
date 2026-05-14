@@ -37,12 +37,42 @@ export default function DynamicBackground() {
   const animFrameId = useRef<number>(0);
   const currentSlide = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    // Initial slide state
+    const slider = sliderRef.current;
+    if (slider) {
+      const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
+      if (slides[0]) {
+        slides[0].style.opacity = '1';
+        slides[0].style.transform = 'scale(var(--bg-scale-start))';
+        slides[0].style.zIndex = '1';
+      }
+    }
+
+    const interval = setInterval(advanceSlide, SLIDE_DURATION);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    };
+    const handleScroll = () => {
+      scrollY.current = window.scrollY;
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+      clearInterval(interval);
+    };
   }, []);
 
   const advanceSlide = useCallback(() => {
@@ -51,9 +81,9 @@ export default function DynamicBackground() {
 
     currentSlide.current = (currentSlide.current + 1) % BACKGROUND_IMAGES.length;
     
-    // Manual DOM manipulation for the crossfade to keep it super performant
     const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
-    slides.forEach((slide, index) => {
+    // Safe iteration for all browsers
+    Array.from(slides).forEach((slide: HTMLDivElement, index) => {
       if (index === currentSlide.current) {
         slide.style.opacity = '1';
         slide.style.transform = 'scale(var(--bg-scale-start))';
@@ -67,22 +97,9 @@ export default function DynamicBackground() {
   }, []);
 
   useEffect(() => {
-    const slider = sliderRef.current;
-    if (slider) {
-      const slides = slider.querySelectorAll<HTMLDivElement>('.bg-slide');
-      if (slides[0]) {
-        slides[0].style.opacity = '1';
-        slides[0].style.transform = 'scale(var(--bg-scale-start))';
-        slides[0].style.zIndex = '1';
-      }
-    }
-    const interval = setInterval(advanceSlide, SLIDE_DURATION);
-    return () => clearInterval(interval);
-  }, [advanceSlide]);
+    if (!mounted) return;
 
-  useEffect(() => {
     const animate = () => {
-      // Disable mouse following on mobile to save GPU
       if (!isMobile) {
         smoothMouse.current.x += (mousePos.current.x - smoothMouse.current.x) * LERP_FACTOR;
         smoothMouse.current.y += (mousePos.current.y - smoothMouse.current.y) * LERP_FACTOR;
@@ -101,7 +118,9 @@ export default function DynamicBackground() {
       if (overlayRef.current) {
         const maxScroll = 1200;
         const scrollRatio = Math.min(sy / maxScroll, 1);
-        const blur = 1.5 + scrollRatio * 3.5;
+        // Reduce blur on mobile to prevent GPU crashes
+        const blurIntensity = isMobile ? 1.0 : 1.5;
+        const blur = blurIntensity + scrollRatio * (isMobile ? 2.5 : 3.5);
         overlayRef.current.style.backdropFilter = `blur(${blur}px)`;
         (overlayRef.current.style as any).webkitBackdropFilter = `blur(${blur}px)`;
       }
@@ -111,7 +130,14 @@ export default function DynamicBackground() {
 
     animFrameId.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animFrameId.current);
-  }, [isMobile]);
+  }, [mounted, isMobile]);
+
+  // Prevent hydration mismatch by returning a simple base until mounted
+  if (!mounted) {
+    return (
+      <div className="fixed inset-0 z-[-2] bg-slate-950" />
+    );
+  }
 
   return (
     <>
@@ -124,18 +150,19 @@ export default function DynamicBackground() {
           inset: 0,
           zIndex: -2,
           overflow: 'hidden',
+          backgroundColor: '#020617',
           willChange: isMobile ? 'auto' : 'transform',
         }}
       >
-        {/* On mobile, we only render a subset of images to save RAM */}
-        {(isMobile ? BACKGROUND_IMAGES.slice(0, 8) : BACKGROUND_IMAGES).map((src, index) => (
+        {/* Render a constant number of images to prevent hydration mismatch */}
+        {BACKGROUND_IMAGES.map((src, index) => (
           <div
             key={src}
             className="bg-slide"
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: `url(${src})`,
+              backgroundImage: (isMobile && index > 7) ? 'none' : `url(${src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               opacity: 0,
@@ -144,6 +171,7 @@ export default function DynamicBackground() {
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity',
               zIndex: 0,
+              display: (isMobile && index > 7) ? 'none' : 'block',
             }}
           />
         ))}

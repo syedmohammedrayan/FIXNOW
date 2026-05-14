@@ -195,7 +195,7 @@ export function ComplaintsTab() {
                  animate={{ opacity: 1, scale: 1, y: 0 }}
                  exit={{ opacity: 0, scale: 0.95 }}
                  transition={{ delay: index * 0.05, duration: 0.5 }}
-                 className="group relative bg-[#0a0f1d]/40 backdrop-blur-[40px] border border-white/[0.08] hover:border-white/[0.15] rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 transition-all duration-700 overflow-hidden shadow-2xl"
+                 className="group relative bg-[#0a0f1d]/40 backdrop-blur-xl sm:backdrop-blur-[40px] border border-white/[0.08] hover:border-white/[0.15] rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 transition-all duration-700 overflow-hidden shadow-2xl"
                  style={{ boxShadow: 'inset 0 1px 1px 0 rgba(255,255,255,0.05)' }}
                >
                   <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none group-hover:bg-cyan-500/10 transition-colors duration-1000" />
