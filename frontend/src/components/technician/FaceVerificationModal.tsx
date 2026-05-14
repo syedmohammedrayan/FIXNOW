@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useRef, useState, useCallback } from "react";
-import dynamic from "next/dynamic";
-const Webcam = dynamic(() => import("react-webcam"), { ssr: false });
+import Webcam from "react-webcam";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, X, RefreshCw, CheckCircle2, ShieldCheck, Loader2, CameraOff } from "lucide-react";
 import axios from "axios";
 import { API_BASE } from "@/lib/config";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 
 interface FaceVerificationModalProps {
@@ -22,6 +22,11 @@ export default function FaceVerificationModal({ isOpen, onClose, onSuccess }: Fa
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [permissionError, setPermissionError] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
@@ -126,18 +131,20 @@ export default function FaceVerificationModal({ isOpen, onClose, onSuccess }: Fa
                   >
                     {!permissionError ? (
                       <>
-                        <Webcam
-                          audio={false}
-                          ref={webcamRef}
-                          screenshotFormat="image/jpeg"
-                          className="w-full h-full object-cover grayscale-[0.3]"
-                          onUserMediaError={() => setPermissionError(true)}
-                          videoConstraints={{
-                            facingMode: "user",
-                            width: 1080,
-                            height: 1080
-                          }}
-                        />
+                        {mounted && (
+                          <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            className="w-full h-full object-cover grayscale-[0.3]"
+                            onUserMediaError={() => setPermissionError(true)}
+                            videoConstraints={{
+                              facingMode: "user",
+                              width: 1080,
+                              height: 1080
+                            }}
+                          />
+                        )}
                         {/* Face Alignment Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="size-[70%] border-2 border-white/20 rounded-[3rem] border-dashed relative">

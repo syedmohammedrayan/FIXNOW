@@ -35,9 +35,9 @@
   }
   
   /* Reduce high-intensity blurs on mobile to prevent GPU crashes */
-  .backdrop-blur-[32px], 
-  .backdrop-blur-[40px], 
-  .backdrop-blur-[50px],
+  .backdrop-blur-\[32px\], 
+  .backdrop-blur-\[40px\], 
+  .backdrop-blur-\[50px\],
   .navbar-glass-scrolled,
   .glass-panel-strong {
     backdrop-filter: blur(12px) saturate(180%) !important;
