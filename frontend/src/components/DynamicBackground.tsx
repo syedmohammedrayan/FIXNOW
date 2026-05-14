@@ -151,16 +151,16 @@ export default function DynamicBackground() {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: (isMobile && index > 7) ? 'none' : `url(${src})`,
+              backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center 30%', /* Adjust focus slightly upwards for mobile portraits */
               opacity: index === 0 ? 1 : 0,
               transform: index === 0 ? 'scale(var(--bg-scale-start))' : 'scale(var(--bg-scale-end))',
-              filter: 'brightness(0.9) saturate(1.1)',
+              filter: 'brightness(0.9) saturate(1.15)', /* Ensure technicians look vibrant */
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity',
               zIndex: index === 0 ? 1 : 0,
-              display: (isMobile && index > 7) ? 'none' : 'block',
+              display: 'block',
             }}
           />
         ))}
@@ -169,22 +169,11 @@ export default function DynamicBackground() {
       {/* ─── Layer 2: Cinematic Overlay (z-index: -1) ─── */}
       <div
         ref={overlayRef}
-        className="dynamic-bg-overlay"
+        className="dynamic-bg-overlay dynamic-bg-overlay-gradient"
         style={{
           position: 'fixed',
           inset: 0,
           zIndex: -1,
-          // Directional cinematic overlay:
-          // dark on left (behind text), lighter on right (reveals technician)
-          background: `
-            linear-gradient(
-              105deg,
-              rgba(5, 8, 22, 0.82) 0%,
-              rgba(5, 8, 22, 0.55) 40%,
-              rgba(5, 8, 22, 0.25) 65%,
-              rgba(5, 8, 22, 0.10) 100%
-            )
-          `,
           backdropFilter: 'blur(1.5px)',
           WebkitBackdropFilter: 'blur(1.5px)',
           pointerEvents: 'none',

@@ -27,7 +27,30 @@
   }
 }
 
+/* ─── Cinematic Background Overlay ─── */
+.dynamic-bg-overlay-gradient {
+  background: linear-gradient(
+    105deg,
+    rgba(5, 8, 22, 0.82) 0%,
+    rgba(5, 8, 22, 0.55) 40%,
+    rgba(5, 8, 22, 0.25) 65%,
+    rgba(5, 8, 22, 0.10) 100%
+  );
+}
+
 @media (max-width: 768px) {
+  .dynamic-bg-overlay-gradient {
+    /* Top-to-bottom cinematic gradient for mobile so the technician is visible */
+    background: linear-gradient(
+      180deg,
+      rgba(5, 8, 22, 0.85) 0%,
+      rgba(5, 8, 22, 0.40) 25%,
+      rgba(5, 8, 22, 0.15) 50%,
+      rgba(5, 8, 22, 0.60) 85%,
+      rgba(5, 8, 22, 0.90) 100%
+    );
+  }
+
   :root {
     --bg-scale-start: 1.0;
     --bg-scale-end: 1.02;
