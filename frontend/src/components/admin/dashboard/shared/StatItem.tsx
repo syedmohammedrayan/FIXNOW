@@ -10,16 +10,24 @@ interface StatItemProps {
 
 export function StatItem({ label, value, icon, color, trend }: StatItemProps) {
   return (
-    <div className="bg-slate-900/50 backdrop-blur-xl border border-white/[0.08] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl flex items-center justify-between gap-3 group cursor-default shadow-xl hover:border-white/[0.15] transition-all duration-300 min-h-[80px] sm:min-h-[90px]">
-      <div className="min-w-0 flex-1">
-        <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 truncate">{label}</p>
-        <h4 className="text-lg sm:text-2xl lg:text-3xl font-black text-white group-hover:text-slate-100 transition-colors truncate">{value}</h4>
+    <div className="bg-[#0f1115]/80 backdrop-blur-2xl border border-white/[0.06] p-4 sm:p-5 rounded-[1.25rem] sm:rounded-3xl flex flex-col justify-between gap-3 sm:gap-4 group cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.6)] hover:border-white/[0.15] transition-all duration-500 aspect-square sm:aspect-auto sm:min-h-[140px] relative overflow-hidden">
+      {/* Subtle cinematic gradient layer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      
+      <div className="flex items-start justify-between w-full relative z-10 gap-2">
+        <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-black/40 border border-white/[0.05] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
+          {React.cloneElement(icon as React.ReactElement, { className: 'w-4 h-4 sm:w-5 sm:h-5 text-slate-300 group-hover:text-white transition-colors duration-500' })}
+        </div>
         {trend && (
-          <p className="text-[8px] font-bold text-white/30 mt-0.5 uppercase tracking-widest truncate">{trend}</p>
+          <span className="text-[8px] sm:text-[9px] font-black text-slate-300 bg-white/[0.03] px-2 py-1 rounded-full uppercase tracking-widest border border-white/[0.05] backdrop-blur-md whitespace-nowrap">
+            {trend}
+          </span>
         )}
       </div>
-      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.08] transition-all shrink-0">
-        {React.cloneElement(icon as React.ReactElement, { className: 'w-3.5 h-3.5 sm:w-5 sm:h-5 text-slate-300' })}
+      
+      <div className="min-w-0 w-full relative z-10 mt-auto pt-2 sm:pt-0">
+        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5 sm:mb-1.5 truncate group-hover:text-slate-300 transition-colors">{label}</p>
+        <h4 className="text-xl sm:text-3xl font-black text-white tracking-tight group-hover:translate-x-1 transition-transform duration-500 truncate">{value}</h4>
       </div>
     </div>
   );
