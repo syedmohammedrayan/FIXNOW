@@ -64,77 +64,101 @@ export default function TechnicianComplaintsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <div className="min-h-screen bg-[#020617] flex selection:bg-rose-500/30 selection:text-white">
       <TechnicianSidebar profile={profile} />
 
-      <main className="flex-1 pl-0 md:pl-[78px] lg:pl-[280px] p-6 lg:p-12">
-        <div className="max-w-6xl mx-auto space-y-10">
+      <main className="flex-1 pl-0 md:pl-[78px] lg:pl-[280px] p-4 sm:p-6 lg:p-12 relative overflow-hidden">
+        {/* Cinematic Ambient Glows */}
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12 relative z-10">
           
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-                  <ShieldAlert className="size-6 text-rose-500" />
+          {/* Header & Control Center */}
+          <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <div className="size-14 sm:size-16 rounded-[1.5rem] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(244,63,94,0.1)]">
+                  <ShieldAlert className="size-7 sm:size-8 text-rose-500" />
                 </div>
-                <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter">Customer Complaints</h1>
+                <div>
+                  <h1 className="text-3xl sm:text-5xl font-black text-white uppercase italic tracking-tighter leading-none">
+                    Incident <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/70 to-white/30">Console.</span>
+                  </h1>
+                  <p className="text-slate-500 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] mt-2 flex items-center gap-2">
+                    <span className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
+                    Resolution Protocol Active
+                  </p>
+                </div>
               </div>
-              <p className="text-slate-500 text-xs font-black uppercase tracking-[0.3em] ml-1">Resolution Protocol Console</p>
             </div>
 
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-500" />
-              <input 
-                type="text"
-                placeholder="SEARCH COMPLAINTS..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-rose-500/50 transition-all"
-              />
+            <div className="relative w-full xl:w-[400px] group">
+              <div className="absolute inset-0 bg-white/[0.02] blur-xl rounded-3xl group-hover:bg-rose-500/[0.02] transition-colors" />
+              <div className="relative">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-slate-500 group-focus-within:text-white transition-colors" />
+                <input 
+                  type="text"
+                  placeholder="FILTER BY BOOKING, CUSTOMER OR INTEL..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-14 pr-6 py-5 bg-[#0a0f1d]/40 border border-white/[0.08] rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest text-white placeholder:text-slate-600 focus:outline-none focus:border-white/20 focus:bg-[#0a0f1d]/60 backdrop-blur-xl transition-all shadow-2xl"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Reports</span>
-                <span className="text-2xl font-black text-white italic">{complaints.length}</span>
-             </div>
-             <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Open Issues</span>
-                <span className="text-2xl font-black text-rose-500 italic">{complaints.filter(c => c.status === 'Open').length}</span>
-             </div>
-             <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">In Review</span>
-                <span className="text-2xl font-black text-amber-500 italic">{complaints.filter(c => c.status === 'In Review').length}</span>
-             </div>
-             <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Resolved</span>
-                <span className="text-2xl font-black text-emerald-500 italic">{complaints.filter(c => c.status === 'Resolved').length}</span>
-             </div>
+          {/* Real-time Analytics Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+             {[
+               { label: 'Total Incidents', value: complaints.length, color: 'text-white' },
+               { label: 'Open Protocol', value: complaints.filter(c => c.status === 'Open').length, color: 'text-rose-500' },
+               { label: 'In Analysis', value: complaints.filter(c => c.status === 'In Review').length, color: 'text-amber-500' },
+               { label: 'Resolved Ops', value: complaints.filter(c => c.status === 'Resolved').length, color: 'text-emerald-500' }
+             ].map((stat, i) => (
+               <motion.div
+                 key={i}
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: i * 0.1 }}
+                 className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04] transition-all duration-500 group"
+                 style={{ boxShadow: 'inset 0 1px 1px 0 rgba(255,255,255,0.05)' }}
+               >
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2 group-hover:text-slate-400 transition-colors">{stat.label}</span>
+                  <span className={cn("text-3xl sm:text-4xl font-black italic tracking-tighter", stat.color)}>{stat.value}</span>
+               </motion.div>
+             ))}
           </div>
 
-          {/* Complaints Grid */}
+          {/* Active Incident Feed */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-32 space-y-4">
-               <div className="size-16 border-4 border-white/10 border-t-rose-500 rounded-full animate-spin" />
-               <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] animate-pulse">Decrypting Files...</p>
+            <div className="flex flex-col items-center justify-center py-32 space-y-6">
+               <div className="relative">
+                  <div className="absolute inset-0 bg-rose-500/20 blur-3xl rounded-full animate-pulse" />
+                  <div className="size-20 border-4 border-white/5 border-t-rose-500 rounded-full animate-spin relative z-10" />
+               </div>
+               <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] animate-pulse">Decrypting Protocol Files...</p>
             </div>
           ) : filteredComplaints.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6">
-               <AnimatePresence>
+            <div className="grid grid-cols-1 gap-8">
+               <AnimatePresence mode="popLayout">
                  {filteredComplaints.map((complaint, index) => (
                    <motion.div
                      key={complaint.id}
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: index * 0.1 }}
-                     className="group relative bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-white/10 rounded-[2.5rem] p-8 transition-all duration-500 overflow-hidden"
+                     initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.95 }}
+                     transition={{ delay: index * 0.1, duration: 0.5 }}
+                     className="group relative bg-[#0a0f1d]/40 backdrop-blur-[40px] border border-white/[0.08] hover:border-white/[0.15] rounded-[3rem] p-6 sm:p-10 transition-all duration-700 overflow-hidden shadow-2xl"
+                     style={{ boxShadow: 'inset 0 1px 1px 0 rgba(255,255,255,0.05)' }}
                    >
+                     {/* Background Accent */}
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none group-hover:bg-rose-500/10 transition-colors duration-1000" />
+
                      {/* Status Badge */}
-                     <div className="absolute top-8 right-8">
+                     <div className="absolute top-8 sm:top-10 right-8 sm:right-10">
                         <span className={cn(
-                          "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                          "px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-lg backdrop-blur-md",
                           complaint.status === 'Open' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" :
                           complaint.status === 'In Review' ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
                           "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
@@ -143,79 +167,89 @@ export default function TechnicianComplaintsPage() {
                         </span>
                      </div>
 
-                     <div className="flex flex-col lg:flex-row gap-10">
-                        {/* Image Section */}
-                        {complaint.imageUrl ? (
-                          <div className="w-full lg:w-80 shrink-0">
-                             <div className="relative aspect-square rounded-[2rem] overflow-hidden border border-white/10 group-hover:border-white/20 transition-all">
-                                <img src={complaint.imageUrl} alt="Complaint Proof" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-6">
+                     <div className="flex flex-col lg:flex-row gap-8 sm:gap-12 relative z-10">
+                        {/* Evidence Bay */}
+                        <div className="w-full lg:w-80 xl:w-96 shrink-0">
+                           {complaint.imageUrl ? (
+                             <div className="relative aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 group-hover:border-white/20 transition-all shadow-2xl group/img">
+                                <img src={complaint.imageUrl} alt="Evidence" className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover/img:scale-110" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end p-8 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500">
                                    <button 
                                      onClick={() => window.open(complaint.imageUrl, '_blank')}
-                                     className="flex items-center gap-2 text-white/70 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors"
+                                     className="flex items-center gap-3 text-white/70 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all"
                                    >
-                                      <ExternalLink className="size-3" />
-                                      View Full Image
+                                      <div className="size-8 rounded-lg bg-white/10 flex items-center justify-center">
+                                         <ExternalLink className="size-4" />
+                                      </div>
+                                      Expand Evidence
                                    </button>
                                 </div>
                              </div>
-                          </div>
-                        ) : (
-                          <div className="w-full lg:w-80 shrink-0 aspect-square rounded-[2rem] bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center gap-3">
-                             <ImageIcon className="size-10 text-white/10" />
-                             <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">No Visual Evidence</span>
-                          </div>
-                        )}
+                           ) : (
+                             <div className="w-full aspect-square rounded-[2.5rem] bg-white/[0.02] border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 group-hover:bg-white/[0.04] transition-all duration-500">
+                                <div className="size-16 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/5">
+                                   <ImageIcon className="size-8 text-white/10" />
+                                </div>
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">No Visual Intelligence</span>
+                             </div>
+                           )}
+                        </div>
 
-                        {/* Content Section */}
-                        <div className="flex-1 space-y-6">
-                           <div className="space-y-1">
-                              <div className="flex items-center gap-3 text-cyan-400">
-                                 <Clock className="size-3.5" />
-                                 <span className="text-[10px] font-black uppercase tracking-widest">
+                        {/* Intelligence Data */}
+                        <div className="flex-1 space-y-8">
+                           <div className="space-y-2">
+                              <div className="flex items-center gap-3 text-cyan-400/60">
+                                 <Clock className="size-4" />
+                                 <span className="text-[10px] font-black uppercase tracking-[0.25em]">
                                     {complaint.createdAt?.toDate().toLocaleDateString('en-IN', {
                                       day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
                                     })}
                                  </span>
                               </div>
-                              <h3 className="text-2xl font-black text-white uppercase tracking-tight italic">
-                                 Booking #{complaint.bookingId.slice(-8).toUpperCase()}
+                              <h3 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter italic group-hover:text-rose-500 transition-colors duration-500">
+                                 Booking #{complaint.id.slice(-8).toUpperCase()}
                               </h3>
                            </div>
 
-                           <div className="grid grid-cols-2 gap-6">
-                              <div className="space-y-1">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Customer</p>
-                                 <div className="flex items-center gap-2">
-                                    <User className="size-3.5 text-white/40" />
-                                    <span className="text-sm font-bold text-white">{complaint.customerName}</span>
+                           <div className="grid grid-cols-2 gap-8">
+                              <div className="space-y-2">
+                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                    <span className="size-1 bg-white/20 rounded-full" /> Source Origin
+                                 </p>
+                                 <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-2xl border border-white/5">
+                                    <div className="size-8 rounded-lg bg-slate-900 flex items-center justify-center text-xs">👤</div>
+                                    <span className="text-sm font-black text-white uppercase italic tracking-tight">{complaint.customerName}</span>
                                  </div>
                               </div>
-                              <div className="space-y-1">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Category</p>
-                                 <div className="flex items-center gap-2">
-                                    <AlertCircle className="size-3.5 text-white/40" />
-                                    <span className="text-sm font-bold text-white">{complaint.category}</span>
+                              <div className="space-y-2">
+                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                    <span className="size-1 bg-white/20 rounded-full" /> Incident Class
+                                 </p>
+                                 <div className="flex items-center gap-3 p-3 bg-white/[0.03] rounded-2xl border border-white/5">
+                                    <div className="size-8 rounded-lg bg-slate-900 flex items-center justify-center text-xs">🛠️</div>
+                                    <span className="text-sm font-black text-white uppercase italic tracking-tight">{complaint.category}</span>
                                  </div>
                               </div>
                            </div>
 
-                           <div className="space-y-2">
-                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Issue Description</p>
-                              <div className="p-6 rounded-3xl bg-white/5 border border-white/5 relative">
-                                 <MessageSquare className="absolute -top-3 -left-3 size-8 text-white/5" />
-                                 <p className="text-slate-300 text-sm leading-relaxed font-medium italic">
+                           <div className="space-y-3">
+                              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                 <span className="size-1 bg-white/20 rounded-full" /> Narrative Transcript
+                              </p>
+                              <div className="p-8 rounded-[2rem] bg-white/[0.03] border border-white/[0.08] relative group/msg">
+                                 <MessageSquare className="absolute -top-4 -left-4 size-12 text-white/5 group-hover/msg:text-rose-500/10 transition-colors" />
+                                 <p className="text-slate-300 text-lg leading-relaxed font-medium italic relative z-10">
                                     "{complaint.description}"
                                  </p>
                               </div>
                            </div>
 
-                           <div className="pt-4 flex items-center gap-4">
-                              <button className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
-                                 Request Review
+                           <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
+                              <button className="w-full sm:flex-1 py-5 bg-white/[0.04] border border-white/[0.1] rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-white/[0.08] hover:border-white/20 transition-all active:scale-95 shadow-xl">
+                                 Initiate Review
                               </button>
-                              <button className="flex-1 py-4 bg-rose-500 text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-400 transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)]">
-                                 Resolve Complaint
+                              <button className="w-full sm:flex-1 py-5 bg-rose-500 text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-rose-400 transition-all active:scale-95 shadow-[0_10px_40px_rgba(244,63,94,0.3)]">
+                                 Resolve Protocol
                               </button>
                            </div>
                         </div>
@@ -225,13 +259,20 @@ export default function TechnicianComplaintsPage() {
                </AnimatePresence>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-32 text-center">
-               <div className="size-20 rounded-[2rem] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-8">
-                  <CheckCircle2 className="size-10 text-emerald-400" />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-32 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-[4rem]"
+            >
+               <div className="relative mb-8">
+                  <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
+                  <div className="relative size-24 rounded-[2.5rem] bg-emerald-500/10 border border-emerald-500/50 flex items-center justify-center">
+                    <CheckCircle2 className="size-12 text-emerald-400" />
+                  </div>
                </div>
-               <h3 className="text-2xl font-black text-white uppercase italic tracking-tight">Zero Incidents</h3>
-               <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Your performance metrics are optimal</p>
-            </div>
+               <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Zero Hostiles</h3>
+               <p className="text-slate-500 text-[11px] font-black uppercase tracking-[0.5em] mt-3">All sectors operational and verified</p>
+            </motion.div>
           )}
 
         </div>
