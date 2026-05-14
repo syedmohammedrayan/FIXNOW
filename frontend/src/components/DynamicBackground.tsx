@@ -37,10 +37,8 @@ export default function DynamicBackground() {
   const animFrameId = useRef<number>(0);
   const currentSlide = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -97,8 +95,6 @@ export default function DynamicBackground() {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-
     const animate = () => {
       if (!isMobile) {
         smoothMouse.current.x += (mousePos.current.x - smoothMouse.current.x) * LERP_FACTOR;
@@ -130,14 +126,7 @@ export default function DynamicBackground() {
 
     animFrameId.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animFrameId.current);
-  }, [mounted, isMobile]);
-
-  // Prevent hydration mismatch by returning a simple base until mounted
-  if (!mounted) {
-    return (
-      <div className="fixed inset-0 z-[-2] bg-slate-950" />
-    );
-  }
+  }, [isMobile]);
 
   return (
     <>
@@ -165,12 +154,12 @@ export default function DynamicBackground() {
               backgroundImage: (isMobile && index > 7) ? 'none' : `url(${src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              opacity: 0,
-              transform: 'scale(1)',
+              opacity: index === 0 ? 1 : 0,
+              transform: index === 0 ? 'scale(var(--bg-scale-start))' : 'scale(var(--bg-scale-end))',
               filter: 'brightness(0.9) saturate(1.1)',
               transition: `opacity ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${SLIDE_DURATION}ms linear`,
               willChange: 'opacity',
-              zIndex: 0,
+              zIndex: index === 0 ? 1 : 0,
               display: (isMobile && index > 7) ? 'none' : 'block',
             }}
           />
