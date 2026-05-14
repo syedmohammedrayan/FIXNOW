@@ -129,7 +129,8 @@ export default function IdUploadCard({ onSuccess, existingIdUrl }: IdUploadCardP
               onDragLeave={onDragLeave}
               onDrop={onDrop}
               className={cn(
-                "relative cursor-pointer border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300",
+                "relative cursor-pointer border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all duration-300",
+
                 isDragging 
                   ? "border-cyan-500/50 bg-cyan-500/5" 
                   : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"

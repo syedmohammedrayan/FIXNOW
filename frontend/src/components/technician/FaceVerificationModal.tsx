@@ -88,13 +88,13 @@ export default function FaceVerificationModal({ isOpen, onClose, onSuccess }: Fa
 
           {/* Modal Content */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl"
+            exit={{ scale: 0.95, opacity: 0, y: 50 }}
+            className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-t-[2.5rem] sm:rounded-[3rem] shadow-2xl flex flex-col max-h-[85vh] overflow-y-auto scrollbar-none"
           >
             {/* Header */}
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+            <div className="p-5 sm:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                   <ShieldCheck className="size-5 text-cyan-400" />
