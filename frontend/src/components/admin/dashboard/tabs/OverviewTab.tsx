@@ -23,7 +23,7 @@ export function OverviewTab({ allTechs, bookings, transactions, techs, toolOrder
       className="space-y-6 sm:space-y-8"
     >
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatItem icon={<Users />}       label="Technicians"           value={allTechs.length}       trend="+4 today"    color="white" />
         <StatItem icon={<Activity />}    label="Active Jobs"           value={bookings.filter(b => b.status !== 'Completed' && b.status !== 'Refused').length} trend="Live" color="white" />
         <StatItem icon={<DollarSign />}  label="Revenue"               value={`₹${transactions.reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0).toLocaleString()}`} trend="+12% avg" color="white" />

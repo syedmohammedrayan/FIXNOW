@@ -46,7 +46,7 @@ export default function WorkDocumentation({
     >
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-[1.5] space-y-8">
-          <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl">
+          <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-5 sm:p-10 rounded-[2.5rem] shadow-2xl">
             <div className="flex items-center gap-3 pb-6 border-b border-white/5">
               <div className="size-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white">
                 <FileText className="size-5" />

@@ -267,7 +267,7 @@ export default function AdminDashboard() {
           handleSignOut={handleSignOut}
         />
 
-        <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+        <div className="p-3 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
           <AnimatePresence mode="wait">
             {activeTab === 'overview' && (
               <OverviewTab 

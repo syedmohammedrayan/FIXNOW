@@ -121,7 +121,7 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
           >
             <Logo 
               isAdmin 
-              iconClassName="w-[100px] sm:w-[120px] opacity-90 hover:opacity-100 transition-opacity" 
+              iconClassName="w-[85px] sm:w-[120px] opacity-90 hover:opacity-100 transition-opacity" 
             />
           </button>
         </div>

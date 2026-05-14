@@ -554,7 +554,7 @@ export default function TechnicianDashboard() {
           ) : (
             <>
               {/* Stats Section — Improved Depth */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
                 <StatCard 
                   icon={<DollarSign className="w-5 h-5" />} 
                   label="Gross Earnings" 
@@ -656,13 +656,13 @@ export default function TechnicianDashboard() {
                             initial={{ opacity: 0, x: -20, scale: 0.98 }}
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white/[0.03] backdrop-blur-3xl p-6 sm:p-10 border border-white/[0.08] rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500"
+                            className="bg-white/[0.03] backdrop-blur-3xl p-5 sm:p-8 lg:p-10 border border-white/[0.08] rounded-[2.5rem] sm:rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500"
                           >
                             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             
-                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-4 mb-5 flex-wrap">
+                                <div className="flex items-center gap-4 mb-4 sm:mb-5 flex-wrap">
                                   <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-cyan-500/10">
                                     <Radio className="w-3.5 h-3.5 animate-pulse" />
                                     Tactical Broadcast
@@ -677,14 +677,14 @@ export default function TechnicianDashboard() {
                                   {broadcast.customerName || broadcast.customer_name || 'Valued Customer'}
                                 </h3>
                                 
-                                <div className="flex items-center gap-3 mb-6">
+                                <div className="flex items-center gap-3 mb-5 sm:mb-6">
                                   <div className="size-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
                                     <Briefcase className="size-4 text-slate-300" />
                                   </div>
                                   <p className="text-slate-300 text-sm font-black uppercase tracking-tight italic">{broadcast.category}</p>
                                 </div>
 
-                                <div className="space-y-3 mb-8">
+                                <div className="space-y-3 mb-6 sm:mb-8">
                                   {broadcast.address && (
                                     <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
                                       <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
@@ -716,7 +716,7 @@ export default function TechnicianDashboard() {
 
                               <button
                                 onClick={() => acceptBroadcast(broadcast.id)}
-                                className="px-10 py-6 bg-white text-slate-950 rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-cyan-50 hover:scale-[1.02] transition-all active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.2)] lg:self-end group-hover:shadow-[0_25px_60px_rgba(34,211,238,0.2)]"
+                                className="w-full sm:w-auto px-8 py-4 sm:px-10 sm:py-6 bg-white text-slate-950 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-cyan-50 hover:scale-[1.02] transition-all active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.2)] lg:self-end group-hover:shadow-[0_25px_60px_rgba(34,211,238,0.2)]"
                               >
                                 Accept Protocol
                               </button>

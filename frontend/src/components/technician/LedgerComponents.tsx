@@ -66,9 +66,9 @@ export function DeclinedHistory({
                   className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 group shadow-sm transition-shadow"
                 >
                   <div className="flex flex-col sm:flex-row justify-between gap-4">
-                    <div className="flex gap-5">
-                      <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl shrink-0">
-                        <Ban className="w-5 h-5 text-rose-500" />
+                    <div className="flex flex-col xs:flex-row gap-4 sm:gap-5">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shrink-0">
+                        <Ban className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500" />
                       </div>
                       <div>
                         <h3 className="text-base font-bold text-white">

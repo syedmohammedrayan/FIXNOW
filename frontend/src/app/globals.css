@@ -60,6 +60,13 @@ body {
   /* Prevent horizontal scroll on mobile due to animations */
   overflow-x: hidden;
   width: 100%;
+  max-width: 100vw;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Ensure all direct body children (except background layers and chatbot) sit above z-index: 0 */
@@ -289,7 +296,7 @@ body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor
 
 /* ── Hero Heading — HOME SERVICES (primary focal point) ── */
 .hero-heading-primary {
-  font-size: clamp(3.2rem, 10vw, 9.5rem);
+  font-size: clamp(2.5rem, 10vw, 9.5rem);
   font-weight: 900;
   text-transform: uppercase;
   font-style: italic;
@@ -305,7 +312,7 @@ body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor
 /* ── Hero Heading — RELIABLE (secondary) ── */
 .hero-heading-secondary {
   display: block;
-  font-size: clamp(2.4rem, 7.5vw, 7rem);
+  font-size: clamp(1.8rem, 7.5vw, 7rem);
   font-weight: 900;
   text-transform: uppercase;
   font-style: italic;

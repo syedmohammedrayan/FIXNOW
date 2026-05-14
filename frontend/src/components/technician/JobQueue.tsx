@@ -37,11 +37,11 @@ export default function JobQueue({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 hover:border-cyan-500/50 rounded-[2rem] p-6 transition-all group"
+              className="bg-slate-900/40 backdrop-blur-3xl border border-white/10 hover:border-cyan-500/50 rounded-[2rem] p-4 sm:p-6 transition-all group"
             >
-              <div className="flex flex-col sm:flex-row justify-between gap-6">
-                <div className="flex gap-5">
-                  <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-xl">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-xl shrink-0">
                     {job.category === "Electrical"
                       ? "⚡"
                       : job.category === "Plumbing"

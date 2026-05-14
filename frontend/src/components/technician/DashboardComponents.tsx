@@ -30,7 +30,7 @@ export function StatCard({
   };
 
   return (
-    <div className="bg-[#0B0F1A]/60 backdrop-blur-3xl p-4 sm:p-6 lg:p-7 border border-white/5 rounded-[1.5rem] sm:rounded-[2.5rem] flex flex-col justify-between group hover:border-white/10 hover:bg-[#0B0F1A]/80 overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-700 aspect-[4/3] sm:aspect-auto sm:min-h-[180px] relative">
+    <div className="bg-[#0B0F1A]/60 backdrop-blur-3xl p-4 sm:p-6 lg:p-7 border border-white/5 rounded-[1.5rem] sm:rounded-[2.5rem] flex flex-col justify-between group hover:border-white/10 hover:bg-[#0B0F1A]/80 overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-700 sm:min-h-[180px] relative min-h-[140px]">
       {/* Cinematic Ambient Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/[0.03] blur-[40px] -mr-16 -mt-16 group-hover:bg-indigo-500/[0.06] transition-all duration-700 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/[0.02] blur-[30px] -ml-12 -mb-12 group-hover:bg-emerald-500/[0.04] transition-all duration-700 pointer-events-none" />

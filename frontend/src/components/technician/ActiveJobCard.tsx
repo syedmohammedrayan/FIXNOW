@@ -114,7 +114,7 @@ export default function ActiveJobCard({
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="p-5 sm:p-8 lg:p-12 relative z-20">
+        <div className="p-4 sm:p-8 lg:p-12 relative z-20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-10 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3 mb-3">
@@ -235,7 +235,7 @@ export default function ActiveJobCard({
                             value={digit}
                             onChange={(e) => handleOtpChange(i, e.target.value)}
                             className={cn(
-                              "w-16 h-20 sm:w-20 sm:h-24 text-center text-4xl sm:text-5xl font-black rounded-2xl bg-slate-950/50 border-2 transition-all duration-300 focus:outline-none focus:-translate-y-1",
+                              "w-12 h-16 sm:w-20 sm:h-24 text-center text-3xl sm:text-5xl font-black rounded-2xl bg-slate-950/50 border-2 transition-all duration-300 focus:outline-none focus:-translate-y-1",
                               digit ? "border-cyan-500 text-white shadow-[0_10px_20px_rgba(34,211,238,0.15)]" : "border-white/10 text-slate-500 focus:border-cyan-500/50 hover:border-white/20"
                             )}
                           />
