@@ -92,6 +92,18 @@ export function ComplaintsTab() {
     return matchesSearch && matchesFilter;
   });
 
+  const formatProtocolDate = (createdAt: any) => {
+    try {
+      if (!createdAt) return 'TIMESTAMP REDACTED';
+      const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
+      return date.toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    } catch (e) {
+      return 'DATA CORRUPT';
+    }
+  };
+
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       
@@ -217,14 +229,12 @@ export function ComplaintsTab() {
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
                            <div className="space-y-2">
                               <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter group-hover:text-cyan-400 transition-colors duration-500 leading-none">
-                                Booking #{c.bookingId.slice(-8).toUpperCase()}
+                                Booking #{c.bookingId ? c.bookingId.slice(-8).toUpperCase() : c.id.slice(-8).toUpperCase()}
                               </h3>
                               <div className="flex items-center gap-3 text-slate-500">
                                  <Clock className="size-3.5" />
                                  <span className="text-[9px] font-black uppercase tracking-[0.2em]">
-                                    {c.createdAt?.toDate().toLocaleString('en-IN', {
-                                      day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                                    })}
+                                    {formatProtocolDate(c.createdAt)}
                                  </span>
                               </div>
                            </div>
@@ -250,7 +260,7 @@ export function ComplaintsTab() {
                               </p>
                               <div className="flex items-center gap-3 p-3 sm:p-4 bg-white/[0.03] rounded-xl sm:rounded-2xl border border-white/[0.05] group/item hover:bg-white/[0.05] transition-all">
                                  <User className="size-3.5 text-white/40 group-hover/item:text-white transition-colors" />
-                                 <span className="text-xs sm:text-sm font-black text-white uppercase italic tracking-tight truncate">{c.customerName}</span>
+                                 <span className="text-xs sm:text-sm font-black text-white uppercase italic tracking-tight truncate">{c.customerName || 'Anonymous'}</span>
                               </div>
                            </div>
                            <div className="space-y-2">
@@ -259,7 +269,7 @@ export function ComplaintsTab() {
                               </p>
                               <div className="flex items-center gap-3 p-3 sm:p-4 bg-white/[0.03] rounded-xl sm:rounded-2xl border border-white/[0.05] group/item hover:bg-white/[0.05] transition-all">
                                  <ShieldAlert className="size-3.5 text-cyan-400/60 group-hover/item:text-cyan-400 transition-colors" />
-                                 <span className="text-xs sm:text-sm font-black text-white uppercase italic tracking-tight truncate">{c.technicianName}</span>
+                                 <span className="text-xs sm:text-sm font-black text-white uppercase italic tracking-tight truncate">{c.technicianName || 'Pending Assignment'}</span>
                               </div>
                            </div>
                            <div className="space-y-2">
@@ -288,14 +298,14 @@ export function ComplaintsTab() {
                      </div>
 
                      {/* Tactical Actions */}
-                     <div className="flex lg:flex-col gap-3 sm:gap-4 shrink-0 justify-start sm:justify-center">
+                     <div className="flex flex-row lg:flex-col gap-3 sm:gap-4 shrink-0 justify-start sm:justify-center overflow-x-auto no-scrollbar pb-2 lg:pb-0">
                          <button 
                            onClick={() => {
                              const url = getImageUrl(c.imageUrl);
                              if (url) window.open(url, '_blank');
                            }}
                            className={cn(
-                             "group/action flex-1 lg:w-16 p-4 sm:p-5 bg-white/[0.04] border border-white/[0.1] rounded-xl sm:rounded-2xl flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all shadow-xl active:scale-90",
+                             "group/action min-w-[50px] lg:w-16 p-4 sm:p-5 bg-white/[0.04] border border-white/[0.1] rounded-xl sm:rounded-2xl flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all shadow-xl active:scale-90",
                              !c.imageUrl && "opacity-20 cursor-not-allowed"
                            )}
                            disabled={!c.imageUrl}
@@ -305,7 +315,7 @@ export function ComplaintsTab() {
                          </button>
                         <button 
                           onClick={() => handleUpdateStatus(c.id, 'In Review')}
-                          className="flex-1 lg:w-16 p-4 sm:p-5 bg-amber-500/10 border border-amber-500/20 rounded-xl sm:rounded-2xl text-amber-400 hover:bg-amber-500/20 transition-all shadow-xl active:scale-90 flex items-center justify-center"
+                          className="min-w-[50px] lg:w-16 p-4 sm:p-5 bg-amber-500/10 border border-amber-500/20 rounded-xl sm:rounded-2xl text-amber-400 hover:bg-amber-500/20 transition-all shadow-xl active:scale-90 flex items-center justify-center"
                           title="Initiate Review"
                         >
                            <Clock className="size-5 sm:size-6" />
@@ -314,7 +324,7 @@ export function ComplaintsTab() {
                           onClick={() => handleUpdateStatus(c.id, 'Resolved', c.technicianName)}
                           disabled={c.status === 'Resolved'}
                           className={cn(
-                            "flex-1 lg:w-16 p-4 sm:p-5 border rounded-xl sm:rounded-2xl transition-all shadow-xl active:scale-90 flex items-center justify-center",
+                            "min-w-[50px] lg:w-16 p-4 sm:p-5 border rounded-xl sm:rounded-2xl transition-all shadow-xl active:scale-90 flex items-center justify-center",
                             c.status === 'Resolved' 
                               ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-500/40 cursor-not-allowed"
                               : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
@@ -326,7 +336,7 @@ export function ComplaintsTab() {
                         {c.status === 'Resolved' && (
                           <button 
                             onClick={() => handleFinalize(c.id)}
-                            className="flex-1 lg:w-16 p-4 sm:p-5 bg-rose-500 text-slate-950 rounded-xl sm:rounded-2xl hover:bg-rose-400 transition-all shadow-[0_10px_30px_rgba(244,63,94,0.3)] active:scale-90 flex items-center justify-center"
+                            className="min-w-[50px] lg:w-16 p-4 sm:p-5 bg-rose-500 text-slate-950 rounded-xl sm:rounded-2xl hover:bg-rose-400 transition-all shadow-[0_10px_30px_rgba(244,63,94,0.3)] active:scale-90 flex items-center justify-center"
                             title="Finalize & Purge"
                           >
                              <Trash2 className="size-5 sm:size-6" />
