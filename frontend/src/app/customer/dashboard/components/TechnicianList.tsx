@@ -38,17 +38,14 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
               <div className="flex items-center gap-3 sm:gap-5 relative z-10">
                 <div className="size-12 sm:size-16 rounded-xl sm:rounded-[1.25rem] bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
                   {tech.avatar && (tech.avatar.startsWith('data:image') || tech.avatar.startsWith('http') || tech.avatar.startsWith('/') || tech.avatar.length > 5) ? (
-                    <div className="relative size-full">
-                      <img 
-                        src={getAvatarUrl(tech.avatar)!} 
-                        className="w-full h-full object-cover transition-all duration-500" 
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement!.innerHTML = '<span class="text-3xl sm:text-4xl transition-all duration-500">👷</span>';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
-                    </div>
+                    <img 
+                      src={getAvatarUrl(tech.avatar)!} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement!.innerHTML = '<span class="text-3xl sm:text-4xl transition-all duration-500">👷</span>';
+                      }}
+                    />
                   ) : (
                     <span className="text-3xl sm:text-4xl transition-all duration-500">{tech.avatar || '👷'}</span>
                   )}

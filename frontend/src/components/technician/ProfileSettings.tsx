@@ -271,10 +271,7 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
                 </div>
               )}
               {profile.avatar && profile.avatar.length > 5 ? (
-                <div className="relative size-full">
-                  <img src={getAvatarUrl(profile.avatar)!} className="size-full object-contain bg-slate-50 p-2" />
-                  <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] pointer-events-none" />
-                </div>
+                <img src={getAvatarUrl(profile.avatar)!} className="size-full object-cover" />
               ) : (
                 <div className="size-full bg-slate-900 flex items-center justify-center text-5xl">👷</div>
               )}
