@@ -30,18 +30,16 @@ import {
   Minus
 } from 'lucide-react';
 import axios from 'axios';
-import { GoogleMap, useJsApiLoader, DirectionsRenderer, OverlayView, Polyline } from '@react-google-maps/api';
+import { GoogleMap, DirectionsRenderer, OverlayView, Polyline } from '@react-google-maps/api';
 import { io } from 'socket.io-client';
 import { SOCKET_URL, API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
+import { useGoogleMaps } from '@/components/GoogleMapsProvider';
 import ComplaintModal from '@/components/customer/ComplaintModal';
 import FeedbackModal from '@/components/customer/FeedbackModal';
-
-const LIBRARIES: ("geometry" | "places" | "visualization")[] = ["geometry", "places", "visualization"];
 
 const lightMapStyles = [
   { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
@@ -72,7 +70,7 @@ const darkMapStyles = [
 ];
 
 export default function TrackingPage() {
-  const { currentKey, rotateKey } = useGoogleMapsKey();
+  const { isLoaded, loadError } = useGoogleMaps();
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('id');
@@ -145,21 +143,8 @@ export default function TrackingPage() {
     (booking?.customerLat ? { lat: booking.customerLat, lng: booking.customerLng } : 
      booking?.customer_lat ? { lat: booking.customer_lat, lng: booking.customer_lng } : null);
 
-  // Only initialise the loader once we have a real key — an empty string causes Google Maps to throw
-  const mapsKey = currentKey || '';
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: mapsKey,
-    libraries: LIBRARIES,
-    id: 'fixnow-google-maps-script'
-  });
-
-  // Handle load error by rotating key
-  useEffect(() => {
-    if (loadError) {
-      console.error("Maps failed to load. Rotating key...");
-      rotateKey();
-    }
-  }, [loadError, rotateKey]);
+  // isLoaded and loadError come from the shared GoogleMapsProvider in layout.tsx
+  // No local useJsApiLoader call needed — prevents the "different options" loader conflict
 
   const onLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance);
