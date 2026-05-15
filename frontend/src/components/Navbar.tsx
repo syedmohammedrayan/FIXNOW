@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Menu, 
-  X, 
-  Shield, 
+import {
+  Menu,
+  X,
+  Shield,
   ChevronDown,
   Bell,
   User,
@@ -109,14 +109,14 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
           setAdminDetails(querySnapshot.docs[0].data());
         } else {
           setAdminDetails({
-            name: 'System Admin',
-            company: 'FIXNOW Technologies',
+            name: 'SMR',
+            company: 'FIXNOW',
             address: 'Service Mesh Operations Center',
-            email: 'admin@fixnow.app'
+            email: 'fixnow-smr@gmail.com'
           });
         }
       } catch (error) {
-        setAdminDetails({ name: 'System Admin', company: 'FIXNOW Technologies', email: 'support@fixnow.app' });
+        setAdminDetails({ name: 'SMR', company: 'FIXNOW', email: 'fixnow-smr@gmail.com' });
       } finally {
         setLoadingAdmin(false);
       }
@@ -280,10 +280,10 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
               {/* ── Drawer Header ── */}
               <div className="flex items-center justify-between px-6 pt-14 pb-6 border-b border-white/[0.06]">
                 <Link href="/" onClick={() => setIsOpen(false)}>
-                    <Logo 
-                      isAdmin={profile?.role === 'admin'}
-                      iconClassName="w-[120px]"
-                    />
+                  <Logo
+                    isAdmin={profile?.role === 'admin'}
+                    iconClassName="w-[120px]"
+                  />
                 </Link>
                 <button
                   onClick={() => setIsOpen(false)}
@@ -429,44 +429,173 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
       <AnimatePresence>
         {showAboutModal && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center px-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={() => setShowAboutModal(false)} />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }} 
-              animate={{ opacity: 1, scale: 1, y: 0 }} 
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-slate-950/40 backdrop-blur-3xl border border-white/[0.1] rounded-[2.5rem] p-8 sm:p-12 shadow-2xl overflow-hidden"
-              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)' }}
+            {/* Solid backdrop — no background bleed through */}
+            <motion.div
+              key="about-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0"
+              style={{ background: 'rgba(8, 12, 22, 0.96)', backdropFilter: 'blur(24px)' }}
+              onClick={() => setShowAboutModal(false)}
+            />
+
+            <motion.div
+              key="about-panel"
+              initial={{ opacity: 0, scale: 0.92, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 24 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-lg rounded-[2.5rem] overflow-hidden"
+              style={{
+                /* Fully opaque silver-cinematic glass — zero background bleed */
+                background: 'linear-gradient(145deg, #1c2233 0%, #141925 40%, #0f1520 100%)',
+                border: '1px solid rgba(192, 208, 230, 0.18)',
+                boxShadow: [
+                  '0 0 0 1px rgba(255,255,255,0.06) inset',
+                  '0 2px 0 rgba(220,228,245,0.12) inset',
+                  '0 32px 80px rgba(0,0,0,0.7)',
+                  '0 8px 32px rgba(0,0,0,0.5)',
+                ].join(', '),
+              }}
             >
-              <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 blur-3xl -mr-20 -mt-20 pointer-events-none" />
-              <div className="flex justify-between items-start mb-8 sm:mb-10 relative z-10">
-                <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter italic">Protocol <br/> Intel.</h2>
-                <button onClick={() => setShowAboutModal(false)} className="p-3 text-white/20 hover:text-white transition"><X className="size-6" /></button>
-              </div>
-              
-              {loadingAdmin ? (
-                <div className="py-20 flex justify-center"><Loader2 className="size-10 text-white" /></div>
-              ) : (
-                <div className="space-y-6 sm:space-y-8 relative z-10">
-                  <div className="p-6 sm:p-8 bg-white/[0.03] border border-white/[0.08] rounded-[2rem] space-y-6">
-                    <div>
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2">Lead Coordinator</p>
-                      <p className="text-xl sm:text-2xl font-black text-white italic">{adminDetails?.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2">Organization</p>
-                      <p className="text-white font-bold uppercase tracking-tight text-sm sm:text-base">{adminDetails?.company}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2">Secure Channel</p>
-                      <p className="text-cyan-500 font-bold uppercase tracking-widest text-xs sm:text-sm">{adminDetails?.email}</p>
+              {/* Silver shimmer accent — top edge */}
+              <div
+                className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+                style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(210,225,245,0.5) 50%, transparent 100%)' }}
+              />
+              {/* Subtle corner glow */}
+              <div className="absolute top-0 right-0 w-56 h-56 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(180,200,230,0.07) 0%, transparent 70%)' }} />
+              <div className="absolute bottom-0 left-0 w-40 h-40 pointer-events-none" style={{ background: 'radial-gradient(circle at bottom left, rgba(100,160,220,0.06) 0%, transparent 70%)' }} />
+
+              <div className="relative z-10 p-8 sm:p-12">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8 sm:mb-10">
+                  <div>
+                    <h2
+                      className="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic leading-none"
+                      style={{ color: '#dce8f5', textShadow: '0 2px 16px rgba(180,210,240,0.25)' }}
+                    >
+                      Protocol
+                      <br />
+                      <span style={{ color: '#a8bfd8' }}>Intel.</span>
+                    </h2>
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="w-8 h-px" style={{ background: 'linear-gradient(90deg, rgba(180,210,240,0.6), transparent)' }} />
+                      <span className="text-[8px] font-black uppercase tracking-[0.35em]" style={{ color: 'rgba(160,185,215,0.5)' }}>Classified Intel</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-white/40 px-4">
-                    <Activity className="size-4 text-cyan-500" />
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em]">Active Mesh Status: Optimized</p>
-                  </div>
+                  <button
+                    onClick={() => setShowAboutModal(false)}
+                    className="transition-all active:scale-90 rounded-2xl p-2.5 hover:bg-white/[0.07]"
+                    style={{ color: 'rgba(180,200,230,0.4)' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(220,235,255,0.9)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(180,200,230,0.4)')}
+                  >
+                    <X className="size-5" />
+                  </button>
                 </div>
-              )}
+
+                {loadingAdmin ? (
+                  <div className="py-20 flex justify-center">
+                    <Loader2 className="size-10" style={{ borderTopColor: '#a8c0d8', borderColor: 'rgba(168,192,216,0.15)' }} />
+                  </div>
+                ) : (
+                  <div className="space-y-5 sm:space-y-6">
+                    {/* Info card */}
+                    <div
+                      className="rounded-[1.75rem] p-6 sm:p-8 space-y-6"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+                        border: '1px solid rgba(192,210,235,0.12)',
+                        boxShadow: 'inset 0 1px 0 rgba(220,235,255,0.06)',
+                      }}
+                    >
+                      {/* Lead Coordinator */}
+                      <div>
+                        <p
+                          className="text-[9px] font-black uppercase tracking-[0.3em] mb-2"
+                          style={{ color: 'rgba(160,185,215,0.55)' }}
+                        >
+                          Lead Coordinator
+                        </p>
+                        <p
+                          className="text-xl sm:text-2xl font-black italic"
+                          style={{ color: '#dce8f5', textShadow: '0 1px 8px rgba(180,210,240,0.2)' }}
+                        >
+                          {adminDetails?.name}
+                        </p>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="h-px" style={{ background: 'rgba(180,205,235,0.08)' }} />
+
+                      {/* Organization */}
+                      <div>
+                        <p
+                          className="text-[9px] font-black uppercase tracking-[0.3em] mb-2"
+                          style={{ color: 'rgba(160,185,215,0.55)' }}
+                        >
+                          Organization
+                        </p>
+                        <p
+                          className="text-sm sm:text-base font-bold uppercase tracking-tight"
+                          style={{ color: '#b8cfe6' }}
+                        >
+                          {adminDetails?.company}
+                        </p>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="h-px" style={{ background: 'rgba(180,205,235,0.08)' }} />
+
+                      {/* Secure Channel */}
+                      <div>
+                        <p
+                          className="text-[9px] font-black uppercase tracking-[0.3em] mb-2"
+                          style={{ color: 'rgba(160,185,215,0.55)' }}
+                        >
+                          Secure Channel
+                        </p>
+                        <p
+                          className="text-xs sm:text-sm font-bold tracking-widest"
+                          style={{
+                            color: '#7db8e8',
+                            textShadow: '0 0 18px rgba(100,170,230,0.35)',
+                            letterSpacing: '0.12em',
+                          }}
+                        >
+                          {adminDetails?.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Status bar */}
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+                      style={{
+                        background: 'rgba(255,255,255,0.025)',
+                        border: '1px solid rgba(192,210,235,0.08)',
+                      }}
+                    >
+                      <div className="relative flex-shrink-0">
+                        <Activity className="size-4" style={{ color: '#5ba8dc' }} />
+                        <span
+                          className="absolute inset-0 animate-ping rounded-full opacity-30"
+                          style={{ background: '#5ba8dc', animationDuration: '2s' }}
+                        />
+                      </div>
+                      <p
+                        className="text-[9px] font-black uppercase tracking-[0.25em]"
+                        style={{ color: 'rgba(160,195,230,0.55)' }}
+                      >
+                        Active Mesh Status: Optimized
+                      </p>
+                      <div className="ml-auto size-1.5 rounded-full" style={{ background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.8)' }} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         )}
@@ -478,8 +607,8 @@ export default function Navbar({ customProfile }: { customProfile?: any }) {
 // ── Desktop NavLink ──
 function NavLink({ href, children, active }: { href: string, children: React.ReactNode, active: boolean }) {
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={cn(
         "relative group flex items-center gap-1.5 text-sm font-bold tracking-wide transition-all duration-300 active:scale-95 px-3 py-1.5 rounded-xl",
         active
@@ -498,15 +627,15 @@ function NavLink({ href, children, active }: { href: string, children: React.Rea
 }
 
 // ── Drawer Nav Row ──
-function DrawerNavItem({ 
-  href, icon, children, active, accent, onClick 
-}: { 
-  href: string; 
-  icon: React.ReactNode; 
-  children: React.ReactNode; 
+function DrawerNavItem({
+  href, icon, children, active, accent, onClick
+}: {
+  href: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
   active: boolean;
   accent?: 'cyan';
-  onClick: () => void; 
+  onClick: () => void;
 }) {
   const accentStyles = accent === 'cyan'
     ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
@@ -532,6 +661,6 @@ function DrawerNavItem({
   );
 }
 
-function Loader2({ className }: { className?: string }) {
-  return <div className={cn("border-2 border-white/10 border-t-white rounded-full animate-spin", className)} />;
+function Loader2({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return <div className={cn('border-2 rounded-full animate-spin', className)} style={style} />;
 }
