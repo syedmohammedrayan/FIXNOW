@@ -114,7 +114,11 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (err: any) {
-      setError('Google authentication failed.');
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        setError('An account with this email already exists. Please login using your password.');
+      } else if (err.message !== 'popup-closed-by-user' && err.code !== 'auth/popup-closed-by-user') {
+        setError('Google authentication failed. Please try again.');
+      }
       setLoading(false);
     }
   };

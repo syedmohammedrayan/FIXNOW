@@ -223,7 +223,9 @@ function SignupInner() {
       setError('');
       await signInWithPopup(auth, googleProvider);
     } catch (err: any) {
-      if (err.message !== 'popup-closed-by-user') {
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        setError('An account with this email already exists. Please go to Login and use your password.');
+      } else if (err.message !== 'popup-closed-by-user' && err.code !== 'auth/popup-closed-by-user') {
         setError(err.message || 'Google sign-in failed');
       }
     } finally {

@@ -72,7 +72,11 @@ router.post('/signup', async (req, res) => {
     } catch (e) { }
 
     if (existingUser && existingInAuth) {
-      return res.status(409).json({ error: 'This email is already registered and active.' });
+      if (id && id === existingUser.id) {
+        // If it's the exact same user (Google Auth re-triggering signup), just return success
+        return res.status(200).json({ success: true, user: existingUser });
+      }
+      return res.status(409).json({ error: 'This email is already registered and active. Please login.' });
     }
 
     if (existingUser && !existingInAuth) {
