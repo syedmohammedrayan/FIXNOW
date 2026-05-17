@@ -71,16 +71,20 @@ export default function LoginPage() {
                 setLoading(false);
                 return;
               }
+              setLoading(false);
               router.replace('/technician/dashboard');
             } else if (dbRole === 'admin') {
+              setLoading(false);
               router.replace('/admin/dashboard');
             } else {
+              setLoading(false);
               router.replace('/customer/dashboard');
             }
             return;
           }
         }
         // User is authenticated but has no DB profile – redirect to signup
+        setLoading(false);
         router.replace(`/auth/signup?role=${role}`);
       } catch (err: any) {
         setError(err.message || 'Error processing authentication.');

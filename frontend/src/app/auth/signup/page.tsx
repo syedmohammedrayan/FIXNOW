@@ -92,12 +92,16 @@ function SignupInner() {
             if (dbRole === 'technician') {
               if (!profileData.user.approved) {
                 setError('Your account is pending admin approval.');
+                setLoading(false);
                 return;
               }
+              setLoading(false);
               router.replace('/technician/dashboard');
             } else if (dbRole === 'admin') {
+              setLoading(false);
               router.replace('/admin/dashboard');
             } else {
+              setLoading(false);
               router.replace('/customer/dashboard');
             }
             return;
