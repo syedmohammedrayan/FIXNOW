@@ -1,7 +1,10 @@
 {
   "css.lint.unknownAtRules": "ignore",
-  "python.defaultInterpreterPath": "c:\\FIXNOW\\.venv\\Scripts\\python.exe",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
   "python.analysis.extraPaths": [
-    "c:\\FIXNOW\\.venv\\Lib\\site-packages"
-  ]
+    "${workspaceFolder}/.venv/Lib/site-packages"
+  ],
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic"
 }

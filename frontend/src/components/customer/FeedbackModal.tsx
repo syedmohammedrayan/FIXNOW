@@ -57,7 +57,7 @@ export default function FeedbackModal({ isOpen, onClose, booking }: FeedbackModa
         const newSum = currentSum + rating;
         const newAvg = newSum / totalRatings;
 
-        await updateDoc(techRef, {
+        const updateData = {
           rating: newAvg,
           ratingSum: newSum,
           totalRatings: totalRatings,
@@ -68,7 +68,22 @@ export default function FeedbackModal({ isOpen, onClose, booking }: FeedbackModa
             date: new Date(),
             customerName: 'Verified Customer'
           })
-        });
+        };
+
+        // Update the user profile
+        await updateDoc(techRef, updateData);
+        
+        // Also update the public technicians directory for search ranking & ML
+        try {
+          const publicTechRef = doc(db, 'technicians', booking.technicianId);
+          await updateDoc(publicTechRef, {
+            rating: newAvg,
+            ratingSum: newSum,
+            totalRatings: totalRatings
+          });
+        } catch (e) {
+          console.warn("Could not update public technician profile, might not exist yet:", e);
+        }
       }
 
       setIsSuccess(true);

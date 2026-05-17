@@ -61,3 +61,7 @@ frontend/build_output*.log
 # ML cache & data
 ml/__pycache__/
 ml/data/
+.venv/
+__pycache__/
+*.pyc
+ml/models/*.json

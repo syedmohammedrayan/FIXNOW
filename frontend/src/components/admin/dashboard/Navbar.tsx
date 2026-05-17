@@ -35,6 +35,7 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
     { icon: <ClipboardList className="w-5 h-5" />,   label: 'Bookings',      tab: 'bookings' },
     { icon: <ShoppingCart className="w-5 h-5" />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
     { icon: <DollarSign className="w-5 h-5" />,      label: 'Transactions',  tab: 'transactions' },
+    { icon: <Activity className="w-5 h-5" />,        label: 'Revenue Intel', tab: 'revenue' },
     { icon: <AlertTriangle className="w-5 h-5" />,   label: 'Complaints',    tab: 'complaints' },
     { icon: <Bell className="w-5 h-5" />,            label: 'Notifications', tab: 'notifications' },
   ];

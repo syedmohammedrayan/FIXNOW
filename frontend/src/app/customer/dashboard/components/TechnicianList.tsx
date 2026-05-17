@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Sparkles } from 'lucide-react';
+import { MapPin, Sparkles, BrainCircuit } from 'lucide-react';
 import { Technician } from '../types';
 
 import { getAvatarUrl } from '@/lib/image-utils';
@@ -69,17 +69,43 @@ export default function TechnicianList({ technicians, onSelect, analyzing }: Tec
                 </div>
               </div>
               
-              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/[0.05] flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <Sparkles className="size-3 sm:size-3.5 text-white" />
-                    <span className="text-[10px] sm:text-xs font-black text-white">{tech.rating}</span>
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/[0.05] flex flex-col gap-4 relative z-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-center gap-1 sm:gap-1.5" title="Customer Rating">
+                      <Sparkles className="size-3 sm:size-3.5 text-yellow-400" />
+                      <span className="text-[10px] sm:text-xs font-black text-white">{tech.rating}</span>
+                    </div>
+                    <div className="flex items-center gap-1 sm:gap-1.5" title="Distance from you">
+                      <MapPin className="size-3 sm:size-3.5 text-cyan-400" />
+                      <span className="text-[9px] sm:text-[10px] font-black text-white/70 uppercase tracking-widest">{tech.distance}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <MapPin className="size-3 sm:size-3.5 text-white/30" />
-                    <span className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">{tech.distance}</span>
-                  </div>
+                  
+                  {tech.xgbScore !== undefined && (
+                    <div className="flex items-center gap-1.5 bg-indigo-500/20 px-2 py-1 rounded-full border border-indigo-500/30">
+                      <BrainCircuit className="size-3.5 text-indigo-400" />
+                      <span className="text-[10px] font-black text-indigo-300 tracking-widest">
+                        {(tech.xgbScore * 100).toFixed(0)}% SUCCESS RATE
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                {tech.xgbScore !== undefined && (
+                  <div className="w-full h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${tech.xgbScore * 100}%` }}
+                      transition={{ duration: 1, ease: "easeOut", delay: idx * 0.1 }}
+                      className={`h-full rounded-full ${
+                        tech.xgbScore > 0.8 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]' :
+                        tech.xgbScore > 0.5 ? 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]' :
+                        'bg-gradient-to-r from-red-500 to-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                      }`}
+                    />
+                  </div>
+                )}
               </div>
             </motion.div>
           ))

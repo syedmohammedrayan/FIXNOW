@@ -7,6 +7,7 @@ import axios from 'axios';
 import { API_BASE, RAZORPAY_KEY_ID } from '@/lib/config';
 import { AnalysisResult, Technician } from '../types';
 import { Socket } from 'socket.io-client';
+import { calculateTechnicianRank } from '@/app/services/aiRankingEngine';
 
 interface UseBookingProps {
   userId: string | null;
@@ -360,15 +361,42 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
             }
           }
           
-          // Normalize avatars
-          techs = techs.map((t: any) => {
+          // Normalize avatars and fetch ML scores
+          const techsWithScore = await Promise.all(techs.map(async (t: any) => {
             if (t.avatar && !t.avatar.startsWith('http') && !t.avatar.startsWith('data:')) {
               t.avatar = `${API_BASE}${t.avatar}`;
             }
-            return t;
-          });
+            
+            // Parse distance
+            let distKm = 5;
+            if (typeof t.distance === 'string') {
+              const parsed = parseFloat(t.distance.replace(/[^\d.]/g, ''));
+              if (!isNaN(parsed)) {
+                 distKm = t.distance.toLowerCase().includes('km') ? parsed : (t.distance.toLowerCase().includes('m') ? parsed / 1000 : parsed);
+              }
+            } else if (typeof t.distance === 'number') {
+              distKm = t.distance;
+            }
+
+            const budget = 500; // default assumption
+            const rank = await calculateTechnicianRank({
+              technician: t,
+              jobEmbedding: null,
+              technicianEmbedding: null,
+              distanceKm: distKm,
+              customerBudget: budget
+            });
+            
+            return {
+              ...t,
+              xgbScore: rank.xgbScore,
+              totalScore: rank.totalScore
+            };
+          }));
           
-          setMatchedTechs(techs);
+          // Sort by total ML score
+          techsWithScore.sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+          setMatchedTechs(techsWithScore);
         }
       }
     } catch (err: unknown) {
@@ -428,13 +456,39 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
           });
           if (search.data.success) {
             let techs = search.data.technicians || [];
-            techs = techs.map((t: any) => {
+            const techsWithScore = await Promise.all(techs.map(async (t: any) => {
               if (t.avatar && !t.avatar.startsWith('http') && !t.avatar.startsWith('data:')) {
                 t.avatar = `${API_BASE}${t.avatar}`;
               }
-              return t;
-            });
-            setMatchedTechs(techs);
+
+              let distKm = 5;
+              if (typeof t.distance === 'string') {
+                const parsed = parseFloat(t.distance.replace(/[^\d.]/g, ''));
+                if (!isNaN(parsed)) {
+                   distKm = t.distance.toLowerCase().includes('km') ? parsed : (t.distance.toLowerCase().includes('m') ? parsed / 1000 : parsed);
+                }
+              } else if (typeof t.distance === 'number') {
+                distKm = t.distance;
+              }
+
+              const budget = 500;
+              const rank = await calculateTechnicianRank({
+                technician: t,
+                jobEmbedding: null,
+                technicianEmbedding: null,
+                distanceKm: distKm,
+                customerBudget: budget
+              });
+
+              return {
+                ...t,
+                xgbScore: rank.xgbScore,
+                totalScore: rank.totalScore
+              };
+            }));
+            
+            techsWithScore.sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+            setMatchedTechs(techsWithScore);
           }
         }
       } catch (err: unknown) {

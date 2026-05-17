@@ -30,13 +30,13 @@ def export_collection(db, collection_name: str, output_dir: str) -> pd.DataFrame
         docs.append(record)
     
     if not docs:
-        print(f"    ⚠ No documents found in '{collection_name}'")
+        print(f"    [!] No documents found in '{collection_name}'")
         return pd.DataFrame()
     
     df = pd.DataFrame(docs)
     output_path = os.path.join(output_dir, f'{collection_name}.csv')
     df.to_csv(output_path, index=False)
-    print(f"    ✅ Exported {len(df)} records → {output_path}")
+    print(f"    [OK] Exported {len(df)} records -> {output_path}")
     return df
 
 def main():
@@ -51,14 +51,14 @@ def main():
     db = init_firebase()
     
     # Export core collections
-    collections = ['bookings', 'technicians', 'users', 'reviews', 'toolCatalog']
+    collections = ['bookings', 'technicians', 'users', 'reviews', 'toolCatalog', 'technician_subscriptions']
     
     results = {}
     for col in collections:
         try:
             results[col] = export_collection(db, col, output_dir)
         except Exception as e:
-            print(f"    ❌ Error exporting '{col}': {e}")
+            print(f"    [ERR] Error exporting '{col}': {e}")
     
     # Summary
     print("\n" + "=" * 50)

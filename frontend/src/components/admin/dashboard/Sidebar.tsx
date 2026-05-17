@@ -43,6 +43,7 @@ export function Sidebar({
     { icon: <ClipboardList />,   label: 'Bookings',      tab: 'bookings' },
     { icon: <ShoppingCart />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
     { icon: <DollarSign />,      label: 'Transactions',  tab: 'transactions' },
+    { icon: <Activity />,        label: 'Revenue Intel', tab: 'revenue' },
     { icon: <AlertTriangle />,   label: 'Complaints',    tab: 'complaints' },
     { icon: <Bell />,            label: 'Notifications', tab: 'notifications' },
   ];

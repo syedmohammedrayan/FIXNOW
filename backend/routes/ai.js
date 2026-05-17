@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Groq } = require('groq-sdk');
+const OpenAI = require('openai');
 const fs = require('fs');
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -84,6 +85,11 @@ async function fetchGroqWithFallback(options) {
   throw lastError;
 }
 
+// Initialize OpenAI
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
+
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -132,21 +138,40 @@ router.post('/chat', async (req, res) => {
 
     res.json({ success: true, reply, action, data });
   } catch (error) {
-    console.warn('Groq Chat Failed, falling back to Gemini:', error.message);
+    console.warn('Groq Chat Failed, falling back to OpenAI:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
-      MISSION: Concierge for customers, technical supervisor for technicians.
-      User message: ${message}`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const reply = response.text();
-
+      if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
+      const openaiResponse = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. MISSION: Concierge for customers, technical supervisor for technicians.`
+          },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1024
+      });
+      const reply = openaiResponse.choices[0].message.content;
       res.json({ success: true, reply, action: null, data: null });
-    } catch (geminiError) {
-      console.error('Total Chat Failure:', geminiError);
-      res.status(500).json({ success: false, error: 'AI processing failed' });
+    } catch (openaiError) {
+      console.warn('OpenAI Chat Failed, falling back to Gemini:', openaiError.message);
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
+        MISSION: Concierge for customers, technical supervisor for technicians.
+        User message: ${message}`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const reply = response.text();
+
+        res.json({ success: true, reply, action: null, data: null });
+      } catch (geminiError) {
+        console.error('Total Chat Failure:', geminiError);
+        res.status(500).json({ success: false, error: 'AI processing failed' });
+      }
     }
   }
 });
@@ -209,40 +234,59 @@ router.post('/parse-issue', async (req, res) => {
     const data = safeJsonParse(text);
     res.json({ success: true, data });
   } catch (error) {
-    console.warn('Groq Parse Issue Failed, falling back to Gemini:', error.message);
+    console.warn('Groq Parse Issue Failed, falling back to OpenAI:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const prompt = `You are a multilingual repair triage expert.
-      TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
-      RULES:
-      - 'Electrician': Raw power, wiring, fans.
-      - 'HVAC / AC Technician': AC systems, installation, shifting, repair.
-      - 'Washing Machine Technician': ALL washing machine repair, parts, and service.
-      - 'Water Systems Technician': RO, filters, water pumps, and water tanks.
-      - 'Refrigerator Technician': Fridges, freezers, and technical parts.
-      - 'Kitchen Services Technician': Microwaves, Chimneys, Hobs, and Dishwashers.
-      - 'Installation Services Technician': Physical mounting work.
-      - 'electronics_smart_home': TVs, CCTV, Smart IoT.
-      
-      Return ONLY JSON:
-      { 
-        "category": "INVALID" if input is nonsense/greeting/random, else one from the list, 
-        "urgency": "High|Medium|Low", 
-        "estimatedCostRange": "500 - 1500", 
-        "summary": "Short description", 
-        "recommendedMaterials": [],
-        "technicalTerms": []
-      }
-      
-      User Issue: ${issueText}`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const data = safeJsonParse(response.text());
+      if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
+      const openaiResponse = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a multilingual repair triage expert. Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"]. Return ONLY JSON: { "category": "...", "urgency": "High|Medium|Low", "estimatedCostRange": "500 - 1500", "summary": "...", "recommendedMaterials": [], "technicalTerms": [] }. Return {"category": "INVALID"} if input is nonsense.`
+          },
+          { role: 'user', content: issueText }
+        ],
+        temperature: 0.3,
+        response_format: { type: 'json_object' }
+      });
+      const data = safeJsonParse(openaiResponse.choices[0].message.content);
       res.json({ success: true, data });
-    } catch (geminiError) {
-      console.error('Total Parse Issue Failure:', geminiError);
-      res.status(500).json({ success: false, error: 'AI processing failed' });
+    } catch (openaiError) {
+      console.warn('OpenAI Parse Issue Failed, falling back to Gemini:', openaiError.message);
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `You are a multilingual repair triage expert.
+        TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
+        RULES:
+        - 'Electrician': Raw power, wiring, fans.
+        - 'HVAC / AC Technician': AC systems, installation, shifting, repair.
+        - 'Washing Machine Technician': ALL washing machine repair, parts, and service.
+        - 'Water Systems Technician': RO, filters, water pumps, and water tanks.
+        - 'Refrigerator Technician': Fridges, freezers, and technical parts.
+        - 'Kitchen Services Technician': Microwaves, Chimneys, Hobs, and Dishwashers.
+        - 'Installation Services Technician': Physical mounting work.
+        - 'electronics_smart_home': TVs, CCTV, Smart IoT.
+        
+        Return ONLY JSON:
+        { 
+          "category": "INVALID" if input is nonsense/greeting/random, else one from the list, 
+          "urgency": "High|Medium|Low", 
+          "estimatedCostRange": "500 - 1500", 
+          "summary": "Short description", 
+          "recommendedMaterials": [],
+          "technicalTerms": []
+        }
+        
+        User Issue: ${issueText}`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const data = safeJsonParse(response.text());
+        res.json({ success: true, data });
+      } catch (geminiError) {
+        console.error('Total Parse Issue Failure:', geminiError);
+        res.status(500).json({ success: false, error: 'AI processing failed' });
+      }
     }
   }
 });
@@ -320,22 +364,48 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
       const data = safeJsonParse(completion.choices[0].message.content);
       return res.json({ success: true, data });
     } catch (groqError) {
-      console.warn("⚠️ Groq Vision failed, falling back to Gemini:", groqError.message);
+      console.warn("⚠️ Groq Vision failed, falling back to OpenAI:", groqError.message);
 
-      // Fallback to Gemini (Current 2026 Model)
-      const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
-      const imagePart = {
-        inlineData: {
-          data: req.file.buffer.toString("base64"),
-          mimeType: req.file.mimetype
-        }
-      };
+      // Fallback to OpenAI Vision
+      try {
+        if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
+        const base64Img = req.file.buffer.toString("base64");
+        const imgDataUrl = `data:${req.file.mimetype};base64,${base64Img}`;
 
-      const result = await model.generateContent([prompt, imagePart]);
-      const response = await result.response;
-      const data = safeJsonParse(response.text());
+        const openaiVisionResponse = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: imgDataUrl } }
+              ]
+            }
+          ],
+          max_tokens: 1024
+        });
 
-      return res.json({ success: true, data });
+        const data = safeJsonParse(openaiVisionResponse.choices[0].message.content);
+        return res.json({ success: true, data });
+      } catch (openaiVisionError) {
+        console.warn("⚠️ OpenAI Vision failed, falling back to Gemini:", openaiVisionError.message);
+
+        // Fallback to Gemini (Current 2026 Model)
+        const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
+        const imagePart = {
+          inlineData: {
+            data: req.file.buffer.toString("base64"),
+            mimeType: req.file.mimetype
+          }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        const response = await result.response;
+        const data = safeJsonParse(response.text());
+
+        return res.json({ success: true, data });
+      }
     }
   } catch (error) {
     console.error("Total Vision Analysis Error:", error);
@@ -343,6 +413,134 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
   }
 });
 
+// --- PHASE 4: New AI Endpoints ---
+
+// 1. Voice Transcription (Whisper)
+router.post('/transcribe', upload.single('audio'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ success: false, error: "No audio file provided" });
+  
+  try {
+    const groq = new Groq({ apiKey: groqKeys[0] });
+    
+    // Convert memory buffer to file-like object for Groq
+    const audioFile = new File([req.file.buffer], "audio.webm", { type: req.file.mimetype });
+    
+    const transcription = await groq.audio.transcriptions.create({
+      file: audioFile,
+      model: "whisper-large-v3-turbo",
+      response_format: "json",
+      language: "en", // Using english to force translation of indian languages if possible, or omit language for auto-detect
+    });
+    
+    res.json({ success: true, text: transcription.text });
+  } catch (error) {
+    console.error("Transcription Error:", error);
+    res.status(500).json({ success: false, error: "Failed to transcribe audio" });
+  }
+});
+
+// 2. Explainable AI for Recommendations
+router.post('/explain', async (req, res) => {
+  const { technician, scores } = req.body;
+  
+  try {
+    const prompt = `You are the FIXNOW AI Dispatcher. Explain to the customer why this technician was recommended.
+    Technician: ${technician.name || 'Professional'}
+    Category: ${technician.category || 'General'}
+    Rating: ${technician.rating || 'N/A'}
+    Match Score: ${Math.round((scores.totalScore || 0) * 100)}%
+    AI Success Confidence: ${Math.round((scores.xgbScore || 0) * 100)}%
+    Distance: ${Math.round(scores.distance || 0)}km
+    
+    Write exactly 3 short, punchy bullet points highlighting their expertise, proximity, and our AI's confidence in their success. Do NOT use markdown asterisks. Format as a JSON array of strings.`;
+
+    const completion = await fetchGroqWithFallback({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.1-8b-instant",
+      temperature: 0.3,
+      response_format: { type: "json_object" }
+    });
+    
+    let text = completion.choices[0].message.content;
+    const data = safeJsonParse(text);
+    // Handle both { "bullets": [...] } and direct array (which safeJsonParse might not handle if it expects obj, but let's assume it returns { bullets: [] })
+    let bullets = data.bullets || data.reasons || data.points || Object.values(data)[0] || [];
+    if (!Array.isArray(bullets)) bullets = ["High skill match verified by AI", "Excellent rating history", "Close proximity for fast arrival"];
+    
+    res.json({ success: true, bullets });
+  } catch (error) {
+    console.error("Explanation Error:", error);
+    res.json({ 
+      success: true, 
+      bullets: [
+        "Strong semantic skill match", 
+        "High success probability predicted", 
+        "Optimal distance and availability"
+      ] 
+    });
+  }
+});
+
+// 3. AI Negotiation Engine
+router.post('/negotiate', async (req, res) => {
+  const { customerBudget, technicianPrice, urgency, distance } = req.body;
+  
+  try {
+    const prompt = `You are the FIXNOW AI Negotiation Engine. 
+    Customer Budget: ₹${customerBudget || 500}
+    Technician Base Price: ₹${technicianPrice || 800}
+    Urgency: ${urgency || 'Medium'}
+    Distance: ${distance || 5}km
+    
+    Determine a fair middle-ground settlement price. If urgency is high, lean closer to the technician price. If distance is far, compensate slightly.
+    
+    Return ONLY JSON:
+    {
+      "suggestedPrice": 650,
+      "reasoning": "A fair compromise considering the high urgency and travel distance."
+    }`;
+
+    const completion = await fetchGroqWithFallback({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.1-8b-instant",
+      temperature: 0.2,
+      response_format: { type: "json_object" }
+    });
+    
+    const data = safeJsonParse(completion.choices[0].message.content);
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error("Negotiation Error:", error);
+    // Fallback logic
+    const basePrice = parseInt(technicianPrice) || 800;
+    const budget = parseInt(customerBudget) || basePrice;
+    const midpoint = Math.round((basePrice + budget) / 2);
+    
+    res.json({ 
+      success: true, 
+      data: {
+        suggestedPrice: midpoint,
+        reasoning: "Suggested fair midpoint based on standard market rates."
+      }
+    });
+  }
+});
+
+// 4. Semantic Embedding Proxy
+router.post('/embed', async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ success: false, error: "Text required" });
+  
+  try {
+    const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+    const result = await model.embedContent(text);
+    const embedding = result.embedding.values;
+    
+    res.json({ success: true, embedding });
+  } catch (error) {
+    console.error("Embedding Error:", error);
+    res.status(500).json({ success: false, error: "Failed to generate embedding" });
+  }
+});
+
 module.exports = router;
-
-

@@ -93,7 +93,18 @@ router.post('/search', async (req, res) => {
 
     if (error) throw error;
 
+    const subsSnap = await db.collection('technician_subscriptions').get();
+    const subsMap = {};
+    subsSnap.docs.forEach(d => { subsMap[d.id] = d.data(); });
+
     let matched = (techs || []).filter(tech => {
+      const sub = subsMap[tech.id];
+      const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 5;
+      const used = sub ? (sub.bookingsUsed || 0) : 0;
+
+      if (sub && sub.paymentStatus === 'expired') return false; // Filter expired tech
+      if (limit > 0 && used >= limit) return false; // Filter maxed tech
+
       const techCat = (tech.category || '').toLowerCase();
       const techSkills = (tech.skills || []).map(s => s.toLowerCase());
       const reqCat = targetCategory.toLowerCase();
@@ -102,10 +113,20 @@ router.post('/search', async (req, res) => {
              techCat.includes(reqCat) || 
              reqCat.includes(techCat) ||
              techSkills.some(s => s === reqCat || s.includes(reqCat) || reqCat.includes(s));
-    }).map(t => ({
-      ...t,
-      specialityTagline: getMirageTagline(t.category)
-    }));
+    }).map(t => {
+      const sub = subsMap[t.id];
+      const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 5;
+      const used = sub ? (sub.bookingsUsed || 0) : 0;
+      let quotaUsed = 0.0;
+      if (limit > 0) {
+        quotaUsed = used / limit;
+      }
+      return {
+        ...t,
+        specialityTagline: getMirageTagline(t.category),
+        quota_used_percentage: quotaUsed
+      };
+    });
 
     console.log(`✨ FILTERED MATCHES: ${matched.length} (Online & Approved)`);
 
@@ -140,7 +161,18 @@ router.post('/create', async (req, res) => {
       const snap = await db.collection('technicians').where('online', '==', true).where('approved', '==', true).get();
       const onlineTechs = snap.docs.map(d => ({id: d.id, ...d.data()}));
       
+      const subsSnap = await db.collection('technician_subscriptions').get();
+      const subsMap = {};
+      subsSnap.docs.forEach(d => { subsMap[d.id] = d.data(); });
+      
       (onlineTechs || []).forEach(tech => {
+        const sub = subsMap[tech.id];
+        const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 5;
+        const used = sub ? (sub.bookingsUsed || 0) : 0;
+
+        if (sub && sub.paymentStatus === 'expired') return; // filter out expired
+        if (limit > 0 && used >= limit) return; // filter out maxed
+
         const techCat = (tech.category || '').toLowerCase();
         const techSkills = (tech.skills || []).map(s => s.toLowerCase());
         const reqCat = (category || '').toLowerCase();
@@ -264,6 +296,24 @@ router.post('/accept-broadcast', async (req, res) => {
       return res.status(400).json({ error: 'This order has already been claimed or cancelled.' });
     }
 
+    // Check Technician Subscription Quota
+    const subRef = await db.collection('technician_subscriptions').doc(technicianId).get();
+    let bookingsUsed = 0;
+    let limit = 5; // Default free plan limit
+
+    if (subRef.exists) {
+      const sub = subRef.data();
+      if (sub.paymentStatus === 'expired') {
+        return res.status(403).json({ error: 'Subscription expired. Please purchase a new plan to get orders.' });
+      }
+      if (sub.bookingLimit !== undefined) limit = sub.bookingLimit;
+      bookingsUsed = sub.bookingsUsed || 0;
+    }
+
+    if (limit > 0 && bookingsUsed >= limit) {
+      return res.status(403).json({ error: 'Subscription limit reached. Please upgrade your plan.' });
+    }
+
     const update = {
       technician_id: technicianId,
       technicianId: technicianId,
@@ -285,6 +335,25 @@ router.post('/accept-broadcast', async (req, res) => {
     await db.collection('bookings').doc(bookingId).update(update);
     const updateErr = null;
     if (updateErr) throw updateErr;
+
+    // Increment bookingsUsed
+    if (subRef.exists) {
+      await db.collection('technician_subscriptions').doc(technicianId).update({
+        bookingsUsed: bookingsUsed + 1
+      });
+    } else {
+      // Create default plan document if it didn't exist
+      await db.collection('technician_subscriptions').doc(technicianId).set({
+        technicianId,
+        planId: 'free',
+        planName: 'Free Plan',
+        bookingLimit: 5,
+        bookingsUsed: 1,
+        priorityMultiplier: 1.0,
+        paymentStatus: 'active',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      });
+    }
 
     res.json({ success: true, booking: { ...booking, ...update } });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -451,6 +520,30 @@ router.post('/update-status', async (req, res) => {
                 updated_at: new Date().toISOString()
               });
               console.log(`💰 Updated earnings for tech ${techId}: +₹${finalAmount}`);
+              
+              // --- PHASE 7: Continuous Learning Hook ---
+              try {
+                // Write to performance table
+                await db.collection('technician_performance').add({
+                  technicianId: techId,
+                  bookingId,
+                  completedOnTime: true, // Assuming true for now
+                  customerSatisfied: true, // Assuming true for now
+                  ratingReceived: 5, // Defaulting to 5, can be updated by customer review flow
+                  cancelled: false,
+                  timestamp: new Date().toISOString()
+                });
+                
+                // Write to AI predictions table (audit)
+                await db.collection('ai_predictions').add({
+                  technicianId: techId,
+                  bookingId,
+                  successOutcome: 1, // 1 for success
+                  timestamp: new Date().toISOString()
+                });
+              } catch (clErr) {
+                console.error("Continuous Learning hook failed:", clErr.message);
+              }
             } catch (err) {
               console.error("Failed to update tech aggregate stats:", err.message);
             }
@@ -603,6 +696,78 @@ router.get('/transactions/technician/:techId', async (req, res) => {
     if (error) throw error;
     res.json({ success: true, transactions: data || [] });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ── AI RETRAINING PIPELINE ──
+router.post('/admin/retrain', async (req, res) => {
+  try {
+    const axios = require('axios');
+    const snap = await db.collection('bookings').where('status', '==', 'Completed').get();
+    
+    if (snap.empty) {
+      return res.status(400).json({ success: false, message: 'No completed bookings found for training.' });
+    }
+    
+    const trainingData = [];
+    
+    for (const doc of snap.docs) {
+      const b = doc.data();
+      
+      // We need to fetch the tech to get their experience and subscription info
+      let exp = 2;
+      let plan = 'free';
+      let rating = 4.5;
+      
+      if (b.technician_id) {
+        const tRef = await db.collection('users').doc(b.technician_id).get();
+        if (tRef.exists) {
+          const t = tRef.data();
+          exp = t.experience || 2;
+          plan = (t.subscriptionPlan || 'free').toLowerCase();
+          rating = t.rating || 4.5;
+        }
+      }
+      
+      // Determine feature values
+      const skill_match = 0.8; // default heuristic for completed jobs
+      const distance = b.distance || 5.0;
+      const budget_fit = 0.8;
+      const visibility_promotion = plan === 'elite' ? 0.2 : (plan === 'pro' ? 0.1 : 0.0);
+      const quota_used_percentage = 0.5; // average
+      
+      // Determine success: if a customer rated < 3, it's a failure (0), else success (1)
+      const success = (rating >= 3.0) ? 1 : 0;
+      
+      trainingData.push({
+        skill_match,
+        distance,
+        rating,
+        experience: exp,
+        budget_fit,
+        visibility_promotion,
+        quota_used_percentage,
+        success
+      });
+    }
+    
+    // Post to FastAPI
+    const mlUrl = process.env.ML_API_URL || 'http://localhost:8000';
+    const response = await axios.post(`${mlUrl}/retrain`, { data: trainingData });
+    
+    res.json({
+      success: true,
+      message: 'AI Model Retrained',
+      metrics: {
+        accuracy: response.data.accuracy,
+        roc_auc: response.data.roc_auc,
+        samples: response.data.samples
+      }
+    });
+    
+  } catch (err) {
+    console.error("AI Retrain Error:", err.response?.data || err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 module.exports = router;

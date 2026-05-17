@@ -46,12 +46,6 @@ const mainMenuItems: MenuItem[] = [
     label: 'Dashboard', 
     href: '/technician/dashboard',
     description: 'Overview & stats',
-    onClick: () => {
-      if (typeof window !== 'undefined') {
-        window.location.hash = '';
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
-      }
-    }
   },
   { 
     icon: CalendarCheck, 
@@ -70,6 +64,12 @@ const mainMenuItems: MenuItem[] = [
     label: 'Service Store', 
     href: '/technician/store',
     description: 'Browse services',
+  },
+  { 
+    icon: Crown, 
+    label: 'Subscription', 
+    href: '/technician/subscription',
+    description: 'Manage plan',
   },
   { 
     icon: AlertCircle, 

@@ -20,12 +20,28 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
+import { io, Socket } from 'socket.io-client';
+import { SOCKET_URL } from '@/lib/config';
 
 const Map          = dynamic(() => import('@/components/ui/map').then(mod => mod.Map),          { ssr: false });
 const MapMarker    = dynamic(() => import('@/components/ui/map').then(mod => mod.MapMarker),    { ssr: false });
 const MarkerContent = dynamic(() => import('@/components/ui/map').then(mod => mod.MarkerContent), { ssr: false });
 const MapPopup     = dynamic(() => import('@/components/ui/map').then(mod => mod.MapPopup),     { ssr: false });
 import { isValidCoordinate } from '@/components/ui/map';
+import { Star } from 'lucide-react';
+
+// Haversine distance calculation (returns km)
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2); 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; // Distance in km
+};
 
 export function LiveMapTab() {
   const [mapTheme,       setMapTheme]       = useState<'dark' | 'light'>('dark');
@@ -47,55 +63,66 @@ export function LiveMapTab() {
     }
   }, []);
 
+  // Socket.IO for Sub-Second Real-Time Updates
+  const [socketLocations, setSocketLocations] = useState<Record<string, { lat: number, lng: number }>>({});
+
   useEffect(() => {
+    // 1. Initial Firestore Load (Throttled but persistent)
     const unsubTechs = onSnapshot(collection(db, 'technicians'), snap => {
-      const techData = snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any))
-        .filter(t => {
-          const loc = t.location || { lat: t.lat, lng: t.lng };
-          return isValidCoordinate(loc);
-        });
+      const techData = snap.docs.map(d => ({ id: d.id, type: 'tech', ...d.data() } as any));
       setTechs(techData);
       
-      // Dynamically center map on the fleet
-      if (techData.length > 0) {
-        let sumLat = 0;
-        let sumLng = 0;
-        let count = 0;
-        techData.forEach(t => {
-          const loc = t.location || { lat: t.lat, lng: t.lng };
-          if (isValidCoordinate(loc)) {
-            sumLat += loc.lat;
-            sumLng += loc.lng;
-            count++;
-          }
-        });
-        if (count > 0) {
-          setMapCenter([sumLng / count, sumLat / count]);
-        }
+      // Dynamically center map on first load
+      if (techData.length > 0 && mapCenter[0] === 0) {
+        const valid = techData.filter(t => isValidCoordinate(t.location || { lat: t.lat, lng: t.lng }));
+        if (valid.length > 0) setMapCenter([valid[0].location?.lng || valid[0].lng, valid[0].location?.lat || valid[0].lat]);
       }
-
       setLoading(false);
     });
 
     const q = query(collection(db, 'bookings'), where('status', 'in', ['Accepted', 'On the Way', 'Arrived', 'In Progress']));
     const unsubBookings = onSnapshot(q, snap => {
-      setBookings(snap.docs.map(d => ({ id: d.id, type: 'customer', ...d.data() } as any))
-        .filter(b => {
-          const loc = b.customerLocation || { lat: b.customerLat, lng: b.customerLng };
-          return isValidCoordinate(loc);
-        }));
+      setBookings(snap.docs.map(d => ({ id: d.id, type: 'customer', ...d.data() } as any)));
     });
 
-    return () => { unsubTechs(); unsubBookings(); };
+    // 2. Socket.IO Direct Stream (Bypasses 10s Firestore Throttling)
+    const socket: Socket = io(SOCKET_URL, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+
+    socket.on('connect', () => {
+      console.log('⚡ Connected to Tactical Live Stream');
+      socket.emit('admin_join_fleet');
+    });
+
+    socket.on('fleet_tech_location', (data: { techId: string, location: { lat: number, lng: number } }) => {
+      setSocketLocations(prev => ({ ...prev, [data.techId]: data.location }));
+    });
+
+    socket.on('fleet_customer_location', (data: { customerId: string, bookingId: string, location: { lat: number, lng: number } }) => {
+      setSocketLocations(prev => ({ ...prev, [data.customerId || data.bookingId]: data.location }));
+    });
+
+    return () => { 
+      unsubTechs(); 
+      unsubBookings(); 
+      socket.disconnect();
+    };
   }, []);
 
   const getEntityLocation = (entity: any): [number, number] => {
+    // Override with socket stream if available for sub-second accuracy
+    if (socketLocations[entity.id]) {
+      return [socketLocations[entity.id].lng, socketLocations[entity.id].lat];
+    }
     if (entity.type === 'tech') {
       const loc = entity.location || { lat: entity.lat, lng: entity.lng };
-      return [loc.lng, loc.lat];
+      return [loc?.lng || 0, loc?.lat || 0];
     }
     const loc = entity.customerLocation || { lat: entity.customerLat, lng: entity.customerLng };
-    return [loc.lng, loc.lat];
+    return [loc?.lng || 0, loc?.lat || 0];
   };
 
   return (
@@ -131,8 +158,67 @@ export function LiveMapTab() {
         </div>
       </div>
 
-      {/* Map Container */}
-      <div className="flex-1 rounded-[1.75rem] sm:rounded-[2.5rem] overflow-hidden border border-white/[0.08] bg-slate-900/40 relative shadow-2xl min-h-[400px]">
+      {/* Map and Sidebar Container */}
+      <div className="flex-1 flex gap-4 overflow-hidden min-h-[400px]">
+        {/* Sidebar - Fleet Status */}
+        <div className="hidden lg:flex flex-col w-80 bg-slate-900/40 border border-white/[0.08] rounded-[2rem] p-4 overflow-y-auto">
+          <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <Zap className="size-3 text-amber-400" />
+            Active Fleet Elements
+          </h3>
+          <div className="space-y-3">
+            {techs.filter(t => t.online).map(tech => {
+              const activeBooking = bookings.find(b => b.technician_id === tech.id || b.technicianId === tech.id);
+              return (
+                <div key={tech.id} className="p-3.5 bg-slate-900/60 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.3)] cursor-pointer hover:bg-slate-800/80 transition-colors group" onClick={() => {
+                  setSelectedEntity(tech);
+                  const loc = getEntityLocation(tech);
+                  if (isValidCoordinate({ lat: loc[1], lng: loc[0] })) setMapCenter(loc);
+                }}>
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-black text-white group-hover:text-indigo-300 transition-colors">{tech.name}</p>
+                    <div className={cn("size-2 rounded-full mt-1", activeBooking ? "bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.6)]" : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]")} />
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-[9px] text-slate-400 uppercase tracking-widest">{tech.category}</p>
+                    <div className="flex items-center gap-1 bg-white/5 px-1.5 py-0.5 rounded-md">
+                      <Star className="size-2.5 text-amber-400 fill-amber-400" />
+                      <span className="text-[9px] font-black text-white">{Number(tech.rating || 0).toFixed(1)}</span>
+                    </div>
+                  </div>
+
+                  {activeBooking && (
+                    <div className="mt-3 pt-3 border-t border-white/[0.04]">
+                      <p className="text-[10px] text-amber-400/90 font-black tracking-wide">En Route to Client</p>
+                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">{activeBooking.customerName}</p>
+                      
+                      {(() => {
+                        const techLoc = getEntityLocation(tech);
+                        const custLoc = getEntityLocation(activeBooking);
+                        if (techLoc[0] !== 0 && custLoc[0] !== 0) {
+                          const dist = getDistance(techLoc[1], techLoc[0], custLoc[1], custLoc[0]);
+                          return (
+                            <div className="flex items-center justify-between mt-2 bg-black/40 rounded-lg p-2 border border-white/[0.02]">
+                              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Live Distance</span>
+                              <span className="text-[10px] font-black text-emerald-400">
+                                {dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`}
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Map Container */}
+        <div className="flex-1 rounded-[1.75rem] sm:rounded-[2.5rem] overflow-hidden border border-white/[0.08] bg-slate-900/40 relative shadow-2xl">
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/60">
             <div className="w-10 h-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
@@ -151,13 +237,17 @@ export function LiveMapTab() {
             {/* Technician Markers */}
             {techs.map(tech => {
               const loc = getEntityLocation(tech);
+              if (!isValidCoordinate({ lat: loc[1], lng: loc[0] })) return null;
+              const isActive = bookings.some(b => b.technicianId === tech.id || b.technician_id === tech.id);
+              
               return (
                 <MapMarker key={tech.id} longitude={loc[0]} latitude={loc[1]} onClick={() => setSelectedEntity(tech)}>
                   <MarkerContent>
                     <div className="relative cursor-pointer group">
-                      {tech.online && <div className="absolute -inset-4 bg-white/10 rounded-full animate-ping pointer-events-none" />}
+                      {(tech.online || isActive) && <div className={cn("absolute -inset-4 rounded-full animate-ping pointer-events-none opacity-50", isActive ? "bg-amber-400" : "bg-emerald-500")} />}
                       <div className={cn(
                         'size-10 rounded-2xl border-2 shadow-xl flex items-center justify-center transform rotate-45 transition-all duration-300 group-hover:scale-110',
+                        isActive ? 'bg-amber-400 border-white text-slate-900' :
                         tech.online ? 'bg-white border-slate-900 text-slate-900' : 'bg-slate-800 border-slate-700 text-slate-400'
                       )}>
                         <span className={cn('text-lg -rotate-45', !tech.online && 'opacity-50 grayscale')}>🛠️</span>
@@ -174,15 +264,17 @@ export function LiveMapTab() {
             {/* Customer Markers */}
             {bookings.map(booking => {
               const loc = getEntityLocation(booking);
+              if (!isValidCoordinate({ lat: loc[1], lng: loc[0] })) return null;
+              
               return (
                 <MapMarker key={booking.id} longitude={loc[0]} latitude={loc[1]} onClick={() => setSelectedEntity(booking)}>
                   <MarkerContent>
                     <div className="relative cursor-pointer group">
-                      <div className="absolute -inset-4 bg-emerald-500/20 rounded-full animate-pulse pointer-events-none" />
-                      <div className="size-10 rounded-full bg-emerald-500 border-2 border-white shadow-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                        <span className="text-lg">📍</span>
+                      <div className="absolute -inset-4 bg-cyan-500/20 rounded-full animate-pulse pointer-events-none" />
+                      <div className="size-8 rounded-full bg-cyan-500 border-2 border-white shadow-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                        <span className="text-sm">📍</span>
                       </div>
-                      <div className="absolute top-12 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-emerald-500 text-white text-[6px] font-black rounded uppercase tracking-tighter whitespace-nowrap shadow-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-10 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-cyan-500 text-slate-900 text-[6px] font-black rounded uppercase tracking-tighter whitespace-nowrap shadow-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         {booking.customerName?.split(' ')[0] || 'CLIENT'}
                       </div>
                     </div>
@@ -274,7 +366,9 @@ export function LiveMapTab() {
             <Filter className="size-3.5 sm:size-4" />
           </button>
         </div>
-      </div>
+
+        </div>{/* /Map Container */}
+      </div>{/* /flex: sidebar + map */}
 
       <style jsx global>{`
         .custom-popup .maplibregl-popup-content {

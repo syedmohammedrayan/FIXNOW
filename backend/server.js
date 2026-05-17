@@ -27,6 +27,7 @@ const aiRoutes = require('./routes/ai');
 const bookingsRoutes = require('./routes/bookings');
 const toolsRoutes = require('./routes/tools');
 const usersRoutes = require('./routes/users');
+const subscriptionsRoutes = require('./routes/subscriptions');
 const { getRealETA } = require('./services/etaService');
 const { notifyUser } = require('./services/notifications');
 const { runReminderEngine } = require('./services/reminderEngine');
@@ -37,6 +38,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/tools', toolsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/upload', uploadRoute);
 app.use('/api/complaints', complaintsRoutes);
 
@@ -52,6 +54,12 @@ const connectedTechnicians = new Map(); // socketId -> { techId, category, categ
 
 io.on('connection', (socket) => {
   console.log('✅ Client connected:', socket.id);
+
+  // Admin joins the fleet tracking room for real-time global view
+  socket.on('admin_join_fleet', () => {
+    socket.join('admin_fleet');
+    console.log(`🗺️ Admin ${socket.id} joined fleet tracking room`);
+  });
 
   // Join a booking room for live tracking
   socket.on('join_booking', (data) => {
@@ -99,6 +107,11 @@ io.on('connection', (socket) => {
     // Emit raw location to room if not idle (REAL-TIME UI)
     if (room) {
       io.to(room).emit('location_update', location);
+    }
+
+    // Broadcast to admin fleet room for live map (UNTHROTTLED)
+    if (techId && location) {
+      io.to('admin_fleet').emit('fleet_tech_location', { techId, location, bookingId, timestamp: Date.now() });
     }
 
     // Update technician document in Firestore (THROTTLED)
@@ -162,6 +175,11 @@ io.on('connection', (socket) => {
     if (!bookingId) return;
     const room = `booking_${bookingId}`;
     io.to(room).emit('customer_location_update', location);
+
+    // Broadcast to admin fleet room for live map (UNTHROTTLED)
+    if (location) {
+      io.to('admin_fleet').emit('fleet_customer_location', { customerId, bookingId, location, timestamp: Date.now() });
+    }
 
     // Also persist customer location in booking document (THROTTLED)
     const idKey = customerId || bookingId;

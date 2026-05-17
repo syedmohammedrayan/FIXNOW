@@ -16,6 +16,8 @@ export interface Technician {
   rating: string;
   distance: string;
   online?: boolean;
+  xgbScore?: number;
+  totalScore?: number;
 }
 
 export interface Notification {

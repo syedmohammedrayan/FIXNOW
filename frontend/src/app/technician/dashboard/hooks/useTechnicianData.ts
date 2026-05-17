@@ -388,8 +388,15 @@ export function useTechnicianData() {
         fetchTechData(user?.uid);
       }
     } catch (e: any) {
-      setNotification({ message: e.response?.data?.error || "Failed to accept broadcast.", type: 'error' });
+      const errorMsg = e.response?.data?.error || "Failed to accept broadcast.";
+      setNotification({ message: errorMsg, type: 'error' });
       setAvailableBroadcasts((prev) => prev.filter(b => b.id !== broadcastId));
+      
+      if (errorMsg.includes("Subscription limit reached") || errorMsg.includes("upgrade your plan")) {
+        setTimeout(() => {
+          router.push('/technician/subscription');
+        }, 1500);
+      }
     }
   };
 

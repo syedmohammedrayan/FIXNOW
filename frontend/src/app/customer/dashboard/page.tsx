@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { Activity } from 'lucide-react';
 
 
 const BookingHistory = dynamic(() => import('@/components/customer/BookingHistory'), { ssr: false });
@@ -20,6 +21,7 @@ const ServiceCatalog = dynamic(() => import('./components/ServiceCatalog'), { ss
 const AITriagePanel = dynamic(() => import('./components/AITriagePanel'), { ssr: false });
 const DashboardHeader = dynamic(() => import('./components/DashboardHeader'), { ssr: false });
 const StatusBanners = dynamic(() => import('./components/StatusBanners'), { ssr: false });
+const NearbyTechniciansMap = dynamic(() => import('@/components/ai/NearbyTechniciansMap'), { ssr: false });
 
 import { SOCKET_URL } from '@/lib/config';
 import { io, Socket } from 'socket.io-client';
@@ -373,6 +375,7 @@ export default function CustomerDashboard() {
         onTrack={(id) => router.push(`/customer/tracking?id=${id}`)}
       />
 
+
       <div className="mt-6 sm:mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-start">
           <div className="lg:col-span-8 space-y-6 sm:space-y-8">
@@ -410,12 +413,21 @@ export default function CustomerDashboard() {
             </AnimatePresence>
           </div>
 
-          <div className="lg:col-span-4 lg:sticky lg:top-24">
+          <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
             <TechnicianList 
               technicians={matchedTechs} 
               onSelect={selectTechnician} 
               analyzing={analyzing} 
             />
+            {coords && matchedTechs.length > 0 && (
+              <div className="h-[350px] sm:h-[400px] w-full rounded-[2rem] overflow-hidden shadow-2xl border border-white/10">
+                <NearbyTechniciansMap 
+                  customerLocation={coords}
+                  technicians={matchedTechs}
+                  radiusKm={15}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
