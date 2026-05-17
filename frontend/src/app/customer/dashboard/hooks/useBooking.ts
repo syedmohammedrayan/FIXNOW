@@ -11,6 +11,7 @@ import { Socket } from 'socket.io-client';
 interface UseBookingProps {
   userId: string | null;
   socketRef: React.MutableRefObject<Socket | null>;
+  socketInstance?: Socket | null;
   coords: { lat: number; lng: number } | null;
   setCoords: (coords: { lat: number; lng: number } | null) => void;
   userProfile: any;
@@ -28,7 +29,7 @@ export interface BroadcastAcceptedTech {
 
 const BROADCAST_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
-export function useBooking({ userId, socketRef, coords, setCoords, userProfile }: UseBookingProps) {
+export function useBooking({ userId, socketRef, socketInstance, coords, setCoords, userProfile }: UseBookingProps) {
   const [issueText, setIssueText] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -74,7 +75,7 @@ export function useBooking({ userId, socketRef, coords, setCoords, userProfile }
 
   // ── Socket listeners for broadcast events ──
   useEffect(() => {
-    const socket = socketRef.current;
+    const socket = socketInstance || socketRef.current;
     if (!socket) return;
 
     const handleStatusUpdate = (data: any) => {
@@ -107,6 +108,25 @@ export function useBooking({ userId, socketRef, coords, setCoords, userProfile }
         setBroadcastTimerEnd(null);
         setShowAcceptedPopup(true);
 
+        // INSTANT LIVE LOCATION SHARING
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const liveLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              setCoords(liveLoc);
+              if (socketRef.current) {
+                socketRef.current.emit('customer_update_location', {
+                  bookingId: data.bookingId,
+                  location: liveLoc,
+                  customerId: userId || 'GUEST'
+                });
+              }
+            },
+            (err) => console.warn('Instant geolocation failed:', err),
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          );
+        }
+
         // Update booking confirmation with tech info
         setBookingConfirmation(prev => prev ? {
           ...prev,
@@ -136,7 +156,7 @@ export function useBooking({ userId, socketRef, coords, setCoords, userProfile }
       socket.off('status_update', handleStatusUpdate);
       socket.off('broadcast_accepted', handleBroadcastAccepted);
     };
-  }, [socketRef, bookingConfirmation, broadcastBookingId, analysisResult]);
+  }, [socketInstance, socketRef, bookingConfirmation, broadcastBookingId, analysisResult]);
 
   // ── Cleanup broadcast timeout on unmount ──
   useEffect(() => {

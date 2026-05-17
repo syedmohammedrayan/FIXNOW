@@ -68,6 +68,7 @@ export default function CustomerDashboard() {
   const [deleting, setDeleting] = useState(false);
   const [showLangMenuVoice, setShowLangMenuVoice] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
 
   const addressInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -130,7 +131,7 @@ export default function CustomerDashboard() {
     resetBroadcast,
     dismissAcceptedPopup,
     removeImage
-  } = useBooking({ userId, socketRef, coords, setCoords, userProfile });
+  } = useBooking({ userId, socketRef, socketInstance, coords, setCoords, userProfile });
 
   const [urgentReminders, setUrgentReminders] = useState<Reminder[]>([]);
 
@@ -206,6 +207,7 @@ export default function CustomerDashboard() {
 
   useEffect(() => {
     const s = io(SOCKET_URL);
+    setSocketInstance(s);
     socketRef.current = s;
     return () => {
       s.disconnect();
