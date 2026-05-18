@@ -45,6 +45,11 @@ export default function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState('');
 
+  // Use a ref so the auth listener always reads the latest role
+  // without needing to re-register on every role tab switch
+  const roleRef = React.useRef(role);
+  useEffect(() => { roleRef.current = role; }, [role]);
+
   useEffect(() => {
     setMounted(true);
     const unsubscribe = onAuthStateChanged(auth, async (user: any) => {
@@ -57,10 +62,12 @@ export default function LoginPage() {
           const profileData = await profileRes.json();
           if (profileData.success && profileData.user) {
             const dbRole = profileData.user.role;
-            
-            if (dbRole !== role) {
+            // Read latest role from ref to avoid stale closure
+            const currentRole = roleRef.current;
+
+            if (dbRole !== currentRole) {
               await auth.signOut();
-              setError(`These login credentials are not for the ${role} panel.`);
+              setError(`These login credentials are not for the ${currentRole} panel.`);
               setLoading(false);
               return;
             }
@@ -85,14 +92,16 @@ export default function LoginPage() {
         }
         // User is authenticated but has no DB profile – redirect to signup
         setLoading(false);
-        router.replace(`/auth/signup?role=${role}`);
+        router.replace(`/auth/signup?role=${roleRef.current}`);
       } catch (err: any) {
         setError(err.message || 'Error processing authentication.');
         setLoading(false);
       }
     });
     return () => unsubscribe();
-  }, [router, role]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
+
 
   useEffect(() => {
     if (initialRole && (initialRole === 'customer' || initialRole === 'technician' || initialRole === 'admin')) {

@@ -59,8 +59,10 @@ const performPermanentDeletion = async (id) => {
 // Create or Update User Profile
 router.post('/signup', async (req, res) => {
   try {
-    const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl, selfieUrl } = req.body;
+    const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl, selfieUrl, googleAuth } = req.body;
 
+    // Determine if this is a Google OAuth signup (no real phone number)
+    const isGoogleOAuth = googleAuth === true || (phone && phone.startsWith('google_'));
 
     // Check if user already exists in DB
     const s = await db.collection('users').where('email', '==', email).limit(1).get(); const existingUser = s.empty ? null : s.docs[0].data();
@@ -86,9 +88,12 @@ router.post('/signup', async (req, res) => {
       const tSnap = await db.collection('technicians').where('email', '==', email).get(); tSnap.forEach(d => d.ref.delete());
     }
 
-    const pSnap = await db.collection('users').where('phone', '==', phone).limit(1).get(); const existingPhone = pSnap.empty ? null : pSnap.docs[0].data();
-    if (existingPhone) {
-      return res.status(409).json({ error: 'This phone number is already registered.' });
+    // Skip phone duplicate check for Google OAuth users (no real phone provided)
+    if (!isGoogleOAuth && phone) {
+      const pSnap = await db.collection('users').where('phone', '==', phone).limit(1).get(); const existingPhone = pSnap.empty ? null : pSnap.docs[0].data();
+      if (existingPhone) {
+        return res.status(409).json({ error: 'This phone number is already registered.' });
+      }
     }
 
     // Check if user is in pending_technicians

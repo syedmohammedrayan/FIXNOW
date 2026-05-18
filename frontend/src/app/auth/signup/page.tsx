@@ -67,10 +67,20 @@ function SignupInner() {
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLinked, setIsGoogleLinked] = useState(false);
 
+  // Use refs so the auth listener always reads the latest values
+  // without needing to re-register every time state changes
+  const roleRef = React.useRef(role);
+  const isGoogleLinkedRef = React.useRef(false);
+  useEffect(() => { roleRef.current = role; }, [role]);
+
   useEffect(() => {
     setMounted(true);
+    // Register the listener ONCE – use refs to avoid stale closures
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user || isGoogleLinked) return;
+      if (!user || isGoogleLinkedRef.current) return;
+
+      // Mark as processed immediately to prevent duplicate runs
+      isGoogleLinkedRef.current = true;
 
       // Pre-fill form data from Google account
       setFormData(prev => ({
@@ -87,7 +97,7 @@ function SignupInner() {
         if (profileRes.ok) {
           const profileData = await profileRes.json();
           if (profileData.success && profileData.user) {
-            // Existing user â€” redirect straight to their dashboard
+            // Existing user – redirect straight to their dashboard
             const dbRole = profileData.user.role;
             if (dbRole === 'technician') {
               if (!profileData.user.approved) {
@@ -109,19 +119,21 @@ function SignupInner() {
         }
       } catch {}
 
-      // New Google user â€” if role is 'customer', auto-register immediately
-      if (role === 'customer') {
+      // New Google user – read the LATEST role from ref to avoid stale closure
+      const currentRole = roleRef.current;
+      if (currentRole === 'customer') {
         try {
           setLoading(true);
           const payload = {
             id: user.uid,
             name: user.displayName || '',
             email: user.email || '',
-            phone: '',
+            phone: `google_${user.uid}`, // Use unique placeholder to bypass phone duplicate check
             address: '',
             password: 'GoogleUser123!',
             role: 'customer',
             passwordHint: '',
+            googleAuth: true,
           };
           const res = await fetch(`${API_BASE}/api/users/signup`, {
             method: 'POST',
@@ -132,17 +144,20 @@ function SignupInner() {
           if (data.success) {
             router.replace('/customer/dashboard');
             return;
+          } else {
+            setError(data.error || data.message || 'Registration failed. Please try again.');
+            setLoading(false);
           }
         } catch (err: any) {
           setError(err.message || 'Auto-registration failed. Please complete the form.');
-        } finally {
           setLoading(false);
         }
       }
-      // For technicians or when role is not yet set â€” stay on form to collect extra info
+      // For technicians or when role is not yet set – stay on form to collect extra info
     });
     return () => { unsubscribe(); };
-  }, [isGoogleLinked, role, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -222,18 +237,19 @@ function SignupInner() {
   };
 
   const handleGoogleClick = async () => {
+    setError('');
     try {
       setLoading(true);
-      setError('');
       await signInWithPopup(auth, googleProvider);
+      // Don't clear loading here — onAuthStateChanged takes over and handles redirect
     } catch (err: any) {
+      // Only clear loading on error or user-cancelled popup
+      setLoading(false);
       if (err.code === 'auth/account-exists-with-different-credential') {
         setError('An account with this email already exists. Please go to Login and use your password.');
-      } else if (err.message !== 'popup-closed-by-user' && err.code !== 'auth/popup-closed-by-user') {
+      } else if (err.code !== 'auth/popup-closed-by-user' && err.message !== 'popup-closed-by-user') {
         setError(err.message || 'Google sign-in failed');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
