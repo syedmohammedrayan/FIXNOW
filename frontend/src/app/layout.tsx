@@ -6,6 +6,7 @@ import DynamicBackground from "@/components/DynamicBackground";
 import ChatbotIntegration from "@/components/chat/ChatbotIntegration";
 import Script from "next/script";
 import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -83,6 +84,7 @@ export default function RootLayout({
           src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" 
           strategy="lazyOnload" 
         />
+        <SpeedInsights />
       </body>
     </html>
   );
