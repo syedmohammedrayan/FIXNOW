@@ -64,4 +64,3 @@ ml/data/
 .venv/
 __pycache__/
 *.pyc
-ml/models/*.json
