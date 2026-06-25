@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -72,8 +72,17 @@ const darkMapStyles = [
 ];
 
 export default function TechnicianServicePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><Loader2 className="size-12 text-cyan-500 animate-spin" /></div>}>
+      <TechnicianServiceContent />
+    </Suspense>
+  );
+}
+
+function TechnicianServiceContent() {
   const { currentKey, rotateKey } = useGoogleMapsKey();
-  const { bookingId } = useParams<{ bookingId: string }>();
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get('id');
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [booking, setBooking] = useState<Booking | null>(null);

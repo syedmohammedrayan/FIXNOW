@@ -136,6 +136,7 @@ def confidence_label(prob: float) -> str:
 # ─── Endpoints ────────────────────────────────────────────────────────────────
 
 @app.get("/", tags=["Health"])
+@app.head("/", tags=["Health"])
 def health():
     return {
         "status": "online",
@@ -147,6 +148,7 @@ def health():
 
 
 @app.get("/ping", tags=["Health"])
+@app.head("/ping", tags=["Health"])
 def ping():
     """Lightweight health check for UptimeRobot."""
     return {"status": "ok"}

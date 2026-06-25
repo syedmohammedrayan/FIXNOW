@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, Phone, Mail, MapPin, 
@@ -13,7 +13,16 @@ import axios from 'axios';
 import { API_BASE } from '@/lib/config';
 
 export default function TechnicianDetailsPage() {
-  const { id } = useParams();
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div></div>}>
+      <TechnicianDetailsContent />
+    </Suspense>
+  );
+}
+
+function TechnicianDetailsContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const router = useRouter();
   const [tech, setTech] = useState<any>(null);
   const [loading, setLoading] = useState(true);
