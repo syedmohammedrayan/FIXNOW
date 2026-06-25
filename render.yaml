@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: fixnow-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5050
+      - key: NODE_ENV
+        value: production
+      # Note: Add the rest of your environment variables directly in the Render Dashboard
+
+  - type: web
+    name: fixnow-ml
+    env: python
+    plan: free
+    rootDir: ml
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
