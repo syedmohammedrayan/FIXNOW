@@ -17,7 +17,6 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
 from pathlib import Path
-from pathlib import Path
 
 app = FastAPI(
     title="FIXNOW ML Service",
@@ -145,6 +144,12 @@ def health():
         "model_loaded": model is not None,
         "model_path": str(MODEL_PATH)
     }
+
+
+@app.get("/ping", tags=["Health"])
+def ping():
+    """Lightweight health check for UptimeRobot."""
+    return {"status": "ok"}
 
 
 @app.post("/predict", tags=["Prediction"])
