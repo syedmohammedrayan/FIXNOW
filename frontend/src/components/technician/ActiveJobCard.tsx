@@ -278,7 +278,7 @@ export default function ActiveJobCard({
               {jobStatus !== "Arrived" && (
                 <div className="mt-6 sm:mt-8 border-t border-white/10 pt-6 sm:pt-8">
                   <Link
-                    href={`/technician/service/${currentJob.id}`}
+                    href={`/technician/service/details?id=${currentJob.id}`}
                     className="w-full py-4 sm:py-6 bg-slate-800/40 border border-white/10 hover:bg-slate-700/60 hover:border-white/30 text-white font-bold rounded-xl sm:rounded-[1.5rem] transition-all duration-300 shadow-lg flex items-center justify-center gap-2 sm:gap-3 active:scale-[0.98] text-xs sm:text-sm uppercase tracking-[0.2em] group relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

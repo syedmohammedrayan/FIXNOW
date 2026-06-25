@@ -89,7 +89,7 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                 {/* Actions */}
                 <div className="flex gap-2 pt-3 border-t border-white/[0.05]">
                   <Link
-                    href={`/admin/technicians/${t.id}`}
+                    href={`/admin/technicians/details?id=${t.id}`}
                     className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.09] text-slate-300 rounded-xl text-[10px] font-black uppercase tracking-widest transition active:scale-95"
                   >
                     <Eye className="w-3.5 h-3.5" /> View
@@ -154,7 +154,7 @@ export function TechniciansTab({ allTechs, setShowAddModal, deleteTechnician }: 
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition">
-                          <Link href={`/admin/technicians/${t.id}`} className="p-2 text-slate-500 hover:text-white hover:bg-white/[0.06] rounded-lg transition">
+                          <Link href={`/admin/technicians/details?id=${t.id}`} className="p-2 text-slate-500 hover:text-white hover:bg-white/[0.06] rounded-lg transition">
                             <Eye className="w-4 h-4" />
                           </Link>
                           <button onClick={() => deleteTechnician(t.id)} className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition">

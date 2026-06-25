@@ -306,7 +306,7 @@ export default function TechnicianBookings() {
                         </div>
                       )}
                       {tab === 'active' && (
-                        <button onClick={() => router.push(`/technician/service/${booking.id}`)} className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-xl text-xs font-bold flex items-center gap-2"><MapPin className="size-3.5" /> Manage</button>
+                        <button onClick={() => router.push(`/technician/service/details?id=${booking.id}`)} className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-xl text-xs font-bold flex items-center gap-2"><MapPin className="size-3.5" /> Manage</button>
                       )}
                     </div>
                   </motion.div>
