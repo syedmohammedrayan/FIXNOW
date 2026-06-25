@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Navigation, 
@@ -70,6 +70,14 @@ const darkMapStyles = [
 ];
 
 export default function TrackingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><Activity className="size-12 text-cyan-500 animate-pulse" /></div>}>
+      <TrackingContent />
+    </Suspense>
+  );
+}
+
+function TrackingContent() {
   const { isLoaded, loadError } = useGoogleMaps();
   const router = useRouter();
   const searchParams = useSearchParams();
