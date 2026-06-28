@@ -1,3 +1,8 @@
+packages:
+  - "frontend"
+  - "backend"
+  - "ml"
+
 allowBuilds:
   '@firebase/util': set this to true or false
   '@google/genai': set this to true or false
