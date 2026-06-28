@@ -25,6 +25,7 @@ export default function RootLayout({
         <link rel="icon" href="https://ik.imagekit.io/smr2007/fixnow-logo.png" />
       </head>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+        <a href="#main-content" className="skip-to-content">Skip to content</a>
         <DynamicBackground />
         <ThemeProvider
           attribute="class"
@@ -33,7 +34,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <GoogleMapsProvider>
-            {children}
+            <main id="main-content">
+              {children}
+            </main>
           </GoogleMapsProvider>
         </ThemeProvider>
         

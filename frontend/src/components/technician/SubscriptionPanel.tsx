@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Check, Zap, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getSubscriptionPlans, getTechnicianSubscription, upgradeSubscription, SubscriptionPlan, TechnicianSubscription } from '@/app/services/subscriptionService';
+import { getSubscriptionPlans, getTechnicianSubscription, upgradeSubscription, SubscriptionPlan, TechnicianSubscription } from '@/server/services/subscriptionService';
 
 export default function SubscriptionPanel({ technicianId }: { technicianId: string }) {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);

@@ -6,6 +6,23 @@ export interface AnalysisResult {
   recommendedMaterials: string[];
   technicalTerms?: string[];
   serviceSpecs?: string;
+  confidence?: number;
+  reasoning?: string;
+  estimatedTime?: string;
+  memoryUsed?: boolean;
+  previousRepairsCount?: number;
+  requiredTools?: string[];
+  requiredMaterials?: string[];
+  recommendedRepair?: string;
+  documentDetails?: {
+    isFixNow?: boolean;
+    productType?: string;
+    warrantyDate?: string;
+    warrantyValid?: boolean;
+    amount?: number;
+    specs?: string[];
+    recommendedTechnicianCategory?: string;
+  };
 }
 
 export interface Technician {

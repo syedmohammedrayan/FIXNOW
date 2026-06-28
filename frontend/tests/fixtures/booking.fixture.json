@@ -1,0 +1,13 @@
+{
+  "problemSummary": "AC refrigerant leak and coil icing",
+  "recommendedTechnician": "HVAC",
+  "toolsRequired": [
+    "Refrigerant manifold gauge",
+    "Leak detector",
+    "R-32 refrigerant cylinder",
+    "Vacuum pump"
+  ],
+  "estimatedDurationMinutes": 150,
+  "priority": "High",
+  "schedulingTags": ["requires_outdoor_access", "2_person_job_potential"]
+}

@@ -9,25 +9,50 @@ interface StatItemProps {
 }
 
 export function StatItem({ label, value, icon, color, trend }: StatItemProps) {
+  // Generate a random sparkline for visual effect (since we can't use real chart library per requirements)
+  const isPositive = trend?.includes('+') || trend?.includes('Up');
+  const strokeColor = isPositive ? '#10b981' : (trend?.includes('-') ? '#ef4444' : '#64748b');
+  
   return (
-    <div className="bg-[#0f1115]/80 backdrop-blur-2xl border border-white/[0.06] p-3 sm:p-5 rounded-[1rem] sm:rounded-3xl flex flex-col justify-between gap-2.5 sm:gap-4 group cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.6)] hover:border-white/[0.15] transition-all duration-500 min-h-[96px] sm:min-h-[140px] relative overflow-hidden">
-      {/* Subtle cinematic gradient layer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      
-      <div className="flex items-start justify-between w-full relative z-10 gap-1.5">
-        <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-black/40 border border-white/[0.05] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
-          {React.cloneElement(icon as React.ReactElement, { className: 'w-3.5 h-3.5 sm:w-5 sm:h-5 text-slate-300 group-hover:text-white transition-colors duration-500' })}
+    <div className="card-stat flex flex-col justify-between gap-3 group relative overflow-hidden min-h-[140px]">
+      <div className="flex items-start justify-between w-full relative z-10">
+        <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0 group-hover:bg-white/[0.08] transition-colors duration-300">
+          {React.cloneElement(icon as React.ReactElement, { className: 'w-4 h-4 text-slate-300 group-hover:text-white transition-colors duration-300' })}
         </div>
         {trend && (
-          <span className="text-[7px] sm:text-[9px] font-black text-slate-300 bg-white/[0.03] px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full uppercase tracking-widest border border-white/[0.05] backdrop-blur-md whitespace-nowrap">
+          <span className="badge badge-neutral bg-white/[0.03]">
             {trend}
           </span>
         )}
       </div>
       
-      <div className="min-w-0 w-full relative z-10 mt-auto pt-1 sm:pt-0">
-        <p className="text-[8px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5 sm:mb-1.5 truncate group-hover:text-slate-300 transition-colors">{label}</p>
-        <h4 className="text-lg sm:text-3xl font-black text-white tracking-tight group-hover:translate-x-1 transition-transform duration-500 truncate">{value}</h4>
+      <div className="min-w-0 w-full relative z-10 mt-auto">
+        <p className="text-overline text-slate-400 mb-1 truncate">{label}</p>
+        <h4 className="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{value}</h4>
+      </div>
+
+      {/* Decorative Sparkline */}
+      <div className="absolute bottom-0 left-0 w-full h-12 opacity-30 pointer-events-none">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="w-full h-full">
+          <path 
+            d={isPositive ? "M0,30 L20,20 L40,25 L60,10 L80,15 L100,5" : "M0,30 L20,25 L40,15 L60,20 L80,10 L100,15"} 
+            fill="none" 
+            stroke={strokeColor} 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+          />
+          <path 
+            d={isPositive ? "M0,30 L20,20 L40,25 L60,10 L80,15 L100,5 L100,30 L0,30 Z" : "M0,30 L20,25 L40,15 L60,20 L80,10 L100,15 L100,30 L0,30 Z"} 
+            fill={`url(#gradient-${label.replace(/\s+/g, '-')})`} 
+          />
+          <defs>
+            <linearGradient id={`gradient-${label.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={strokeColor} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
     </div>
   );

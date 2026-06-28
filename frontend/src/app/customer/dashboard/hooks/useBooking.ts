@@ -7,7 +7,7 @@ import axios from 'axios';
 import { API_BASE, RAZORPAY_KEY_ID } from '@/lib/config';
 import { AnalysisResult, Technician } from '../types';
 import { Socket } from 'socket.io-client';
-import { calculateTechnicianRank } from '@/app/services/aiRankingEngine';
+import { calculateTechnicianRank } from '@/server/ai/agents/aiRankingEngine';
 
 interface UseBookingProps {
   userId: string | null;
@@ -291,6 +291,49 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     return () => clearTimeout(timer);
   }, [userId]);
 
+  // Helper to downscale image to prevent VLM CPU overload
+  const compressImage = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 512;
+          const MAX_HEIGHT = 512;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Canvas conversion failed'));
+          }, 'image/jpeg', 0.8);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
   const handleAnalyze = async (explicitText?: string) => {
     const textToAnalyze = typeof explicitText === 'string' ? explicitText : issueText;
     if (!textToAnalyze.trim() && !imageFile) return;
@@ -301,9 +344,13 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       let res;
       if (imageFile) {
         const formData = new FormData();
-        formData.append('image', imageFile);
+        
+        // Compress image before sending to massively speed up local CPU inference
+        const compressedBlob = await compressImage(imageFile);
+        formData.append('image', compressedBlob, 'upload.jpg');
+        
         formData.append('userText', textToAnalyze);
-        res = await axios.post(`${API_BASE}/api/ai/analyze-image`, formData);
+        res = await axios.post(`${API_BASE}/api/ai/analyze-image`, formData, { timeout: 180000 });
         
         if (res.data.success) {
           const visionData = res.data.data;
@@ -314,16 +361,20 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
           }
           setAnalysisResult({
             category: (visionData.category || visionData.service || 'general_maintenance'),
-            urgency: (visionData.urgency || 'medium').charAt(0).toUpperCase() + (visionData.urgency || 'medium').slice(1),
-            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || '₹300 - ₹900', 
+            urgency: (visionData.urgency || visionData.severity || 'medium').charAt(0).toUpperCase() + (visionData.urgency || visionData.severity || 'medium').slice(1),
+            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || (visionData.estimatedCostMin && visionData.estimatedCostMax ? `₹${visionData.estimatedCostMin} - ₹${visionData.estimatedCostMax}` : '₹300 - ₹900'), 
             summary: visionData.summary || visionData.problem || 'Visual analysis completed.',
-            recommendedMaterials: visionData.materials || [visionData.solution || 'Consult the technician upon arrival'],
-            serviceSpecs: visionData.serviceSpecs,
-            technicalTerms: visionData.technicalTerms
+            recommendedMaterials: visionData.requiredMaterials || visionData.materials || [],
+            requiredTools: visionData.requiredTools || [],
+            requiredMaterials: visionData.requiredMaterials || [],
+            recommendedRepair: visionData.solution || visionData.problem || 'Specialized assessment and repair needed',
+            serviceSpecs: visionData.serviceSpecs || visionData.estimatedRepairTime,
+            technicalTerms: visionData.technicalTerms || visionData.possibleCauses,
+            confidence: visionData.confidence
           });
         }
       } else {
-        res = await axios.post(`${API_BASE}/api/ai/parse-issue`, { issueText: textToAnalyze });
+        res = await axios.post(`/api/ai/parse-issue`, { issueText: textToAnalyze });
         if (res.data.success) {
           if (res.data.data.category === 'INVALID') {
             alert('Service request not recognized. Please describe a specific repair or maintenance issue (e.g., "Leaking tap", "AC not cooling").');
@@ -432,7 +483,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         formData.append('image', file);
         formData.append('userText', issueText);
         
-        const res = await axios.post(`${API_BASE}/api/ai/analyze-image`, formData);
+        const res = await axios.post(`/api/ai/analyze-image`, formData);
         if (res.data.success) {
           const visionData = res.data.data;
           if (visionData.category === 'INVALID') {
@@ -445,12 +496,21 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
             urgency: (visionData.urgency || 'medium').charAt(0).toUpperCase() + (visionData.urgency || 'medium').slice(1),
             estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || '₹300 - ₹900', 
             summary: visionData.summary || visionData.problem || 'Visual analysis completed.',
-            recommendedMaterials: visionData.materials || [visionData.solution || 'Consult the technician upon arrival']
+            recommendedMaterials: visionData.requiredMaterials || visionData.materials || [],
+            requiredTools: visionData.requiredTools || [],
+            requiredMaterials: visionData.requiredMaterials || [],
+            recommendedRepair: visionData.solution || visionData.problem || 'Specialized assessment and repair needed',
+            confidence: visionData.confidence,
+            documentDetails: visionData.documentDetails
           });
           
           const origin = coords || { lat: 37.7749, lng: -122.4194 };
+          const searchCategory = visionData.category === 'Document / Invoice' && visionData.documentDetails?.recommendedTechnicianCategory 
+            ? visionData.documentDetails.recommendedTechnicianCategory 
+            : (visionData.category || visionData.service || 'general_maintenance');
+
           const search = await axios.post(`${API_BASE}/api/bookings/search`, {
-            category: (visionData.category || visionData.service || 'general_maintenance'),
+            category: searchCategory,
             customerLat: origin.lat,
             customerLng: origin.lng,
           });

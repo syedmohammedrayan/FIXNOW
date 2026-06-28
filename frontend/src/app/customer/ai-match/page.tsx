@@ -13,11 +13,11 @@ import NearbyTechniciansMap from '@/components/ai/NearbyTechniciansMap';
 import TechnicianMatchCard from '@/components/ai/TechnicianMatchCard';
 import { Activity, Camera, Search, ArrowRight, X, MapPin } from 'lucide-react';
 
-import { findNearbyTechnicians } from '@/app/services/nearbyTechnicians';
-import { getJobEmbedding, getOrGenerateEmbedding } from '@/app/services/embeddingService';
-import { calculateTechnicianRank } from '@/app/services/aiRankingEngine';
-import { analyzeIssueImage } from '@/app/services/imageAnalysisService';
-import { getAiExplanation, getAiNegotiation } from '@/app/services/explanationService';
+import { findNearbyTechnicians } from '@/server/services/nearbyTechnicians';
+import { getJobEmbedding, getOrGenerateEmbedding } from '@/server/ai/agents/embeddingService';
+import { calculateTechnicianRank } from '@/server/ai/agents/aiRankingEngine';
+import { analyzeIssueImage } from '@/server/ai/agents/imageAnalysisService';
+import { getAiExplanation, getAiNegotiation } from '@/server/ai/agents/explanationService';
 import { API_BASE } from '@/lib/config';
 
 export default function AIMatchPage() {

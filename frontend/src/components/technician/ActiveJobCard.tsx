@@ -185,6 +185,39 @@ export default function ActiveJobCard({
                 </a>
               </div>
 
+              <div className="mb-8 sm:mb-10 p-5 sm:p-7 rounded-[1.5rem] bg-slate-800/40 border border-white/10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.05] pointer-events-none">
+                  <ShieldCheck className="size-32 text-white" />
+                </div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="size-8 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30">
+                      <Zap className="size-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-black text-sm uppercase tracking-widest">AI Work Plan</h4>
+                      <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mt-0.5">Recommended repair sequence</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {[
+                      `Inspect ${currentJob.category} core components`,
+                      "Isolate primary fault domain",
+                      "Execute targeted repair protocol",
+                      "Run full diagnostic verification",
+                    ].map((step, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-white/[0.03] border border-white/[0.05] rounded-xl">
+                        <div className="size-5 rounded bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-[10px] font-bold text-white/50">{idx + 1}</span>
+                        </div>
+                        <p className="text-sm font-medium text-slate-300">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
                 {["On the Way", "Arrived"].map((s) => (
                   <button

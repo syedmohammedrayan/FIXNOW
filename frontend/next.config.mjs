@@ -1,12 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: 'standalone',
   images: { unoptimized: true },
+  serverExternalPackages: ['pino'],
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -27,7 +25,7 @@ const nextConfig = {
 
     return config;
   },
-  swcMinify: true,
+  turbopack: {},
 };
 
 export default nextConfig;

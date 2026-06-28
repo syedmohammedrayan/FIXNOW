@@ -1,0 +1,12 @@
+{
+  "problem": "AC is blowing warm air and there is ice on the indoor coil.",
+  "confidence": 0.95,
+  "urgency": "High",
+  "estimatedRepair": "Refrigerant leak repair and recharge",
+  "estimatedCost": "₹2500-4000",
+  "estimatedTime": "2-3 hours",
+  "recommendedTechnicianType": "HVAC",
+  "safetyAdvice": "Turn off the AC immediately to prevent compressor damage.",
+  "suggestedNextAction": "Book an HVAC technician for leak detection.",
+  "needsEmergencyVisit": false
+}

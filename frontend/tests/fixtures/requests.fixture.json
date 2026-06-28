@@ -1,0 +1,19 @@
+{
+  "validCustomerIssue": {
+    "trigger": "customer_issue",
+    "userId": "user-123",
+    "sessionId": "session-456",
+    "problemText": "My AC is leaking water inside the room."
+  },
+  "validImageUpload": {
+    "trigger": "image_upload",
+    "userId": "user-123",
+    "sessionId": "session-456",
+    "imageDescription": "A blurry photo of an LG washing machine with an LE error code."
+  },
+  "invalidMissingInput": {
+    "trigger": "customer_issue",
+    "userId": "user-123",
+    "sessionId": "session-456"
+  }
+}

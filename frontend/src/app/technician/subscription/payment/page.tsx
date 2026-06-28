@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Activity, ShieldCheck, CheckCircle2, ArrowLeft, QrCode } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getSubscriptionPlans, upgradeSubscription, SubscriptionPlan } from '@/app/services/subscriptionService';
+import { getSubscriptionPlans, upgradeSubscription, SubscriptionPlan } from '@/server/services/subscriptionService';
 
 function PaymentContent() {
   const router = useRouter();

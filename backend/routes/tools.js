@@ -4,22 +4,26 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { db } = require('../config/firebaseAdmin');
+const cloudinary = require('../config/cloudinary');
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '..', 'uploads', 'tools');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+// Use memory storage — files go straight to Cloudinary, never saved to disk
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+/**
+ * Upload a buffer to Cloudinary and return the secure URL.
+ */
+async function uploadToCloudinary(fileBuffer, folder = 'fixnow/tools') {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: 'auto' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+    stream.end(fileBuffer);
+  });
 }
-
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const uniqueName = `tool_${Date.now()}_${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  }
-});
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // Get catalog
 router.get('/catalog', async (req, res) => {
@@ -65,7 +69,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
       custom_tool: customToolName ? {
         name: customToolName,
         description: customToolDescription || '',
-        image: req.file ? `/uploads/tools/${req.file.filename}` : null,
+        image: req.file ? await uploadToCloudinary(req.file.buffer) : null,
       } : null,
       total_amount: parseFloat(totalAmount) || 0,
       payment_method: payMethod,

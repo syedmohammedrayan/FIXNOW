@@ -260,13 +260,13 @@ const { exec } = require('child_process');
 
 function startServer() {
   server.listen(PORT, () => {
-    const groqKey = process.env.GROQ_API_KEY || 'gsk_...';
+    const groqKey = process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_1 || 'gsk_...';
     const isMockKey = groqKey.startsWith('gsk_...') || groqKey === '';
     console.log(`\n🚀 FIXNOW Backend Server running on http://localhost:${PORT}`);
     console.log(`📡 Socket.IO ready for real-time connections`);
     console.log(`🗄️  Database: Firebase Firestore`);
     console.log(`🤖 AI Engine: Meta-Llama 4 Scout via Groq`);
-    console.log(`🔑 Key Status: ${isMockKey ? 'FALLBACK/MOCK' : 'ACTIVE POOL'}\n`);
+    console.log(`🔑 Key Status: ${isMockKey ? 'FALLBACK/MOCK' : 'ACTIVE POOL (15 Keys)'}\n`);
   });
 
   server.on('error', (e) => {

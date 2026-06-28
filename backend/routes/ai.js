@@ -8,14 +8,11 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Filter out known invalid keys and empty values
-const groqKeys = [
-  process.env.GROQ_API_KEY_1,
-  process.env.GROQ_API_KEY_2,
-  process.env.GROQ_API_KEY_3,
-  process.env.GROQ_API_KEY_4,
-  process.env.GROQ_API_KEY_5
-].filter(k => k && k.startsWith('gsk_'));
+// Dynamically gather all GROQ_API_KEY_* environment variables
+const groqKeys = Object.keys(process.env)
+  .filter(key => key.startsWith('GROQ_API_KEY'))
+  .map(key => process.env[key])
+  .filter(val => val && val.startsWith('gsk_'));
 
 let currentKeyIndex = 0;
 
@@ -40,6 +37,8 @@ function safeJsonParse(text) {
   }
 }
 
+// Initialize OpenRouter (REMOVED)
+
 async function fetchGroqWithFallback(options) {
   let lastError;
   if (groqKeys.length === 0) throw new Error("No valid Groq API keys available.");
@@ -49,7 +48,8 @@ async function fetchGroqWithFallback(options) {
     const groq = new Groq({ apiKey: key });
     try {
       const response = await groq.chat.completions.create(options);
-      currentKeyIndex = (currentKeyIndex + i) % groqKeys.length;
+      // Advance to the NEXT key for the next request (True Round-Robin)
+      currentKeyIndex = (currentKeyIndex + i + 1) % groqKeys.length;
       return response;
     } catch (err) {
       console.warn(`Groq key [${key.substring(0, 10)}...] failed: ${err.message}. Trying next...`);
@@ -58,10 +58,10 @@ async function fetchGroqWithFallback(options) {
       // If it's a rate limit on the large model, try the new Llama 4 Scout first
       if (err.status === 429 && options.model === "llama-3.3-70b-versatile") {
         try {
-          console.log(`Attempting Llama 4 Scout fallback with key [${key.substring(0, 10)}...]`);
+          console.log(`Attempting Llama fallback with key [${key.substring(0, 10)}...]`);
           const scoutResponse = await groq.chat.completions.create({
             ...options,
-            model: "meta-llama/llama-4-scout-17b-16e-instruct"
+            model: "llama-3.1-8b-instant"
           });
           currentKeyIndex = (currentKeyIndex + i) % groqKeys.length;
           return scoutResponse;
@@ -82,13 +82,11 @@ async function fetchGroqWithFallback(options) {
       }
     }
   }
+
   throw lastError;
 }
 
-// Initialize OpenAI
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+// Removed local llama-server client
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -116,7 +114,7 @@ router.post('/chat', async (req, res) => {
           "content": message
         }
       ],
-      "model": "llama-3.3-70b-versatile",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
       "temperature": 0.7,
       "max_completion_tokens": 1024,
       "top_p": 1,
@@ -138,40 +136,21 @@ router.post('/chat', async (req, res) => {
 
     res.json({ success: true, reply, action, data });
   } catch (error) {
-    console.warn('Groq Chat Failed, falling back to OpenAI:', error.message);
+    console.warn('Groq Chat Failed, falling back directly to Gemini:', error.message);
     try {
-      if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
-      const openaiResponse = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. MISSION: Concierge for customers, technical supervisor for technicians.`
-          },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 1024
-      });
-      const reply = openaiResponse.choices[0].message.content;
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
+      MISSION: Concierge for customers, technical supervisor for technicians.
+      User message: ${message}`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const reply = response.text();
+
       res.json({ success: true, reply, action: null, data: null });
-    } catch (openaiError) {
-      console.warn('OpenAI Chat Failed, falling back to Gemini:', openaiError.message);
-      try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
-        MISSION: Concierge for customers, technical supervisor for technicians.
-        User message: ${message}`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const reply = response.text();
-
-        res.json({ success: true, reply, action: null, data: null });
-      } catch (geminiError) {
-        console.error('Total Chat Failure:', geminiError);
-        res.status(500).json({ success: false, error: 'AI processing failed' });
-      }
+    } catch (geminiError) {
+      console.error('Total Chat Failure:', geminiError);
+      res.status(500).json({ success: false, error: 'AI processing failed' });
     }
   }
 });
@@ -214,7 +193,7 @@ router.post('/parse-issue', async (req, res) => {
           
           5. REJECTION RULE: If the user input is a greeting (e.g., 'hello', 'how are you'), random words, nonsense text, just numbers/emojis, or does NOT describe any service or repair need, you MUST return EXACTLY: {"category": "INVALID"}. Do NOT try to guess a category.
           
-          Return ONLY a JSON object: 
+          You MUST return ONLY a JSON object. Do NOT wrap it in markdown. Do NOT add any conversational text before or after the JSON. Start your response with { and end it with }.
           { 
             "category": "INVALID|plumbing|electrical|...", 
             "urgency": "High|Medium|Low", 
@@ -226,7 +205,7 @@ router.post('/parse-issue', async (req, res) => {
         },
         { role: "user", content: issueText }
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
       response_format: { type: "json_object" }
     });
 
@@ -234,59 +213,40 @@ router.post('/parse-issue', async (req, res) => {
     const data = safeJsonParse(text);
     res.json({ success: true, data });
   } catch (error) {
-    console.warn('Groq Parse Issue Failed, falling back to OpenAI:', error.message);
+    console.warn('Groq Parse Issue Failed, falling back directly to Gemini:', error.message);
     try {
-      if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
-      const openaiResponse = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a multilingual repair triage expert. Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"]. Return ONLY JSON: { "category": "...", "urgency": "High|Medium|Low", "estimatedCostRange": "500 - 1500", "summary": "...", "recommendedMaterials": [], "technicalTerms": [] }. Return {"category": "INVALID"} if input is nonsense.`
-          },
-          { role: 'user', content: issueText }
-        ],
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
-      });
-      const data = safeJsonParse(openaiResponse.choices[0].message.content);
-      res.json({ success: true, data });
-    } catch (openaiError) {
-      console.warn('OpenAI Parse Issue Failed, falling back to Gemini:', openaiError.message);
-      try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `You are a multilingual repair triage expert.
-        TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
-        RULES:
-        - 'Electrician': Raw power, wiring, fans.
-        - 'HVAC / AC Technician': AC systems, installation, shifting, repair.
-        - 'Washing Machine Technician': ALL washing machine repair, parts, and service.
-        - 'Water Systems Technician': RO, filters, water pumps, and water tanks.
-        - 'Refrigerator Technician': Fridges, freezers, and technical parts.
-        - 'Kitchen Services Technician': Microwaves, Chimneys, Hobs, and Dishwashers.
-        - 'Installation Services Technician': Physical mounting work.
-        - 'electronics_smart_home': TVs, CCTV, Smart IoT.
-        
-        Return ONLY JSON:
-        { 
-          "category": "INVALID" if input is nonsense/greeting/random, else one from the list, 
-          "urgency": "High|Medium|Low", 
-          "estimatedCostRange": "500 - 1500", 
-          "summary": "Short description", 
-          "recommendedMaterials": [],
-          "technicalTerms": []
-        }
-        
-        User Issue: ${issueText}`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const data = safeJsonParse(response.text());
-        res.json({ success: true, data });
-      } catch (geminiError) {
-        console.error('Total Parse Issue Failure:', geminiError);
-        res.status(500).json({ success: false, error: 'AI processing failed' });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const prompt = `You are a multilingual repair triage expert.
+      TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
+      RULES:
+      - 'Electrician': Raw power, wiring, fans.
+      - 'HVAC / AC Technician': AC systems, installation, shifting, repair.
+      - 'Washing Machine Technician': ALL washing machine repair, parts, and service.
+      - 'Water Systems Technician': RO, filters, water pumps, and water tanks.
+      - 'Refrigerator Technician': Fridges, freezers, and technical parts.
+      - 'Kitchen Services Technician': Microwaves, Chimneys, Hobs, and Dishwashers.
+      - 'Installation Services Technician': Physical mounting work.
+      - 'electronics_smart_home': TVs, CCTV, Smart IoT.
+      
+      Return ONLY JSON:
+      { 
+        "category": "INVALID" if input is nonsense/greeting/random, else one from the list, 
+        "urgency": "High|Medium|Low", 
+        "estimatedCostRange": "500 - 1500", 
+        "summary": "Short description", 
+        "recommendedMaterials": [],
+        "technicalTerms": []
       }
+      
+      User Issue: ${issueText}`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const data = safeJsonParse(response.text());
+      res.json({ success: true, data });
+    } catch (geminiError) {
+      console.error('Total Parse Issue Failure:', geminiError);
+      res.status(500).json({ success: false, error: 'AI processing failed' });
     }
   }
 });
@@ -298,118 +258,94 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
     return res.status(400).json({ success: false, error: "No image provided" });
   }
 
-  const prompt = `Analyze this multimodal repair issue. 
-  The user context may be in various Indian languages or English: "${userText || 'No description provided'}".
-  
-  Identify exactly: 
-  1. Category (Pick EXACTLY one from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"])
-     - CRITICAL: Visually distinguish between DIRT (Cleaning) and DAMAGE (Plumbing/Repair). 
-     - 'Electrician': Detect raw wiring, switchboards, MCB panels, ceiling fans, tube lights, or heavy inverters/batteries.
-     - 'HVAC / AC Technician': Detect AC units, compressors, coils.
-     - 'Washing Machine Technician': Detect washing machines, drums, bearings.
-     - 'Refrigerator Technician': Detect refrigerators and freezers.
-     - 'Kitchen Services Technician': Detect chimneys, microwaves, hobs.
-     - 'Water Systems Technician': Detect RO units, purifiers, tanks, pumps.
-     - 'Rural Area Technicians': Detect solar panels, handpumps, rural infrastructure.
-     - 'Gas & Utilities': Detect gas pipes, stoves, fire extinguishers, and safety sensors.
-     - 'Electronics & Smart Home': Detect TVs, Cameras, Smart locks, Solar panels, and EV ports. Do NOT confuse with basic electrical wiring or appliance PCBs.
-     - 'Installation Services Technician': Detect wall drilling, brackets, mounting work, or heavy appliance placement. Do NOT use for AC or Washing Machines.
-     - 'Renovation Service': Detect wallpapers, ceiling grids, metal frames, or furniture being polished.
-     - 'Moving & Misc': Detect cardboard boxes, trucks, heavy items being lifted, or drivers.
-     - 'Carpentry': Detect wood, power saws, drills, hinges, door frames, or disassembled furniture.
-     - 'Painter': Detect buckets of paint, rollers, brushes, wall cracks (for putty), or peeling paint.
-     - A dirty sink is 'Cleaning Services'. A leaking pipe under the sink is 'Plumbing'.
-  2. Urgency (Low, Medium, High, Critical)
-  3. Short description (In English).
-  4. Estimated cost in INR (Range e.g. 500-1500).
-  5. Required materials.
-  
-  STRICTNESS: Ensure zero cross-triggering between Cleaning and Repair categories.
-  REJECTION: If the userText is nonsense, random emojis, or a greeting like "hello", return "INVALID" for category.
-  
-  Return ONLY JSON:
-  {
-    "category": "INVALID|...",
-    "urgency": "...",
-    "problem": "...",
-    "solution": "...",
-    "priceEstimate": "...",
-    "estimatedCostRange": "...",
-    "materials": ["...", "..."],
-    "summary": "...",
-    "serviceSpecs": "Technical details"
-  }`;
-
   try {
-    // Try Groq Vision First (Multimodal Llama 4)
-    try {
-      const base64Image = req.file.buffer.toString("base64");
-      const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
+    const base64Image = req.file.buffer.toString("base64");
 
-      const completion = await fetchGroqWithFallback({
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: imageUrl } }
-            ]
-          }
-        ],
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        temperature: 0.5,
-        max_tokens: 1024
-      });
+    const response = await fetchGroqWithFallback({
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { 
+              type: "text", 
+              text: `You are FixNow AI.
 
-      const data = safeJsonParse(completion.choices[0].message.content);
-      return res.json({ success: true, data });
-    } catch (groqError) {
-      console.warn("⚠️ Groq Vision failed, falling back to OpenAI:", groqError.message);
+Analyze images. These could be home repair issues OR documents/invoices/receipts.
+The user context may be in various Indian languages or English: "${userText || 'No description provided'}".
 
-      // Fallback to OpenAI Vision
-      try {
-        if (!openai) throw new Error('OpenAI not configured, skipping to Gemini');
-        const base64Img = req.file.buffer.toString("base64");
-        const imgDataUrl = `data:${req.file.mimetype};base64,${base64Img}`;
+If the image is a document, invoice, or receipt:
+- Set category to "Document / Invoice"
+- Put the document type or company name in "problem"
+- Put the total amount in "estimatedCostMin" and "estimatedCostMax" (if found, otherwise 0)
+- Extract the key items/details into "summary"
+- Put all visible text into "ocr"
+- Leave arrays like requiredMaterials, requiredTools, possibleCauses empty.
+- Do NOT return "INVALID" for documents.
 
-        const openaiVisionResponse = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          messages: [
+If the image is a home repair issue:
+- Diagnose the problem and fill all fields accordingly.
+- Pick a repair Category from the list below.
+
+You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add any conversational text before or after the JSON. Start your response with { and end it with }.
+
+{
+  "problem": "",
+  "category": "",
+  "severity": "",
+  "confidence": 0,
+  "recommendedTechnician": "",
+  "estimatedCostMin": 0,
+  "estimatedCostMax": 0,
+  "estimatedRepairTime": "",
+  "urgency": "",
+  "possibleCauses": [],
+  "requiredMaterials": [],
+  "requiredTools": [],
+  "safetyTips": [],
+  "ocr": "",
+  "summary": ""
+}
+
+Category MUST be one of: "Document / Invoice", "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
+Return "INVALID" for category if input is completely unreadable nonsense.`
+            },
             {
-              role: 'user',
-              content: [
-                { type: 'text', text: prompt },
-                { type: 'image_url', image_url: { url: imgDataUrl } }
-              ]
+              type: "image_url",
+              image_url: {
+                url: `data:${req.file.mimetype};base64,${base64Image}`
+              }
             }
-          ],
-          max_tokens: 1024
-        });
+          ]
+        }
+      ],
+      temperature: 0.1,
+      max_tokens: 700,
+      response_format: { type: "json_object" }
+    });
 
-        const data = safeJsonParse(openaiVisionResponse.choices[0].message.content);
-        return res.json({ success: true, data });
-      } catch (openaiVisionError) {
-        console.warn("⚠️ OpenAI Vision failed, falling back to Gemini:", openaiVisionError.message);
+    // Handle markdown-wrapped JSON from local models
+    const rawText = response.choices[0].message.content;
+    console.log("--- RAW QWEN OUTPUT ---");
+    console.log(rawText);
+    console.log("-----------------------");
 
-        // Fallback to Gemini (Current 2026 Model)
-        const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
-        const imagePart = {
-          inlineData: {
-            data: req.file.buffer.toString("base64"),
-            mimeType: req.file.mimetype
-          }
-        };
+    // Handle markdown-wrapped JSON from local models
+    const cleanedText = rawText
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
 
-        const result = await model.generateContent([prompt, imagePart]);
-        const response = await result.response;
-        const data = safeJsonParse(response.text());
+    const data = safeJsonParse(cleanedText);
+    return res.json({ success: true, data });
 
-        return res.json({ success: true, data });
-      }
-    }
-  } catch (error) {
-    console.error("Total Vision Analysis Error:", error);
-    res.status(500).json({ success: false, error: "Vision analysis failed: " + error.message });
+  } catch (err) {
+    console.error('Vision Analysis Error:', err.message);
+    res.status(500).json({
+      success: false,
+      error: 'Vision provider failed.',
+      debug: { message: err.message }
+    });
   }
 });
 

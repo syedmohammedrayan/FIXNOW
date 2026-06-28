@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, Square, Loader2, CheckCircle } from 'lucide-react';
-import { transcribeAudio } from '@/app/services/voiceProcessingService';
+import { transcribeAudio } from '@/server/ai/agents/voiceProcessingService';
 
 export default function VoiceRecorder({ onTranscribed }: { onTranscribed: (text: string) => void }) {
   const [isRecording, setIsRecording] = useState(false);

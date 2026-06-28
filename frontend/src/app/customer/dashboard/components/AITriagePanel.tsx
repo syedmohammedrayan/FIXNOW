@@ -4,6 +4,9 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Languages, Check, Mic, Camera, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+
+const AIWorkflowTimeline = dynamic(() => import('@/components/ai/AIWorkflowTimeline'), { ssr: false });
 
 interface AITriagePanelProps {
   analyzing: boolean;
@@ -53,19 +56,26 @@ export default function AITriagePanel({
       style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 60px rgba(0,0,0,0.3)' }}
     >
       {analyzing && (
-        <div className="absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-md border border-white/10 flex items-center justify-center rounded-[2rem] sm:rounded-[2.5rem]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-            <p className="text-white font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Scanning Core Systems...</p>
+        <div className="absolute inset-0 z-50 bg-slate-950/70 backdrop-blur-md border border-white/10 flex flex-col items-center justify-center rounded-[2rem] sm:rounded-[2.5rem] p-6">
+          <div className="w-full max-w-md bg-slate-900/80 p-6 sm:p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center gap-6 sm:gap-8">
+            <p className="text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] animate-pulse">Running Intelligence Protocol</p>
+            <AIWorkflowTimeline 
+              steps={[
+                { id: 'multimodal', label: 'Multimodal', status: 'complete' },
+                { id: 'context', label: 'Memory Context', status: 'complete' },
+                { id: 'diagnosis', label: 'Smart Diagnosis', status: 'active' },
+                { id: 'booking', label: 'Booking Plan', status: 'pending' }
+              ]} 
+              className="justify-center w-full max-w-sm"
+            />
           </div>
         </div>
       )}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base sm:text-lg md:text-xl font-black text-white flex items-center gap-2 sm:gap-3">
-            <Sparkles className="size-4 sm:size-5 text-white" /> AI Scan & Diagnose
+            <Sparkles className="size-4 sm:size-5 text-white" /> Smart Scan & Diagnose
           </h2>
-          <p className="text-[9px] sm:text-[10px] text-white/35 font-black uppercase tracking-widest mt-1">Instant voice & visual diagnosis powered by Gemini 1.5 & Groq</p>
         </div>
         <div className="flex gap-1.5">
           {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/10" />)}

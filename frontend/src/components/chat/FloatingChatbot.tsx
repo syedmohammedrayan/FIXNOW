@@ -2,129 +2,122 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bot, X, Send, MinusCircle, Mic, Sparkles, 
-  Wrench, Shield, MessageSquare, Zap, 
-  Settings, User, Terminal, List, CheckCircle2
+import {
+  Bot, X, Send, MinusCircle, Mic, Sparkles,
+  Wrench, Shield, MessageSquare, Zap,
+  Settings, User, Terminal, List, CheckCircle2,
+  Loader2
 } from 'lucide-react';
-import axios from 'axios';
-// @ts-ignore
-import { API_BASE } from '@/lib/config';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
-
-type Message = {
-  sender: 'bot' | 'user';
-  text: string;
-  action?: string;
-  data?: any;
-  timestamp: Date;
-};
-
-const StreamingText = ({ text, onComplete }: { text: string; onComplete?: () => void }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < text.length) {
-        setDisplayedText((prev) => prev + text.charAt(index));
-        index++;
-      } else {
-        clearInterval(interval);
-        if (onComplete) onComplete();
-      }
-    }, 15); // Faster typing
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return <span>{displayedText}</span>;
-};
 
 const RoleIcon = ({ role }: { role: string }) => {
   if (role === 'technician') return <Terminal className="w-4 h-4 text-cyan-400" />;
   return <Sparkles className="w-4 h-4 text-white" />;
 };
 
-export default function FloatingChatbot({ 
+export default function FloatingChatbot({
   role = 'customer',
-  userId 
-}: { 
+  userId
+}: {
   role?: 'customer' | 'technician',
-  userId?: string 
+  userId?: string
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      sender: 'bot', 
-      text: role === 'customer' 
-        ? "Systems online. I am your FIXNOW concierge. How can I facilitate your service request today?" 
-        : "Operational Protocol Active. Senior Technical Assistant ready. Report your diagnostic query.",
-      timestamp: new Date() 
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [sessionId] = useState(() => uuidv4());
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [localInput, setLocalInput] = useState('');
+
+  const defaultWelcome = {
+    id: 'welcome',
+    role: 'assistant' as const,
+    content: role === 'customer'
+      ? "Systems online. I am your FIXNOW concierge. How can I facilitate your service request today?"
+      : "Operational Protocol Active. Senior Technical Assistant ready. Report your diagnostic query."
+  };
+
+  const [messages, setMessages] = useState<any[]>([defaultWelcome]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 2. Load from localStorage on mount
   useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`chat_history_${role}`);
+      if (saved) {
+        setMessages(JSON.parse(saved));
+      }
+    } catch (e) { }
+  }, [role, setMessages]);
+
+  // 3. Save to localStorage when messages change
+  useEffect(() => {
+    if (messages.length > 1) { // Don't just save the default welcome
+      localStorage.setItem(`chat_history_${role}`, JSON.stringify(messages));
+    }
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, role, isLoading]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSend = async (e?: React.FormEvent, manualText?: string) => {
-    if (e) e.preventDefault();
-    const textToSend = manualText || input;
-    if (!textToSend.trim()) return;
-
-    const newUserMsg: Message = { sender: 'user', text: textToSend, timestamp: new Date() };
-    setMessages(prev => [...prev, newUserMsg]);
-    setInput('');
-    setIsTyping(true);
-
+  const submitMessage = async (text: string) => {
     try {
-      const res = await axios.post(
-        `${API_BASE}/api/ai/chat`,
-        { message: textToSend, role, userId: userId || 'anonymous' },
-        { timeout: 30000 }
-      );
+      setIsLoading(true);
+      const userMsg = { id: uuidv4(), role: 'user', content: text };
+      const updatedMessages = [...messages, userMsg];
+      setMessages(updatedMessages);
+
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role,
+          userId,
+          sessionId,
+          messages: updatedMessages,
+        }),
+      });
+
+      const data = await res.json();
 
       setMessages(prev => [
         ...prev,
-        { 
-          sender: 'bot', 
-          text: res.data.reply, 
-          action: res.data.action, 
-          data: res.data.data,
-          timestamp: new Date()
-        }
+        {
+          id: uuidv4(),
+          role: "assistant",
+          content: data.reply || "No response received.",
+        },
       ]);
-    } catch (error) {
-      setMessages(prev => [...prev, { 
-        sender: 'bot', 
-        text: 'System Link Failure. Latency detected in AI Core. Please re-initialize.', 
-        timestamp: new Date() 
-      }]);
+    } catch (err) {
+      console.error('Chat error:', err);
     } finally {
-      setIsTyping(false);
+      setIsLoading(false);
     }
   };
 
-  const quickActions = role === 'customer' 
+  const handleQuickAction = async (text: string) => {
+    await submitMessage(text);
+  };
+
+  const quickActions = role === 'customer'
     ? [
-        { label: 'Book Electrician', icon: <Zap className="w-3 h-3" /> },
-        { label: 'Fix Leaking Pipe', icon: <Wrench className="w-3 h-3" /> },
-        { label: 'Price Estimate', icon: <Shield className="w-3 h-3" /> }
-      ]
+      { label: 'Book Electrician', icon: <Zap className="w-3 h-3" /> },
+      { label: 'Fix Leaking Pipe', icon: <Wrench className="w-3 h-3" /> },
+      { label: 'Price Estimate', icon: <Shield className="w-3 h-3" /> }
+    ]
     : [
-        { label: 'AC Diagnostics', icon: <Terminal className="w-3 h-3" /> },
-        { label: 'Safety Protocol', icon: <Shield className="w-3 h-3" /> },
-        { label: 'Inventory Sync', icon: <List className="w-3 h-3" /> }
-      ];
+      { label: 'AC Diagnostics', icon: <Terminal className="w-3 h-3" /> },
+      { label: 'Safety Protocol', icon: <Shield className="w-3 h-3" /> },
+      { label: 'Inventory Sync', icon: <List className="w-3 h-3" /> }
+    ];
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[99999] flex flex-col-reverse items-end gap-4 pointer-events-none">
@@ -149,7 +142,6 @@ export default function FloatingChatbot({
         )}
       </motion.button>
 
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -162,7 +154,7 @@ export default function FloatingChatbot({
             )}
           >
             {/* Header */}
-            <div 
+            <div
               className={cn(
                 "p-5 flex justify-between items-center cursor-pointer border-b border-white/5 bg-white/5"
               )}
@@ -193,39 +185,32 @@ export default function FloatingChatbot({
             {!isMinimized && (
               <>
                 {/* Messages */}
-                <div className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
+                <div className="flex-1 p-6 overflow-y-auto space-y-6 chatbot-scrollbar">
                   {messages.map((msg, i) => (
-                    <motion.div 
-                      key={`${msg.sender}-${msg.timestamp.getTime()}-${i}`} 
-                      initial={{ opacity: 0, x: msg.sender === 'user' ? 20 : -20 }}
+                    <motion.div
+                      key={msg.id}
+                      initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className={cn("flex flex-col", msg.sender === 'user' ? 'items-end' : 'items-start')}
+                      className={cn("flex flex-col", msg.role === 'user' ? 'items-end' : 'items-start')}
                     >
                       <div className={cn(
-                        "max-w-[90%] p-4 rounded-3xl text-xs font-medium leading-relaxed shadow-lg",
-                        msg.sender === 'user' 
-                          ? "bg-white text-slate-900 rounded-tr-none border border-white/10" 
-                          : "bg-white/5 text-slate-200 rounded-tl-none border border-white/5 backdrop-blur-sm"
+                        "max-w-[90%] p-4 rounded-3xl text-sm font-medium leading-relaxed shadow-lg",
+                        msg.role === 'user'
+                          ? "bg-white text-slate-900 rounded-tr-none border border-white/10"
+                          : "bg-white/5 text-slate-200 rounded-tl-none border border-white/5 backdrop-blur-sm prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-sm"
                       )}>
-                        {msg.sender === 'bot' && i === messages.length - 1 ? (
-                          <StreamingText text={msg.text} />
+                        {msg.role === 'user' ? (
+                          (msg as any).content || (msg as any).parts?.map((p: any) => p.text).join('')
                         ) : (
-                          msg.text
-                        )}
-                        
-                        {msg.action && (
-                          <div className="mt-3 p-3 bg-black/40 border border-white/10 rounded-2xl flex items-center gap-2">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">{msg.action.replace(/_/g, ' ')}</span>
-                          </div>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {(msg as any).content || (msg as any).parts?.map((p: any) => p.text).join('')}
+                          </ReactMarkdown>
                         )}
                       </div>
-                      <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 px-1">
-                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
                     </motion.div>
                   ))}
-                  {isTyping && (
+
+                  {isLoading && (
                     <div className="flex items-center gap-2 px-2">
                       <div className="flex gap-1">
                         <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -243,8 +228,9 @@ export default function FloatingChatbot({
                   {quickActions.map((action, i) => (
                     <button
                       key={`${action.label}-${i}`}
-                      onClick={() => handleSend(undefined, action.label)}
-                      className="whitespace-nowrap flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+                      onClick={() => handleQuickAction(action.label)}
+                      disabled={isLoading}
+                      className="whitespace-nowrap flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {action.icon}
                       {action.label}
@@ -253,34 +239,51 @@ export default function FloatingChatbot({
                 </div>
 
                 {/* Input Area */}
-                <form 
-                  onSubmit={handleSend} 
+                <form
+                  ref={formRef}
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!localInput.trim() || isLoading) return;
+
+                    const text = localInput.trim();
+                    setLocalInput(''); // Clear immediately
+                    await submitMessage(text);
+                  }}
                   className="p-6 bg-slate-950 border-t border-white/5 flex gap-3 items-center"
                 >
                   <div className="flex-1 relative">
-                    <input 
-                      type="text" 
-                      value={input} 
-                      onChange={(e) => setInput(e.target.value)} 
+                    <input
+                      type="text"
+                      value={localInput}
+                      onChange={(e) => setLocalInput(e.target.value)}
+                      disabled={isLoading}
                       placeholder={role === 'customer' ? "Report an issue..." : "Diagnostic query..."}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all font-medium"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all font-medium disabled:opacity-50"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (formRef.current) formRef.current.requestSubmit();
+                        }
+                      }}
                     />
-                    <button 
-                      type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-white transition-colors"
-                    >
-                      <Mic className="w-4 h-4" />
-                    </button>
                   </div>
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="submit" 
+                  <motion.button
+                    whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      if (formRef.current) formRef.current.requestSubmit();
+                    }}
+                    type="button"
+                    disabled={isLoading || !localInput.trim()}
                     className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center bg-white text-slate-900 shadow-lg transition-all"
+                      "w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all",
+                      isLoading || !localInput.trim()
+                        ? "bg-white/10 text-white/30 cursor-not-allowed"
+                        : "bg-white text-slate-900"
                     )}
                   >
-                    <Send className="w-5 h-5" />
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                   </motion.button>
                 </form>
               </>
@@ -288,25 +291,6 @@ export default function FloatingChatbot({
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }
