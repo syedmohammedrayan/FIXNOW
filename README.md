@@ -1,6 +1,6 @@
 FIXNOW 
 
-![FIXNOW](https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg?updatedAt=1778516774058)
+![FIXNOW](fixnow-smr.vercel.app)
 
 # Overview
 
