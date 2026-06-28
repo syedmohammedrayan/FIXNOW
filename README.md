@@ -1,10 +1,10 @@
 FIXNOW 
 
-![FIXNOW](fixnow-smr.vercel.app)
+![FIXNOW](https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg?updatedAt=1778516774058)
 
 # Overview
 
-FIXNOW is an AI-powered home services marketplace that transforms the traditional technician booking experience into an intelligent, automated, and highly personalized platform.
+FIXNOW is a home services marketplace that transforms the traditional technician booking experience into an intelligent, automated, and highly personalized platform.
 
 Instead of requiring customers to manually search for technicians, describe technical issues, negotiate pricing, and coordinate service requests, FIXNOW leverages Artificial Intelligence to diagnose problems, identify the required service category, recommend the most suitable technician, estimate repair costs, streamline bookings, and securely manage digital payments.
 
