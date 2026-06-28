@@ -50,11 +50,11 @@ export const createSubscriptionOrder = async (technicianId: string, planId: stri
       body: JSON.stringify({ technicianId, planId })
     });
     const data = await res.json();
-    if (data.success) return data;
-  } catch (err) {
+    return data;
+  } catch (err: any) {
     console.error("Failed to create subscription order:", err);
+    return { success: false, error: err.message };
   }
-  return null;
 };
 
 export const verifySubscriptionPayment = async (

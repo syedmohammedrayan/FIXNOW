@@ -121,7 +121,8 @@ router.post('/create-order', async (req, res) => {
 
     const amountInPaise = Math.round(Number(plan.price) * 100);
 
-    const order = await razorpayService.createOrder(amountInPaise, `sub_${technicianId}_${Date.now()}`, {
+    const receiptId = `sub_${technicianId.substring(0, 8)}_${Date.now()}`;
+    const order = await razorpayService.createOrder(amountInPaise, receiptId, {
       technicianId,
       planId
     });
