@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Check, Zap, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getSubscriptionPlans, getTechnicianSubscription, upgradeSubscription, SubscriptionPlan, TechnicianSubscription } from '@/server/services/subscriptionService';
+import { getSubscriptionPlans, getTechnicianSubscription, SubscriptionPlan, TechnicianSubscription } from '@/server/services/subscriptionService';
 
 export default function SubscriptionPanel({ technicianId }: { technicianId: string }) {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -24,12 +24,8 @@ export default function SubscriptionPanel({ technicianId }: { technicianId: stri
 
   const handleUpgrade = async (planId: string) => {
     if (planId === 'free') {
-      if (confirm("Are you sure you want to downgrade to the Free Plan?")) {
-        setLoading(true);
-        const newSub = await upgradeSubscription(technicianId, planId);
-        if (newSub) setCurrentSub(newSub);
-        setLoading(false);
-        alert("Downgraded to Free Plan.");
+      if (confirm("Are you sure you want to downgrade to the Free Plan? Downgrades are handled by our support team.")) {
+        alert("Please contact support at support@fixnow.app to process your downgrade.");
       }
     } else {
       router.push(`/technician/subscription/payment?planId=${planId}`);
