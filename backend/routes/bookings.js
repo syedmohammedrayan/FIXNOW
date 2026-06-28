@@ -586,25 +586,73 @@ router.post('/decline', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── CANCEL BY CUSTOMER ──
+// ── CANCEL BY CUSTOMER OR TECHNICIAN ──
 router.post('/cancel', async (req, res) => {
   try {
-    const { bookingId, reason } = req.body;
-    await db.collection('bookings').doc(bookingId).update({
-      status: 'Cancelled',
-      cancelled_at: new Date().toISOString(),
-      cancelledAt: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      cancel_reason: reason || '',
-      cancelReason: reason || ''
-    });
+    const { bookingId, reason, cancelledBy } = req.body;
+    
+    const docRef = await db.collection('bookings').doc(bookingId).get();
+    if (!docRef.exists) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+    const booking = docRef.data();
+
+    const now = new Date().toISOString();
+    const batch = db.batch();
+
+    if (booking.payment_status === 'Paid' || booking.paymentStatus === 'Paid') {
+      // Create Refund Request
+      batch.update(db.collection('bookings').doc(bookingId), {
+        status: 'Cancellation Requested',
+        cancel_reason: reason || '',
+        cancelReason: reason || '',
+        cancelledBy: cancelledBy || 'Customer',
+        updated_at: now,
+        updatedAt: now
+      });
+
+      const refundReqRef = db.collection('refundRequests').doc();
+      batch.set(refundReqRef, {
+        id: refundReqRef.id,
+        bookingId: bookingId,
+        customerId: booking.customer_id || booking.customerId,
+        customerName: booking.customer_name || booking.customerName,
+        technicianId: booking.technician_id || booking.technicianId,
+        technicianName: booking.technician_name || booking.technicianName,
+        category: booking.category,
+        totalAmount: booking.totalAmount || booking.total_amount,
+        paymentId: booking.razorpayPaymentId || booking.paymentId,
+        orderId: booking.razorpayOrderId || booking.orderId,
+        paymentMethod: booking.paymentMode || booking.payment_mode,
+        paidAt: booking.paidAt || booking.paid_at,
+        cancelledAt: now,
+        cancelReason: reason || '',
+        cancelledBy: cancelledBy || 'Customer',
+        refundStatus: 'Pending',
+        createdAt: now,
+        updatedAt: now
+      });
+    } else {
+      // Unpaid, just cancel
+      batch.update(db.collection('bookings').doc(bookingId), {
+        status: 'Cancelled',
+        cancelled_at: now,
+        cancelledAt: now,
+        updated_at: now,
+        updatedAt: now,
+        cancel_reason: reason || '',
+        cancelReason: reason || '',
+        cancelledBy: cancelledBy || 'Customer'
+      });
+    }
+
+    await batch.commit();
     
     // Optionally notify technician if they were already assigned
     const dRef = await db.collection('bookings').doc(bookingId).get();
-    const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
-    if (booking && booking.technician_id && booking.technician_id !== 'broadcast') {
-      notifyUser(booking.technician_id, 'bookingCancelled', booking);
+    const updatedBooking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
+    if (updatedBooking && updatedBooking.technician_id && updatedBooking.technician_id !== 'broadcast') {
+      notifyUser(updatedBooking.technician_id, 'bookingCancelled', updatedBooking);
       
       // Emit socket event for real-time dashboard popup
       const io = req.app.get('io');

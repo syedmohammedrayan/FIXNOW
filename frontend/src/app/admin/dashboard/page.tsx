@@ -27,6 +27,7 @@ const NotificationsTab = dynamic(() => import('@/components/admin/dashboard/tabs
 const LiveMapTab = dynamic(() => import('@/components/admin/dashboard/tabs/LiveMapTab').then(mod => mod.LiveMapTab), { ssr: false });
 const ComplaintsTab = dynamic(() => import('@/components/admin/dashboard/tabs/ComplaintsTab').then(mod => mod.ComplaintsTab), { ssr: false });
 const RevenueTab = dynamic(() => import('@/components/admin/dashboard/tabs/RevenueTab').then(mod => mod.RevenueTab), { ssr: false });
+const RefundRequestsTab = dynamic(() => import('@/components/admin/dashboard/tabs/RefundRequestsTab').then(mod => mod.RefundRequestsTab), { ssr: false });
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -65,8 +66,9 @@ export default function AdminDashboard() {
   const [deliveryData, setDeliveryData] = useState({ time: '10:00 AM', day: 'Today' });
   const [transactions, setTransactions] = useState<any[]>([]);
   const [notificationLogs, setNotificationLogs] = useState<any[]>([]);
+  const [refundRequests, setRefundRequests] = useState<any[]>([]);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'live-map' | 'approvals' | 'techs' | 'bookings' | 'tools' | 'transactions' | 'notifications' | 'complaints' | 'revenue'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'live-map' | 'approvals' | 'techs' | 'bookings' | 'tools' | 'transactions' | 'notifications' | 'complaints' | 'revenue' | 'refunds'>('overview');
   const [showAddModal, setShowAddModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -148,6 +150,12 @@ export default function AdminDashboard() {
       setToolOrders(orders);
     }, (err: any) => console.error('Tools Listener Error:', err));
 
+    const unsubRefunds = onSnapshot(query(collection(db, 'refundRequests'), limit(50)), (snap) => {
+      const docs = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+      docs.sort((a: any, b: any) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      setRefundRequests(docs);
+    });
+
     const interval = setInterval(fetchData, 60000);
 
     return () => {
@@ -156,6 +164,7 @@ export default function AdminDashboard() {
       unsubBookings();
       unsubTrans();
       unsubTools();
+      unsubRefunds();
     };
   }, []);
 
@@ -332,6 +341,10 @@ export default function AdminDashboard() {
 
             {activeTab === 'revenue' && (
               <RevenueTab allTechs={allTechs} />
+            )}
+
+            {activeTab === 'refunds' && (
+              <RefundRequestsTab refundRequests={refundRequests} />
             )}
           </AnimatePresence>
         </div>

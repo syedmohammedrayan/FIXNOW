@@ -14,7 +14,20 @@ router.post('/verify', paymentController.verifyPayment);
 // you might need a raw body parser middleware specifically for this route.
 router.post('/webhook', paymentController.handleWebhook);
 
-// Refund Payment
+// Refund Payment (Direct)
 router.post('/refund', paymentController.refundPayment);
+
+// --- Production Booking Flow ---
+// 1. Create Order before Booking
+router.post('/create-booking-order', paymentController.createBookingOrder);
+
+// 2. Verify Order and Create Booking
+router.post('/verify-booking', paymentController.verifyBookingOrder);
+
+// 3. Admin Approve Refund Request
+router.post('/refund-request/:id/approve', paymentController.approveRefundRequest);
+
+// 4. Admin Reject Refund Request
+router.post('/refund-request/:id/reject', paymentController.rejectRefundRequest);
 
 module.exports = router;

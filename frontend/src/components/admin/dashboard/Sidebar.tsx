@@ -44,6 +44,7 @@ export function Sidebar({
     { icon: <ShoppingCart />,    label: 'Store',         tab: 'tools',         count: toolOrdersCount },
     { icon: <DollarSign />,      label: 'Transactions',  tab: 'transactions' },
     { icon: <Activity />,        label: 'Revenue Intel', tab: 'revenue' },
+    { icon: <AlertTriangle />,   label: 'Refunds',       tab: 'refunds' },
     { icon: <AlertTriangle />,   label: 'Complaints',    tab: 'complaints' },
     { icon: <Bell />,            label: 'Notifications', tab: 'notifications' },
   ];

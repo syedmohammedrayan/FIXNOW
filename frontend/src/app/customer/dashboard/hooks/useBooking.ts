@@ -621,11 +621,15 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         return;
       }
 
-      // Create the pending booking first
+      // ==========================================
+      // PRODUCTION BOOKING FLOW (PRE-BOOKING PAY)
+      // ==========================================
+      
       const origin = coords || { lat: 37.7749, lng: -122.4194 };
-      const bookingRes = await axios.post(`${API_BASE}/api/bookings/create`, {
+      const bookingPayload = {
         customerId: userId || 'guest',
         technicianId: selectedTech?.id,
+        technicianName: selectedTech?.name,
         category: analysisResult?.category,
         estimatedCostRange: analysisResult?.estimatedCostRange,
         serviceSpecs: analysisResult?.serviceSpecs,
@@ -637,14 +641,10 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         paymentMode: 'pay_now',
         customerLat: origin.lat,
         customerLng: origin.lng,
-      });
+      };
 
-      if (!bookingRes.data.success) throw new Error('Failed to create booking');
-      const booking = bookingRes.data.booking;
-
-      const orderRes = await axios.post(`${API_BASE}/api/payment/create-order`, {
-        bookingId: booking.id
-      });
+      // 1. Create Razorpay order BEFORE booking creation
+      const orderRes = await axios.post(`${API_BASE}/api/payment/create-booking-order`, bookingPayload);
 
       if (!orderRes.data.success) {
         throw new Error(orderRes.data.message || 'Failed to create payment order');
@@ -671,20 +671,24 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         description: 'Service booking',
         handler: async (response: any) => {
           try {
-            const verifyRes = await axios.post(`${API_BASE}/api/payment/verify`, {
+            // 2. Verify payment and create booking on backend
+            const verifyRes = await axios.post(`${API_BASE}/api/payment/verify-booking`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              bookingId: booking.id
+              bookingPayload
             });
             
             if (verifyRes.data.success) {
-              setBookingConfirmation(booking);
+              const newBooking = verifyRes.data.booking;
+              setBookingConfirmation(newBooking);
               setBookingStep('done');
+              
+              // No need to emit 'new_order' if assigned directly to specific tech
+              // Backend emits 'new_assigned_booking' directly to tech's private room.
               const sock = socketRef.current;
               if (sock) {
-                sock.emit('new_order', booking);
-                sock.emit('join_booking', { bookingId: booking.id });
+                sock.emit('join_booking', { bookingId: newBooking.id });
               }
             } else {
               alert('Payment verification failed');
