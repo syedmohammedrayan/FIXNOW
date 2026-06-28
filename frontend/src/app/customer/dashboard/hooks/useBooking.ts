@@ -621,49 +621,89 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         return;
       }
 
-      const getDynamicAmount = () => {
-        const range = analysisResult?.estimatedCostRange;
-        if (range) {
-          const firstPart = range.split('-')[0].replace(/[^\d]/g, '');
-          const parsed = parseFloat(firstPart);
-          if (!isNaN(parsed) && parsed > 0) return parsed;
-        }
-        return 499;
-      };
-
-      const amount = getDynamicAmount();
-      const orderRes = await axios.post(`${API_BASE}/api/payments/create-order`, {
-        amount,
-        currency: 'INR',
-        receipt: `bk_${Date.now()}`,
+      // Create the pending booking first
+      const origin = coords || { lat: 37.7749, lng: -122.4194 };
+      const bookingRes = await axios.post(`${API_BASE}/api/bookings/create`, {
+        customerId: userId || 'guest',
+        technicianId: selectedTech?.id,
+        category: analysisResult?.category,
+        estimatedCostRange: analysisResult?.estimatedCostRange,
+        serviceSpecs: analysisResult?.serviceSpecs,
+        technicalTerms: analysisResult?.technicalTerms,
+        customerName,
+        address,
+        contactNumber,
+        serviceTime,
+        paymentMode: 'pay_now',
+        customerLat: origin.lat,
+        customerLng: origin.lng,
       });
 
-      const key = orderRes.data.keyId || RAZORPAY_KEY_ID;
-      const order = orderRes.data.order;
+      if (!bookingRes.data.success) throw new Error('Failed to create booking');
+      const booking = bookingRes.data.booking;
 
-      if (orderRes.data.mock || !window.Razorpay || !key) {
-        await createBookingRecord('pay_now');
+      const orderRes = await axios.post(`${API_BASE}/api/payment/create-order`, {
+        bookingId: booking.id
+      });
+
+      if (!orderRes.data.success) {
+        throw new Error(orderRes.data.message || 'Failed to create payment order');
+      }
+
+      const key = orderRes.data.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const orderId = orderRes.data.orderId;
+      const amount = orderRes.data.amount;
+      const currency = orderRes.data.currency || 'INR';
+
+      if (!window.Razorpay || !key) {
+        alert('Payment system not fully initialized');
         setAnalyzing(false);
         return;
       }
 
       const Rzp = (window as any).Razorpay;
-      if (!Rzp) throw new Error('Razorpay script not loaded');
       const rzp = new Rzp({
         key,
-        amount: order.amount,
-        currency: order.currency || 'INR',
-        order_id: order.id,
+        amount,
+        currency,
+        order_id: orderId,
         name: 'FIXNOW',
         description: 'Service booking',
-        handler: async () => {
-          await createBookingRecord('pay_now');
+        handler: async (response: any) => {
+          try {
+            const verifyRes = await axios.post(`${API_BASE}/api/payment/verify`, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              bookingId: booking.id
+            });
+            
+            if (verifyRes.data.success) {
+              setBookingConfirmation(booking);
+              setBookingStep('done');
+              const sock = socketRef.current;
+              if (sock) {
+                sock.emit('new_order', booking);
+                sock.emit('join_booking', { bookingId: booking.id });
+              }
+            } else {
+              alert('Payment verification failed');
+            }
+          } catch (e) {
+            console.error('Verify error', e);
+            alert('Payment verification error');
+          }
         },
       });
+      
+      rzp.on('payment.failed', function (response: any){
+        alert("Payment Failed: " + response.error.description);
+      });
+      
       rzp.open();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Payment or booking failed.');
+      alert(err?.response?.data?.message || err.message || 'Payment or booking failed.');
     } finally {
       setAnalyzing(false);
     }

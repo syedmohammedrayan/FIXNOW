@@ -14,4 +14,7 @@ router.post('/verify', paymentController.verifyPayment);
 // you might need a raw body parser middleware specifically for this route.
 router.post('/webhook', paymentController.handleWebhook);
 
+// Refund Payment
+router.post('/refund', paymentController.refundPayment);
+
 module.exports = router;

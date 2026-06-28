@@ -221,6 +221,64 @@ class PaymentController {
       res.status(500).send('Webhook Error');
     }
   }
+
+  /**
+   * Processes a refund for a cancelled booking.
+   */
+  async refundPayment(req, res) {
+    try {
+      const { bookingId } = req.body;
+      if (!bookingId) {
+        return res.status(400).json({ success: false, message: 'bookingId is required' });
+      }
+
+      const bookingRef = db.collection('bookings').doc(bookingId);
+      const bookingDoc = await bookingRef.get();
+
+      if (!bookingDoc.exists) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+
+      const bookingData = bookingDoc.data();
+
+      // Ensure the booking is Paid and Cancelled
+      if (bookingData.payment_status !== 'Paid' && bookingData.paymentStatus !== 'Paid') {
+        return res.status(400).json({ success: false, message: 'Only paid bookings can be refunded' });
+      }
+
+      if (bookingData.status !== 'Cancelled') {
+        return res.status(400).json({ success: false, message: 'Booking must be cancelled to process a refund' });
+      }
+
+      if (!bookingData.razorpayPaymentId) {
+        return res.status(400).json({ success: false, message: 'Missing Razorpay Payment ID on booking' });
+      }
+
+      // Initiate refund through Razorpay
+      const refund = await razorpayService.refundPayment(bookingData.razorpayPaymentId, null, {
+        bookingId: bookingId,
+        customerId: bookingData.customer_id
+      });
+
+      // Update Firestore
+      await bookingRef.update({
+        paymentStatus: 'Refunded',
+        payment_status: 'Refunded',
+        refundId: refund.id,
+        refundedAt: new Date().toISOString()
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Refund processed successfully',
+        refundId: refund.id
+      });
+
+    } catch (error) {
+      console.error('❌ Process Refund Error:', error);
+      return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new PaymentController();

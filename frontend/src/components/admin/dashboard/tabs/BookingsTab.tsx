@@ -1,15 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, RefreshCcw } from 'lucide-react';
 import { statusColor } from '../shared/utils';
+import axios from 'axios';
+import { API_BASE } from '@/lib/config';
 
 interface BookingsTabProps {
   bookings: any[];
 }
 
 export function BookingsTab({ bookings }: BookingsTabProps) {
+  const [processingRefundId, setProcessingRefundId] = useState<string | null>(null);
+
+  const processRefund = async (bookingId: string) => {
+    if (!confirm('Are you sure you want to process a refund for this booking?')) return;
+    setProcessingRefundId(bookingId);
+    try {
+      const res = await axios.post(`${API_BASE}/api/payment/refund`, { bookingId });
+      if (res.data.success) {
+        alert('Refund processed successfully!');
+        window.location.reload(); // Refresh to update data
+      } else {
+        alert(res.data.message || 'Refund failed');
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || err.message || 'Error processing refund');
+    } finally {
+      setProcessingRefundId(null);
+    }
+  };
+
   return (
     <motion.div key="bookings" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
       {/* Header */}
@@ -48,7 +71,22 @@ export function BookingsTab({ bookings }: BookingsTabProps) {
                     <p className="font-black text-emerald-400">{b.estimatedCostRange || '₹0'}</p>
                   </div>
                 </div>
-                <p className="text-[9px] text-slate-600 font-mono mt-2">{new Date(b.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                <div className="flex justify-between items-center mt-3">
+                  <p className="text-[9px] text-slate-600 font-mono">{new Date(b.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                  {b.status === 'Cancelled' && (b.payment_status === 'Paid' || b.paymentStatus === 'Paid') && (
+                    <button
+                      onClick={() => processRefund(b.id)}
+                      disabled={processingRefundId === b.id}
+                      className="px-3 py-1.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-rose-500/30 transition flex items-center gap-1"
+                    >
+                      {processingRefundId === b.id ? <RefreshCcw className="w-3 h-3 animate-spin" /> : null}
+                      Process Refund
+                    </button>
+                  )}
+                  {b.payment_status === 'Refunded' || b.paymentStatus === 'Refunded' ? (
+                    <span className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-[9px] font-bold uppercase border border-slate-700">Refunded</span>
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>
@@ -64,6 +102,7 @@ export function BookingsTab({ bookings }: BookingsTabProps) {
                     <th className="px-6 py-4">Technician</th>
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4 text-right">Revenue</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04]">
@@ -79,6 +118,21 @@ export function BookingsTab({ bookings }: BookingsTabProps) {
                       <td className="px-6 py-4 text-slate-400 font-medium text-xs">{b.technicianName || b.technicianId || 'Unassigned'}</td>
                       <td className="px-6 py-4 text-slate-500 text-xs font-mono">{new Date(b.createdAt).toLocaleDateString()}</td>
                       <td className="px-6 py-4 text-right font-black text-emerald-400">{b.estimatedCostRange || '₹0'}</td>
+                      <td className="px-6 py-4 text-right flex justify-end gap-2">
+                        {b.status === 'Cancelled' && (b.payment_status === 'Paid' || b.paymentStatus === 'Paid') && (
+                          <button
+                            onClick={() => processRefund(b.id)}
+                            disabled={processingRefundId === b.id}
+                            className="px-3 py-1.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-rose-500/30 transition flex items-center gap-1"
+                          >
+                            {processingRefundId === b.id ? <RefreshCcw className="w-3 h-3 animate-spin" /> : null}
+                            Process Refund
+                          </button>
+                        )}
+                        {b.payment_status === 'Refunded' || b.paymentStatus === 'Refunded' ? (
+                          <span className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-[10px] font-bold uppercase border border-slate-700">Refunded</span>
+                        ) : null}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
