@@ -33,11 +33,7 @@ import { auth } from '@/lib/firebase';
 import { useDashboardData } from './hooks/useDashboardData';
 import { useBooking } from './hooks/useBooking';
 
-declare global {
-  interface Window {
-    Razorpay?: new (opts: Record<string, unknown>) => { open: () => void };
-  }
-}
+
 
 const LANGS: { code: string; label: string }[] = [
   { code: 'en-US', label: 'English' },
@@ -361,6 +357,7 @@ export default function CustomerDashboard() {
           <PaymentOverlay 
             bookingId={activeJob.id!} 
             totalAmount={Number(activeJob?.totalAmount || activeJob?.total_amount || 0)} 
+            customerProfile={userProfile}
             onPaymentComplete={() => {
               // Dashboard will automatically update via Firestore onSnapshot
             }}

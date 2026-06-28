@@ -103,8 +103,10 @@ router.get('/:technicianId', async (req, res) => {
   }
 });
 
-// 3. Upgrade Plan (Simulated Checkout)
-router.post('/upgrade', async (req, res) => {
+const razorpayService = require('../services/razorpay.service');
+
+// 3. Create Subscription Order (Razorpay Phase 2)
+router.post('/create-order', async (req, res) => {
   try {
     const { technicianId, planId } = req.body;
     
@@ -112,14 +114,50 @@ router.post('/upgrade', async (req, res) => {
     if (!planDoc.exists) return res.status(404).json({ success: false, error: "Plan not found" });
     const plan = planDoc.data();
     
-    // In a real app, you would create a Razorpay order here
-    /*
-    const instance = new Razorpay({ key_id: '...', key_secret: '...' });
-    const order = await instance.orders.create({ amount: plan.price * 100, currency: "INR" });
-    return res.json({ success: true, order });
-    */
-    
-    // For Hackathon/MVP: Directly activate plan
+    // Free plan bypasses Razorpay entirely
+    if (plan.price === 0) {
+      return res.status(400).json({ success: false, error: "Cannot create order for free plan" });
+    }
+
+    const amountInPaise = Math.round(Number(plan.price) * 100);
+
+    const order = await razorpayService.createOrder(amountInPaise, `sub_${technicianId}_${Date.now()}`, {
+      technicianId,
+      planId
+    });
+
+    res.json({
+      success: true,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      keyId: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.error("❌ Subscription Create Order Error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Verify Subscription Payment (Razorpay Phase 4)
+router.post('/verify', async (req, res) => {
+  try {
+    const { technicianId, planId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+       return res.status(400).json({ success: false, message: 'Missing payment signature' });
+    }
+
+    const isValid = razorpayService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+    if (!isValid) {
+       return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+    }
+
+    const planDoc = await db.collection('subscription_plans').doc(planId).get();
+    if (!planDoc.exists) return res.status(404).json({ success: false, error: "Plan not found" });
+    const plan = planDoc.data();
+
+    // Proceed to activate plan
     const newSub = {
       technicianId,
       planId,
@@ -128,6 +166,8 @@ router.post('/upgrade', async (req, res) => {
       bookingsUsed: 0, // reset on upgrade
       priorityMultiplier: plan.priorityMultiplier,
       paymentStatus: 'active',
+      razorpayPaymentId: razorpay_payment_id,
+      razorpayOrderId: razorpay_order_id,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -141,16 +181,28 @@ router.post('/upgrade', async (req, res) => {
         expiresAt: newSub.expiresAt,
         updatedAt: newSub.updatedAt
       };
-      // We wrap in individual try/catch in case the doc doesn't exist in one collection
       try { await db.collection('users').doc(technicianId).update(updateData); } catch (e) {}
       try { await db.collection('technicians').doc(technicianId).update(updateData); } catch (e) {}
     } catch (syncErr) {
       console.warn("Could not sync upgraded plan to users/technicians:", syncErr.message);
     }
     
+    // Add ledger entry for subscription purchase
+    const ledgerRef = db.collection('admin_ledgers').doc();
+    await ledgerRef.set({
+      type: 'SUBSCRIPTION',
+      technicianId: technicianId,
+      planId: planId,
+      paymentId: razorpay_payment_id,
+      orderId: razorpay_order_id,
+      grossAmount: plan.price,
+      status: 'COMPLETED',
+      timestamp: new Date().toISOString()
+    });
+
     res.json({ success: true, subscription: newSub });
   } catch (error) {
-    console.error("Upgrade Plan Error:", error);
+    console.error("❌ Verify Subscription Error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

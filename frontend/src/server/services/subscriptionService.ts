@@ -42,17 +42,36 @@ export const getTechnicianSubscription = async (technicianId: string): Promise<T
   return null;
 };
 
-export const upgradeSubscription = async (technicianId: string, planId: string): Promise<TechnicianSubscription | null> => {
+export const createSubscriptionOrder = async (technicianId: string, planId: string): Promise<any> => {
   try {
-    const res = await fetch(`${API_BASE}/api/subscriptions/upgrade`, {
+    const res = await fetch(`${API_BASE}/api/subscriptions/create-order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ technicianId, planId })
     });
     const data = await res.json();
+    if (data.success) return data;
+  } catch (err) {
+    console.error("Failed to create subscription order:", err);
+  }
+  return null;
+};
+
+export const verifySubscriptionPayment = async (
+  technicianId: string, 
+  planId: string,
+  paymentDetails: { razorpay_order_id: string, razorpay_payment_id: string, razorpay_signature: string }
+): Promise<TechnicianSubscription | null> => {
+  try {
+    const res = await fetch(`${API_BASE}/api/subscriptions/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ technicianId, planId, ...paymentDetails })
+    });
+    const data = await res.json();
     if (data.success) return data.subscription;
   } catch (err) {
-    console.error("Failed to upgrade subscription:", err);
+    console.error("Failed to verify subscription:", err);
   }
   return null;
 };

@@ -769,6 +769,10 @@ function TrackingContent() {
           <PaymentOverlay 
             bookingId={bookingId!} 
             totalAmount={Number(booking?.totalAmount || booking?.total_amount || 0)} 
+            customerProfile={{
+              name: booking?.customerName || booking?.customer_name || '',
+              phone: booking?.customerPhone || booking?.customer_phone || ''
+            }}
             onPaymentComplete={() => {
               // Once payment is complete on customer side, the dashboard just continues listening
               // The technician side will automatically detect the paymentStatus update.

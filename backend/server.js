@@ -34,6 +34,8 @@ const { runReminderEngine } = require('./services/reminderEngine');
 const { db } = require('./config/firebaseAdmin');
 const uploadRoute = require('./routes/upload');
 const complaintsRoutes = require('./routes/complaints');
+const paymentRoutes = require('./routes/payment');
+
 app.use('/api/ai', aiRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/tools', toolsRoutes);
@@ -41,6 +43,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/upload', uploadRoute);
 app.use('/api/complaints', complaintsRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

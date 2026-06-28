@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Activity, ShieldCheck, CheckCircle2, ArrowLeft, QrCode } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getSubscriptionPlans, upgradeSubscription, SubscriptionPlan } from '@/server/services/subscriptionService';
+import { getSubscriptionPlans, createSubscriptionOrder, verifySubscriptionPayment, SubscriptionPlan } from '@/server/services/subscriptionService';
 
 function PaymentContent() {
   const router = useRouter();
@@ -47,23 +47,88 @@ function PaymentContent() {
     fetchPlan();
   }, [planId, router]);
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleConfirmPayment = async () => {
     if (!userId || !plan) return;
     
     setProcessing(true);
-    // Simulate real-time payment processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const newSub = await upgradeSubscription(userId, plan.id);
-    setProcessing(false);
-    
-    if (newSub) {
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/technician/subscription');
-      }, 3000);
-    } else {
-      alert("Payment failed. Please try again.");
+    try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error("Failed to load Razorpay SDK");
+      }
+
+      // 1. Create Order
+      const order = await createSubscriptionOrder(userId, plan.id);
+      if (!order || !order.success) {
+        throw new Error(order?.error || "Failed to create order");
+      }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: order.keyId,
+        amount: order.amount.toString(),
+        currency: order.currency,
+        name: "FixNow Subscriptions",
+        description: `Upgrade to ${plan.name}`,
+        image: "https://fixnow.app/logo.png",
+        order_id: order.orderId,
+        handler: async function (response: any) {
+          try {
+            // 3. Verify Payment
+            const newSub = await verifySubscriptionPayment(userId, plan.id, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (newSub) {
+              setProcessing(false);
+              setSuccess(true);
+              setTimeout(() => {
+                router.push('/technician/subscription');
+              }, 3000);
+            } else {
+              setProcessing(false);
+              alert("Payment verification failed. Please try again.");
+            }
+          } catch (err: any) {
+            setProcessing(false);
+            alert("Verification Error: " + err.message);
+          }
+        },
+        theme: { color: "#6366f1" },
+        modal: {
+          ondismiss: function() {
+            setProcessing(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        setProcessing(false);
+        alert(response.error.description || "Payment failed");
+      });
+      
+      rzp.open();
+    } catch (error: any) {
+      setProcessing(false);
+      alert(error.message || "Something went wrong.");
     }
   };
 
