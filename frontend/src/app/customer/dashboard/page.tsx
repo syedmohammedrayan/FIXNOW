@@ -22,6 +22,7 @@ const AITriagePanel = dynamic(() => import('./components/AITriagePanel'), { ssr:
 const DashboardHeader = dynamic(() => import('./components/DashboardHeader'), { ssr: false });
 const StatusBanners = dynamic(() => import('./components/StatusBanners'), { ssr: false });
 const NearbyTechniciansMap = dynamic(() => import('@/components/ai/NearbyTechniciansMap'), { ssr: false });
+const PaymentOverlay = dynamic(() => import('@/components/customer/PaymentOverlay'), { ssr: false });
 
 import { SOCKET_URL } from '@/lib/config';
 import { io, Socket } from 'socket.io-client';
@@ -354,6 +355,18 @@ export default function CustomerDashboard() {
         setIssueText={setIssueText}
         activeJob={activeJob}
       />
+
+      <AnimatePresence>
+        {(activeJob?.paymentStatus === 'Requested' || activeJob?.payment_status === 'Requested') && (
+          <PaymentOverlay 
+            bookingId={activeJob.id!} 
+            totalAmount={Number(activeJob?.totalAmount || activeJob?.total_amount || 0)} 
+            onPaymentComplete={() => {
+              // Dashboard will automatically update via Firestore onSnapshot
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <DashboardHeader 
         onShowHistory={() => setShowHistory(true)}

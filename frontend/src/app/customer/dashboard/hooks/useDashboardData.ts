@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { auth, db } from '@/lib/firebase';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, collection, query, where, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { API_BASE } from '@/lib/config';
 import { Notification, Reminder } from '../types';
@@ -90,37 +90,37 @@ export function useDashboardData() {
     return () => clearInterval(interval);
   }, [userId]);
 
-  // Fetch Active Job and handle Success/Payment states
+  // Fetch Active Job and handle Success/Payment states via Real-time Snapshot
   useEffect(() => {
     if (!userId) return;
-    const fetchActiveJob = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/api/bookings/customer/${userId}`);
-        if (res.data.success) {
-          const bookings = Array.isArray(res.data.bookings) ? res.data.bookings : [];
-          const active = bookings.find((b: any) => 
-            (['Accepted', 'On the Way', 'Arrived', 'In Progress'].includes(b.status) || 
-            (b.status === 'Completed' && b.payment_status === 'Unpaid')) && 
-            b.category !== 'Toilet Repair'
-          );
-          
-          // Detect transition to completed & paid
-          if (!active && activeJobRef.current?.status === 'Completed' && activeJobRef.current?.payment_status === 'Unpaid') {
-             setShowPaymentSuccess(true);
-             setTimeout(() => setShowPaymentSuccess(false), 8000);
-          }
-          
-          setActiveJob(active || null);
-          activeJobRef.current = active || null;
-        }
-      } catch (err) {
-        console.error('Failed to fetch active job:', err);
+    
+    const q = query(
+      collection(db, 'bookings'),
+      where('customer_id', '==', userId)
+    );
+
+    const unsub = onSnapshot(q, (snap) => {
+      const bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const active = bookings.find((b: any) => 
+        (['Accepted', 'On the Way', 'Arrived', 'In Progress'].includes(b.status) || 
+        (b.status === 'Completed' && (b.payment_status === 'Unpaid' || b.payment_status === 'Requested' || b.paymentStatus === 'Requested'))) && 
+        b.category !== 'Toilet Repair'
+      );
+      
+      // Detect transition to completed & paid
+      if (!active && activeJobRef.current?.status === 'Completed' && (activeJobRef.current?.payment_status === 'Unpaid' || activeJobRef.current?.payment_status === 'Requested' || activeJobRef.current?.paymentStatus === 'Requested')) {
+         setShowPaymentSuccess(true);
+         setTimeout(() => setShowPaymentSuccess(false), 8000);
       }
-    };
-    fetchActiveJob();
-    const interval = setInterval(fetchActiveJob, 180000); // 3 minutes
-    return () => clearInterval(interval);
-  }, [userId]); // Removed activeJob from dependencies to prevent infinite loop
+      
+      setActiveJob(active || null);
+      activeJobRef.current = active || null;
+    }, (err) => {
+      console.error('Failed to fetch active job realtime:', err);
+    });
+
+    return () => unsub();
+  }, [userId]);
 
   const markNotifRead = async (notifId: string) => {
     try {
