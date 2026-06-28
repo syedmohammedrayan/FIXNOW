@@ -20,10 +20,10 @@ The platform reduces booking uncertainty, minimizes manual communication, improv
 > | Customer searches for technicians manually | AI-powered technician recommendation |
 > | Generic technician listing | Smart technician ranking using location, ratings, availability, subscription priority, and AI confidence |
 > | Limited booking workflow | End-to-end AI-assisted booking ecosystem |
-> | Static support chat | CascadeFlow AI Assistant with contextual conversations |
-> | No persistent user memory | Hindsight Memory for personalized recommendations |
+> | Static chatbot with one-time responses | **CascadeFlow AI Orchestration** for structured reasoning, intelligent routing, and high-quality responses and analysis |
+> | No conversation memory | **Hindsight Memory** remembers user preferences, booking history, appliances, and previous interactions for personalized assistance |
+> | Manual technician allocation | Intelligent Real-Time Dispatch Engine |
 > | Basic technician allocation | Intelligent real-time dispatch engine |
-> | Limited payment workflow | Booking advance, Razorpay integration, payment verification, refunds, and post-service settlement |
 > | Minimal maintenance support | Digital maintenance history with AI recommendations |
 > | Reactive service experience | Preventive and predictive maintenance roadmap |
 
