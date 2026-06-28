@@ -293,13 +293,17 @@ class PaymentController {
       const { estimatedCostRange, customerId, technicianId, category } = req.body;
       
       // Calculate amount securely on backend based on estimated cost range
-      // e.g. "499-999" -> 499
       let rawAmount = 499; // Fallback
-      if (estimatedCostRange) {
-        const firstPart = String(estimatedCostRange).split('-')[0].replace(/[^\d.]/g, '');
-        const parsed = parseFloat(firstPart);
-        if (!isNaN(parsed) && parsed > 0) {
-          rawAmount = parsed;
+
+      if (typeof estimatedCostRange === "string") {
+        const matches = estimatedCostRange.match(/\d+/g);
+
+        if (matches && matches.length > 0) {
+            const parsed = Number(matches[0]);
+
+            if (Number.isFinite(parsed) && parsed > 0) {
+                rawAmount = parsed;
+            }
         }
       }
 

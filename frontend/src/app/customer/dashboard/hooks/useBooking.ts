@@ -626,12 +626,22 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       // ==========================================
       
       const origin = coords || { lat: 37.7749, lng: -122.4194 };
+      
+      const estimatedCostRange =
+        analysisResult?.estimatedCostRange ??
+        (
+          (analysisResult as any)?.estimatedCostMin &&
+          (analysisResult as any)?.estimatedCostMax
+            ? `${(analysisResult as any).estimatedCostMin}-${(analysisResult as any).estimatedCostMax}`
+            : "499-999"
+        );
+
       const bookingPayload = {
         customerId: userId || 'guest',
         technicianId: selectedTech?.id,
         technicianName: selectedTech?.name,
         category: analysisResult?.category,
-        estimatedCostRange: analysisResult?.estimatedCostRange,
+        estimatedCostRange,
         serviceSpecs: analysisResult?.serviceSpecs,
         technicalTerms: analysisResult?.technicalTerms,
         customerName,
@@ -642,6 +652,10 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         customerLat: origin.lat,
         customerLng: origin.lng,
       };
+
+      console.log("BOOKING PAYLOAD");
+      console.log(bookingPayload);
+      console.log("analysisResult", analysisResult);
 
       // 1. Create Razorpay order BEFORE booking creation
       const orderRes = await axios.post(`${API_BASE}/api/payment/create-booking-order`, bookingPayload);
