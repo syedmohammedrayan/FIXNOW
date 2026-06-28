@@ -99,7 +99,6 @@ export default function AIResponseCard({
               </div>
             </div>
           </div>
-          <ConfidenceGauge value={confidence} size={80} />
         </div>
 
         {/* Document Title / Product Type */}
@@ -215,7 +214,6 @@ export default function AIResponseCard({
             </div>
           </div>
         </div>
-        <ConfidenceGauge value={confidence} size={80} />
       </div>
 
       {/* Problem Statement */}

@@ -18,6 +18,21 @@ interface UseBookingProps {
   userProfile: any;
 }
 
+const getRealisticCostRange = (category: string): string => {
+  const cat = (category || '').toLowerCase();
+  if (cat.includes('plumb')) return '₹300 - ₹1,200';
+  if (cat.includes('electric')) return '₹400 - ₹1,500';
+  if (cat.includes('ac ') || cat.includes('hvac')) return '₹500 - ₹2,500';
+  if (cat.includes('appliance') || cat.includes('washing') || cat.includes('refrigerat')) return '₹500 - ₹2,000';
+  if (cat.includes('carpenter') || cat.includes('carpentry')) return '₹400 - ₹2,000';
+  if (cat.includes('paint')) return '₹2,000 - ₹15,000';
+  if (cat.includes('clean')) return '₹800 - ₹3,000';
+  if (cat.includes('pest')) return '₹800 - ₹2,500';
+  if (cat.includes('pack') || cat.includes('mov')) return '₹1,500 - ₹8,000';
+  if (cat.includes('car') || cat.includes('bike')) return '₹500 - ₹4,000';
+  return '₹300 - ₹1,000';
+};
+
 export type BroadcastStatus = 'idle' | 'waiting' | 'accepted' | 'expired' | 'cancelled';
 
 export interface BroadcastAcceptedTech {
@@ -202,7 +217,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
               setAnalysisResult({
                 category: pendingBroadcast.category,
                 urgency: pendingBroadcast.urgency || 'Medium',
-                estimatedCostRange: pendingBroadcast.estimatedCostRange || '₹300 - ₹900',
+                estimatedCostRange: pendingBroadcast.estimatedCostRange || getRealisticCostRange(pendingBroadcast.category),
                 summary: pendingBroadcast.issueDescription || '',
                 recommendedMaterials: pendingBroadcast.recommendedMaterials || []
               });
@@ -362,7 +377,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
           setAnalysisResult({
             category: (visionData.category || visionData.service || 'general_maintenance'),
             urgency: (visionData.urgency || visionData.severity || 'medium').charAt(0).toUpperCase() + (visionData.urgency || visionData.severity || 'medium').slice(1),
-            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || (visionData.estimatedCostMin && visionData.estimatedCostMax ? `₹${visionData.estimatedCostMin} - ₹${visionData.estimatedCostMax}` : '₹300 - ₹900'), 
+            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || getRealisticCostRange(visionData.category || visionData.service), 
             summary: visionData.summary || visionData.problem || 'Visual analysis completed.',
             recommendedMaterials: visionData.requiredMaterials || visionData.materials || [],
             requiredTools: visionData.requiredTools || [],
@@ -494,7 +509,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
           setAnalysisResult({
             category: (visionData.category || visionData.service || 'general_maintenance'),
             urgency: (visionData.urgency || 'medium').charAt(0).toUpperCase() + (visionData.urgency || 'medium').slice(1),
-            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || '₹300 - ₹900', 
+            estimatedCostRange: visionData.estimatedCostRange || visionData.priceEstimate || getRealisticCostRange(visionData.category || visionData.service), 
             summary: visionData.summary || visionData.problem || 'Visual analysis completed.',
             recommendedMaterials: visionData.requiredMaterials || visionData.materials || [],
             requiredTools: visionData.requiredTools || [],
