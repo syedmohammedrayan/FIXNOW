@@ -4,7 +4,7 @@ FIXNOW
 
 FIXNOW is a home services marketplace that transforms the traditional technician booking experience into an intelligent, automated, and highly personalized platform.
 
-<h3>Why FIXNOW?</h3>
+<h2>Why FIXNOW?</h2>
 
 Most home-service marketplaces primarily focus on connecting customers with nearby technicians. FIXNOW goes beyond simple service aggregation by combining Artificial Intelligence, real-time dispatching, contextual memory, secure payments, and intelligent automation into a single platform.
 
@@ -12,20 +12,21 @@ Rather than acting as a listing marketplace, FIXNOW functions as an AI-powered s
 
 The platform reduces booking uncertainty, minimizes manual communication, improves technician efficiency, and delivers a more transparent experience for both customers and service professionals.
 
-What Makes FIXNOW Different?
-Traditional Home-Service Platforms	FIXNOW
-Manual problem description	AI Image, Voice, and Text Diagnosis
+<h2>What Makes FIXNOW Different?</h2>
+
+Traditional Home-Service Platforms	                    FIXNOW
+Manual problem description	                  AI Image, Voice, and Text Diagnosis
 Customer searches for technicians manually	AI-powered technician recommendation
-Generic technician listing	Smart technician ranking using location, ratings, availability, subscription priority, and AI confidence
-Limited booking workflow	End-to-end AI-assisted booking ecosystem
-Static support chat	CascadeFlow AI Assistant with contextual conversations
-No persistent user memory	Hindsight Memory for personalized recommendations
-Basic technician allocation	Intelligent real-time dispatch engine
-Limited payment workflow	Booking advance, Razorpay integration, payment verification, refunds, and post-service settlement
-Minimal maintenance support	Digital maintenance history with AI recommendations
-Reactive service experience	Preventive and predictive maintenance roadmap
-Why Customers Choose FIXNOW
-AI-Driven Problem Diagnosis
+Generic technician listing	                  Smart technician ranking using location, ratings, availability, subscription priority, and AI confidence
+Limited booking workflow	                  End-to-end AI-assisted booking ecosystem
+Static support chat	                        CascadeFlow AI Assistant with contextual conversations
+No persistent user memory	                  Hindsight Memory for personalized recommendations
+Basic technician allocation	                  Intelligent real-time dispatch engine
+Limited payment workflow	                  Booking advance, Razorpay integration, payment verification, refunds, and post-service settlement
+Minimal maintenance support	                  Digital maintenance history with AI recommendations
+Reactive service experience	                  Preventive and predictive maintenance roadmap
+
+<h2>Why Customers Choose FIXNOW</h2>
 
 Customers can upload an image, describe the issue using text, or speak naturally through voice input. The AI analyzes the problem and identifies the likely service category, urgency level, estimated repair cost, required tools, and recommended materials before a technician is even contacted.
 
@@ -57,7 +58,7 @@ Personalized AI Assistance
 
 Using CascadeFlow AI orchestration together with Hindsight Memory, FIXNOW remembers relevant user preferences, previous services, appliance history, and conversation context to provide increasingly personalized recommendations over time.
 
-Benefits for Technicians
+<h2>Benefits for Technicians</h2>
 
 FIXNOW is designed not only for customers but also to empower independent service professionals.
 
@@ -72,7 +73,8 @@ Subscription-based visibility improvements
 QR-based payment support
 Digital service history
 Customer information before arrival
-Zero-Commission Business Model
+
+<h2>Zero-Commission Business Model</h2>
 
 Unlike many traditional service marketplaces that deduct a commission from every completed job, FIXNOW follows a zero-commission model.
 
@@ -89,7 +91,7 @@ Future enterprise offerings
 
 This approach allows technicians to maximize their income while encouraging long-term engagement with the platform.
 
-Enterprise-Grade AI Ecosystem
+<h2>Enterprise-Grade Ecosystem</h2>
 
 FIXNOW combines multiple modern technologies into a unified intelligent platform, including:
 
@@ -107,7 +109,7 @@ Socket.IO real-time communication
 Rather than being just another technician marketplace, FIXNOW is designed as an intelligent service ecosystem that continuously learns, automates workflows, and improves the experience for customers, technicians, and administrators through AI-driven decision making.
 ---
 
-# AI Architecture & Intelligent Features
+<h2> AI Architecture & Intelligent Features</h2>
 
 FIXNOW is built around a multi-layer Artificial Intelligence architecture rather than relying on a single Large Language Model request.
 
@@ -992,32 +994,15 @@ Security measures include:
 
 ---
 
-# Future Roadmap
+<h2>Future Roadmap</h2>
 
 Planned future enhancements include:
 
 * AI Predictive Maintenance
 * IoT Device Monitoring
 * AR Repair Assistance
-* Voice Calling Between Customers and Technicians
-* AI Dynamic Pricing
-* Smart Warranty Detection
-* Emergency Technician Dispatch
 * Multi-City Expansion
-* AI Fraud Detection
-* Technician Skill Verification
-* Service Recommendation Engine
 * Preventive Maintenance Scheduling
-
----
-
-# Contributors
-
-**Syed Mohammed Rayan**
-
-Bachelor of Engineering (Computer Science Engineering)
-
-Muffakham Jah College of Engineering & Technology
 
 ---
 
