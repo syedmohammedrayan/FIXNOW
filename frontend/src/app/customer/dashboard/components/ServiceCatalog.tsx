@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, X, Sparkles } from 'lucide-react';
+import { Search, X, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ALL_SERVICES } from '@/lib/services';
 
@@ -21,6 +21,18 @@ export default function ServiceCatalog({
   setSelectedCategory,
   onSelectService
 }: ServiceCatalogProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const filtered = ALL_SERVICES
     .filter(cat => selectedCategory === 'All' || cat.category === selectedCategory)
     .flatMap(cat => cat.items)
@@ -70,23 +82,41 @@ export default function ServiceCatalog({
         )}
       </div>
 
-      {/* Category Pills */}
-      <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 -mx-1 px-1 scrollbar-none">
-        {['All', ...ALL_SERVICES.map(s => s.category)].map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setSelectedCategory(cat)}
-            className={cn(
-              "px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all duration-300 whitespace-nowrap shrink-0",
-              selectedCategory === cat
-                ? "bg-white text-slate-900 border-white shadow-lg shadow-black/20"
-                : "bg-white/[0.04] text-white/50 border-white/[0.06] hover:border-white/30 hover:text-white"
-            )}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Category Pills with Scroll Controls */}
+      <div className="relative flex items-center group/scroll">
+        <button
+          type="button"
+          onClick={() => scroll('left')}
+          className="absolute left-0 z-10 p-1 bg-slate-900/80 text-white rounded-full opacity-0 group-hover/scroll:opacity-100 transition-opacity disabled:opacity-0 hidden sm:flex items-center justify-center -ml-2"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        
+        <div ref={scrollRef} className="flex flex-nowrap overflow-x-auto gap-2 pb-2 -mx-1 px-1 scrollbar-none w-full scroll-smooth">
+          {['All', ...ALL_SERVICES.map(s => s.category)].map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={cn(
+                "px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all duration-300 whitespace-nowrap shrink-0",
+                selectedCategory === cat
+                  ? "bg-white text-slate-900 border-white shadow-lg shadow-black/20"
+                  : "bg-white/[0.04] text-white/50 border-white/[0.06] hover:border-white/30 hover:text-white"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => scroll('right')}
+          className="absolute right-0 z-10 p-1 bg-slate-900/80 text-white rounded-full opacity-0 group-hover/scroll:opacity-100 transition-opacity disabled:opacity-0 hidden sm:flex items-center justify-center -mr-2"
+        >
+          <ChevronRight className="size-4" />
+        </button>
       </div>
 
       {/* Service Items Grid */}
