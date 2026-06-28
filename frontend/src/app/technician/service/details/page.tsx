@@ -8,6 +8,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { API_BASE, SOCKET_URL } from '@/lib/config';
 import axios from 'axios';
+import loadRazorpay from '@/lib/loadRazorpay';
 import {
   ArrowLeft, MapPin, Phone, Navigation, CheckCircle2,
   XCircle, Loader2, ShieldCheck, AlertTriangle, Activity,
@@ -519,6 +520,13 @@ function TechnicianServiceContent() {
           },
           theme: { color: "#06b6d4" } // cyan-500
         };
+
+        const loaded = await loadRazorpay();
+        if (!loaded || !(window as any).Razorpay) {
+          alert("Unable to load Razorpay Checkout");
+          setCompleting(false);
+          return;
+        }
 
         const rzp = new (window as any).Razorpay(options);
         rzp.on('payment.failed', function () {

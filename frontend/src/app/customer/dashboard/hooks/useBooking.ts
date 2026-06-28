@@ -8,6 +8,7 @@ import { API_BASE, RAZORPAY_KEY_ID } from '@/lib/config';
 import { AnalysisResult, Technician } from '../types';
 import { Socket } from 'socket.io-client';
 import { calculateTechnicianRank } from '@/server/ai/agents/aiRankingEngine';
+import loadRazorpay from '@/lib/loadRazorpay';
 
 interface UseBookingProps {
   userId: string | null;
@@ -669,8 +670,25 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       const amount = orderRes.data.amount;
       const currency = orderRes.data.currency || 'INR';
 
-      if (!window.Razorpay || !key) {
-        alert('Payment system not fully initialized');
+      console.log("window.Razorpay =", (window as any).Razorpay);
+      console.log("key =", key);
+
+      const loaded = await loadRazorpay();
+
+      if (!loaded) {
+        alert("Unable to load Razorpay Checkout");
+        setAnalyzing(false);
+        return;
+      }
+
+      if (!(window as any).Razorpay) {
+        alert("SDK Missing");
+        setAnalyzing(false);
+        return;
+      }
+
+      if (!key) {
+        alert("Key Missing");
         setAnalyzing(false);
         return;
       }
