@@ -10,7 +10,7 @@ Instead of requiring customers to manually search for technicians, describe tech
 
 The platform integrates **CascadeFlow AI orchestration**, **Hindsight Memory**, **Computer Vision**, **OCR**, **Voice AI**, **Firebase**, **Google Maps**, **Socket.IO**, and **Razorpay** to provide a seamless end-to-end service experience.
 
-Why FIXNOW?
+<h1>Why FIXNOW?<h1>
 
 Most home-service marketplaces primarily focus on connecting customers with nearby technicians. FIXNOW goes beyond simple service aggregation by combining Artificial Intelligence, real-time dispatching, contextual memory, secure payments, and intelligent automation into a single platform.
 
