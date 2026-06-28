@@ -195,22 +195,14 @@ function PaymentContent() {
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center mb-10">
-                  <div className="w-48 h-48 bg-white rounded-2xl p-4 shadow-[0_0_40px_rgba(255,255,255,0.1)] flex items-center justify-center relative group">
-                    <div className="absolute inset-0 bg-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none flex items-center justify-center">
-                      <div className="w-full h-1 bg-cyan-400 absolute top-0 shadow-[0_0_15px_rgba(34,211,238,1)] animate-[scan_2s_ease-in-out_infinite]" />
-                    </div>
-                    {/* Mock QR Code Pattern using CSS for a techy look */}
-                    <div className="w-full h-full grid grid-cols-4 grid-rows-4 gap-1">
-                      {Array.from({ length: 16 }).map((_, i) => (
-                        <div key={i} className={`bg-slate-950 ${Math.random() > 0.3 ? 'opacity-100' : 'opacity-20'} rounded-sm`} />
-                      ))}
-                    </div>
-                    <div className="absolute bg-white p-2 rounded-lg shadow-xl">
-                      <QrCode className="w-8 h-8 text-slate-950" />
+                <div className="flex flex-col items-center justify-center mb-10 space-y-4">
+                  <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm">
+                    <ShieldCheck className="w-8 h-8 text-cyan-400" />
+                    <div className="text-left">
+                      <p className="text-xs font-black text-white uppercase tracking-widest">End-to-End Encryption</p>
+                      <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Secured by Razorpay Checkout</p>
                     </div>
                   </div>
-                  <p className="mt-4 text-slate-400 text-sm font-bold tracking-widest uppercase">Scan via any UPI App</p>
                 </div>
 
                 <button
