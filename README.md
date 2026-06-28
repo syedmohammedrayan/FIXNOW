@@ -12,19 +12,20 @@ Rather than acting as a listing marketplace, FIXNOW functions as an AI-powered s
 
 The platform reduces booking uncertainty, minimizes manual communication, improves technician efficiency, and delivers a more transparent experience for both customers and service professionals.
 
-<h2>What Makes FIXNOW Different?</h2>
-
-Traditional Home-Service Platforms	                    FIXNOW
-Manual problem description	                  AI Image, Voice, and Text Diagnosis
-Customer searches for technicians manually	AI-powered technician recommendation
-Generic technician listing	                  Smart technician ranking using location, ratings, availability, subscription priority, and AI confidence
-Limited booking workflow	                  End-to-end AI-assisted booking ecosystem
-Static support chat	                        CascadeFlow AI Assistant with contextual conversations
-No persistent user memory	                  Hindsight Memory for personalized recommendations
-Basic technician allocation	                  Intelligent real-time dispatch engine
-Limited payment workflow	                  Booking advance, Razorpay integration, payment verification, refunds, and post-service settlement
-Minimal maintenance support	                  Digital maintenance history with AI recommendations
-Reactive service experience	                  Preventive and predictive maintenance roadmap
+> <h2></h2> What Makes FIXNOW Different?</h2>
+>
+> | Traditional Home-Service Platforms | FIXNOW |
+> |-----------------------------------|---------|
+> | Manual problem description | AI Image, Voice, and Text Diagnosis |
+> | Customer searches for technicians manually | AI-powered technician recommendation |
+> | Generic technician listing | Smart technician ranking using location, ratings, availability, subscription priority, and AI confidence |
+> | Limited booking workflow | End-to-end AI-assisted booking ecosystem |
+> | Static support chat | CascadeFlow AI Assistant with contextual conversations |
+> | No persistent user memory | Hindsight Memory for personalized recommendations |
+> | Basic technician allocation | Intelligent real-time dispatch engine |
+> | Limited payment workflow | Booking advance, Razorpay integration, payment verification, refunds, and post-service settlement |
+> | Minimal maintenance support | Digital maintenance history with AI recommendations |
+> | Reactive service experience | Preventive and predictive maintenance roadmap |
 
 <h2>Why Customers Choose FIXNOW</h2>
 
