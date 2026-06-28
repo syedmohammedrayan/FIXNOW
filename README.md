@@ -2,15 +2,9 @@ FIXNOW
 
 ![FIXNOW](https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg?updatedAt=1778516774058)
 
-# Overview
-
 FIXNOW is a home services marketplace that transforms the traditional technician booking experience into an intelligent, automated, and highly personalized platform.
 
-Instead of requiring customers to manually search for technicians, describe technical issues, negotiate pricing, and coordinate service requests, FIXNOW leverages Artificial Intelligence to diagnose problems, identify the required service category, recommend the most suitable technician, estimate repair costs, streamline bookings, and securely manage digital payments.
-
-The platform integrates **CascadeFlow AI orchestration**, **Hindsight Memory**, **Computer Vision**, **OCR**, **Voice AI**, **Firebase**, **Google Maps**, **Socket.IO**, and **Razorpay** to provide a seamless end-to-end service experience.
-
-<h1>Why FIXNOW?<h1>
+<h3>Why FIXNOW?</h3>
 
 Most home-service marketplaces primarily focus on connecting customers with nearby technicians. FIXNOW goes beyond simple service aggregation by combining Artificial Intelligence, real-time dispatching, contextual memory, secure payments, and intelligent automation into a single platform.
 
