@@ -138,6 +138,35 @@ export default function BookingForm({
             </div>
           </div>
         </div>
+        
+        {/* Cost & Advance Display */}
+        {analysisResult && paymentMethod === 'now' && (
+          <div className="mb-8 sm:mb-10 bg-white/5 border border-indigo-500/20 rounded-2xl p-4 sm:p-5 shadow-inner">
+            <h4 className="text-indigo-400 font-black text-xs uppercase tracking-[0.2em] mb-4">Payment Summary</h4>
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Estimated Service Cost</span>
+              <span className="text-white font-black text-sm">{analysisResult.estimatedCostRange || '₹499 - ₹999'}</span>
+            </div>
+            
+            {/* Calculate Advance */}
+            {(() => {
+              const range = analysisResult.estimatedCostRange || '499-999';
+              const match = range.match(/\d+/g);
+              const min = match && match.length > 0 ? Number(match[0]) : 499;
+              const advance = Math.round(min * 0.5);
+              return (
+                <div className="flex justify-between items-center py-2 border-t border-white/10 mt-3 pt-3">
+                  <div>
+                    <span className="text-white text-[11px] font-black uppercase tracking-widest block">Booking Advance (Today)</span>
+                    <span className="text-slate-500 text-[9px] font-bold uppercase tracking-wider mt-1 block">Remaining adjusted against final invoice</span>
+                  </div>
+                  <span className="text-white font-black text-xl">₹{advance}</span>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
         <div className="mb-8 sm:mb-10">
           <p className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 mb-3 sm:mb-4">Transaction Protocol</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

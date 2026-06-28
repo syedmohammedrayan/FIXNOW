@@ -24,10 +24,16 @@ router.post('/create-booking-order', paymentController.createBookingOrder);
 // 2. Verify Order and Create Booking
 router.post('/verify-booking', paymentController.verifyBookingOrder);
 
-// 3. Admin Approve Refund Request
+// 3. Create Balance Order
+router.post('/create-balance-order', paymentController.createBalanceOrder);
+
+// 4. Verify Balance Payment
+router.post('/verify-balance-payment', paymentController.verifyBalancePayment);
+
+// 5. Admin Approve Refund Request
 router.post('/refund-request/:id/approve', paymentController.approveRefundRequest);
 
-// 4. Admin Reject Refund Request
+// 6. Admin Reject Refund Request
 router.post('/refund-request/:id/reject', paymentController.rejectRefundRequest);
 
 module.exports = router;

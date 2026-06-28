@@ -41,6 +41,7 @@ interface Booking {
   customer_name?: string;
   technician_id?: string;
   serviceStartedAt?: string;
+  bookingAdvance?: number;
 }
 
 const lightMapStyles = [
@@ -462,27 +463,85 @@ function TechnicianServiceContent() {
     return base + extra;
   };
 
+  const calculateBalance = () => {
+    return calculateTotal() - (booking?.bookingAdvance || 0);
+  };
+
   const handleComplete = async () => {
-    if (!isPaid && booking?.status !== 'Completed') {
+    const balance = calculateBalance();
+    
+    // If balance > 0 and not paid, show payment modal
+    if (!isPaid && booking?.status !== 'Completed' && balance > 0) {
       setShowPaymentModal(true);
       return;
     }
     
     setCompleting(true);
     try {
+      if (balance > 0 && paymentMethod === 'upi' && !isPaid) {
+        // Create balance order
+        const orderRes = await axios.post(`${API_BASE}/api/payment/create-balance-order`, {
+          bookingId,
+          balanceAmount: balance
+        });
+
+        if (!orderRes.data.success) throw new Error("Failed to create balance order");
+
+        const options = {
+          key: orderRes.data.keyId,
+          amount: orderRes.data.amount,
+          currency: orderRes.data.currency,
+          order_id: orderRes.data.orderId,
+          name: "FixNow Services",
+          description: "Balance Payment",
+          handler: async function (response: any) {
+            try {
+              await axios.post(`${API_BASE}/api/payment/verify-balance-payment`, {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingId,
+                finalAmount: calculateTotal(),
+                servicesDone,
+                accessories
+              });
+              setIsPaid(true);
+              setActionDone('completed');
+              setTimeout(() => router.push('/technician/bookings'), 3000);
+            } catch (err) {
+              alert("Payment verification failed.");
+              setCompleting(false);
+            }
+          },
+          prefill: {
+            name: booking?.customerName || "Customer",
+            contact: booking?.contactNumber || ""
+          },
+          theme: { color: "#06b6d4" } // cyan-500
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function () {
+          alert("Payment failed");
+          setCompleting(false);
+        });
+        rzp.open();
+        return; // Don't proceed to update-status below, handled in callback
+      }
+
+      // Cash payment or balance <= 0
       await axios.post(`${API_BASE}/api/bookings/update-status`, { 
         bookingId, 
         status: 'Completed',
         servicesDone,
         accessories,
-        totalAmount: calculateTotal(),
+        finalAmount: calculateTotal(),
         isPaid: true
       });
       setActionDone('completed');
       setTimeout(() => router.push('/technician/bookings'), 3000);
     } catch (e) {
       alert('Failed to mark as completed.');
-    } finally {
       setCompleting(false);
     }
   };
@@ -1003,8 +1062,14 @@ function TechnicianServiceContent() {
                 <button onClick={() => setShowPaymentModal(false)} className="p-2 text-slate-500 hover:text-white transition-all"><XCircle className="size-8" /></button>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 mb-10 text-center">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Total Payable Amount</p>
-                <h4 className="text-5xl font-black text-white tracking-tighter">₹{calculateTotal()}</h4>
+                <div className="flex justify-between items-center mb-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  <span>Final Cost:</span> <span className="text-white">₹{calculateTotal()}</span>
+                </div>
+                <div className="flex justify-between items-center mb-6 text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-white/10 pb-4">
+                  <span>Advance Paid:</span> <span className="text-white">₹{booking?.bookingAdvance || 0}</span>
+                </div>
+                <p className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em] mb-3">Balance Due</p>
+                <h4 className="text-5xl font-black text-white tracking-tighter">₹{Math.max(0, calculateBalance())}</h4>
               </div>
               <div className="flex gap-4 mb-10">
                 <button onClick={() => setPaymentMethod('upi')} className={cn("flex-1 p-6 rounded-[2rem] border transition-all flex flex-col items-center gap-3", paymentMethod === 'upi' ? "bg-cyan-500/10 border-cyan-400 text-cyan-400" : "bg-white/5 border-white/10 text-slate-500")}><CreditCard className="size-7" /><span className="text-[10px] font-black uppercase tracking-widest">Digital QR</span></button>
@@ -1012,13 +1077,13 @@ function TechnicianServiceContent() {
               </div>
               {paymentMethod === 'upi' ? (
                 <div className="text-center mb-10">
-                  <div className="inline-block p-8 bg-white rounded-[2.5rem] shadow-xl mb-6"><QRCodeSVG value={`upi://pay?pa=fixnow@upi&pn=FixNow&am=${calculateTotal()}&cu=INR`} size={180} level="H" /></div>
+                  <div className="inline-block p-8 bg-white rounded-[2.5rem] shadow-xl mb-6"><QRCodeSVG value={`upi://pay?pa=fixnow@upi&pn=FixNow&am=${Math.max(0, calculateBalance())}&cu=INR`} size={180} level="H" /></div>
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Monitoring Payment Network...</p>
                 </div>
               ) : (
                 <div className="text-center py-14 mb-10 bg-emerald-500/10 border border-emerald-500/20 rounded-[2.5rem]">
                   <DollarSign className="size-8 text-emerald-400 mx-auto mb-6 animate-bounce" />
-                  <p className="text-xs font-bold text-slate-500 px-10 leading-relaxed uppercase tracking-widest">Collect <span className="text-white font-black text-sm">₹{calculateTotal()}</span> from customer.</p>
+                  <p className="text-xs font-bold text-slate-500 px-10 leading-relaxed uppercase tracking-widest">Collect <span className="text-white font-black text-sm">₹{Math.max(0, calculateBalance())}</span> from customer.</p>
                 </div>
               )}
               <button onClick={() => { setIsPaid(true); handleComplete(); }} disabled={completing} className="w-full py-6 bg-white text-slate-950 font-black text-xs uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-slate-100 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-2xl disabled:opacity-70">{completing ? <Loader2 className="size-5 animate-spin" /> : <CheckCircle2 className="size-5" />} Finalize Settlement</button>

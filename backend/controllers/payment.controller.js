@@ -293,16 +293,25 @@ class PaymentController {
       const { estimatedCostRange, customerId, technicianId, category } = req.body;
       
       // Calculate amount securely on backend based on estimated cost range
-      let rawAmount = 499; // Fallback
+      let estimatedMin = 499; // Fallback
+      let estimatedMax = 999;
+      let rawAmount = 250; // 50% of 499
 
       if (typeof estimatedCostRange === "string") {
         const matches = estimatedCostRange.match(/\d+/g);
 
         if (matches && matches.length > 0) {
-            const parsed = Number(matches[0]);
+            const parsedMin = Number(matches[0]);
 
-            if (Number.isFinite(parsed) && parsed > 0) {
-                rawAmount = parsed;
+            if (Number.isFinite(parsedMin) && parsedMin > 0) {
+                estimatedMin = parsedMin;
+                rawAmount = Math.round(parsedMin * 0.5); // 50% advance
+                
+                if (matches.length > 1) {
+                  estimatedMax = Number(matches[1]);
+                } else {
+                  estimatedMax = estimatedMin;
+                }
             }
         }
       }
@@ -320,7 +329,10 @@ class PaymentController {
         customerId,
         technicianId,
         category,
-        isPreBooking: "true"
+        isPreBooking: "true",
+        bookingAdvance: rawAmount.toString(),
+        estimatedMin: estimatedMin.toString(),
+        estimatedMax: estimatedMax.toString()
       });
 
       return res.status(200).json({
@@ -380,6 +392,17 @@ class PaymentController {
       }
       if (!customerName) customerName = 'Valued Customer';
 
+      // Re-parse estimated cost range to get min/max
+      let estimatedMin = 499;
+      let estimatedMax = 999;
+      if (typeof bookingPayload.estimatedCostRange === "string") {
+        const matches = bookingPayload.estimatedCostRange.match(/\d+/g);
+        if (matches && matches.length > 0) {
+            estimatedMin = Number(matches[0]);
+            estimatedMax = matches.length > 1 ? Number(matches[1]) : estimatedMin;
+        }
+      }
+
       // 3. Create the Booking in Firestore
       const bookingId = 'BK_' + Date.now();
       const now = new Date().toISOString();
@@ -398,17 +421,27 @@ class PaymentController {
         updated_at: now,
         updatedAt: now,
         
-        // Payment (dual format)
-        payment_status: 'Paid',
-        paymentStatus: 'Paid',
+        // Payment Architecture
+        paymentStage: 'advance_paid',
+        payment_status: 'Advance Paid',
+        paymentStatus: 'Advance Paid',
         payment_mode: 'Online',
         paymentMode: 'Online',
-        razorpayPaymentId: razorpay_payment_id,
+        
+        // Razorpay Advanced Fields
+        advancePaymentId: razorpay_payment_id,
+        razorpayPaymentId: razorpay_payment_id, // kept for legacy compat
         razorpayOrderId: razorpay_order_id,
         razorpaySignature: razorpay_signature,
         paidAt: now,
-        totalAmount: paidAmount,
-        total_amount: paidAmount,
+        
+        // Cost Estimates and Tracking
+        estimatedMin: estimatedMin,
+        estimatedMax: estimatedMax,
+        bookingAdvance: paidAmount, // 50% paid now
+        totalAmount: 0, // Final amount unknown until inspection
+        total_amount: 0,
+        remainingAmount: 0,
         
         // Customer info
         customer_id: bookingPayload.customerId || 'guest',
@@ -482,6 +515,99 @@ class PaymentController {
       });
     } catch (error) {
       console.error('❌ Verify Booking Order Error:', error);
+      return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+  }
+
+  /**
+   * Create Razorpay order for the remaining balance.
+   */
+  async createBalanceOrder(req, res) {
+    try {
+      const { bookingId, balanceAmount } = req.body;
+      
+      if (!bookingId || !balanceAmount || balanceAmount <= 0) {
+        return res.status(400).json({ success: false, message: 'Invalid balance amount or booking ID' });
+      }
+
+      const amountInPaise = Math.round(Number(balanceAmount) * 100);
+      const tempReceiptId = `bal_${bookingId}_${Date.now()}`;
+
+      const order = await razorpayService.createOrder(amountInPaise, tempReceiptId, {
+        bookingId,
+        isBalancePayment: "true"
+      });
+
+      return res.status(200).json({
+        success: true,
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        keyId: process.env.RAZORPAY_KEY_ID
+      });
+    } catch (error) {
+      console.error('❌ Create Balance Order Error:', error);
+      return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
+  }
+
+  /**
+   * Verify the balance payment from Razorpay and update the booking to completed.
+   */
+  async verifyBalancePayment(req, res) {
+    try {
+      const { 
+        razorpay_order_id, 
+        razorpay_payment_id, 
+        razorpay_signature, 
+        bookingId,
+        finalAmount,
+        servicesDone,
+        accessories
+      } = req.body;
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !bookingId) {
+        return res.status(400).json({ success: false, message: 'Missing required parameters' });
+      }
+
+      const isValid = razorpayService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+      if (!isValid) {
+        return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+      }
+
+      const bookingRef = db.collection('bookings').doc(bookingId);
+      const bookingDoc = await bookingRef.get();
+      if (!bookingDoc.exists) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+
+      const paymentDetails = await razorpayService.fetchPayment(razorpay_payment_id);
+      const balancePaid = Number(paymentDetails.amount) / 100;
+      
+      const bData = bookingDoc.data();
+      const totalCollected = (bData.bookingAdvance || 0) + balancePaid;
+      
+      const now = new Date().toISOString();
+      
+      await bookingRef.update({
+        status: 'Completed',
+        paymentStage: 'completed',
+        paymentStatus: 'Paid',
+        payment_status: 'Paid',
+        balancePaymentId: razorpay_payment_id,
+        remainingAmount: balancePaid,
+        totalAmount: finalAmount || totalCollected,
+        total_amount: finalAmount || totalCollected,
+        totalCollected: totalCollected,
+        servicesDone: servicesDone || [],
+        accessories: accessories || [],
+        updatedAt: now,
+        updated_at: now
+      });
+      
+      return res.status(200).json({ success: true, message: 'Balance verified and booking completed.' });
+    } catch (error) {
+      console.error('❌ Verify Balance Payment Error:', error);
       return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
   }

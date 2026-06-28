@@ -68,12 +68,14 @@ export function BookingsTab({ bookings }: BookingsTabProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold mb-0.5">Revenue</p>
-                    <p className="font-black text-emerald-400">{b.estimatedCostRange || '₹0'}</p>
+                    <p className="font-black text-emerald-400">
+                      {b.finalAmount ? `₹${b.finalAmount}` : (b.bookingAdvance ? `Adv: ₹${b.bookingAdvance}` : (b.estimatedCostRange || '₹0'))}
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center mt-3">
                   <p className="text-[9px] text-slate-600 font-mono">{new Date(b.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                  {b.status === 'Cancelled' && (b.payment_status === 'Paid' || b.paymentStatus === 'Paid') && (
+                  {b.status === 'Cancelled' && (b.payment_status === 'Paid' || b.paymentStatus === 'Paid' || b.paymentStatus === 'Advance Paid') && (
                     <button
                       onClick={() => processRefund(b.id)}
                       disabled={processingRefundId === b.id}
@@ -114,10 +116,13 @@ export function BookingsTab({ bookings }: BookingsTabProps) {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border ${statusColor(b.status)}`}>{b.status}</span>
+                        {b.paymentStage === 'advance_paid' && <div className="text-[8px] text-indigo-400 mt-1 uppercase font-bold tracking-widest">Advance Paid</div>}
                       </td>
                       <td className="px-6 py-4 text-slate-400 font-medium text-xs">{b.technicianName || b.technicianId || 'Unassigned'}</td>
                       <td className="px-6 py-4 text-slate-500 text-xs font-mono">{new Date(b.createdAt).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 text-right font-black text-emerald-400">{b.estimatedCostRange || '₹0'}</td>
+                      <td className="px-6 py-4 text-right font-black text-emerald-400">
+                        {b.finalAmount ? `₹${b.finalAmount}` : (b.bookingAdvance ? `Adv: ₹${b.bookingAdvance}` : (b.estimatedCostRange || '₹0'))}
+                      </td>
                       <td className="px-6 py-4 text-right flex justify-end gap-2">
                         {b.status === 'Cancelled' && (b.payment_status === 'Paid' || b.paymentStatus === 'Paid') && (
                           <button

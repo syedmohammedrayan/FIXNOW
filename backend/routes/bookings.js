@@ -451,7 +451,7 @@ router.post('/verify-otp', async (req, res) => {
 // ── UPDATE STATUS ──
 router.post('/update-status', async (req, res) => {
   try {
-    const { bookingId, status, paymentStatus, technicianId, technicianName, isPaid, totalAmount, servicesDone, accessories } = req.body;
+    const { bookingId, status, paymentStatus, technicianId, technicianName, isPaid, totalAmount, finalAmount, servicesDone, accessories } = req.body;
     const update = { status, updated_at: new Date().toISOString(), updatedAt: new Date().toISOString() };
     if (paymentStatus) update.payment_status = paymentStatus;
     // Handle payment confirmation from technician
@@ -463,10 +463,15 @@ router.post('/update-status', async (req, res) => {
       update.payment_status = 'Unpaid';
       update.paymentStatus = 'Unpaid';
     }
-    if (totalAmount !== undefined) {
-      update.total_amount = totalAmount;
-      update.totalAmount = totalAmount;
-      update.finalAmount = totalAmount;
+    
+    const amountToSet = finalAmount !== undefined ? finalAmount : totalAmount;
+    if (amountToSet !== undefined) {
+      update.total_amount = amountToSet;
+      update.totalAmount = amountToSet;
+      update.finalAmount = amountToSet;
+    }
+    if (status === 'Completed') {
+      update.paymentStage = 'completed';
     }
     if (servicesDone) {
       update.services_done = servicesDone;
