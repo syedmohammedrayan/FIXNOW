@@ -623,6 +623,40 @@ router.post('/cancel', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── REQUEST PAYMENT ──
+router.post('/:id/request-payment', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+    
+    // Update booking payment status
+    await db.collection('bookings').doc(id).update({
+      paymentStatus: 'Requested',
+      payment_status: 'Requested',
+      totalAmount: amount,
+      total_amount: amount,
+      updatedAt: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+
+    const docRef = await db.collection('bookings').doc(id).get();
+    if (docRef.exists) {
+      const booking = { id: docRef.id, ...docRef.data() };
+      booking.totalAmount = amount; // ensuring it's available for template
+      // Send Twilio notification
+      notifyUser(booking.customer_id, 'paymentRequested', booking);
+      
+      // Emit real-time socket event for instantly triggering the customer's dashboard
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`booking_${id}`).emit('payment_requested', { bookingId: id, amount });
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ── SINGLE BOOKING ──
 router.get('/:id', async (req, res) => {
   try {

@@ -9,6 +9,8 @@ interface PaymentScreenProps {
   totalAmount: number;
   setShowPaymentScreen: (show: boolean) => void;
   handleConfirmPayment: (method: "QR" | "Cash") => void;
+  handleRequestDigitalPayment: () => void;
+  paymentRequested: boolean;
   completing: boolean;
 }
 
@@ -16,6 +18,8 @@ export default function PaymentScreen({
   totalAmount,
   setShowPaymentScreen,
   handleConfirmPayment,
+  handleRequestDigitalPayment,
+  paymentRequested,
   completing,
 }: PaymentScreenProps) {
   return (
@@ -85,19 +89,25 @@ export default function PaymentScreen({
               <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest text-center">
                 GPay • PhonePe • Paytm • Amazon
               </p>
-              <button
-                onClick={() => handleConfirmPayment("QR")}
-                disabled={completing}
-                className="mt-8 w-full py-5 bg-white text-slate-950 hover:bg-slate-100 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl shadow-white/10 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50"
-              >
-                {completing ? (
-                  <Loader2 className="animate-spin size-5" />
-                ) : (
-                  <>
-                    <QrCode className="size-5" /> Confirm QR Success
-                  </>
-                )}
-              </button>
+              {paymentRequested ? (
+                <div className="mt-8 w-full py-5 bg-white/10 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl flex items-center justify-center gap-3">
+                  <Loader2 className="animate-spin size-5 text-cyan-400" /> Waiting for Customer...
+                </div>
+              ) : (
+                <button
+                  onClick={handleRequestDigitalPayment}
+                  disabled={completing}
+                  className="mt-8 w-full py-5 bg-white text-slate-950 hover:bg-slate-100 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl shadow-white/10 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50"
+                >
+                  {completing ? (
+                    <Loader2 className="animate-spin size-5" />
+                  ) : (
+                    <>
+                      <Smartphone className="size-5" /> Request Digital Payment
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
             <div className="flex flex-col bg-white/5 border border-white/10 rounded-[2.5rem] p-8 shadow-sm">

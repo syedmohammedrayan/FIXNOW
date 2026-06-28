@@ -456,6 +456,30 @@ export default function TechnicianDashboard() {
     setNewAccPrice("");
   };
 
+  const handleRequestDigitalPayment = async () => {
+    if (!currentJob) return;
+    setCompleting(true);
+    try {
+      await axios.post(`${API_BASE}/api/bookings/${currentJob.id}/request-payment`, {
+        amount: calculateTotal()
+      });
+    } catch (err) {
+      console.error('Failed to request digital payment', err);
+      alert('Failed to send digital payment request.');
+    } finally {
+      setCompleting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentJob?.paymentStatus === 'Paid' || currentJob?.payment_status === 'Paid') {
+      // Auto-complete the job when the customer pays successfully
+      if (!completing && showPaymentScreen) {
+        handleComplete(true);
+      }
+    }
+  }, [currentJob?.paymentStatus, currentJob?.payment_status, showPaymentScreen, completing]);
+
   const handleComplete = async (paidOverride?: boolean) => {
     if (!currentJob) return;
     const finalIsPaid = paidOverride ?? isPaid;
@@ -608,6 +632,8 @@ export default function TechnicianDashboard() {
                           setShowPaymentScreen(false);
                           handleComplete(true);
                         }}
+                        handleRequestDigitalPayment={handleRequestDigitalPayment}
+                        paymentRequested={currentJob?.paymentStatus === 'Requested' || currentJob?.payment_status === 'Requested'}
                         completing={completing}
                         servicesDone={servicesDone}
                         setServicesDone={setServicesDone}

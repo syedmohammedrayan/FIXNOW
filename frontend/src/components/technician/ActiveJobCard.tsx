@@ -35,6 +35,8 @@ interface ActiveJobCardProps {
   setShowPaymentScreen: (s: boolean) => void;
   calculateTotal: () => number;
   handleConfirmPayment: (method: "QR" | "Cash") => void;
+  handleRequestDigitalPayment: () => void;
+  paymentRequested: boolean;
   completing: boolean;
   servicesDone: string;
   setServicesDone: (s: string) => void;
@@ -67,6 +69,8 @@ export default function ActiveJobCard({
   setShowPaymentScreen,
   calculateTotal,
   handleConfirmPayment,
+  handleRequestDigitalPayment,
+  paymentRequested,
   completing,
   servicesDone,
   setServicesDone,
@@ -328,6 +332,8 @@ export default function ActiveJobCard({
               totalAmount={calculateTotal()}
               setShowPaymentScreen={setShowPaymentScreen}
               handleConfirmPayment={handleConfirmPayment}
+              handleRequestDigitalPayment={handleRequestDigitalPayment}
+              paymentRequested={paymentRequested}
               completing={completing}
             />
           ) : (

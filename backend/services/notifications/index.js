@@ -64,7 +64,18 @@ const templates = {
     sms: `FIXNOW: Your complaint for booking #${(data.id || '').slice(-6).toUpperCase()} has been resolved by ${data.technicianName}. Thank you for your patience!`,
     whatsapp: `Your complaint for booking *#${(data.id || '').slice(-6).toUpperCase()}* has been resolved by *${data.technicianName}*. ✅ Thank you for your patience!`,
     push: { title: 'Complaint Resolved', body: `Technician ${data.technicianName} has resolved your complaint.` }
-  })
+  }),
+  paymentRequested: (data) => {
+    const amount = Number(data.totalAmount || data.amount || 0);
+    const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Point the customer to their tracking/dashboard page
+    const link = `https://fixnow.app/customer/dashboard?booking=${data.id}`;
+    return {
+      sms: `FIXNOW: Payment requested for booking #${(data.id || '').slice(-6).toUpperCase()}. Amount due: ₹${formattedAmount}. Tap to pay via UPI or Card: ${link}`,
+      whatsapp: `Payment requested for booking *#${(data.id || '').slice(-6).toUpperCase()}*. 💳 Amount due: *₹${formattedAmount}*. Tap to pay via UPI or Card: ${link}`,
+      push: { title: 'Payment Required', body: `Please settle the payment of ₹${formattedAmount} to complete the service.` }
+    };
+  }
 };
 
 async function sendSMS(to, message) {

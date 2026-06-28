@@ -40,6 +40,7 @@ import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useGoogleMaps } from '@/components/GoogleMapsProvider';
 import ComplaintModal from '@/components/customer/ComplaintModal';
 import FeedbackModal from '@/components/customer/FeedbackModal';
+import PaymentOverlay from '@/components/customer/PaymentOverlay';
 
 const lightMapStyles = [
   { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
@@ -762,6 +763,20 @@ function TrackingContent() {
         </aside>
 
       </main>
+
+      <AnimatePresence>
+        {(booking?.paymentStatus === 'Requested' || booking?.payment_status === 'Requested') && (
+          <PaymentOverlay 
+            bookingId={bookingId!} 
+            totalAmount={Number(booking?.totalAmount || booking?.total_amount || 0)} 
+            onPaymentComplete={() => {
+              // Once payment is complete on customer side, the dashboard just continues listening
+              // The technician side will automatically detect the paymentStatus update.
+              setStatus('Completed');
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* PENDING / WAITING FOR ACCEPTANCE OVERLAY */}
       <AnimatePresence>
