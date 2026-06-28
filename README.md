@@ -1,4 +1,4 @@
-FIXNOW 
+FIXNOW (https://fixnow-smr.vercel.app/)
 
 ![FIXNOW](https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg?updatedAt=1778516774058)
 
