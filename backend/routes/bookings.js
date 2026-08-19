@@ -188,19 +188,26 @@ router.post('/create', async (req, res) => {
       console.warn("Failed to fetch eligible techs for broadcast:", err.message);
     }
 
-    // Ensure customer name is retrieved and stored properly
+    // Ensure customer name and phone are retrieved and stored properly
     let customerName = req.body.customerName;
-    if (!customerName && customerId) {
+    let contactNumber = req.body.contactNumber || req.body.contact_number;
+    
+    if ((!customerName || !contactNumber) && customerId) {
       try {
         const userDoc = await db.collection('users').doc(customerId).get();
         if (userDoc.exists) {
-          customerName = userDoc.data()?.name || userDoc.data()?.fullName || 'Valued Customer';
+          const uData = userDoc.data();
+          if (!customerName) customerName = uData?.name || uData?.fullName || 'Valued Customer';
+          if (!contactNumber) contactNumber = uData?.phone || uData?.phoneNumber || '';
         }
       } catch (e) {
-        console.warn("Failed to fetch customer name for booking:", e.message);
+        console.warn("Failed to fetch customer details for booking:", e.message);
       }
     }
     if (!customerName) customerName = 'Valued Customer';
+    if (!contactNumber) {
+      return res.status(400).json({ success: false, error: 'A valid phone number is required to create a booking.' });
+    }
 
     const now = new Date().toISOString();
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -225,8 +232,8 @@ router.post('/create', async (req, res) => {
       customerId: customerId || req.body.customer_id || '',
       customer_name: customerName,
       customerName: customerName,
-      contact_number: req.body.contactNumber || req.body.contact_number || '',
-      contactNumber: req.body.contactNumber || req.body.contact_number || '',
+      contact_number: contactNumber,
+      contactNumber: contactNumber,
       // Address & location (dual format)
       address: req.body.address || '',
       customer_location: req.body.customerLocation || req.body.customer_location || null,

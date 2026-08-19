@@ -82,9 +82,9 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   }, []);
 
   useEffect(() => {
-    if (userProfile?.name) {
-      setCustomerName(userProfile.name);
-    }
+    if (userProfile?.name) setCustomerName(userProfile.name);
+    if (userProfile?.phone) setContactNumber(userProfile.phone);
+    if (userProfile?.address) setAddress(userProfile.address);
   }, [userProfile]);
   const [paymentMethod, setPaymentMethod] = useState<'now' | 'later'>('now');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -746,6 +746,10 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   };
 
   const createBroadcastBooking = async () => {
+    if (!address.trim() || !contactNumber.trim()) {
+      alert('Please enter service address and contact number.');
+      return;
+    }
     if (!analysisResult) return;
     setAnalyzing(true);
 
