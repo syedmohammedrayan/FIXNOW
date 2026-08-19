@@ -70,7 +70,6 @@ export function AdminProfileModal({ isOpen, onClose }: AdminProfileModalProps) {
       uploadData.append('avatar', file);
       const res = await axios.post(`${API_BASE}/api/profile/me/avatar`, uploadData, {
         headers: { 
-          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
         }
       });

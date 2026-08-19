@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FixNow",
-  description: "Advanced service dispatch and technician tracking ecosystem.",
+  description: "Advanced Home Services Ecosystem.",
 };
 
 export default function RootLayout({
@@ -38,7 +38,7 @@ export default function RootLayout({
             </main>
           </GoogleMapsProvider>
         </ThemeProvider>
-        
+
         <div className="chatbot-container">
           <ChatbotIntegration />
         </div>
@@ -81,9 +81,9 @@ export default function RootLayout({
             }
           `}
         </Script>
-        <Script 
-          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" 
-          strategy="lazyOnload" 
+        <Script
+          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+          strategy="lazyOnload"
         />
         <Script
           id="razorpay-checkout"
