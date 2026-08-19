@@ -10,7 +10,7 @@ import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FixNow",
+  title: "FIXNOW",
   description: "Advanced Home Services Ecosystem.",
 };
 
