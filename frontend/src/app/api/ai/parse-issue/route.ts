@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Groq } from 'groq-sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,10 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "No text provided" }, { status: 400 });
     }
 
-    const messages = [
-      {
-        role: 'system',
-        content: `You are FixNow AI.
+    const promptText = `You are FixNow AI.
 
 Analyze the user's issue text. The user context may be in various Indian languages or English.
 Issue Text: "${issueText}"
@@ -39,17 +38,28 @@ You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add
 }
 
 Category MUST be one of: "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
-Return "INVALID" for category if input is nonsense.`
-      }
-    ];
+Return "INVALID" for category if input is nonsense.`;
 
-    const completion = await groq.chat.completions.create({
-      messages: messages as any,
-      model: "groq/compound",
-      response_format: { type: "json_object" }
-    });
-
-    const rawText = completion.choices[0].message.content;
+    let rawText = '';
+    
+    // --- STEP 1: Try Gemini Primary ---
+    try {
+      console.log('[AI Parse] Trying Gemini');
+      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      const result = await model.generateContent(promptText);
+      const response = await result.response;
+      rawText = response.text();
+    } catch (geminiError: any) {
+      console.warn('[AI Parse] Gemini failed, falling back to Groq:', geminiError.message);
+      
+      // --- STEP 2: Try Groq Fallback ---
+      const completion = await groq.chat.completions.create({
+        messages: [{ role: 'user', content: promptText }],
+        model: "groq/compound",
+        response_format: { type: "json_object" }
+      });
+      rawText = completion.choices[0].message.content || '';
+    }
     
     let data;
     try {
