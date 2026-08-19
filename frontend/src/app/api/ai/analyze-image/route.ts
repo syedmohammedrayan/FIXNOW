@@ -155,7 +155,7 @@ Return "INVALID" for category if input is completely unreadable nonsense.`;
             ]
           }
         ] as any,
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        model: "groq/compound",
         temperature: 0.7,
         max_tokens: 1024,
       });
