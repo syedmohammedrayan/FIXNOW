@@ -22,6 +22,7 @@ You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add
 
 {
   "problem": "",
+  "recommendedRepair": "Detailed, step-by-step solution for how the technician will resolve this specific damage/issue.",
   "category": "",
   "severity": "",
   "confidence": 0,
