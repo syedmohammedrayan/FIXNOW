@@ -6,7 +6,7 @@ import { Sparkles, Languages, Check, Mic, Camera, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 
-const AIWorkflowTimeline = dynamic(() => import('@/components/ai/AIWorkflowTimeline'), { ssr: false });
+import { Loader2 } from '@/components/ui/loader-2';
 
 interface AITriagePanelProps {
   analyzing: boolean;
@@ -57,18 +57,7 @@ export default function AITriagePanel({
     >
       {analyzing && (
         <div className="absolute inset-0 z-50 bg-slate-950/70 backdrop-blur-md border border-white/10 flex flex-col items-center justify-center rounded-[2rem] sm:rounded-[2.5rem] p-6">
-          <div className="w-full max-w-md bg-slate-900/80 p-6 sm:p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center gap-6 sm:gap-8">
-            <p className="text-white font-black text-xs sm:text-sm uppercase tracking-[0.2em] animate-pulse">Running Intelligence Protocol</p>
-            <AIWorkflowTimeline 
-              steps={[
-                { id: 'multimodal', label: 'Multimodal', status: 'complete' },
-                { id: 'context', label: 'Memory Context', status: 'complete' },
-                { id: 'diagnosis', label: 'Smart Diagnosis', status: 'active' },
-                { id: 'booking', label: 'Booking Plan', status: 'pending' }
-              ]} 
-              className="justify-center w-full max-w-sm"
-            />
-          </div>
+          <Loader2 />
         </div>
       )}
       <div className="flex items-center justify-between">
