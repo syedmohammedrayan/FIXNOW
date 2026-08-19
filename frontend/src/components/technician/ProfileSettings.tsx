@@ -167,7 +167,10 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
       };
 
       // Call the backend endpoint instead of updating Firestore client-side directly
-      await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, updateData);
+      const token = await auth.currentUser?.getIdToken();
+      await axios.patch(`${API_BASE}/api/profile/me`, updateData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
       setProfile((prev: any) => ({ ...prev, ...updateData }));
       setIsEditing(false);
@@ -191,10 +194,14 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
 
     setUploadingAvatar(true);
     try {
+      const token = await auth.currentUser?.getIdToken();
       const uploadData = new FormData();
       uploadData.append('avatar', file);
-      const res = await axios.post(`${API_BASE}/api/users/${user.uid}/avatar`, uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const res = await axios.post(`${API_BASE}/api/profile/me/avatar`, uploadData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
       });
       if (res.data && res.data.avatar) {
         // 2. Final Update with server URL
@@ -221,8 +228,10 @@ export default function ProfileSettings({ user, profile, setProfile }: ProfilePr
     setUploadingAvatar(true);
     try {
       setProfile((prev: any) => ({ ...prev, avatar: undefined }));
-      // Use backend API to clear avatar
-      await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { avatar: null });
+      const token = await auth.currentUser?.getIdToken();
+      await axios.delete(`${API_BASE}/api/profile/me/avatar`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     } catch (err) {
       console.error('Failed to delete avatar', err);
     } finally {

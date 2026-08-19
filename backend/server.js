@@ -35,6 +35,7 @@ const { db } = require('./config/firebaseAdmin');
 const uploadRoute = require('./routes/upload');
 const complaintsRoutes = require('./routes/complaints');
 const paymentRoutes = require('./routes/payment');
+const profileRoutes = require('./routes/profile');
 
 app.use('/api/ai', aiRoutes);
 app.use('/api/bookings', bookingsRoutes);
@@ -44,6 +45,7 @@ app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/upload', uploadRoute);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

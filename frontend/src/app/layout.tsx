@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "FIXNOW PRO | Service Control Center",
   description: "Advanced service dispatch and technician tracking ecosystem.",
+  icons: {
+    icon: "https://ik.imagekit.io/smr2007/fixnow-logo-colored.svg",
+  },
 };
 
 export default function RootLayout({
@@ -22,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="https://ik.imagekit.io/smr2007/fixnow-logo.png" />
       </head>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
 

@@ -1,6 +1,7 @@
-import React from 'react';
-import { Menu, RefreshCw, LayoutDashboard, Activity, ShieldCheck, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, RefreshCw, LayoutDashboard, Activity, ShieldCheck, Users, ClipboardList, ShoppingCart, DollarSign, Bell, LogOut, AlertTriangle, User } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
+import { AdminProfileModal } from './shared/AdminProfileModal';
 
 interface NavbarProps {
   sidebarOpen: boolean;
@@ -27,6 +28,8 @@ const TAB_LABELS: Record<string, string> = {
 };
 
 export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, fetchData, setShowAddModal, techsCount, toolOrdersCount, handleSignOut }: NavbarProps) {
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
   const navLinks = [
     { icon: <LayoutDashboard className="w-5 h-5" />, label: 'Overview',      tab: 'overview' },
     { icon: <Activity className="w-5 h-5" />,        label: 'Live Map',      tab: 'live-map' },
@@ -105,6 +108,16 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
             </button>
             
             <button
+              onClick={() => setShowProfileModal(true)}
+              className="p-2.5 rounded-xl text-cyan-400/80 hover:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/20 transition-all border border-transparent group relative"
+            >
+              <User className="w-5 h-5" />
+              <div className="absolute -bottom-10 right-0 px-2.5 py-1.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+                Profile
+              </div>
+            </button>
+
+            <button
               onClick={handleSignOut}
               className="p-2.5 rounded-xl text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all border border-transparent group relative"
             >
@@ -127,6 +140,11 @@ export function Navbar({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, f
           </button>
         </div>
       </header>
+      
+      <AdminProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)} 
+      />
     </div>
   );
 }

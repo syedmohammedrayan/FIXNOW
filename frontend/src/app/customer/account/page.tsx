@@ -97,8 +97,11 @@ export default function CustomerAccount() {
     if (!user) return;
     setSaving(true);
     try {
-      await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, {
+      const token = await user.getIdToken();
+      await axios.patch(`${API_BASE}/api/profile/me`, {
         ...formData
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       // Optionally show a custom toast instead of alert
       alert('Profile protocol updated successfully!');
@@ -115,10 +118,14 @@ export default function CustomerAccount() {
     const file = e.target.files[0];
     setUploadingAvatar(true);
     try {
+      const token = await user.getIdToken();
       const uploadData = new FormData();
       uploadData.append('avatar', file);
-      const res = await axios.post(`${API_BASE}/api/users/${user.uid}/avatar`, uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const res = await axios.post(`${API_BASE}/api/profile/me/avatar`, uploadData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
       });
       if (res.data && res.data.avatar) {
         const url = res.data.avatar;
@@ -139,7 +146,10 @@ export default function CustomerAccount() {
     setUploadingAvatar(true);
     setFormData(prev => ({ ...prev, avatar: '' }));
     try {
-      await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { avatar: null });
+      const token = await user.getIdToken();
+      await axios.delete(`${API_BASE}/api/profile/me/avatar`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     } catch (err) {
       console.error(err);
     } finally {

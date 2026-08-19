@@ -652,69 +652,7 @@ router.get('/admin-bypass', async (req, res) => {
   }
 });
 
-// Avatar upload - Using Cloudinary
-router.post('/:id/avatar', upload.single('avatar'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-    const { id } = req.params;
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: `fixnow/avatars/${id}`
-    });
-
-    // Cleanup local temp file
-    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-
-    const publicUrl = result.secure_url;
-
-    const update = { avatar: publicUrl, updated_at: new Date().toISOString() };
-    await db.collection('users').doc(id).set({ id, ...update }, { merge: true });
-    try { await db.collection('technicians').doc(id).update(update); } catch (e) { }
-
-    res.json({ success: true, localUrl: publicUrl, avatar: publicUrl });
-  } catch (err) {
-    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-    console.error('Avatar save error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Update profile details
-router.post('/:id/update-profile', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const body = { ...req.body };
-
-    // Clean dangerous fields
-    delete body.specialityTagline;
-
-    // Convert camelCase to snake_case for DB
-    const update = {};
-    for (const [key, value] of Object.entries(body)) {
-      const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      update[snakeKey] = value;
-    }
-    update.updated_at = new Date().toISOString();
-
-    await db.collection('users').doc(id).set(update, { merge: true });
-    const tDoc = await db.collection('technicians').doc(id).get();
-    if (tDoc.exists) {
-      await db.collection('technicians').doc(id).update(update);
-    } else {
-      const uDoc = await db.collection('users').doc(id).get();
-      if (uDoc.exists && uDoc.data().role === 'technician') {
-        await db.collection('technicians').doc(id).set({ id, ...update }, { merge: true });
-      }
-    }
-
-    res.json({ success: true, message: 'Profile updated successfully', data: update });
-  } catch (err) {
-    console.error('Profile update error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Update verification status (for re-uploads)
 router.post('/update-verification-status', async (req, res) => {

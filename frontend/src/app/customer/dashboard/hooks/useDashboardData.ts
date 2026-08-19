@@ -163,15 +163,19 @@ export function useDashboardData() {
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>, setUploadingAvatar: (v: boolean) => void, setAvatarMenuOpen: (v: boolean) => void) => {
-    if (!e.target.files || !e.target.files[0] || !userId) return;
+    if (!e.target.files || !e.target.files[0] || !userId || !auth.currentUser) return;
     const file = e.target.files[0];
     setUploadingAvatar(true);
     setAvatarMenuOpen(false);
     try {
+      const token = await auth.currentUser.getIdToken();
       const uploadData = new FormData();
       uploadData.append('avatar', file);
-      const res = await axios.post(`${API_BASE}/api/users/${userId}/avatar`, uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const res = await axios.post(`${API_BASE}/api/profile/me/avatar`, uploadData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
       });
       if (res.data && res.data.avatar) {
         let url = res.data.avatar;
@@ -186,14 +190,16 @@ export function useDashboardData() {
   };
 
   const handleAvatarDelete = async (setUploadingAvatar: (v: boolean) => void, setAvatarMenuOpen: (v: boolean) => void) => {
-    if (!userId || !userProfile.avatar) return;
+    if (!userId || !userProfile.avatar || !auth.currentUser) return;
     setUploadingAvatar(true);
     setAvatarMenuOpen(false);
     const oldAvatar = userProfile.avatar;
     setUserProfile(prev => ({ ...prev, avatar: undefined }));
     try {
-      // Update via backend directly
-      await axios.post(`${API_BASE}/api/users/${userId}/update-profile`, { avatar: null });
+      const token = await auth.currentUser.getIdToken();
+      await axios.delete(`${API_BASE}/api/profile/me/avatar`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     } catch (err) {
       console.error('Failed to delete avatar', err);
       setUserProfile(prev => ({ ...prev, avatar: oldAvatar }));
