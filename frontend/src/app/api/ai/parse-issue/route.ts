@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fixNowAIService } from '@/lib/ai/service';
+import { Groq } from 'groq-sdk';
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const messages = [
       {
-        role: 'user',
+        role: 'system',
         content: `You are FixNow AI.
 
 Analyze the user's issue text. The user context may be in various Indian languages or English.
@@ -41,12 +43,17 @@ Return "INVALID" for category if input is nonsense.`
       }
     ];
 
-    // This perfectly routes it through CascadeAgent (drafter/verifier) AND Hindsight memory
-    const rawText = await fixNowAIService.ask(messages, 'system', 'anonymous');
+    const completion = await groq.chat.completions.create({
+      messages: messages as any,
+      model: "groq/compound",
+      response_format: { type: "json_object" }
+    });
+
+    const rawText = completion.choices[0].message.content;
     
     let data;
     try {
-      const cleaned = rawText
+      const cleaned = (rawText || "")
         .replace(/```json/gi, "")
         .replace(/```/g, "")
         .trim();
