@@ -336,8 +336,9 @@ export default function TechnicianDashboard() {
     try {
       const formData = new FormData();
       formData.append("avatar", file);
-      const res = await axios.post(`${API_BASE}/api/users/${user.uid}/avatar`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const token = await user.getIdToken();
+      const res = await axios.post(`${API_BASE}/api/profile/me/avatar`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) {
         // 2. Final Update with server URL
@@ -363,8 +364,10 @@ export default function TechnicianDashboard() {
     setAvatarMenuOpen(false);
     try {
       setProfile((prev: any) => ({ ...prev, avatar: undefined }));
-      // Use backend API to clear avatar (consistent with upload path)
-      await axios.post(`${API_BASE}/api/users/${user.uid}/update-profile`, { avatar: null });
+      const token = await user.getIdToken();
+      await axios.delete(`${API_BASE}/api/profile/me/avatar`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     } catch (err) {
       console.error("Failed to delete avatar", err);
     } finally {
