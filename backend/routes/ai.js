@@ -367,50 +367,7 @@ router.post('/parse-issue', async (req, res) => {
 });
 
 
-router.post('/transcribe', upload.single('audio'), async (req, res) => {
-  if (!req.file) return res.status(400).json({ success: false, error: "No audio file provided" });
 
-  try {
-    // Try Gemini First
-    console.log('[AI Voice] Trying Gemini');
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-    const prompt = "Transcribe the following audio exactly. Output only the transcribed text without any additional commentary. Translate to English if it is in another language.";
-    
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          data: req.file.buffer.toString("base64"),
-          mimeType: req.file.mimetype
-        }
-      }
-    ]);
-    const response = await result.response;
-    const text = response.text().trim();
-    
-    console.log('[AI Voice] Gemini succeeded');
-    res.json({ success: true, text });
-  } catch (geminiError) {
-    console.warn('[AI Voice] Gemini failed, falling back to Groq Whisper:', geminiError.message);
-    
-    try {
-      const audioFile = new File([req.file.buffer], "audio.webm", { type: req.file.mimetype });
-
-      const transcription = await groq.audio.transcriptions.create({
-        file: audioFile,
-        model: "whisper-large-v3-turbo",
-        response_format: "json",
-        language: "en", 
-      });
-
-      console.log('[AI Voice] Groq Whisper succeeded');
-      res.json({ success: true, text: transcription.text });
-    } catch (groqError) {
-      console.error("[AI Voice] Groq Fallback Error:", groqError);
-      res.status(500).json({ success: false, error: "Failed to transcribe audio" });
-    }
-  }
-});
 
 router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
   if (!req.file) {
