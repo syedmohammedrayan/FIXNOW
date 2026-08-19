@@ -12,7 +12,7 @@ export class GeminiProvider implements AIProvider {
       success: true,
       content: 'Gemini Skeleton Response',
       provider: this.name,
-      model: options?.model || 'gemini-2.5-flash-lite',
+      model: options?.model || 'gemini-3-flash-preview',
       latency: 45,
       usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
       metadata: {}
@@ -27,12 +27,12 @@ export class GeminiProvider implements AIProvider {
     return {
       status: 'connected',
       latencyMs: 40,
-      availableModels: ['gemini-2.5-flash-lite'],
+      availableModels: ['gemini-3-flash-preview'],
       providerVersion: 'v1'
     };
   }
 
   async listModels(): Promise<string[]> {
-    return ['gemini-2.5-flash-lite'];
+    return ['gemini-3-flash-preview'];
   }
 }

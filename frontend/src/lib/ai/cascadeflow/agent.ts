@@ -45,23 +45,18 @@ export class FixNowCascadeAgent {
       console.warn('[FixNowCascadeAgent] Cascade handler failed, falling back to direct Groq:', e?.message || e);
       
       // Dynamically pool all keys
-      const groqKeys = Object.keys(process.env)
-        .filter(key => key.startsWith('GROQ_API_KEY'))
-        .map(key => process.env[key])
-        .filter(val => val && val.startsWith('gsk_'));
-        
-      const groqApiKey = groqKeys.length > 0 ? groqKeys[Math.floor(Math.random() * groqKeys.length)] : '';
+      const groqApiKey = process.env.GROQ_API_KEY || '';
       const geminiApiKey = process.env.GEMINI_API_KEY || '';
-      
-      let providerModel: any;
-      
+
+      let providerModel;
+
       if (groqApiKey) {
         const groq = createGroq({ apiKey: groqApiKey });
         providerModel = groq(cascadeConfig.defaultModels.verifier);
         console.warn('[FixNowCascadeAgent] Using Groq fallback');
       } else if (geminiApiKey) {
         const google = createGoogleGenerativeAI({ apiKey: geminiApiKey });
-        providerModel = google('gemini-2.5-flash-lite');
+        providerModel = google('gemini-3-flash-preview');
         console.warn('[FixNowCascadeAgent] Using Gemini fallback');
       } else {
         throw new Error('No Groq or Gemini API keys configured in environment.');

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Groq } from 'groq-sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,13 +16,7 @@ export async function POST(req: NextRequest) {
     const base64Image = buffer.toString("base64");
     const mimeType = image.type || 'image/jpeg';
 
-    const messages = [
-      {
-        role: 'user',
-        content: [
-          { 
-            type: "text", 
-            text: `You are FixNow AI.
+    const promptText = `You are FixNow AI.
 
 Analyze images. These could be home repair issues OR documents/invoices/receipts.
 The user context may be in various Indian languages or English: "${userText || 'No description provided'}".
@@ -74,38 +69,9 @@ You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add
 }
 
 Category MUST be one of: "Document / Invoice", "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
-Return "INVALID" for category if input is completely unreadable nonsense.` 
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:${mimeType};base64,${base64Image}`
-            }
-          }
-        ]
-      }
-    ];
+Return "INVALID" for category if input is completely unreadable nonsense.`;
 
-    // Key rotation logic
-    const groqKeys = Object.keys(process.env)
-      .filter(key => key.startsWith('GROQ_API_KEY'))
-      .map(key => process.env[key])
-      .filter(val => val && val.startsWith('gsk_'));
-      
-    const groqApiKey = groqKeys.length > 0 ? groqKeys[Math.floor(Math.random() * groqKeys.length)] : process.env.GROQ_API_KEY;
-    const groq = new Groq({ apiKey: groqApiKey as string });
-
-    const chatCompletion = await groq.chat.completions.create({
-      messages: messages as any,
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
-      temperature: 0.7,
-      max_tokens: 1024,
-    });
-
-    const rawText = chatCompletion.choices[0]?.message?.content || '';
-    
-    let data;
-    try {
+    const extractJson = (rawText: string) => {
       const cleaned = rawText
         .replace(/```json/gi, "")
         .replace(/```/g, "")
@@ -119,14 +85,93 @@ Return "INVALID" for category if input is completely unreadable nonsense.`
       }
 
       const jsonString = cleaned.slice(first, last + 1);
-      data = JSON.parse(jsonString);
-    } catch (e) {
-      throw new Error("No valid JSON found in AI response");
+      return JSON.parse(jsonString);
+    };
+
+    const isRecoverableError = (err: any) => {
+      if (err.status && (err.status === 429 || err.status >= 500)) return true;
+      if (err.message && (
+        err.message.includes('rate limit') ||
+        err.message.includes('quota') ||
+        err.message.includes('timeout') ||
+        err.message.includes('503') ||
+        err.message.includes('500') ||
+        err.message.includes('overloaded') ||
+        err.message.includes('JSON')
+      )) return true;
+      return false;
+    };
+
+    // ---- STEP 1: Gemini Primary ----
+    try {
+      console.log('[Frontend AI Vision] Trying Gemini Primary');
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+      const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+
+      const result = await model.generateContent([
+        { text: promptText },
+        {
+          inlineData: {
+            data: base64Image,
+            mimeType: mimeType
+          }
+        }
+      ]);
+
+      const response = await result.response;
+      const data = extractJson(response.text());
+      console.log('[Frontend AI Vision] Gemini succeeded');
+      return NextResponse.json({ success: true, data });
+    } catch (geminiErr: any) {
+      if (!isRecoverableError(geminiErr)) {
+        console.error('[Frontend AI Vision] Gemini non-recoverable error:', geminiErr);
+        return NextResponse.json({ success: false, error: 'AI processing failed' }, { status: 500 });
+      }
+      console.warn('[Frontend AI Vision] Gemini failed (recoverable). Falling back to Groq:', geminiErr.message);
     }
 
-    return NextResponse.json({ success: true, data });
+    // ---- STEP 2: Groq Fallback ----
+    try {
+      console.log('[Frontend AI Vision] Trying Groq Fallback');
+      const groqApiKey = process.env.GROQ_API_KEY;
+      if (!groqApiKey) {
+        throw new Error("GROQ_API_KEY not configured");
+      }
+      
+      const groq = new Groq({ apiKey: groqApiKey });
+
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: "text", text: promptText },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:${mimeType};base64,${base64Image}`
+                }
+              }
+            ]
+          }
+        ] as any,
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        temperature: 0.7,
+        max_tokens: 1024,
+      });
+
+      const rawText = chatCompletion.choices[0]?.message?.content || '';
+      const data = extractJson(rawText);
+      console.log('[Frontend AI Vision] Groq succeeded');
+      
+      return NextResponse.json({ success: true, data });
+    } catch (groqErr: any) {
+      console.error('[Frontend AI Vision] Groq fallback failed:', groqErr);
+      return NextResponse.json({ success: false, error: 'AI processing failed on both providers' }, { status: 500 });
+    }
+
   } catch (error: any) {
-    console.error('[API /api/ai/analyze-image] Error:', error);
+    console.error('[API /api/ai/analyze-image] Outer Error:', error);
     return NextResponse.json({ success: false, error: 'AI processing failed' }, { status: 500 });
   }
 }

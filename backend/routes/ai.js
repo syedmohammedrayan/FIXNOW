@@ -8,23 +8,22 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Dynamically gather all GROQ_API_KEY_* environment variables
-const groqKeys = Object.keys(process.env)
-  .filter(key => key.startsWith('GROQ_API_KEY'))
-  .map(key => process.env[key])
-  .filter(val => val && val.startsWith('gsk_'));
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY
+});
 
-let currentKeyIndex = 0;
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const GEMINI_VISION_MODEL = 'gemini-3-flash-preview';
 
 /**
  * Robust JSON extraction from AI responses
  */
 function safeJsonParse(text) {
   try {
-    // Try direct parse
+
     return JSON.parse(text);
   } catch (e) {
-    // Try extracting from markdown blocks
+
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
@@ -37,65 +36,176 @@ function safeJsonParse(text) {
   }
 }
 
-// Initialize OpenRouter (REMOVED)
 
-async function fetchGroqWithFallback(options) {
-  let lastError;
-  if (groqKeys.length === 0) throw new Error("No valid Groq API keys available.");
-
-  for (let i = 0; i < groqKeys.length; i++) {
-    const key = groqKeys[(currentKeyIndex + i) % groqKeys.length];
-    const groq = new Groq({ apiKey: key });
-    try {
-      const response = await groq.chat.completions.create(options);
-      // Advance to the NEXT key for the next request (True Round-Robin)
-      currentKeyIndex = (currentKeyIndex + i + 1) % groqKeys.length;
-      return response;
-    } catch (err) {
-      console.warn(`Groq key [${key.substring(0, 10)}...] failed: ${err.message}. Trying next...`);
-      lastError = err;
-
-      // If it's a rate limit on the large model, try the new Llama 4 Scout first
-      if (err.status === 429 && options.model === "llama-3.3-70b-versatile") {
-        try {
-          console.log(`Attempting Llama fallback with key [${key.substring(0, 10)}...]`);
-          const scoutResponse = await groq.chat.completions.create({
-            ...options,
-            model: "llama-3.1-8b-instant"
-          });
-          currentKeyIndex = (currentKeyIndex + i) % groqKeys.length;
-          return scoutResponse;
-        } catch (scoutErr) {
-          console.warn(`Scout fallback failed: ${scoutErr.message}. Trying 8b...`);
-          try {
-            console.log(`Attempting 8b model fallback with key [${key.substring(0, 10)}...]`);
-            const fallbackResponse = await groq.chat.completions.create({
-              ...options,
-              model: "llama-3.1-8b-instant"
-            });
-            currentKeyIndex = (currentKeyIndex + i) % groqKeys.length;
-            return fallbackResponse;
-          } catch (innerErr) {
-            console.warn(`8b fallback also failed: ${innerErr.message}`);
-          }
-        }
-      }
-    }
+async function fetchGroq(options) {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY is not configured');
   }
 
-  throw lastError;
+  return groq.chat.completions.create(options);
 }
 
-// Removed local llama-server client
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+function isRecoverableProviderError(err) {
+  // Rate limit, quota, server errors, timeouts, network failures
+  if (err.status && (err.status === 429 || err.status >= 500)) return true;
+  if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND') return true;
+  if (err.message && (
+    err.message.includes('rate limit') ||
+    err.message.includes('quota') ||
+    err.message.includes('temporarily unavailable') ||
+    err.message.includes('timeout') ||
+    err.message.includes('503') ||
+    err.message.includes('500') ||
+    err.message.includes('SAFETY') ||
+    err.message.includes('overloaded')
+  )) return true;
+  return false;
+}
+
+
+const IMAGE_ANALYSIS_PROMPT = (userText) => `You are FixNow AI.
+
+Analyze images. These could be home repair issues OR documents/invoices/receipts.
+The user context may be in various Indian languages or English: "${userText || 'No description provided'}".
+
+If the image is a document, invoice, or receipt:
+- Set category to "Document / Invoice"
+- Put the document type or company name in "problem"
+- Put the total amount in "estimatedCostMin" and "estimatedCostMax" (if found, otherwise 0)
+- Extract the key items/details into "summary"
+- Put all visible text into "ocr"
+- Leave arrays like requiredMaterials, requiredTools, possibleCauses empty.
+- Do NOT return "INVALID" for documents.
+
+If the image is a home repair issue:
+- Diagnose the problem and fill all fields accordingly.
+- Pick a repair Category from the list below.
+
+You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add any conversational text before or after the JSON. Start your response with { and end it with }.
+
+{
+  "problem": "",
+  "category": "",
+  "severity": "",
+  "confidence": 0,
+  "recommendedTechnician": "",
+  "estimatedCostMin": 0,
+  "estimatedCostMax": 0,
+  "estimatedRepairTime": "",
+  "urgency": "",
+  "possibleCauses": [],
+  "requiredMaterials": [],
+  "requiredTools": [],
+  "safetyTips": [],
+  "ocr": "",
+  "summary": ""
+}
+
+Category MUST be one of: "Document / Invoice", "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
+Return "INVALID" for category if input is completely unreadable nonsense.`;
+
+
+// /analyze-image — GEMINI PRIMARY, SINGLE GROQ FALLBACK
+
+router.post('/analyze-image', upload.single('image'), async (req, res) => {
+  const { userText } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: "No image provided" });
+  }
+
+  const base64Image = req.file.buffer.toString("base64");
+  const prompt = IMAGE_ANALYSIS_PROMPT(userText);
+
+  // ---- STEP 1: Try Gemini first ----
+  try {
+    console.log('[AI Vision] Trying Gemini');
+    const model = genAI.getGenerativeModel({ model: GEMINI_VISION_MODEL });
+
+    const result = await model.generateContent([
+      { text: prompt },
+      {
+        inlineData: {
+          data: base64Image,
+          mimeType: req.file.mimetype
+        }
+      }
+    ]);
+
+    const response = await result.response;
+    const rawText = response.text();
+    const data = safeJsonParse(rawText);
+
+    console.log('[AI Vision] Gemini succeeded');
+    return res.json({ success: true, data });
+
+  } catch (geminiErr) {
+    // Determine if we should fallback to Groq
+    const isJsonParseFailure = geminiErr.message && (
+      geminiErr.message.includes('No valid JSON') ||
+      geminiErr.message.includes('malformed')
+    );
+    const shouldFallback = isRecoverableProviderError(geminiErr) || isJsonParseFailure;
+
+    if (!shouldFallback) {
+      // Non-recoverable error (programming error, etc.) — don't try Groq
+      console.error('[AI Vision] Gemini failed with non-recoverable error:', geminiErr.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Vision analysis failed.',
+        debug: { message: geminiErr.message }
+      });
+    }
+
+    console.warn(`[AI Vision] Gemini failed (recoverable): ${geminiErr.message}`);
+  }
+
+  //  STEP 2: Groq fallback 
+  try {
+    console.log('[AI Vision] Falling back to Groq');
+    const groqResponse = await fetchGroq({
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${req.file.mimetype};base64,${base64Image}`
+              }
+            }
+          ]
+        }
+      ],
+      temperature: 0.1,
+      max_tokens: 700,
+      response_format: { type: "json_object" }
+    });
+
+    const rawText = groqResponse.choices[0].message.content;
+    const data = safeJsonParse(rawText);
+
+    console.log('[AI Vision] Groq succeeded');
+    return res.json({ success: true, data });
+
+  } catch (groqErr) {
+    console.error('[AI Vision] Groq fallback also failed:', groqErr.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Vision provider failed.',
+      debug: { message: groqErr.message }
+    });
+  }
+});
+
 
 router.post('/chat', async (req, res) => {
   const { message, role, userId } = req.body;
 
   try {
-    const chatCompletion = await fetchGroqWithFallback({
+    const chatCompletion = await fetchGroq({
       "messages": [
         {
           "role": "system",
@@ -123,7 +233,7 @@ router.post('/chat', async (req, res) => {
 
     const reply = chatCompletion.choices[0].message.content;
 
-    // Parse actions if any
+
     let action = null;
     let data = null;
 
@@ -138,7 +248,7 @@ router.post('/chat', async (req, res) => {
   } catch (error) {
     console.warn('Groq Chat Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
       const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
       MISSION: Concierge for customers, technical supervisor for technicians.
       User message: ${message}`;
@@ -155,10 +265,11 @@ router.post('/chat', async (req, res) => {
   }
 });
 
+
 router.post('/parse-issue', async (req, res) => {
   const { issueText } = req.body;
   try {
-    const completion = await fetchGroqWithFallback({
+    const completion = await fetchGroq({
       messages: [
         {
           role: "system",
@@ -215,7 +326,7 @@ router.post('/parse-issue', async (req, res) => {
   } catch (error) {
     console.warn('Groq Parse Issue Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
       const prompt = `You are a multilingual repair triage expert.
       TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
       RULES:
@@ -252,122 +363,20 @@ router.post('/parse-issue', async (req, res) => {
 });
 
 
-router.post('/analyze-image', upload.single('image'), async (req, res) => {
-  const { userText } = req.body;
-  if (!req.file) {
-    return res.status(400).json({ success: false, error: "No image provided" });
-  }
-
-  try {
-    const base64Image = req.file.buffer.toString("base64");
-
-    const response = await fetchGroqWithFallback({
-      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { 
-              type: "text", 
-              text: `You are FixNow AI.
-
-Analyze images. These could be home repair issues OR documents/invoices/receipts.
-The user context may be in various Indian languages or English: "${userText || 'No description provided'}".
-
-If the image is a document, invoice, or receipt:
-- Set category to "Document / Invoice"
-- Put the document type or company name in "problem"
-- Put the total amount in "estimatedCostMin" and "estimatedCostMax" (if found, otherwise 0)
-- Extract the key items/details into "summary"
-- Put all visible text into "ocr"
-- Leave arrays like requiredMaterials, requiredTools, possibleCauses empty.
-- Do NOT return "INVALID" for documents.
-
-If the image is a home repair issue:
-- Diagnose the problem and fill all fields accordingly.
-- Pick a repair Category from the list below.
-
-You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add any conversational text before or after the JSON. Start your response with { and end it with }.
-
-{
-  "problem": "",
-  "category": "",
-  "severity": "",
-  "confidence": 0,
-  "recommendedTechnician": "",
-  "estimatedCostMin": 0,
-  "estimatedCostMax": 0,
-  "estimatedRepairTime": "",
-  "urgency": "",
-  "possibleCauses": [],
-  "requiredMaterials": [],
-  "requiredTools": [],
-  "safetyTips": [],
-  "ocr": "",
-  "summary": ""
-}
-
-Category MUST be one of: "Document / Invoice", "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
-Return "INVALID" for category if input is completely unreadable nonsense.`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${req.file.mimetype};base64,${base64Image}`
-              }
-            }
-          ]
-        }
-      ],
-      temperature: 0.1,
-      max_tokens: 700,
-      response_format: { type: "json_object" }
-    });
-
-    // Handle markdown-wrapped JSON from local models
-    const rawText = response.choices[0].message.content;
-    console.log("--- RAW QWEN OUTPUT ---");
-    console.log(rawText);
-    console.log("-----------------------");
-
-    // Handle markdown-wrapped JSON from local models
-    const cleanedText = rawText
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
-
-    const data = safeJsonParse(cleanedText);
-    return res.json({ success: true, data });
-
-  } catch (err) {
-    console.error('Vision Analysis Error:', err.message);
-    res.status(500).json({
-      success: false,
-      error: 'Vision provider failed.',
-      debug: { message: err.message }
-    });
-  }
-});
-
-// --- PHASE 4: New AI Endpoints ---
-
-// 1. Voice Transcription (Whisper)
 router.post('/transcribe', upload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, error: "No audio file provided" });
-  
+
   try {
-    const groq = new Groq({ apiKey: groqKeys[0] });
-    
-    // Convert memory buffer to file-like object for Groq
+
     const audioFile = new File([req.file.buffer], "audio.webm", { type: req.file.mimetype });
-    
+
     const transcription = await groq.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-large-v3-turbo",
       response_format: "json",
       language: "en", // Using english to force translation of indian languages if possible, or omit language for auto-detect
     });
-    
+
     res.json({ success: true, text: transcription.text });
   } catch (error) {
     console.error("Transcription Error:", error);
@@ -375,10 +384,10 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
   }
 });
 
-// 2. Explainable AI for Recommendations
+
 router.post('/explain', async (req, res) => {
   const { technician, scores } = req.body;
-  
+
   try {
     const prompt = `You are the FIXNOW AI Dispatcher. Explain to the customer why this technician was recommended.
     Technician: ${technician.name || 'Professional'}
@@ -390,37 +399,37 @@ router.post('/explain', async (req, res) => {
     
     Write exactly 3 short, punchy bullet points highlighting their expertise, proximity, and our AI's confidence in their success. Do NOT use markdown asterisks. Format as a JSON array of strings.`;
 
-    const completion = await fetchGroqWithFallback({
+    const completion = await fetchGroq({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.3,
       response_format: { type: "json_object" }
     });
-    
+
     let text = completion.choices[0].message.content;
     const data = safeJsonParse(text);
-    // Handle both { "bullets": [...] } and direct array (which safeJsonParse might not handle if it expects obj, but let's assume it returns { bullets: [] })
+    // Handle both { "bullets": [...] } and direct array
     let bullets = data.bullets || data.reasons || data.points || Object.values(data)[0] || [];
     if (!Array.isArray(bullets)) bullets = ["High skill match verified by AI", "Excellent rating history", "Close proximity for fast arrival"];
-    
+
     res.json({ success: true, bullets });
   } catch (error) {
     console.error("Explanation Error:", error);
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       bullets: [
-        "Strong semantic skill match", 
-        "High success probability predicted", 
+        "Strong semantic skill match",
+        "High success probability predicted",
         "Optimal distance and availability"
-      ] 
+      ]
     });
   }
 });
 
-// 3. AI Negotiation Engine
+
 router.post('/negotiate', async (req, res) => {
   const { customerBudget, technicianPrice, urgency, distance } = req.body;
-  
+
   try {
     const prompt = `You are the FIXNOW AI Negotiation Engine. 
     Customer Budget: ₹${customerBudget || 500}
@@ -436,13 +445,13 @@ router.post('/negotiate', async (req, res) => {
       "reasoning": "A fair compromise considering the high urgency and travel distance."
     }`;
 
-    const completion = await fetchGroqWithFallback({
+    const completion = await fetchGroq({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.2,
       response_format: { type: "json_object" }
     });
-    
+
     const data = safeJsonParse(completion.choices[0].message.content);
     res.json({ success: true, data });
   } catch (error) {
@@ -451,9 +460,9 @@ router.post('/negotiate', async (req, res) => {
     const basePrice = parseInt(technicianPrice) || 800;
     const budget = parseInt(customerBudget) || basePrice;
     const midpoint = Math.round((basePrice + budget) / 2);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       data: {
         suggestedPrice: midpoint,
         reasoning: "Suggested fair midpoint based on standard market rates."
@@ -462,16 +471,15 @@ router.post('/negotiate', async (req, res) => {
   }
 });
 
-// 4. Semantic Embedding Proxy
 router.post('/embed', async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ success: false, error: "Text required" });
-  
+
   try {
     const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
     const result = await model.embedContent(text);
     const embedding = result.embedding.values;
-    
+
     res.json({ success: true, embedding });
   } catch (error) {
     console.error("Embedding Error:", error);

@@ -12,7 +12,7 @@ export class GeminiProvider implements AIProvider {
     }
 
     const google = createGoogleGenerativeAI({ apiKey });
-    const modelName = modelOverride || 'gemini-2.5-flash-lite';
+    const modelName = modelOverride || 'gemini-3-flash-preview';
 
     const result = await streamText({
       model: google(modelName) as any,
