@@ -13,7 +13,7 @@ export class FixNowCascadeAgent {
     // CascadeAgent handles provider routing internally via GROQ_API_KEY env var
     this.cascadeAgent = new CascadeAgent({
       models: [
-        { name: 'meta-llama/llama-4-scout-17b-16e-instruct', provider: 'groq' as any, cost: 0.000000 },
+        { name: 'groq/compound', provider: 'groq' as any, cost: 0.000000 },
         { name: cascadeConfig.defaultModels.verifier, provider: 'groq' as any, cost: 0.000000 }
       ],
       quality: {

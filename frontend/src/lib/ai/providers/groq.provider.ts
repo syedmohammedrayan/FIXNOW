@@ -12,7 +12,7 @@ export class GroqProvider implements AIProvider {
     }
 
     const groq = createGroq({ apiKey });
-    const modelName = modelOverride || process.env.DEFAULT_MODEL || 'meta-llama/llama-4-scout-17b-16e-instruct';
+    const modelName = modelOverride || process.env.DEFAULT_MODEL || 'groq/compound';
 
     const result = await streamText({
       model: groq(modelName),

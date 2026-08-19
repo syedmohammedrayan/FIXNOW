@@ -89,7 +89,7 @@ export function getRoutingDecision(
   // Complex analysis tasks → high-quality model
   if (intent === 'diagnose' || intent === 'pricing' || intent === 'chat' || intent === 'booking' || priority === 'quality') {
     return {
-      modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      modelId: 'groq/compound',
       reason: 'Complex task requiring high quality → large versatile model',
       costTier: 'free',
       latencyTier: 'medium',

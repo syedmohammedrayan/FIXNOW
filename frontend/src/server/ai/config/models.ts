@@ -36,8 +36,8 @@ export interface ModelDefinition {
  * CascadeFlow uses this to make intelligent routing decisions.
  */
 export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
-  'meta-llama/llama-4-scout-17b-16e-instruct': {
-    id: 'meta-llama/llama-4-scout-17b-16e-instruct',
+  'groq/compound': {
+    id: 'groq/compound',
     name: 'Llama 4 Scout',
     provider: 'groq',
     contextWindow: 128000,
@@ -90,7 +90,7 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
 };
 
 /** Default model ID */
-export const DEFAULT_MODEL_ID = 'meta-llama/llama-4-scout-17b-16e-instruct';
+export const DEFAULT_MODEL_ID = 'groq/compound';
 
 /** Fallback model ID when primary fails */
 export const FALLBACK_MODEL_ID = 'meta-llama/llama-3.1-8b-instruct:free';
