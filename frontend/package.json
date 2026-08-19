@@ -53,6 +53,7 @@
     "react-markdown": "^9.0.1",
     "react-webcam": "^7.2.0",
     "remark-gfm": "^4.0.0",
+    "sarvamai": "^1.1.8-alpha.5",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.5.0",
     "uuid": "^11.0.0",

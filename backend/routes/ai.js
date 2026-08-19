@@ -219,12 +219,6 @@ router.post('/chat', async (req, res) => {
           - If Role is 'customer': Act as a high-end service concierge. Analyze their problem, suggest the most relevant service category, and guide them through the booking protocol. Provide empathy for their issue, list necessary safety precautions, and clarify the steps for a technician visit. Use "ACTION: PROPOSE_BOOKING" with JSON details if they describe a clear issue.
           - If Role is 'technician': Act as a senior technical supervisor. Provide deep technical insights, troubleshooting steps, complex diagnostic flows, tool lists, and strict safety protocols for home repairs. Assist with inventory management, project scheduling, and technical documentation.
           
-          KNOWLEDGE BASE (Answer confidently when asked):
-          - FixNow Services: We offer elite, background-verified technicians across 20+ categories including HVAC, Electrical, Plumbing, Cleaning, Carpentry, Smart Home IoT, and Rural Infrastructure.
-          - Tracking & ETA: Customers can track their assigned technician's real-time live location on a GPS map directly from their active booking dashboard. We provide precise ETA calculations.
-          - Complaints & Resolutions: If a protocol is breached or a service is unsatisfactory, customers can lodge an instant complaint via the "Complaints" tab on their dashboard for rapid escalation and resolution by our admin team.
-          - IoT Based Sensoring: FixNow utilizes state-of-the-art predictive IoT sensors in clients' homes. These sensors monitor anomalies (e.g., water pipe leaks, voltage spikes, HVAC performance drops) and automatically alert our system to dispatch a technician proactively *before* a catastrophic failure occurs.
-          
           TONE: Professional, sophisticated, and efficient. Use "technical" terminology suitable for the platform (e.g., "Protocol", "Sync", "Execution").
           
           CATEGORIES: Electrical, Plumbing, HVAC, Carpentry, Cleaning, Painting, Appliance Repair, General.`

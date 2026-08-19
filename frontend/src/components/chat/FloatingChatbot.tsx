@@ -43,9 +43,6 @@ export default function FloatingChatbot({
 
   const [messages, setMessages] = useState<any[]>([defaultWelcome]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<BlobPart[]>([]);
 
   // 2. Load from localStorage on mount
   useEffect(() => {
@@ -101,62 +98,6 @@ export default function FloatingChatbot({
       ]);
     } catch (err) {
       console.error('Chat error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        await processVoice(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error("Mic error:", err);
-      alert("Microphone access denied or unavailable.");
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const processVoice = async (audioBlob: Blob) => {
-    try {
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice.webm');
-
-      const res = await fetch("/api/ai/transcribe-voice", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      
-      if (data.success && data.transcript) {
-        await submitMessage(data.transcript);
-      } else {
-        console.error("Voice translation failed:", data);
-      }
-    } catch (err) {
-      console.error("Voice processing error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -326,24 +267,6 @@ export default function FloatingChatbot({
                       }}
                     />
                   </div>
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onMouseDown={startRecording}
-                    onMouseUp={stopRecording}
-                    onMouseLeave={stopRecording}
-                    onTouchStart={startRecording}
-                    onTouchEnd={stopRecording}
-                    className={cn(
-                      "w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center transition-all",
-                      isRecording 
-                        ? "bg-rose-500 text-white animate-pulse shadow-[0_0_15px_rgba(244,63,94,0.5)]" 
-                        : "bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white"
-                    )}
-                  >
-                    <Mic className="w-5 h-5" />
-                  </motion.button>
                   <motion.button
                     whileHover={{ scale: isLoading ? 1 : 1.05 }}
                     whileTap={{ scale: isLoading ? 1 : 0.95 }}
