@@ -164,7 +164,7 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
   try {
     console.log('[AI Vision] Falling back to Groq');
     const groqResponse = await fetchGroq({
-      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      model: 'groq/compound',
       messages: [
         {
           role: 'user',
@@ -224,7 +224,7 @@ router.post('/chat', async (req, res) => {
           "content": message
         }
       ],
-      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "model": "groq/compound",
       "temperature": 0.7,
       "max_completion_tokens": 1024,
       "top_p": 1,
@@ -316,7 +316,7 @@ router.post('/parse-issue', async (req, res) => {
         },
         { role: "user", content: issueText }
       ],
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: "groq/compound",
       response_format: { type: "json_object" }
     });
 
