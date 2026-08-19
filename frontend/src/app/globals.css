@@ -869,26 +869,7 @@ body, html {
   border-radius: 0.25rem;
 }
 
-/* ─── Skip to Content (Accessibility) ─── */
-.skip-to-content {
-  position: absolute;
-  top: -100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100000;
-  padding: 0.75rem 1.5rem;
-  background: #ffffff;
-  color: #0f172a;
-  font-weight: 800;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border-radius: 0 0 1rem 1rem;
-  transition: top 0.2s;
-}
-.skip-to-content:focus {
-  top: 0;
-}
+
 
 /* ─── High Contrast Support ─── */
 @media (prefers-contrast: high) {
