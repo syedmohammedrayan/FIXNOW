@@ -5,6 +5,9 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { SarvamAIClient } = require("sarvamai");
+const os = require('os');
+const path = require('path');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -406,6 +409,55 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
       console.error("[AI Voice] Groq Fallback Error:", groqError);
       res.status(500).json({ success: false, error: "Failed to transcribe audio" });
     }
+  }
+});
+
+router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: "No audio file provided" });
+  }
+
+  try {
+    if (!process.env.SARVAM_API_KEY) {
+      throw new Error("Missing SARVAM_API_KEY in environment");
+    }
+
+    const client = new SarvamAIClient({
+      apiSubscriptionKey: process.env.SARVAM_API_KEY
+    });
+
+    // Write buffer to temporary file for Sarvam SDK
+    const tempFilePath = path.join(os.tmpdir(), `audio-${Date.now()}.webm`);
+    fs.writeFileSync(tempFilePath, req.file.buffer);
+
+    console.log('[Sarvam AI] Processing voice translation...');
+    const response = await client.speechToText.transcribe({
+      file: fs.createReadStream(tempFilePath),
+      model: "saaras:v3",
+      mode: "translate"
+    });
+
+    // Clean up temp file
+    fs.unlinkSync(tempFilePath);
+
+    if (response && response.transcript) {
+      console.log('[Sarvam AI] Succeeded:', response.transcript);
+      res.json({
+        success: true,
+        provider: "sarvam",
+        model: "saaras:v3",
+        transcript: response.transcript
+      });
+    } else {
+      throw new Error("Invalid response from Sarvam AI");
+    }
+
+  } catch (error) {
+    console.error("[Sarvam AI] Error:", error.message || error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Voice processing failed. Please try again." 
+    });
   }
 });
 

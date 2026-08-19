@@ -213,76 +213,80 @@ export default function CustomerDashboard() {
     };
   }, []);
 
-  const startListening = () => {
+  const startListening = async () => {
     if (typeof window === 'undefined') return;
-    const w = window as any;
-    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!SR) {
-      alert("Speech recognition isn't supported in this browser. Try Chrome.");
-      return;
-    }
 
     if (isListening || recognitionRef.current) {
-      if (recognitionRef.current) {
+      if (recognitionRef.current && recognitionRef.current.state !== 'inactive') {
         try {
-          recognitionRef.current.onstart = null;
-          recognitionRef.current.onresult = null;
-          recognitionRef.current.onerror = null;
-          recognitionRef.current.onend = null;
           recognitionRef.current.stop();
         } catch (err) {
           console.error(err);
         }
-        recognitionRef.current = null;
       }
       setIsListening(false);
       return;
     }
 
-    const recognition = new SR();
-    recognition.lang = voiceLang;
-    recognition.interimResults = true;
-    recognition.continuous = false;
-
-    const baseText = issueText.trim();
-    let finalTranscript = baseText;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
-
-    recognition.onresult = (event: any) => {
-      let currentFinal = '';
-      let currentInterim = '';
-      for (let i = 0; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          currentFinal += event.results[i][0].transcript;
-        } else {
-          currentInterim += event.results[i][0].transcript;
-        }
-      }
-      const combined = (currentFinal + ' ' + currentInterim).trim();
-      finalTranscript = baseText ? `${baseText} ${combined}` : combined;
-      setIssueText(finalTranscript);
-    };
-
-    recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-      recognitionRef.current = null;
-      if (finalTranscript.trim()) {
-        handleAnalyze(finalTranscript);
-      }
-    };
-
-    recognitionRef.current = recognition;
     try {
-      recognition.start();
-    } catch (e) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: BlobPart[] = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstart = () => {
+        setIsListening(true);
+      };
+
+      mediaRecorder.onstop = async () => {
+        setIsListening(false);
+        recognitionRef.current = null;
+        
+        // Stop all tracks to release microphone
+        stream.getTracks().forEach(track => track.stop());
+
+        if (audioChunks.length === 0) return;
+
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        
+        // We can use the existing analyzing state to show the loader during transcription
+        const baseText = issueText.trim();
+        
+        try {
+          // Trigger analyzing immediately so the user sees the Loader-2
+          setAnalyzing(true);
+          const res = await axios.post('/api/ai/transcribe-voice', formData, { timeout: 60000 });
+          
+          if (res.data.success && res.data.transcript) {
+            const transcript = res.data.transcript;
+            const finalTranscript = baseText ? `${baseText} ${transcript}` : transcript;
+            
+            setIssueText(finalTranscript);
+            // Send the English translation directly to the existing Gemini diagnosis flow
+            handleAnalyze(finalTranscript);
+          } else {
+            setAnalyzing(false);
+            alert(res.data.error || 'Voice processing failed. Please try again.');
+          }
+        } catch (error: any) {
+          setAnalyzing(false);
+          console.error('Transcription error:', error);
+          alert(error.response?.data?.error || 'Voice processing failed. Please try again.');
+        }
+      };
+
+      recognitionRef.current = mediaRecorder;
+      mediaRecorder.start();
+    } catch (err) {
+      console.error('Microphone error:', err);
+      alert('Microphone access denied or unavailable. Please allow microphone permissions.');
       setIsListening(false);
     }
   };
