@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import dynamic from 'next/dynamic';
 import { Activity } from 'lucide-react';
 
