@@ -25,7 +25,7 @@ const StatusBanners = dynamic(() => import('./components/StatusBanners'), { ssr:
 const NearbyTechniciansMap = dynamic(() => import('@/components/ai/NearbyTechniciansMap'), { ssr: false });
 const PaymentOverlay = dynamic(() => import('@/components/customer/PaymentOverlay'), { ssr: false });
 
-import { SOCKET_URL } from '@/lib/config';
+import { API_BASE, SOCKET_URL } from '@/lib/config';
 import { io, Socket } from 'socket.io-client';
 import { Notification, Reminder } from './types';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
@@ -263,7 +263,7 @@ export default function CustomerDashboard() {
         try {
           // Trigger analyzing immediately so the user sees the Loader-2
           setAnalyzing(true);
-          const res = await axios.post('/api/ai/transcribe-voice', formData, { timeout: 60000 });
+          const res = await axios.post(`${API_BASE}/api/ai/transcribe-voice`, formData, { timeout: 60000 });
           
           if (res.data.success && res.data.transcript) {
             const transcript = res.data.transcript;

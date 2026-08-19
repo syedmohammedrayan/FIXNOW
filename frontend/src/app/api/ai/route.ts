@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SarvamAIClient } from "sarvamai";
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const client = new SarvamAIClient({
-    apiSubscriptionKey: process.env.SARVAM_API_KEY || ""
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,24 +10,20 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = "You are FixNow AI Assistant. Answer queries related to FixNow services, how it works, tracking, complaints, and IoT-based sensoring. Keep answers concise, helpful, and professional.";
 
-    const messages = [
-        { role: 'system', content: systemPrompt },
-        ...userMessages.map((m: any) => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.content
-        }))
-    ];
+    const contents = userMessages.map((m: any) => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }]
+    }));
 
-    console.log('[AI Chatbot] Generating response via Sarvam 105B...');
-    const response = await client.chat.completions({
-        model: "sarvam-105b-conversations",
-        messages: messages as any,
-        temperature: 0.2,
-        top_p: 1,
-        max_tokens: 2000,
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-3-flash-preview",
+      systemInstruction: { role: "system", parts: [{ text: systemPrompt }] }
     });
 
-    const responseText = response.choices[0].message.content || '';
+    console.log('[AI Chatbot] Generating response via Gemini 3 Flash Preview...');
+    
+    const result = await model.generateContent({ contents });
+    const responseText = result.response.text();
 
     return NextResponse.json({
       text: responseText,
