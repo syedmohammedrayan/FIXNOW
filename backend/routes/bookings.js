@@ -600,7 +600,11 @@ router.post('/update-status', async (req, res) => {
     if (booking) {
       if (status === 'Accepted') notifyUser(booking.customer_id, 'technicianAssigned', booking);
       if (status === 'Arrived') notifyUser(booking.customer_id, 'technicianArrived', booking);
-      if (status === 'Completed') notifyUser(booking.customer_id, 'serviceCompleted', booking);
+      if (status === 'Completed') {
+        notifyUser(booking.customer_id, 'serviceCompleted', booking);
+        const { generateAndSendPDF } = require('../services/pdfReportService');
+        generateAndSendPDF(booking).catch(err => console.error('PDF Generate/Send Error:', err));
+      }
     }
     
     res.json({ success: true });
