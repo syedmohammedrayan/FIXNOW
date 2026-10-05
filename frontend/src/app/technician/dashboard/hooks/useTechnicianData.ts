@@ -400,6 +400,12 @@ export function useTechnicianData() {
     }
   };
 
+  const declineBroadcast = (broadcastId: string) => {
+    // Remove from available broadcasts locally — technician doesn't want this one
+    setAvailableBroadcasts((prev) => prev.filter(b => b.id !== broadcastId));
+    setNotification({ message: "Broadcast declined. Removed from your queue.", type: 'info' });
+  };
+
   const declineJob = async (jobId: string) => {
     try {
       await axios.post(`${API_BASE}/api/bookings/decline`, {
@@ -471,6 +477,7 @@ export function useTechnicianData() {
     acceptJob,
     acceptBroadcast,
     declineJob,
+    declineBroadcast,
     updateJobStatus,
     bellNotifications,
     setBellNotifications,

@@ -99,6 +99,7 @@ export default function TechnicianDashboard() {
     acceptJob,
     acceptBroadcast,
     declineJob,
+    declineBroadcast,
     updateJobStatus,
     bellNotifications, setBellNotifications,
     markNotificationRead
@@ -672,6 +673,7 @@ export default function TechnicianDashboard() {
                     )}
                   </AnimatePresence>
 
+                  {!currentJob && (
                   <div className="space-y-6">
                     <AnimatePresence>
                       {availableBroadcasts.map((broadcast) => {
@@ -743,18 +745,27 @@ export default function TechnicianDashboard() {
                                 </div>
                               </div>
 
-                              <button
-                                onClick={() => acceptBroadcast(broadcast.id)}
-                                className="w-full sm:w-auto px-8 py-4 sm:px-10 sm:py-6 bg-white text-slate-950 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-cyan-50 hover:scale-[1.02] transition-all active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.2)] lg:self-end group-hover:shadow-[0_25px_60px_rgba(34,211,238,0.2)]"
-                              >
-                                Accept Protocol
-                              </button>
+                              <div className="flex flex-col gap-3 lg:self-end">
+                                <button
+                                  onClick={() => acceptBroadcast(broadcast.id)}
+                                  className="w-full sm:w-auto px-8 py-4 sm:px-10 sm:py-6 bg-white text-slate-950 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-cyan-50 hover:scale-[1.02] transition-all active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.2)] group-hover:shadow-[0_25px_60px_rgba(34,211,238,0.2)]"
+                                >
+                                  Accept Protocol
+                                </button>
+                                <button
+                                  onClick={() => declineBroadcast(broadcast.id)}
+                                  className="w-full sm:w-auto px-8 py-3 sm:px-10 sm:py-4 bg-transparent border border-rose-500/30 text-rose-400 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase tracking-[0.25em] text-xs hover:bg-rose-500/10 hover:border-rose-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                                >
+                                  Decline Protocol
+                                </button>
+                              </div>
                             </div>
                           </motion.div>
                         );
                       })}
                     </AnimatePresence>
                   </div>
+                  )}
 
                   {/* Notification Popups — Refined visuals */}
                   <AnimatePresence>
