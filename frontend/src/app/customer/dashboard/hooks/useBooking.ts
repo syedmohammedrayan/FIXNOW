@@ -52,7 +52,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [matchedTechs, setMatchedTechs] = useState<Technician[]>([]);
   const [bookingConfirmation, setBookingConfirmation] = useState<Record<string, any> | null>(null);
-  const [bookingStep, setBookingStep] = useState<'input' | 'confirm' | 'done'>('input');
+  const [bookingStep, setBookingStep] = useState<'input' | 'confirm' | 'broadcast_confirm' | 'done'>('input');
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
 
   // ── Broadcast booking state ──
@@ -785,6 +785,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         const timerEnd = Date.now() + BROADCAST_TIMEOUT_MS;
         setBroadcastStatus('waiting');
         setBroadcastTimerEnd(timerEnd);
+        setBookingStep('input');
 
         // Join the booking room immediately so we get broadcast_accepted events
         if (socketRef.current) {

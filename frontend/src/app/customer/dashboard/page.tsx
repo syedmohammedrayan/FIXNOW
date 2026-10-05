@@ -162,7 +162,7 @@ export default function CustomerDashboard() {
 
   useEffect(() => {
     const initAutocomplete = () => {
-      if (typeof window !== 'undefined' && window.google?.maps?.places?.Autocomplete && addressInputRef.current && bookingStep === 'confirm') {
+      if (typeof window !== 'undefined' && window.google?.maps?.places?.Autocomplete && addressInputRef.current && (bookingStep === 'confirm' || bookingStep === 'broadcast_confirm')) {
         const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
           types: ['geocode'],
           componentRestrictions: { country: 'IN' }
@@ -186,7 +186,7 @@ export default function CustomerDashboard() {
       }
     };
 
-    if (typeof window !== 'undefined' && !(window as any).google && bookingStep === 'confirm') {
+    if (typeof window !== 'undefined' && !(window as any).google && (bookingStep === 'confirm' || bookingStep === 'broadcast_confirm')) {
       if (!document.getElementById('google-maps-script')) {
         const script = document.createElement('script');
         script.id = 'google-maps-script';
@@ -307,10 +307,10 @@ export default function CustomerDashboard() {
     );
   }
 
-  if (bookingStep === 'confirm' && selectedTech) {
+  if ((bookingStep === 'confirm' && selectedTech) || bookingStep === 'broadcast_confirm') {
     return (
       <BookingForm 
-        selectedTech={selectedTech}
+        selectedTech={bookingStep === 'broadcast_confirm' ? null : selectedTech!}
         analysisResult={analysisResult}
         address={address}
         setAddress={setAddress}
@@ -322,7 +322,7 @@ export default function CustomerDashboard() {
         setServiceTime={setServiceTime}
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
-        onConfirm={confirmBooking}
+        onConfirm={bookingStep === 'broadcast_confirm' ? createBroadcastBooking : confirmBooking}
         onCancel={() => setBookingStep('input')}
         analyzing={analyzing}
         addressInputRef={addressInputRef}
@@ -417,12 +417,12 @@ export default function CustomerDashboard() {
               {analysisResult && (
                 <AnalysisResultView 
                   analysisResult={analysisResult} 
-                  onBroadcastBook={createBroadcastBooking}
+                  onBroadcastBook={() => setBookingStep('broadcast_confirm')}
                   isWaitingForBroadcast={isWaitingForBroadcast}
                   broadcastStatus={broadcastStatus}
                   broadcastTimerEnd={broadcastTimerEnd}
                   onCancelBroadcast={() => { cancelBroadcast(); resetBroadcast(); }}
-                  onRetryBroadcast={() => { resetBroadcast(); createBroadcastBooking(); }}
+                  onRetryBroadcast={() => { resetBroadcast(); setBookingStep('broadcast_confirm'); }}
                 />
               )}
             </AnimatePresence>

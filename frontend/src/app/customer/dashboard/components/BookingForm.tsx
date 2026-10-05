@@ -8,7 +8,7 @@ import { Technician, AnalysisResult } from '../types';
 import { getAvatarUrl } from '@/lib/image-utils';
 
 interface BookingFormProps {
-  selectedTech: Technician;
+  selectedTech: Technician | null;
   analysisResult: AnalysisResult | null;
   address: string;
   setAddress: (v: string) => void;
@@ -45,10 +45,10 @@ export default function BookingForm({
   addressInputRef
 }: BookingFormProps) {
   useEffect(() => {
-    if (selectedTech.online === false && paymentMethod === 'now') {
+    if ((!selectedTech || selectedTech?.online === false) && paymentMethod === 'now') {
       setPaymentMethod('later');
     }
-  }, [selectedTech.online, paymentMethod, setPaymentMethod]);
+  }, [selectedTech?.online, paymentMethod, setPaymentMethod]);
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 max-w-2xl mx-auto bg-transparent font-sans">
@@ -60,22 +60,38 @@ export default function BookingForm({
         <h2 className="text-xl sm:text-3xl font-black text-white mb-6 sm:mb-8 tracking-tight">Confirm Request</h2>
         
         <div className="bg-white/[0.04] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/[0.06] mb-6 sm:mb-8 flex items-center gap-3 sm:gap-5" style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.03)' }}>
-          <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-500">
-            {selectedTech.avatar && (selectedTech.avatar.startsWith('data:image') || selectedTech.avatar.startsWith('http') || selectedTech.avatar.startsWith('/') || selectedTech.avatar.length > 5) ? (
-            <div className="relative size-full">
-              <img src={getAvatarUrl(selectedTech.avatar)!} className="w-full h-full object-cover transition-all duration-500" />
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
+        {selectedTech ? (
+          <>
+            <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-500">
+              {selectedTech?.avatar && (selectedTech?.avatar.startsWith('data:image') || selectedTech?.avatar.startsWith('http') || selectedTech?.avatar.startsWith('/') || selectedTech?.avatar.length > 5) ? (
+              <div className="relative size-full">
+                <img src={getAvatarUrl(selectedTech?.avatar)!} className="w-full h-full object-cover transition-all duration-500" />
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none" />
+              </div>
+              ) : (
+                <span className="text-3xl drop-shadow-sm transition-all duration-500">{selectedTech?.avatar || '👷'}</span>
+              )}
             </div>
-            ) : (
-              <span className="text-3xl drop-shadow-sm transition-all duration-500">{selectedTech.avatar || '👷'}</span>
-            )}
-          </div>
-          <div>
-            <h3 className="font-black text-base sm:text-lg text-white">{selectedTech.name}</h3>
-            <p className="text-[9px] sm:text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">
-              {selectedTech.category} • ⭐ {selectedTech.rating} • 📍 {selectedTech.distance}
-            </p>
-          </div>
+            <div>
+              <h3 className="font-black text-base sm:text-lg text-white">{selectedTech?.name}</h3>
+              <p className="text-[9px] sm:text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">
+                {selectedTech?.category} • ⭐ {selectedTech?.rating} • 📍 {selectedTech?.distance}
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="size-12 sm:size-16 rounded-xl sm:rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-500">
+              <span className="text-3xl drop-shadow-sm transition-all duration-500">📡</span>
+            </div>
+            <div>
+              <h3 className="font-black text-base sm:text-lg text-white">Broadcast Request</h3>
+              <p className="text-[9px] sm:text-[10px] text-indigo-400 font-black uppercase tracking-widest mt-1">
+                Finding available experts near you...
+              </p>
+            </div>
+          </>
+        )}
         </div>
 
         <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-10">
@@ -172,19 +188,19 @@ export default function BookingForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <button
               type="button"
-              disabled={selectedTech.online === false}
+              disabled={!selectedTech || selectedTech?.online === false}
               onClick={() => setPaymentMethod('now')}
               className={`p-4 sm:p-5 rounded-[1.25rem] sm:rounded-[1.5rem] border-2 text-left transition-all relative overflow-hidden group ${
-                selectedTech.online === false
+                (!selectedTech || selectedTech?.online === false)
                   ? 'border-white/5 bg-white/5 cursor-not-allowed opacity-50'
                   : paymentMethod === 'now'
                   ? 'border-white bg-white/10 shadow-2xl shadow-black/40'
                   : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/30'
               }`}
             >
-              <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mb-3 transition-colors", paymentMethod === 'now' && selectedTech.online !== false ? "border-white" : "border-white/20")}>{paymentMethod === 'now' && selectedTech.online !== false && <div className="w-2.5 h-2.5 bg-white rounded-full" />}</div>
-              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'now' && selectedTech.online !== false ? "text-white" : "text-slate-400")}>Online Payment</p>
-              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'now' && selectedTech.online !== false ? "text-indigo-400" : "text-slate-400")}>{selectedTech.online === false ? 'Unavailable (Offline)' : 'Instant Activation'}</p>
+              <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center mb-3 transition-colors", paymentMethod === 'now' && (!selectedTech || selectedTech?.online !== false) ? "border-white" : "border-white/20")}>{paymentMethod === 'now' && selectedTech && selectedTech.online !== false && <div className="w-2.5 h-2.5 bg-white rounded-full" />}</div>
+              <p className={cn("font-black text-sm uppercase tracking-wider transition-colors", paymentMethod === 'now' && selectedTech && selectedTech.online !== false ? "text-white" : "text-slate-400")}>Online Payment</p>
+              <p className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", paymentMethod === 'now' && selectedTech && selectedTech.online !== false ? "text-indigo-400" : "text-slate-400")}>{!selectedTech ? 'Unavailable for Broadcast' : selectedTech.online === false ? 'Unavailable (Offline)' : 'Instant Activation'}</p>
             </button>
             <button
               type="button"
