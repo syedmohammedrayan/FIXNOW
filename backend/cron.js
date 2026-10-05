@@ -6,29 +6,39 @@ function initCronJobs() {
   
   // Run on the 1st of every month at midnight (0 0 1 * *)
   cron.schedule('0 0 1 * *', async () => {
-    console.log('[CRON] Running monthly subscription reset for Free Plans...');
+    console.log('[CRON] Running monthly subscription reset for all technicians...');
     try {
-      const snapshot = await db.collection('technician_subscriptions')
-        .where('planId', '==', 'free')
-        .get();
+      const snapshot = await db.collection('technician_subscriptions').get();
 
       if (snapshot.empty) {
-        console.log('[CRON] No free plans to reset.');
+        console.log('[CRON] No subscriptions to reset.');
         return;
       }
 
       const batch = db.batch();
+      
+      const nextMonthDate = new Date();
+      nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+      const expiresAtString = nextMonthDate.toISOString();
+      const updatedAtString = new Date().toISOString();
+
       snapshot.docs.forEach(doc => {
         batch.update(doc.ref, { 
+          planId: 'free',
+          planName: 'Free Plan',
+          bookingLimit: 3,
           bookingsUsed: 0,
-          updatedAt: new Date().toISOString()
+          priorityMultiplier: 1.0,
+          paymentStatus: 'active',
+          expiresAt: expiresAtString,
+          updatedAt: updatedAtString
         });
       });
 
       await batch.commit();
-      console.log(`[CRON] Successfully reset ${snapshot.size} free plans.`);
+      console.log(`[CRON] Successfully reset ${snapshot.size} subscriptions to the Free Plan.`);
     } catch (err) {
-      console.error('[CRON] Error resetting free plans:', err);
+      console.error('[CRON] Error resetting subscriptions:', err);
     }
   });
 }
