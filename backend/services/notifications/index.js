@@ -142,11 +142,41 @@ async function sendPush(token, title, body, data = {}) {
   return { success: false, error: 'Push via Supabase not yet configured' };
 }
 
+// Emails using Nodemailer (Free workaround for Twilio limits)
+const nodemailer = require('nodemailer');
+let transporter;
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  transporter = nodemailer.createTransport({
+    service: 'gmail', // Use Gmail as the default free service
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+}
+
+async function sendEmail(to, subject, html) {
+  if (!transporter) return { success: false, error: 'Nodemailer not configured' };
+  if (!to) return { success: false, error: 'No email provided' };
+  
+  try {
+    const info = await transporter.sendMail({
+      from: `"FIXNOW Support" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html
+    });
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Email Send Error:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 /**
  * notifyUser — the main entrypoint for all notifications in the system.
  * Fetches the user's phone from Firestore if not provided in data,
- * then fires SMS + WhatsApp + push notifications in parallel using Promise.allSettled.
- * Promise.allSettled (vs Promise.all) ensures one channel failing doesn't block the others.
+ * then fires SMS + WhatsApp + push + email notifications in parallel.
  */
 async function notifyUser(userId, type, data) {
   const template = templates[type] ? templates[type](data) : null;
@@ -156,37 +186,50 @@ async function notifyUser(userId, type, data) {
   const { db } = require('../../config/firebaseAdmin');
   let recipientPhone = data.phone || data.contact_number;
   let pushToken = data.fcm_token;
+  let recipientEmail = data.email || null;
 
-  // If phone or push token is missing, look them up in the user's Firestore document.
-  if (userId && (!recipientPhone || !pushToken)) {
+  // If missing fields, look them up in the user's Firestore document.
+  if (userId && (!recipientPhone || !pushToken || !recipientEmail)) {
     try {
       const uDoc = await db.collection('users').doc(userId).get();
       const userData = uDoc.exists ? uDoc.data() : null;
       if (userData) {
         recipientPhone = recipientPhone || userData.phone;
         pushToken = pushToken || userData.fcm_token;
+        recipientEmail = recipientEmail || userData.email;
       }
     } catch (e) {
       console.error('Failed to fetch user for notification:', e.message);
     }
   }
 
-  if (!recipientPhone) {
-    console.warn(`⚠️ Notification abort: No phone number found for user ${userId || 'anonymous'}`);
-    // Only continue if we have a push token as an alternative channel.
-    if (!pushToken) return [];
+  // Construct email subject and body dynamically based on the SMS template if no explicit email template is provided
+  const emailSubject = template.push ? template.push.title : `FixNow Update: ${type}`;
+  const emailBody = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px;">
+    <h2 style="color: #4F46E5;">${emailSubject}</h2>
+    <p style="font-size: 16px; line-height: 1.5;">${template.whatsapp || template.sms}</p>
+    <br/>
+    <p style="font-size: 12px; color: #888;">Thank you for choosing FixNow!</p>
+  </div>`;
+
+  console.log(`🔔 Sending ${type} notifications to user ${userId}...`);
+
+  // Send all channels concurrently; individual failures are caught per-channel.
+  const tasks = [];
+  
+  if (recipientPhone) {
+    const normalized = normalizePhone(recipientPhone);
+    tasks.push(sendSMS(normalized, template.sms));
+    tasks.push(sendWhatsApp(normalized, template.whatsapp));
+  } else {
+    tasks.push(Promise.resolve({ success: false, error: 'No phone' }));
+    tasks.push(Promise.resolve({ success: false, error: 'No phone' }));
   }
 
-  recipientPhone = normalizePhone(recipientPhone); 
+  tasks.push(pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No token' }));
+  tasks.push(recipientEmail ? sendEmail(recipientEmail, emailSubject, emailBody) : Promise.resolve({ success: false, error: 'No email' }));
 
-  console.log(`🔔 Sending ${type} notifications to user ${userId} (${recipientPhone || 'PUSH ONLY'})...`);
-
-  // Send all three channels concurrently; individual failures are caught per-channel.
-  const results = await Promise.allSettled([
-    sendSMS(recipientPhone, template.sms),
-    sendWhatsApp(recipientPhone, template.whatsapp),
-    pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No token' })
-  ]);
+  const results = await Promise.allSettled(tasks);
 
   // Persist a notification record in Firestore for in-app notification center.
   try {
@@ -198,7 +241,8 @@ async function notifyUser(userId, type, data) {
       channels: {
         sms: results[0],
         whatsapp: results[1],
-        push: results[2]
+        push: results[2],
+        email: results[3]
       }
     });
 
@@ -207,8 +251,8 @@ async function notifyUser(userId, type, data) {
       id: 'NOTIF_' + Date.now(),
       user_id: userId,
       type,
-      title: template.push.title,
-      message: template.push.body,
+      title: template.push ? template.push.title : 'Notification',
+      message: template.push ? template.push.body : template.sms,
       booking_id: data.id,
       read: false,
       created_at: new Date().toISOString()
