@@ -5,8 +5,10 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
+const { initCronJobs } = require('./cron');
 
 const app = express();
+initCronJobs();
 // Wrap the Express app in a raw HTTP server so Socket.IO and Express share port 5050.
 const server = http.createServer(app);
 

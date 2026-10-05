@@ -40,8 +40,8 @@ const templates = {
   }),
   // Sent when the technician marks status 'Arrived' — OTP is included to verify physical arrival.
   technicianArrived: (data) => ({
-    sms: `FIXNOW: Your technician ${data.technician_name || data.techName} has arrived! Share OTP ${data.otp} to start.`,
-    whatsapp: `Your technician *${data.technician_name || data.techName}* has arrived! 🔑 Share OTP: *${data.otp}* to start the service.`,
+    sms: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
+    whatsapp: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
     push: { title: 'Technician Arrived', body: 'Share your OTP to begin the service.' }
   }),
   // Sent on job completion with the formatted rupee amount due.

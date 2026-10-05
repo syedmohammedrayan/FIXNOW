@@ -192,7 +192,7 @@ router.post('/create', async (req, res) => {
       
       (onlineTechs || []).forEach(tech => {
         const sub = subsMap[tech.id];
-        const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 5;
+        const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 3;
         const used = sub ? (sub.bookingsUsed || 0) : 0;
 
         if (sub && sub.paymentStatus === 'expired') return; // filter out expired
@@ -383,7 +383,7 @@ router.post('/accept-broadcast', async (req, res) => {
         technicianId,
         planId: 'free',
         planName: 'Free Plan',
-        bookingLimit: 5,
+        bookingLimit: 3,
         bookingsUsed: 1,
         priorityMultiplier: 1.0,
         paymentStatus: 'active',

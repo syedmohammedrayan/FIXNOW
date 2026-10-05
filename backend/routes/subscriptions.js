@@ -15,9 +15,9 @@ router.get('/plans', async (req, res) => {
         id: 'free',
         name: 'Free Plan',
         price: 0,
-        bookingLimit: 5,
+        bookingLimit: 3,
         priorityMultiplier: 1.0,
-        features: ['Standard AI ranking', 'Basic analytics', '5 referrals/month']
+        features: ['Standard AI ranking', 'Basic analytics', '3 referrals/month']
       },
       {
         id: 'pro',
@@ -64,7 +64,7 @@ router.get('/:technicianId', async (req, res) => {
       technicianId,
       planId: 'free',
       planName: 'Free Plan',
-      bookingLimit: 5,
+      bookingLimit: 3,
       bookingsUsed: 0,
       priorityMultiplier: 1.0,
       paymentStatus: 'active',
