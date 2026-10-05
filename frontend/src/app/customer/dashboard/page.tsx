@@ -111,6 +111,7 @@ export default function CustomerDashboard() {
     selectedTech, setSelectedTech,
     address, setAddress,
     contactNumber, setContactNumber,
+    email, setEmail,
     customerName, setCustomerName,
     serviceTime, setServiceTime,
     paymentMethod, setPaymentMethod,
@@ -316,6 +317,8 @@ export default function CustomerDashboard() {
         setAddress={setAddress}
         contactNumber={contactNumber}
         setContactNumber={setContactNumber}
+        email={email}
+        setEmail={setEmail}
         customerName={customerName}
         setCustomerName={setCustomerName}
         serviceTime={serviceTime}

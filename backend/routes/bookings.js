@@ -261,6 +261,8 @@ router.post('/create', async (req, res) => {
       customerName: customerName,
       contact_number: contactNumber,
       contactNumber: contactNumber,
+      customer_email: req.body.customerEmail || req.body.customer_email || '',
+      customerEmail: req.body.customerEmail || req.body.customer_email || '',
       // Address & location (dual format)
       address: req.body.address || '',
       customer_location: req.body.customerLocation || req.body.customer_location || null,

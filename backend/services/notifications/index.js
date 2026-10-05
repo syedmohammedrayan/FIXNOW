@@ -4,6 +4,15 @@ require('dotenv').config();
 
 // Single authenticated Twilio client shared across all notification calls.
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const nodemailer = require('nodemailer');
+
+const emailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 /**
  * Normalises phone numbers to E.164 format (required by Twilio).
@@ -42,7 +51,11 @@ const templates = {
   technicianArrived: (data) => ({
     sms: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
     whatsapp: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
-    push: { title: 'Technician Arrived', body: 'Share your OTP to begin the service.' }
+    push: { title: 'Technician Arrived', body: 'Share your OTP to begin the service.' },
+    email: { 
+      subject: 'Your FIXNOW Verification Code', 
+      html: `<h2>Your technician has arrived!</h2><p>Please share the following OTP with the technician to begin your service:</p><h1 style="font-size: 32px; letter-spacing: 5px; color: #10b981;">${data.otp}</h1><p>Do not share this code with anyone else.</p>`
+    }
   }),
   // Sent on job completion with the formatted rupee amount due.
   serviceCompleted: (data) => {
@@ -148,6 +161,24 @@ async function sendPush(token, title, body, data = {}) {
   return { success: false, error: 'Push via Supabase not yet configured' };
 }
 
+async function sendEmail(to, subject, html) {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return { success: false, error: 'No email credentials configured' };
+    if (!to) return { success: false, error: 'No email provided' };
+
+    await emailTransporter.sendMail({
+      from: `"FIXNOW" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Email Send Error:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 /**
  * notifyUser — the main entrypoint for all notifications in the system.
  * Fetches the user's phone from Firestore if not provided in data,
@@ -162,6 +193,7 @@ async function notifyUser(userId, type, data) {
   const { db } = require('../../config/firebaseAdmin');
   let recipientPhone = data.phone || data.contact_number;
   let pushToken = data.fcm_token;
+  let recipientEmail = data.email || data.customer_email || data.customerEmail;
 
   // If phone or push token is missing, look them up in the user's Firestore document.
   if (userId && (!recipientPhone || !pushToken)) {
@@ -171,6 +203,7 @@ async function notifyUser(userId, type, data) {
       if (userData) {
         recipientPhone = recipientPhone || userData.phone;
         pushToken = pushToken || userData.fcm_token;
+        recipientEmail = recipientEmail || userData.email;
       }
     } catch (e) {
       console.error('Failed to fetch user for notification:', e.message);
@@ -191,7 +224,8 @@ async function notifyUser(userId, type, data) {
   const results = await Promise.allSettled([
     sendSMS(recipientPhone, template.sms),
     sendWhatsApp(recipientPhone, template.whatsapp),
-    pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No token' })
+    pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No token' }),
+    (template.email && recipientEmail) ? sendEmail(recipientEmail, template.email.subject, template.email.html) : Promise.resolve({ success: false, error: 'No email template or recipient' })
   ]);
 
   // Persist a notification record in Firestore for in-app notification center.

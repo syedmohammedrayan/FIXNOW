@@ -68,6 +68,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
 
   const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [serviceTime, setServiceTime] = useState('');
 
@@ -81,9 +82,9 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     }));
   }, []);
 
-  useEffect(() => {
     if (userProfile?.name) setCustomerName(userProfile.name);
-    if (userProfile?.phone) setContactNumber(userProfile.phone);
+    if (userProfile?.phone || userProfile?.contact_number) setContactNumber(userProfile.phone || userProfile.contact_number || '');
+    if (userProfile?.email) setEmail(userProfile.email);
     if (userProfile?.address) setAddress(userProfile.address);
   }, [userProfile]);
   const [paymentMethod, setPaymentMethod] = useState<'now' | 'later'>('now');
@@ -610,8 +611,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   };
 
   const confirmBooking = async () => {
-    if (!address.trim() || !contactNumber.trim()) {
-      alert('Please enter service address and contact number.');
+    if (!address.trim() || !contactNumber.trim() || !email.trim()) {
+      alert('Please enter service address, contact number, and email.');
       return;
     }
     setAnalyzing(true);
@@ -646,6 +647,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         serviceSpecs: analysisResult?.serviceSpecs,
         technicalTerms: analysisResult?.technicalTerms,
         customerName,
+        customerEmail: email,
         address,
         contactNumber,
         serviceTime,
@@ -746,8 +748,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   };
 
   const createBroadcastBooking = async () => {
-    if (!address.trim() || !contactNumber.trim()) {
-      alert('Please enter service address and contact number.');
+    if (!address.trim() || !contactNumber.trim() || !email.trim()) {
+      alert('Please enter service address, contact number, and email.');
       return;
     }
     if (!analysisResult) return;
@@ -759,6 +761,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         customerId: userId || 'GUEST_' + Date.now(),
         customerName: customerName || 'Valued Customer',
         contactNumber,
+        customerEmail: email,
         address,
         customerLat: origin.lat,
         customerLng: origin.lng,

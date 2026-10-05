@@ -11,6 +11,8 @@ interface BookingFormProps {
   selectedTech: Technician | null;
   analysisResult: AnalysisResult | null;
   address: string;
+  email: string;
+  setEmail: (email: string) => void;
   setAddress: (v: string) => void;
   contactNumber: string;
   setContactNumber: (v: string) => void;
