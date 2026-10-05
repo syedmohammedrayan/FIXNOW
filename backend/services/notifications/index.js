@@ -12,6 +12,12 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 function normalizePhone(phone) {
   if (!phone) return null;
   let cleaned = phone.replace(/\D/g, ''); // Strip all non-digit characters
+  
+  // If user entered 0 + 10-digit number (e.g. 06305097299), strip the 0
+  if (cleaned.length === 11 && cleaned.startsWith('0')) {
+    cleaned = cleaned.substring(1);
+  }
+  
   if (cleaned.length === 10) return `+91${cleaned}`;         // 10-digit Indian number
   if (cleaned.length === 12 && cleaned.startsWith('91')) return `+${cleaned}`; // 91XXXXXXXXXX
   return phone.startsWith('+') ? phone : `+${cleaned}`;
