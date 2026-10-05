@@ -1,3 +1,7 @@
+// CATEGORY_KEYWORDS: frontend mirror of the backend KEYWORD_MAP.
+// Maps each canonical service category to an array of keywords that indicate the customer
+// has described a problem belonging to that category.
+// Used in the AI issue-parsing flow and for filtering technician search results client-side.
 export const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'HVAC / AC Technician': ['split ac', 'window ac', 'portable ac', 'tower ac', 'cassette ac', 'central ac',
                            'vrf', 'vrv', 'inverter ac', 'non-inverter ac', 'ac install', 'ac uninstall',
@@ -54,6 +58,8 @@ export const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'Rural Area Technicians': ['rural', 'transformer', 'solar pump', 'handpump', 'borewell', 'sanitation', 'microgrid']
 };
 
+// matchCategory: converts a free-text issue description into the best-matching category name.
+// Returns 'General' if no keyword matches — acts as a safe fallback.
 export const matchCategory = (text: string): string => {
   const lowerText = (text || '').toLowerCase();
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
@@ -65,9 +71,11 @@ export const matchCategory = (text: string): string => {
 };
 
 /**
- * Robust category matching for technician assignments.
- * Checks if the technician's primary category or any of their skills 
- * matches the request category.
+ * isCategoryMatch: determines whether a technician's category covers the requested service.
+ * Uses three levels of matching for robustness:
+ *   1. Exact string equality
+ *   2. 'General' wildcard (general techs can handle any request)
+ *   3. Substring containment (e.g., 'AC Technician' ⊆ 'HVAC / AC Technician')
  */
 export const isCategoryMatch = (techCategory: string, requestCategory: string): boolean => {
   if (!techCategory || !requestCategory) return false;

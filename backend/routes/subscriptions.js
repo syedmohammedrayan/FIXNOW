@@ -5,9 +5,11 @@ const { db } = require('../config/firebaseAdmin');
 // Optional: Add Razorpay for real payments, currently simulating
 // const Razorpay = require('razorpay');
 
-// 1. Get all subscription plans
+// GET /api/subscriptions/plans — Returns the available technician subscription tiers.
+// Plans also get force-written to Firestore so DB always reflects current business rules.
 router.get('/plans', async (req, res) => {
   try {
+    // Three subscription tiers that control how many bookings a technician can receive per month.
     const defaultPlans = [
       {
         id: 'free',
@@ -22,6 +24,7 @@ router.get('/plans', async (req, res) => {
         name: 'Pro Plan',
         price: 499,
         bookingLimit: 22,
+        // priorityMultiplier boosts the technician's score during the AI ranking stage.
         priorityMultiplier: 1.2,
         features: ['AI ranking visibility boost', 'Faster notifications', '22 referrals/month', '10% promotion of visibility to the customer (suitable)']
       },
@@ -29,18 +32,18 @@ router.get('/plans', async (req, res) => {
         id: 'elite',
         name: 'Elite Plan',
         price: 1499,
-        bookingLimit: 9999, // unlimited
+        bookingLimit: 9999, // Effectively unlimited
         priorityMultiplier: 1.5,
         features: ['Unlimited referrals', 'Premium badge', 'Highest AI visibility', 'Priority dispatch', '20% promotion of visibility to the customer (suitable)']
       }
     ];
 
-    // Force overwrite in DB to ensure synchronization with new business rules
+    // Overwrite plans in DB on every request so plan changes deploy without a data migration.
     for (const p of defaultPlans) {
       await db.collection('subscription_plans').doc(p.id).set(p);
     }
     
-    // Also remove enterprise plan from DB if it exists
+    // Remove any legacy enterprise plan to prevent stale plan references.
     await db.collection('subscription_plans').doc('enterprise').delete().catch(() => {});
 
     res.json({ success: true, plans: defaultPlans });
@@ -50,12 +53,13 @@ router.get('/plans', async (req, res) => {
   }
 });
 
-// 2. Get technician's active subscription (with expiry check)
+// GET /api/subscriptions/:technicianId — Returns the technician's active subscription with expiry check.
 router.get('/:technicianId', async (req, res) => {
   try {
     const { technicianId } = req.params;
     const docRef = await db.collection('technician_subscriptions').doc(technicianId).get();
     
+    // Default free plan issued when no subscription record exists (new technician signup).
     const defaultFreeSub = {
       technicianId,
       planId: 'free',
@@ -70,13 +74,12 @@ router.get('/:technicianId', async (req, res) => {
     if (docRef.exists) {
       const sub = docRef.data();
       
-      // Expiry Check Logic
+      // Auto-expire: if the subscription date has passed, lock the technician out of new bookings.
       if (sub.expiresAt && new Date(sub.expiresAt) < new Date()) {
-        // Expired -> Lockout state (must purchase new plan to get orders again)
         const expiredSub = {
           ...sub,
           paymentStatus: 'expired',
-          bookingLimit: 0,
+          bookingLimit: 0, // Blocks all new bookings until they renew
           bookingsUsed: 0
         };
         await db.collection('technician_subscriptions').doc(technicianId).set(expiredSub);
@@ -85,10 +88,11 @@ router.get('/:technicianId', async (req, res) => {
 
       res.json({ success: true, subscription: sub });
     } else {
-      // Default to free plan if none exists
+      // Create a free plan record so the technician can start receiving bookings immediately.
       await db.collection('technician_subscriptions').doc(technicianId).set(defaultFreeSub);
       
       try {
+        // Sync plan info to both users and technicians collections for the Admin dashboard.
         const updateData = { subscriptionPlan: 'free', expiresAt: defaultFreeSub.expiresAt };
         await db.collection('users').doc(technicianId).update(updateData);
         await db.collection('technicians').doc(technicianId).update(updateData);
@@ -103,9 +107,11 @@ router.get('/:technicianId', async (req, res) => {
   }
 });
 
+// RazorpayService handles order creation and HMAC signature verification.
 const razorpayService = require('../services/razorpay.service');
 
-// 3. Create Subscription Order (Razorpay Phase 2)
+// POST /api/subscriptions/create-order — Creates a Razorpay order for a paid plan.
+// The frontend uses the returned orderId to open the Razorpay checkout modal.
 router.post('/create-order', async (req, res) => {
   try {
     const { technicianId, planId } = req.body;
@@ -114,11 +120,12 @@ router.post('/create-order', async (req, res) => {
     if (!planDoc.exists) return res.status(404).json({ success: false, error: "Plan not found" });
     const plan = planDoc.data();
     
-    // Free plan bypasses Razorpay entirely
+    // Free plan has no cost — no order needed.
     if (plan.price === 0) {
       return res.status(400).json({ success: false, error: "Cannot create order for free plan" });
     }
 
+    // Razorpay works in the smallest currency unit (paise for INR; 1 INR = 100 paise).
     const amountInPaise = Math.round(Number(plan.price) * 100);
 
     const receiptId = `sub_${technicianId.substring(0, 8)}_${Date.now()}`;
@@ -132,7 +139,7 @@ router.post('/create-order', async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID
+      keyId: process.env.RAZORPAY_KEY_ID // Sent to frontend for the checkout modal
     });
   } catch (error) {
     console.error("❌ Subscription Create Order Error:", error);
@@ -140,7 +147,8 @@ router.post('/create-order', async (req, res) => {
   }
 });
 
-// 4. Verify Subscription Payment (Razorpay Phase 4)
+// POST /api/subscriptions/verify — Verifies Razorpay signature and activates the subscription.
+// This is the critical step: HMAC signature check proves the payment was genuine.
 router.post('/verify', async (req, res) => {
   try {
     const { technicianId, planId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -149,6 +157,8 @@ router.post('/verify', async (req, res) => {
        return res.status(400).json({ success: false, message: 'Missing payment signature' });
     }
 
+    // Verifies that orderId+paymentId signed with our secret matches Razorpay's signature.
+    // Prevents tampering — someone can't fake a successful payment without the secret.
     const isValid = razorpayService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
     if (!isValid) {
        return res.status(400).json({ success: false, message: 'Invalid payment signature' });
@@ -158,13 +168,13 @@ router.post('/verify', async (req, res) => {
     if (!planDoc.exists) return res.status(404).json({ success: false, error: "Plan not found" });
     const plan = planDoc.data();
 
-    // Proceed to activate plan
+    // Activate the subscription for 30 days, resetting the bookingsUsed counter on upgrade.
     const newSub = {
       technicianId,
       planId,
       planName: plan.name,
       bookingLimit: plan.bookingLimit,
-      bookingsUsed: 0, // reset on upgrade
+      bookingsUsed: 0, // Reset on plan upgrade so quota starts fresh
       priorityMultiplier: plan.priorityMultiplier,
       paymentStatus: 'active',
       razorpayPaymentId: razorpay_payment_id,
@@ -175,7 +185,7 @@ router.post('/verify', async (req, res) => {
     
     await db.collection('technician_subscriptions').doc(technicianId).set(newSub);
     
-    // Synchronize to users & technicians collections for Admin Revenue Intel Dashboard
+    // Sync subscription plan info to users & technicians collections for the Admin Revenue Intel Dashboard.
     try {
       const updateData = {
         subscriptionPlan: planId,
@@ -188,7 +198,7 @@ router.post('/verify', async (req, res) => {
       console.warn("Could not sync upgraded plan to users/technicians:", syncErr.message);
     }
     
-    // Add ledger entry for subscription purchase
+    // Write a ledger entry for admin revenue tracking and audit trails.
     const ledgerRef = db.collection('admin_ledgers').doc();
     await ledgerRef.set({
       type: 'SUBSCRIPTION',

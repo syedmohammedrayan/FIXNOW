@@ -1,3 +1,5 @@
+// Users route — handles registration, profile management, admin approval, and account deletion.
+// Technicians and customers share this route but follow different registration paths.
 const express = require('express');
 const router = express.Router();
 const { db, admin } = require('../config/firebaseAdmin');
@@ -6,6 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const cloudinary = require('../config/cloudinary');
 
+// Legacy disk-based upload dirs (some older endpoints still use these before Cloudinary was added).
 const avatarsDir = path.join(__dirname, '..', 'uploads', 'avatars');
 const idsDir = path.join(__dirname, '..', 'uploads', 'ids');
 
@@ -27,7 +30,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Helper for permanent deletion
+// Helper for permanent deletion — removes a user from Firebase Auth AND all Firestore collections.
+// Using Promise.allSettled ensures one failed collection delete doesn't block the others.
 const performPermanentDeletion = async (id) => {
   console.log(`🗑️ Starting permanent deletion for user: ${id}`);
 
@@ -39,7 +43,8 @@ const performPermanentDeletion = async (id) => {
     console.warn(`⚠️ Auth deletion warning for ${id}:`, authErr.message);
   }
 
-  // 2. Database Cleanup
+  // Cascade delete all collections referencing this user via Firestore batches.
+  // Each .then() runs a batch.delete() on each matching document.
   const cleanupPromises = [
     db.collection('users').doc(id).delete(),
     db.collection('technicians').doc(id).delete(),
@@ -56,7 +61,8 @@ const performPermanentDeletion = async (id) => {
   console.log(`✅ Database cleanup completed for user: ${id}`);
 };
 
-// Create or Update User Profile
+  // POST /api/users/signup — registers a new customer or technician account.
+  // Handles Google OAuth re-triggers, ghost user cleanup, and duplicate email/phone prevention.
 router.post('/signup', async (req, res) => {
   try {
     const { id, name, email, role, phone, address, skills, password, passwordHint, category, govIdUrl, selfieUrl, googleAuth } = req.body;

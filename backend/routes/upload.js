@@ -4,11 +4,12 @@ const cloudinary = require('../config/cloudinary')
 
 const router = express.Router()
 
-// Memory storage — no temp files on disk
+// Use memory storage so the file buffer is piped directly to Cloudinary — no temp files on disk.
 const upload = multer({ storage: multer.memoryStorage() })
 
 /**
- * Upload a buffer directly to Cloudinary via stream.
+ * Wraps Cloudinary's stream uploader in a Promise so we can use async/await.
+ * Cloudinary's upload_stream uses a callback pattern, which doesn't work with await directly.
  */
 function uploadBufferToCloudinary(buffer, folder = 'fixnow/general') {
   return new Promise((resolve, reject) => {
@@ -19,10 +20,13 @@ function uploadBufferToCloudinary(buffer, folder = 'fixnow/general') {
         resolve(result)
       }
     )
+    // Write the file buffer into the Cloudinary upload stream.
     stream.end(buffer)
   })
 }
 
+// POST /api/upload — accepts a single image file and returns its Cloudinary CDN URL.
+// Used by the frontend to upload images before associating the URL with a booking or profile.
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
@@ -34,6 +38,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
     const result = await uploadBufferToCloudinary(req.file.buffer)
 
+    // Return the secure HTTPS Cloudinary URL so the frontend can store and display it.
     res.json({
       success: true,
       imageUrl: result.secure_url

@@ -1,8 +1,12 @@
+// Next.js Global Error Boundary — MUST be a Client Component.
+// Catches unhandled exceptions anywhere in the App Router tree and displays a fallback UI
+// instead of crashing the entire site.
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+// GlobalError receives the error object and a `reset` function to attempt recovery.
 export default function GlobalError({
   error,
   reset,
@@ -35,6 +39,7 @@ export default function GlobalError({
         <p className="text-slate-400 text-sm font-medium leading-relaxed mb-2">
           An unexpected error occurred. Our team has been notified.
         </p>
+        {/* Development only: show the actual error message. Kept hidden in prod for security. */}
         {process.env.NODE_ENV === 'development' && (
           <p className="text-rose-400 text-xs font-mono bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-6 text-left break-all">
             {error.message}
@@ -42,6 +47,7 @@ export default function GlobalError({
         )}
 
         <div className="flex flex-col gap-3 mt-8">
+          {/* reset() re-renders the component tree from the error boundary downwards. */}
           <button
             onClick={reset}
             className="w-full py-4 bg-white text-slate-950 font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl"

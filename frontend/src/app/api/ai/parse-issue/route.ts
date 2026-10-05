@@ -1,10 +1,15 @@
+// Next.js Route Handler — runs server-side so API keys are never exposed to the browser.
+// This is the AI issue-parsing endpoint: it converts a customer's natural language problem
+// description into a structured JSON object with category, cost estimate, and repair steps.
 import { NextRequest, NextResponse } from 'next/server';
 import { Groq } from 'groq-sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Both providers are initialised at module scope; whichever one is available handles the request.
+// Both providers are initialised at module scope; whichever one is available handles the request.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// POST /api/ai/parse-issue — called when the customer submits their issue description.
 export async function POST(req: NextRequest) {
   try {
     const { issueText } = await req.json();
@@ -13,6 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "No text provided" }, { status: 400 });
     }
 
+    // The prompt instructs the AI to output a strict JSON schema with no conversational text.
+    // Forcing JSON-only output reduces parsing errors from the AI adding explanatory prose.
     const promptText = `You are FixNow AI.
 
 Analyze the user's issue text. The user context may be in various Indian languages or English.
@@ -43,25 +50,36 @@ Return "INVALID" for category if input is nonsense.`;
 
     let rawText = '';
     
-    // --- STEP 1: Try Gemini Primary ---
+    // Step 1: Try Gemini first (primary provider — faster, higher quality).
     try {
       console.log('[AI Parse] Trying Gemini');
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
       const result = await model.generateContent(promptText);
       const response = await result.response;
       rawText = response.text();
     } catch (geminiError: any) {
-      console.warn('[AI Parse] Gemini failed, falling back to Groq:', geminiError.message);
+      console.warn('[AI Parse] Gemini failed, falling back to NVIDIA:', geminiError.message);
       
-      // --- STEP 2: Try Groq Fallback ---
-      const completion = await groq.chat.completions.create({
-        messages: [{ role: 'user', content: promptText }],
-        model: "groq/compound",
-        response_format: { type: "json_object" }
+      // Step 2: NVIDIA fallback — used when Gemini is rate-limited or unavailable.
+      const axios = require('axios');
+      const nvidiaResponse = await axios.post(`${process.env.NVIDIA_BASE_URL}/chat/completions`, {
+          model: process.env.NVIDIA_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b',
+          messages: [{ role: 'user', content: promptText }],
+          response_format: { type: "json_object" }
+        }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.NVIDIA_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // Add a 30-second timeout to prevent hanging
       });
-      rawText = completion.choices[0].message.content || '';
+      
+      const completion = nvidiaResponse.data;
+      rawText = completion.choices[0]?.message?.content || ''; console.log("[AI Parse] NVIDIA rawText:", rawText);
     }
     
+    // Defensive JSON extraction: strip markdown fences and find the first { ... } block.
+    // Necessary because some model responses still wrap JSON in ```json ``` despite the prompt.
     let data;
     try {
       const cleaned = (rawText || "")
@@ -69,6 +87,7 @@ Return "INVALID" for category if input is nonsense.`;
         .replace(/```/g, "")
         .trim();
 
+      // Find the outermost JSON object boundaries to handle leading/trailing prose.
       const first = cleaned.indexOf("{");
       const last = cleaned.lastIndexOf("}");
 

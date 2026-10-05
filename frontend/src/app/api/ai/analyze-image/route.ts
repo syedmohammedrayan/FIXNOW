@@ -1,9 +1,14 @@
+// Next.js Route Handler — runs server-side so Gemini and Groq API keys stay secret.
+// This endpoint handles multimodal AI analysis: it accepts an image (home damage photo
+// OR a warranty/invoice document) and returns a structured JSON diagnosis.
 import { NextRequest, NextResponse } from 'next/server';
-import { Groq } from 'groq-sdk';
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+// POST /api/ai/analyze-image — called when the customer uploads a photo of their issue.
 export async function POST(req: NextRequest) {
   try {
+    // Image arrives as multipart form data alongside optional descriptive text.
     const formData = await req.formData();
     const image = formData.get('image') as File;
     const userText = formData.get('userText') as string;
@@ -12,10 +17,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "No image provided" }, { status: 400 });
     }
 
+    // Convert the File object to base64 so it can be embedded in the Gemini/Groq API payload.
+    // Gemini's inlineData and Groq's image_url both accept base64-encoded images.
     const buffer = Buffer.from(await image.arrayBuffer());
     const base64Image = buffer.toString("base64");
     const mimeType = image.type || 'image/jpeg';
 
+    // The prompt handles two distinct input types: home repair photos and invoices/receipts.
+    // A single prompt handles both cases so we need only one API call.
     const promptText = `You are FixNow AI.
 
 Analyze images. These could be home repair issues OR documents/invoices/receipts.
@@ -71,6 +80,8 @@ You MUST return ONLY a valid JSON object. Do NOT wrap it in markdown. Do NOT add
 Category MUST be one of: "Document / Invoice", "HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians".
 Return "INVALID" for category if input is completely unreadable nonsense.`;
 
+    // extractJson strips markdown fences and extracts the first { ... } block from the AI response.
+    // Necessary because some models still prepend text despite being instructed not to.
     const extractJson = (rawText: string) => {
       const cleaned = rawText
         .replace(/```json/gi, "")
@@ -88,9 +99,12 @@ Return "INVALID" for category if input is completely unreadable nonsense.`;
       return JSON.parse(jsonString);
     };
 
+    // isRecoverableError classifies errors as transient (should retry with fallback) vs permanent.
+    // Rate limits (429), server errors (5xx), and JSON parse errors are recoverable.
     const isRecoverableError = (err: any) => {
-      if (err.status && (err.status === 429 || err.status >= 500)) return true;
+      if (err.status && (err.status === 429 || err.status >= 500 || err.status === 404)) return true;
       if (err.message && (
+        err.message.includes('404') ||
         err.message.includes('rate limit') ||
         err.message.includes('quota') ||
         err.message.includes('timeout') ||
@@ -102,15 +116,17 @@ Return "INVALID" for category if input is completely unreadable nonsense.`;
       return false;
     };
 
-    // ---- STEP 1: Gemini Primary ----
+    // Step 1: Gemini Primary — multimodal, handles both image and text in the same call.
     try {
       console.log('[Frontend AI Vision] Trying Gemini Primary');
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-      const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
+      // Gemini's generateContent accepts an array of content parts (text + inlineData).
       const result = await model.generateContent([
         { text: promptText },
         {
+          // inlineData sends the image as base64 embedded in the request body.
           inlineData: {
             data: base64Image,
             mimeType: mimeType
@@ -123,50 +139,59 @@ Return "INVALID" for category if input is completely unreadable nonsense.`;
       console.log('[Frontend AI Vision] Gemini succeeded');
       return NextResponse.json({ success: true, data });
     } catch (geminiErr: any) {
+      // Non-recoverable errors (auth failure, invalid key) — don't bother trying Groq.
       if (!isRecoverableError(geminiErr)) {
         console.error('[Frontend AI Vision] Gemini non-recoverable error:', geminiErr);
         return NextResponse.json({ success: false, error: 'AI processing failed' }, { status: 500 });
       }
-      console.warn('[Frontend AI Vision] Gemini failed (recoverable). Falling back to Groq:', geminiErr.message);
+      console.warn('[Frontend AI Vision] Gemini failed (recoverable). Falling back to NVIDIA:', geminiErr.message);
     }
 
-    // ---- STEP 2: Groq Fallback ----
+    // Step 2: NVIDIA Fallback — activated when Gemini hits a rate limit or temporary failure.
     try {
-      console.log('[Frontend AI Vision] Trying Groq Fallback');
-      const groqApiKey = process.env.GROQ_API_KEY;
-      if (!groqApiKey) {
-        throw new Error("GROQ_API_KEY not configured");
+      console.log('[Frontend AI Vision] Trying NVIDIA Fallback');
+      const nvidiaApiKey = process.env.NVIDIA_API_KEY;
+      const nvidiaBaseUrl = process.env.NVIDIA_BASE_URL;
+      if (!nvidiaApiKey || !nvidiaBaseUrl) {
+        throw new Error("NVIDIA_API_KEY or NVIDIA_BASE_URL not configured");
       }
       
-      const groq = new Groq({ apiKey: groqApiKey });
-
-      const chatCompletion = await groq.chat.completions.create({
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: "text", text: promptText },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${mimeType};base64,${base64Image}`
+      const axios = require('axios');
+      const nvidiaResponse = await axios.post(`${nvidiaBaseUrl}/chat/completions`, {
+          model: process.env.NVIDIA_MODEL || "nvidia/nemotron-3.5-lightning-30b-a3b",
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: "text", text: promptText },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${mimeType};base64,${base64Image}`
+                  }
                 }
-              }
-            ]
-          }
-        ] as any,
-        model: "groq/compound",
-        temperature: 0.7,
-        max_tokens: 1024,
+              ]
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1024
+        }, {
+        headers: {
+          'Authorization': `Bearer ${nvidiaApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
       });
 
-      const rawText = chatCompletion.choices[0]?.message?.content || '';
+      const completion = nvidiaResponse.data;
+      const rawText = completion.choices[0]?.message?.content || '';
       const data = extractJson(rawText);
-      console.log('[Frontend AI Vision] Groq succeeded');
+      console.log('[Frontend AI Vision] NVIDIA succeeded');
       
       return NextResponse.json({ success: true, data });
-    } catch (groqErr: any) {
-      console.error('[Frontend AI Vision] Groq fallback failed:', groqErr);
+    } catch (nvidiaErr: any) {
+      // Both providers failed — return a clear error so the UI can show a retry message.
+      console.error('[Frontend AI Vision] NVIDIA fallback failed:', nvidiaErr);
       return NextResponse.json({ success: false, error: 'AI processing failed on both providers' }, { status: 500 });
     }
 

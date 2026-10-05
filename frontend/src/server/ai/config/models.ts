@@ -75,9 +75,9 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     bestFor: ['health', 'quick-response', 'fallback', 'simple-tasks'],
   },
 
-  'gemini-3-flash-preview': {
-    id: 'gemini-3-flash-preview',
-    name: 'Gemini 3 Flash Preview',
+  'gemini-3.5-flash-lite': {
+    id: 'gemini-3.5-flash-lite',
+    name: 'Gemini 2.5 Flash Lite',
     provider: 'gemini',
     contextWindow: 128000,
     costTier: 'free',

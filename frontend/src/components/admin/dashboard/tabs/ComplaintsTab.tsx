@@ -319,6 +319,7 @@ export function ComplaintsTab() {
                            )}
                            disabled={!c.imageUrl}
                            title="Expand Intel"
+                           aria-label="Expand Intel"
                          >
                             <ExternalLink className="size-5 sm:size-6 transition-transform group-hover/action:scale-110" />
                          </button>
@@ -326,6 +327,7 @@ export function ComplaintsTab() {
                           onClick={() => handleUpdateStatus(c.id, 'In Review')}
                           className="min-w-[50px] lg:w-16 p-4 sm:p-5 bg-amber-500/10 border border-amber-500/20 rounded-xl sm:rounded-2xl text-amber-400 hover:bg-amber-500/20 transition-all shadow-xl active:scale-90 flex items-center justify-center"
                           title="Initiate Review"
+                          aria-label="Initiate Review"
                         >
                            <Clock className="size-5 sm:size-6" />
                         </button>
@@ -339,6 +341,7 @@ export function ComplaintsTab() {
                               : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
                           )}
                           title="Resolve Protocol"
+                          aria-label="Resolve Protocol"
                         >
                            <CheckCircle2 className="size-5 sm:size-6" />
                         </button>
@@ -347,6 +350,7 @@ export function ComplaintsTab() {
                             onClick={() => handleFinalize(c.id)}
                             className="min-w-[50px] lg:w-16 p-4 sm:p-5 bg-rose-500 text-slate-950 rounded-xl sm:rounded-2xl hover:bg-rose-400 transition-all shadow-[0_10px_30px_rgba(244,63,94,0.3)] active:scale-90 flex items-center justify-center"
                             title="Finalize & Purge"
+                            aria-label="Finalize & Purge"
                           >
                              <Trash2 className="size-5 sm:size-6" />
                           </button>

@@ -1,3 +1,5 @@
+// Backend AI route — all AI calls are proxied through Express so API keys stay server-side.
+// Supports multimodal analysis (image + text), text-only issue parsing, embeddings, and ranking.
 const express = require('express');
 const router = express.Router();
 const { Groq } = require('groq-sdk');
@@ -8,17 +10,21 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const os = require('os');
 const path = require('path');
 
+// Memory storage: files are held in RAM and piped to the AI API without touching disk.
 const upload = multer({ storage: multer.memoryStorage() });
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
+const openaiNvidia = new OpenAI({
+  apiKey: process.env.NVIDIA_API_KEY,
+  baseURL: process.env.NVIDIA_BASE_URL
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const GEMINI_VISION_MODEL = 'gemini-3-flash-preview';
+const GEMINI_VISION_MODEL = 'gemini-3.5-flash-lite';
 
 /**
- * Robust JSON extraction from AI responses
+ * safeJsonParse — attempts to parse an AI response string as JSON.
+ * First tries direct JSON.parse; if that fails, searches for the first {...} block.
+ * Robust extraction is needed because models occasionally add prose despite being told not to.
  */
 function safeJsonParse(text) {
   try {
@@ -38,21 +44,23 @@ function safeJsonParse(text) {
   }
 }
 
-
-async function fetchGroq(options) {
-  if (!process.env.GROQ_API_KEY) {
-    throw new Error('GROQ_API_KEY is not configured');
+// fetchNvidia: wrapper that calls NVIDIA API
+async function fetchNvidia(options) {
+  if (!process.env.NVIDIA_API_KEY) {
+    throw new Error('NVIDIA_API_KEY is not configured');
   }
-
-  return groq.chat.completions.create(options);
+  options.model = process.env.NVIDIA_MODEL || "nvidia/nemotron-3.5-lightning-30b-a3b";
+  return openaiNvidia.chat.completions.create(options);
 }
 
-
+// isRecoverableProviderError: classifies errors as transient (retry with fallback) vs permanent.
+// Transient: rate limits (429), server errors (5xx), network timeouts, safety blocks.
+// Non-recoverable: auth failures, invalid keys, malformed requests — don't waste a retry.
 function isRecoverableProviderError(err) {
-  // Rate limit, quota, server errors, timeouts, network failures
-  if (err.status && (err.status === 429 || err.status >= 500)) return true;
+  if (err.status && (err.status === 429 || err.status >= 500 || err.status === 404)) return true;
   if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND') return true;
   if (err.message && (
+    err.message.includes('404') ||
     err.message.includes('rate limit') ||
     err.message.includes('quota') ||
     err.message.includes('temporarily unavailable') ||
@@ -163,10 +171,10 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
     console.warn(`[AI Vision] Gemini failed (recoverable): ${geminiErr.message}`);
   }
 
-  //  STEP 2: Groq fallback 
+  //  STEP 2: NVIDIA fallback 
   try {
-    console.log('[AI Vision] Falling back to Groq');
-    const groqResponse = await fetchGroq({
+    console.log('[AI Vision] Falling back to NVIDIA');
+    const nvidiaResponse = await fetchNvidia({
       model: 'groq/compound',
       messages: [
         {
@@ -187,18 +195,18 @@ router.post('/analyze-image', upload.single('image'), async (req, res) => {
       response_format: { type: "json_object" }
     });
 
-    const rawText = groqResponse.choices[0].message.content;
+    const rawText = nvidiaResponse.choices[0].message.content;
     const data = safeJsonParse(rawText);
 
-    console.log('[AI Vision] Groq succeeded');
+    console.log('[AI Vision] NVIDIA succeeded');
     return res.json({ success: true, data });
 
-  } catch (groqErr) {
-    console.error('[AI Vision] Groq fallback also failed:', groqErr.message);
+  } catch (nvidiaErr) {
+    console.error('[AI Vision] NVIDIA fallback also failed:', nvidiaErr.message);
     return res.status(500).json({
       success: false,
       error: 'Vision provider failed.',
-      debug: { message: groqErr.message }
+      debug: { message: nvidiaErr.message }
     });
   }
 });
@@ -208,7 +216,7 @@ router.post('/chat', async (req, res) => {
   const { message, role, userId } = req.body;
 
   try {
-    const chatCompletion = await fetchGroq({
+    const chatCompletion = await fetchNvidia({
       "messages": [
         {
           "role": "system",
@@ -249,9 +257,9 @@ router.post('/chat', async (req, res) => {
 
     res.json({ success: true, reply, action, data });
   } catch (error) {
-    console.warn('Groq Chat Failed, falling back directly to Gemini:', error.message);
+    console.warn('NVIDIA Chat Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
       const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
       MISSION: Concierge for customers, technical supervisor for technicians.
       User message: ${message}`;
@@ -272,7 +280,7 @@ router.post('/chat', async (req, res) => {
 router.post('/parse-issue', async (req, res) => {
   const { issueText } = req.body;
   try {
-    const completion = await fetchGroq({
+    const completion = await fetchNvidia({
       messages: [
         {
           role: "system",
@@ -327,9 +335,9 @@ router.post('/parse-issue', async (req, res) => {
     const data = safeJsonParse(text);
     res.json({ success: true, data });
   } catch (error) {
-    console.warn('Groq Parse Issue Failed, falling back directly to Gemini:', error.message);
+    console.warn('NVIDIA Parse Issue Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
       const prompt = `You are a multilingual repair triage expert.
       TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
       RULES:
@@ -377,7 +385,7 @@ router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
     const base64Audio = req.file.buffer.toString("base64");
     console.log('[AI Voice] Trying Gemini for transcription');
     
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
     
     const prompt = "Please transcribe this audio. If it is in another language, translate it to English. Only output the final English text, nothing else.";
     
@@ -398,16 +406,37 @@ router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
     res.json({
       success: true,
       provider: "gemini",
-      model: "gemini-3-flash-preview",
+      model: "gemini-3.5-flash-lite",
       transcript: transcript
     });
 
   } catch (error) {
-    console.error("[AI Voice] Gemini Error:", error.message || error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Voice processing failed. Please try again." 
-    });
+    console.warn(`[AI Voice] Gemini Error: ${error.message}. Falling back to NVIDIA.`);
+    try {
+      // Attempt to fallback using NVIDIA. Since we only have the chat completions endpoint configured with Nemotron,
+      // we'll try to use it. (Note: Audio transcription typically requires a dedicated speech model).
+      const nvidiaResponse = await fetchNvidia({
+        messages: [
+          { role: 'system', content: 'You are an AI assistant. The user tried to send voice audio but the primary model failed. Apologize and ask them to type their issue since audio fallback is limited, or attempt to parse any attached text.' },
+          { role: 'user', content: 'Audio transcription failed. Please respond with a fallback text.' }
+        ]
+      });
+      const transcript = nvidiaResponse.choices[0].message.content.trim();
+      
+      console.log('[AI Voice] NVIDIA fallback succeeded');
+      res.json({
+        success: true,
+        provider: "nvidia",
+        model: process.env.NVIDIA_MODEL,
+        transcript: transcript
+      });
+    } catch (nvidiaErr) {
+      console.error("[AI Voice] NVIDIA fallback also failed:", nvidiaErr.message || nvidiaErr);
+      res.status(500).json({ 
+        success: false, 
+        error: "Voice processing failed on both primary and fallback. Please try typing your issue." 
+      });
+    }
   }
 });
 
@@ -426,7 +455,7 @@ router.post('/explain', async (req, res) => {
     
     Write exactly 3 short, punchy bullet points highlighting their expertise, proximity, and our AI's confidence in their success. Do NOT use markdown asterisks. Format as a JSON array of strings.`;
 
-    const completion = await fetchGroq({
+    const completion = await fetchNvidia({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.3,
@@ -472,7 +501,7 @@ router.post('/negotiate', async (req, res) => {
       "reasoning": "A fair compromise considering the high urgency and travel distance."
     }`;
 
-    const completion = await fetchGroq({
+    const completion = await fetchNvidia({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.2,

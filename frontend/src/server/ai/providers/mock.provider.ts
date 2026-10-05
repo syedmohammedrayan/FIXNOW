@@ -4,10 +4,15 @@ import { AIResponse } from '../interfaces/response';
 import { ProviderHealth, ProviderOptions } from './provider.types';
 import { ProviderConfig } from './provider.config';
 
+/**
+ * MockProvider — offline fallback and test double for the AI provider layer.
+ * When no real API key is configured, the ProviderFactory falls back here so
+ * the app continues to function without making live LLM calls.
+ */
 export class MockProvider implements AIProvider {
   name = 'mock';
 
-  async generate(request: AIRequest, options?: ProviderOptions): Promise<AIResponse> {
+  // Returns a deterministic static response — useful for tests and demos without API keys.
     const config = ProviderConfig.getInstance();
     
     return {
@@ -22,9 +27,7 @@ export class MockProvider implements AIProvider {
     };
   }
 
-  async stream(request: AIRequest, options?: ProviderOptions): Promise<any> {
-    // In a real stream, this would return an async iterable or ReadableStream
-    // For mock, returning a simple structure simulating a stream
+  // Mock streaming simulates a stream object so callers don't need to branch on provider type.
     return {
       id: request.requestId,
       simulateStream: 'Hello from Mock Provider'

@@ -35,25 +35,28 @@ export const TestimonialsColumn = (props: {
             <React.Fragment key={index}>
               {props.testimonials.map(({ text, image, name, role, city, category }, i) => (
                 <div 
-                  className="p-10 rounded-[2.5rem] border border-white/60 shadow-xl max-w-xs w-full bg-white/40 backdrop-blur-3xl hover:bg-white/60 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 group" 
+                  className="p-10 rounded-[2.5rem] border border-white/60 shadow-xl max-w-xs w-full bg-white/40 backdrop-blur-3xl hover:bg-white/60 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 group flex flex-col" 
                   key={i}
                 >
-                  <div className="text-slate-700 font-bold text-sm leading-relaxed italic">"{text}"</div>
-                  <div className="flex items-center gap-4 mt-8">
-                    <div className="relative p-1 rounded-full border border-slate-950/10 bg-white/20">
+                  <div className="text-slate-700 font-bold text-sm leading-relaxed italic break-words">"{text}"</div>
+                  <div className="flex items-center gap-4 mt-8 min-w-0">
+                    <div className="relative p-1 rounded-full border border-slate-950/10 bg-white/20 shrink-0">
                       <img
                         width={48}
                         height={48}
                         src={image}
                         alt={name}
                         className="h-12 w-12 rounded-full object-cover shadow-sm transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
+                        }}
                       />
                     </div>
-                    <div className="flex flex-col">
-                      <div className="font-black text-slate-950 tracking-tighter uppercase text-sm">{name}</div>
+                    <div className="flex flex-col min-w-0">
+                      <div className="font-black text-slate-950 tracking-tighter uppercase text-sm truncate">{name}</div>
                       <div className="flex flex-wrap gap-x-2 gap-y-0.5">
-                        <div className="text-cyan-700 text-[9px] font-black uppercase tracking-widest">{category || role}</div>
-                        {city && <div className="text-slate-500 text-[9px] font-bold uppercase tracking-widest opacity-60">• {city}</div>}
+                        <div className="text-cyan-700 text-[9px] font-black uppercase tracking-widest truncate">{category || role}</div>
+                        {city && <div className="text-slate-700 text-[9px] font-bold uppercase tracking-widest truncate">• {city}</div>}
                       </div>
                     </div>
                   </div>

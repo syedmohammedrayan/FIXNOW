@@ -3,11 +3,17 @@ import { AIRequest } from '../interfaces/request';
 import { AIResponse } from '../interfaces/response';
 import { ProviderHealth, ProviderOptions } from './provider.types';
 
+/**
+ * GroqProvider — adapter for Groq's ultra-fast LLM inference API.
+ * Groq serves open-source models (LLaMA, Mixtral) at very low latency, making it
+ * a good fallback when the primary provider is slow or rate-limited.
+ * This is currently a skeleton; actual Groq calls run in the backend (routes/ai.js).
+ */
 export class GroqProvider implements AIProvider {
   name = 'groq';
 
+  // Skeleton implementation — returns a static response rather than calling the Groq API.
   async generate(request: AIRequest, options?: ProviderOptions): Promise<AIResponse> {
-    // Skeleton implementation
     return {
       requestId: request.requestId,
       success: true,

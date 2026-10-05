@@ -1,6 +1,12 @@
 const Razorpay = require('razorpay');
+// crypto is Node's built-in module used for HMAC signature generation and verification.
 const crypto = require('crypto');
 
+/**
+ * RazorpayService — singleton wrapper around the Razorpay Node SDK.
+ * All payment operations (create order, verify payment, refund) go through this service
+ * to keep API key handling and error normalisation in one place.
+ */
 class RazorpayService {
   constructor() {
     this.key_id = process.env.RAZORPAY_KEY_ID;
@@ -49,6 +55,8 @@ class RazorpayService {
    */
   verifySignature(orderId, paymentId, signature) {
     if (!this.key_secret) throw new Error("Razorpay secret not configured");
+    // Razorpay signs the payment response as HMAC-SHA256(orderId + '|' + paymentId, secret).
+    // We re-compute the expected signature and compare to detect tampering.
     const body = orderId + "|" + paymentId;
     const expectedSignature = crypto
       .createHmac('sha256', this.key_secret)
@@ -111,4 +119,5 @@ class RazorpayService {
   }
 }
 
+// Exported as a singleton so all routes share one authenticated Razorpay client instance.
 module.exports = new RazorpayService();

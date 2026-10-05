@@ -1,10 +1,16 @@
 const razorpayService = require('../services/razorpay.service');
 const { db } = require('../config/firebaseAdmin');
 
+/**
+ * PaymentController — manages the financial lifecycle of a service booking.
+ * Responsible for securely creating Razorpay orders, verifying cryptographic signatures,
+ * and disbursing funds (wallet updates and admin commissions).
+ */
 class PaymentController {
   /**
-   * Creates a Razorpay Order for a specific booking.
-   * Calculates the exact payable amount securely from the backend.
+   * createOrder: Initiates a transaction for a booking.
+   * Calculates the exact payable amount securely from the backend to prevent
+   * client-side tampering (e.g. users editing the price in browser dev tools).
    */
   async createOrder(req, res) {
     try {
@@ -27,7 +33,8 @@ class PaymentController {
         return res.status(400).json({ success: false, message: 'Booking is already paid' });
       }
 
-      // Calculate amount (using totalAmount or total_amount)
+      // Calculate amount (handles dual-format field names from older booking versions)
+      // We pull this from Firestore, NOT the request body, to prevent price tampering.
       const rawAmount = bookingData.totalAmount || bookingData.total_amount;
       if (!rawAmount || rawAmount <= 0) {
         return res.status(400).json({ success: false, message: 'Invalid booking amount' });

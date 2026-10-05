@@ -1,13 +1,16 @@
-// InsForge client for backend - graceful fallback if SDK is unavailable
-// The @insforge/sdk has ESM/CJS compatibility issues on Node v24+
+// InsForge client for backend — graceful fallback if SDK is unavailable.
+// The @insforge/sdk has ESM/CJS compatibility issues on Node v24+.
 // The bookings route already has mock data fallback, so this is safe.
 
+// null means the real SDK isn't available; the proxy below prevents callers from crashing.
 let insforge = null;
 
 try {
   const { createClient } = require('@insforge/sdk');
   const insforgeUrl = process.env.INSFORGE_URL || '';
   const insforgeAnonKey = process.env.INSFORGE_ANON_KEY || '';
+
+  // Only initialise if both credentials are present.
   if (insforgeUrl && insforgeAnonKey) {
     insforge = createClient({
       baseUrl: insforgeUrl,
@@ -18,10 +21,12 @@ try {
     console.warn('⚠️  InsForge: INSFORGE_URL / INSFORGE_ANON_KEY not set. Using mock data.');
   }
 } catch (e) {
+  // Node v24 ESM/CJS interop failure — fall through to the mock proxy.
   console.warn('⚠️  InsForge SDK unavailable (likely Node v24 ESM issue). Falling back to mock data.');
 }
 
 // Proxy object so callers can do insforge.database.from(...).select() safely
+// even when the real client failed to load — avoids null-check boilerplate everywhere.
 const insforgeProxy = insforge || {
   database: {
     from: () => ({

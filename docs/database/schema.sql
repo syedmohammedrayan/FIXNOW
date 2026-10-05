@@ -1,7 +1,3 @@
--- =============================================
--- FIXNOW Supabase Schema (Production-Ready)
--- =============================================
-
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -203,18 +199,12 @@ CREATE TABLE IF NOT EXISTS live_tracking (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- =============================================
--- Enable Realtime on key tables
--- =============================================
 ALTER PUBLICATION supabase_realtime ADD TABLE bookings;
 ALTER PUBLICATION supabase_realtime ADD TABLE live_tracking;
 ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
 ALTER PUBLICATION supabase_realtime ADD TABLE technicians;
 ALTER PUBLICATION supabase_realtime ADD TABLE tool_orders;
 
--- =============================================
--- Row Level Security
--- =============================================
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE technicians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
@@ -224,8 +214,6 @@ ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pending_technicians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE live_tracking ENABLE ROW LEVEL SECURITY;
 
--- Allow service_role to bypass RLS (backend uses service_role key)
--- Frontend anon key policies:
 CREATE POLICY "Public read technicians" ON technicians FOR SELECT USING (true);
 CREATE POLICY "Technicians update own" ON technicians FOR UPDATE USING (auth.uid() = id);
 
@@ -247,19 +235,6 @@ CREATE POLICY "Read own live tracking" ON live_tracking FOR SELECT USING (true);
 CREATE POLICY "Update live tracking" ON live_tracking FOR UPDATE USING (true);
 CREATE POLICY "Insert live tracking" ON live_tracking FOR INSERT WITH CHECK (true);
 
--- =============================================
--- Storage Buckets (run via Supabase Dashboard or API)
--- =============================================
--- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('ids', 'ids', false);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('tools', 'tools', true);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('ai-analysis', 'ai-analysis', false);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('services', 'services', true);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('bookings', 'bookings', false);
-
--- =============================================
--- Indexes for performance
--- =============================================
 CREATE INDEX IF NOT EXISTS idx_bookings_customer ON bookings(customer_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_technician ON bookings(technician_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);

@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/firebaseAdmin');
+// notifyUser sends SMS/in-app messages to inform the customer about complaint progress.
 const { notifyUser } = require('../services/notifications');
 
-// Update complaint status and notify customer
+// PATCH /api/complaints/update-status — Admin updates the complaint lifecycle status.
+// Triggers customer notifications at "In Review" and "Resolved" milestones.
 router.post('/update-status', async (req, res) => {
   try {
     const { complaintId, status, technicianName } = req.body;
@@ -20,13 +22,14 @@ router.post('/update-status', async (req, res) => {
     }
 
     const complaintData = doc.data();
+    // Persist the new status and update timestamp in Firestore.
     await complaintRef.update({
       status,
       updatedAt: new Date().toISOString()
     });
 
     if (status === 'In Review') {
-      // Send SMS to customer
+      // Notify the customer that their complaint has been acknowledged and is being investigated.
       const customerId = complaintData.customerId || complaintData.customer_id;
       if (customerId) {
         await notifyUser(customerId, 'complaintReview', {
@@ -35,7 +38,7 @@ router.post('/update-status', async (req, res) => {
         });
       }
     } else if (status === 'Resolved') {
-      // Send SMS & In-app notification to customer
+      // Notify the customer that the complaint has been fully resolved.
       const customerId = complaintData.customerId || complaintData.customer_id;
       if (customerId) {
         await notifyUser(customerId, 'complaintResolved', {
@@ -52,7 +55,7 @@ router.post('/update-status', async (req, res) => {
   }
 });
 
-// Finalize and remove complaint from database
+// POST /api/complaints/finalize — Permanently deletes a resolved complaint from Firestore.
 router.post('/finalize', async (req, res) => {
   try {
     const { complaintId } = req.body;

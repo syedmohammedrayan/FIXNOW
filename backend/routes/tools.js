@@ -6,11 +6,11 @@ const fs = require('fs');
 const { db } = require('../config/firebaseAdmin');
 const cloudinary = require('../config/cloudinary');
 
-// Use memory storage — files go straight to Cloudinary, never saved to disk
+// Buffer in memory so files go straight to Cloudinary — no temp disk storage needed.
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 /**
- * Upload a buffer to Cloudinary and return the secure URL.
+ * Wraps Cloudinary's callback-based stream upload in a Promise for async/await use.
  */
 async function uploadToCloudinary(fileBuffer, folder = 'fixnow/tools') {
   return new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ async function uploadToCloudinary(fileBuffer, folder = 'fixnow/tools') {
   });
 }
 
-// Get catalog
+// GET /api/tools/catalog — Returns all items in the tool catalog for the technician store.
 router.get('/catalog', async (req, res) => {
   try {
     const snap = await db.collection('tool_catalog').get();
@@ -37,7 +37,8 @@ router.get('/catalog', async (req, res) => {
   }
 });
 
-// Place a tool order
+// POST /api/tools/order — Technician places an order for tools from the store.
+// Supports optional custom tool with an uploaded image.
 router.post('/order', upload.single('toolImage'), async (req, res) => {
   try {
     const { technicianId, technicianName, items, totalAmount, paymentMethod, customToolName, customToolDescription } = req.body;
@@ -46,6 +47,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
       return res.status(400).json({ error: 'Technician information required' });
     }
 
+    // Items arrive as a JSON string from multipart forms; parse defensively.
     let parsedItems = [];
     if (items) {
       try {
@@ -57,7 +59,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
 
     const orderId = 'TO_' + Date.now();
     
-    // Determine payment status based on method
+    // Two payment methods: pay immediately with Razorpay, or deduct from future earnings.
     const payMethod = paymentMethod || 'deduct_from_earnings';
     const paymentStatus = payMethod === 'pay_now' ? 'Awaiting Verification' : 'Awaiting Approval';
 
@@ -66,6 +68,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
       technician_id: technicianId,
       technician_name: technicianName,
       items: parsedItems,
+      // If a custom tool was requested with an image, upload it to Cloudinary.
       custom_tool: customToolName ? {
         name: customToolName,
         description: customToolDescription || '',
@@ -80,7 +83,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
 
     await db.collection('tool_orders').doc(orderId).set(order);
 
-    // Create transaction record for tool purchase
+    // Create a parallel transaction record for admin financial tracking and earnings ledger.
     const transaction = {
       id: 'TXN_TOOL_' + Date.now(),
       type: 'tool_purchase',
@@ -102,7 +105,7 @@ router.post('/order', upload.single('toolImage'), async (req, res) => {
   }
 });
 
-// Admin: Verify payment for tool order
+// POST /api/tools/orders/:id/verify-payment — Admin marks a "pay now" order's payment as verified.
 router.post('/orders/:id/verify-payment', async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,7 +115,7 @@ router.post('/orders/:id/verify-payment', async (req, res) => {
       updated_at: new Date().toISOString()
     });
 
-    // Update related transaction
+    // Mirror the verified status in the linked transaction record.
     const txnSnap = await db.collection('transactions').where('order_id', '==', id).limit(1).get();
     if (!txnSnap.empty) {
       await db.collection('transactions').doc(txnSnap.docs[0].id).update({
@@ -127,7 +130,7 @@ router.post('/orders/:id/verify-payment', async (req, res) => {
   }
 });
 
-// Get all tool orders (for admin)
+// GET /api/tools/orders — Admin view of all tool orders, sorted newest first.
 router.get('/orders', async (req, res) => {
   try {
     const snap = await db.collection('tool_orders').get();
@@ -138,12 +141,13 @@ router.get('/orders', async (req, res) => {
   }
 });
 
-// Update tool order status
+// POST /api/tools/orders/:id/update — Admin updates order status and delivery timeline.
 router.post('/orders/:id/update', async (req, res) => {
   try {
     const { id } = req.params;
     const { status, deliveryEstimate, deliveryTime, deliveryDay } = req.body;
 
+    // Build delivery estimate string from separate day/time fields if a combined string wasn't provided.
     let estimate = deliveryEstimate;
     if (!estimate && (deliveryTime || deliveryDay)) {
       estimate = `${deliveryDay || ''} at ${deliveryTime || ''}`.trim();
@@ -157,7 +161,7 @@ router.post('/orders/:id/update', async (req, res) => {
 
     await db.collection('tool_orders').doc(id).update(updateData);
 
-    // If approved and it was a deduction, finalize the transaction and payment status
+    // When admin approves an earnings-deduction order, auto-settle it (no separate payment step needed).
     if (status === 'Approved') {
       const docRef = await db.collection('tool_orders').doc(id).get();
       const orderData = docRef.exists ? docRef.data() : null;
@@ -177,7 +181,7 @@ router.post('/orders/:id/update', async (req, res) => {
       }
     }
 
-    // Create notification for the technician
+    // Send an in-app notification to the technician with the approval/rejection result.
     const oDoc = await db.collection('tool_orders').doc(id).get();
     const orderDoc = oDoc.exists ? oDoc.data() : null;
     

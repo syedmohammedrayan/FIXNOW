@@ -1,10 +1,17 @@
+// Bookings route — the core business logic of FixNow.
+// Handles searching for technicians, creating jobs, broadcasting to techs,
+// accepting/rejecting jobs, tracking location, and handling payments.
 const express = require('express');
 const router = require('express').Router();
+// db for Firestore queries; admin for FieldValue.increment (atomic counter updates).
 const { db, admin } = require('../config/firebaseAdmin');
+// notifyUser sends Twilio SMS + in-app notifications at booking lifecycle events.
 const { notifyUser } = require('../services/notifications');
+// getBatchETA fetches driving ETA for multiple technicians in one Google Maps call.
 const { getRealETA, getBatchETA } = require('../services/etaService');
 
 // ── THE ULTIMATE CANONICAL REGISTRY (19 ROLES) ──
+// Central source of truth for all service categories — used for matching, routing, and filtering.
 const VALID_ROLES = [
   'HVAC / AC Technician', 'Electrician', 'Washing Machine Technician', 
   'Water Systems Technician', 'Refrigerator Technician', 'Kitchen Services Technician', 
@@ -16,6 +23,8 @@ const VALID_ROLES = [
 ];
 
 // ── FUZZY KEYWORD MAP FOR ROBUST MATCHING (ALL 19 ROLES) ──
+// Keyword arrays allow AI-parsed issue descriptions to map to a canonical category
+// even when the wording doesn't exactly match (e.g. "washing" → Washing Machine Technician).
 const KEYWORD_MAP = {
   'HVAC / AC Technician': ['ac ', 'air condition', 'cooling', 'hvac', 'ventilation', 'compressor', 'split ac', 'window ac', 'central ac', 'duct', 'chiller'],
   'Electrician': ['electr', 'wire', 'switch', 'socket', 'mcb', 'light', 'fan', 'inverter', 'ups', 'battery', 'panel', 'short circuit', 'power'],
@@ -38,11 +47,15 @@ const KEYWORD_MAP = {
   'Rural Area Technicians': ['rural', 'village', 'handpump', 'solar', 'transformer', 'agriculture', 'tractor']
 };
 
+// Maps any user-provided category string to the canonical role name via exact then fuzzy match.
+// This keeps booking data consistent regardless of how the AI or customer described the service.
 function getCanonicalCategory(text) {
   if (!text) return null;
   const lowerInput = text.toLowerCase().trim();
+  // Try exact match first for efficiency.
   const exactMatch = VALID_ROLES.find(r => r.toLowerCase() === lowerInput);
   if (exactMatch) return exactMatch;
+  // Fall back to keyword inclusion check (fuzzy match).
   for (const [role, keywords] of Object.entries(KEYWORD_MAP)) {
     if (keywords.some(kw => lowerInput.includes(kw))) return role;
   }
@@ -75,10 +88,13 @@ function getMirageTagline(category) {
   return mirageData[cat] || 'Professional Service Technician & Diagnostic Expert';
 }
 
-// ── SEARCH ──
+// ── SEARCH — Returns approved, online technicians matching the requested service category ──
+// Flow: customer selects service → frontend calls POST /search → this filters Firestore
+// → enriches with distance via Google Maps → sorts by proximity → returns ranked list.
 router.post('/search', async (req, res) => {
   try {
     const { category, customerLat, customerLng } = req.body;
+    // Normalise the category string to a canonical role before querying.
     const targetCategory = getCanonicalCategory(category);
     
     if (!targetCategory) {
@@ -87,23 +103,26 @@ router.post('/search', async (req, res) => {
 
     console.log(`🎯 TARGET MATCH: [${targetCategory}]`);
 
+    // Only fetch technicians who are both admin-approved and currently online.
     const snap = await db.collection('technicians').where('approved', '==', true).where('online', '==', true).get();
     const error = null;
     const techs = snap.docs.map(d => ({id: d.id, ...d.data()}));
 
     if (error) throw error;
 
+    // Load all subscription records into a map (techId → sub) for O(1) lookup during filtering.
     const subsSnap = await db.collection('technician_subscriptions').get();
     const subsMap = {};
     subsSnap.docs.forEach(d => { subsMap[d.id] = d.data(); });
 
+    // Filter: only include technicians with matching category AND remaining booking quota.
     let matched = (techs || []).filter(tech => {
       const sub = subsMap[tech.id];
       const limit = sub && sub.bookingLimit !== undefined ? sub.bookingLimit : 5;
       const used = sub ? (sub.bookingsUsed || 0) : 0;
 
-      if (sub && sub.paymentStatus === 'expired') return false; // Filter expired tech
-      if (limit > 0 && used >= limit) return false; // Filter maxed tech
+      if (sub && sub.paymentStatus === 'expired') return false; // Expired subscription → no new bookings
+      if (limit > 0 && used >= limit) return false; // Monthly quota exhausted
 
       const techCat = (tech.category || '').toLowerCase();
       const techSkills = (tech.skills || []).map(s => s.toLowerCase());
@@ -130,17 +149,20 @@ router.post('/search', async (req, res) => {
 
     console.log(`✨ FILTERED MATCHES: ${matched.length} (Online & Approved)`);
 
+    // Enrich matched technicians with real driving distance using one batched Maps API call.
     if (customerLat && customerLng && matched.length > 0) {
       try {
         const origin = { lat: customerLat, lng: customerLng };
         const destinations = matched.map(t => ({ lat: t.location?.lat || t.lat || 0, lng: t.location?.lng || t.lng || 0 }));
         const etas = await getBatchETA(origin, destinations);
+        // Attach distance info to each technician so the UI can display "2.3 km away".
         matched = matched.map((t, i) => ({ ...t, distance: etas[i].distance, distanceValue: etas[i].distanceValue }));
       } catch (e) {
         console.warn('ETA Service failed:', e.message);
       }
     }
 
+    // Sort nearest-first so the customer sees the most accessible technician at the top.
     matched.sort((a, b) => (a.distanceValue || 999999) - (b.distanceValue || 999999));
     res.json({ success: true, technicians: matched });
 
@@ -150,9 +172,12 @@ router.post('/search', async (req, res) => {
   }
 });
 
-// ── BOOKING CREATE ──
+// ── BOOKING CREATE — Customer places a new service booking ──
+// Generates an OTP used to confirm the technician's arrival, and writes the booking
+// to Firestore with both snake_case and camelCase field names for cross-consumer compatibility.
 router.post('/create', async (req, res) => {
   try {
+    // Prefix + timestamp makes a collision-resistant booking ID without a DB sequence.
     const bookingId = 'BK_' + Date.now();
     const { category, customerId } = req.body;
     
@@ -210,9 +235,11 @@ router.post('/create', async (req, res) => {
     }
 
     const now = new Date().toISOString();
+    // 4-digit OTP shared with the customer; technician must enter it on arrival to start the job.
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-    // Store BOTH snake_case + camelCase for every field so all consumers work
+    // Store BOTH snake_case + camelCase for every field so Next.js (camelCase) and
+    // legacy queries (snake_case) both work without field-name mismatches.
     const booking = { 
       id: bookingId, 
       status: 'Pending',
@@ -287,23 +314,25 @@ router.get('/active-broadcasts', async (req, res) => {
   }
 });
 
-// ── ACCEPT BROADCAST ──
+// ── ACCEPT BROADCAST — Technician claims an open booking from the live broadcast queue ──
+// Checks subscription quota before accepting; increments bookingsUsed on success.
 router.post('/accept-broadcast', async (req, res) => {
   try {
     const { bookingId, technicianId, technicianName, technicianAvatar, technicianPhone, technicianRating } = req.body;
     
-    // Use a transaction-like check to prevent double acceptance
+    // Read the booking first to guard against two technicians accepting simultaneously.
     const docRef = await db.collection('bookings').doc(bookingId).get();
     const booking = docRef.exists ? {id: docRef.id, ...docRef.data()} : null;
     const fetchErr = null;
     
     if (fetchErr || !booking) return res.status(404).json({ error: 'Booking not found' });
     
+    // Race condition guard: if status is no longer 'Pending', another tech accepted first.
     if (booking.status !== 'Pending') {
       return res.status(400).json({ error: 'This order has already been claimed or cancelled.' });
     }
 
-    // Check Technician Subscription Quota
+    // Check Technician Subscription Quota — prevents expired/maxed techs from taking jobs.
     const subRef = await db.collection('technician_subscriptions').doc(technicianId).get();
     let bookingsUsed = 0;
     let limit = 5; // Default free plan limit
@@ -420,7 +449,8 @@ router.get('/technician/:techId', async (req, res) => {
   }
 });
 
-// ── VERIFY OTP ──
+// ── VERIFY OTP — Technician enters the 4-digit code given by the customer to start the job ──
+// This confirms the technician physically arrived at the customer's location.
 router.post('/verify-otp', async (req, res) => {
   try {
     const { bookingId, otp, technicianId } = req.body;
@@ -432,7 +462,7 @@ router.post('/verify-otp', async (req, res) => {
     
     const booking = docRef.data();
     
-    // Convert to string to avoid type mismatches
+    // Convert both sides to strings to prevent '1234' !== 1234 type mismatch.
     if (String(booking.otp) !== String(otp)) {
       return res.status(400).json({ error: 'Invalid OTP code' });
     }
@@ -498,7 +528,7 @@ router.post('/update-status', async (req, res) => {
     
     await db.collection('bookings').doc(bookingId).update(update);
     
-    // ── TRANSACTION & STATS LOGIC ──
+    // ── On completion: create a financial transaction record and update the technician's earnings ──
     if (status === 'Completed') {
       const dRef = await db.collection('bookings').doc(bookingId).get();
       const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
@@ -522,7 +552,7 @@ router.post('/update-status', async (req, res) => {
           };
           await db.collection('transactions').doc(txnId).set(transaction);
           
-          // 2. Update Technician Aggregate Stats (Exact Till Date)
+          // 2. Use FieldValue.increment for atomic counter updates — avoids read-modify-write races.
           if (admin && admin.firestore) {
             try {
               await db.collection('technicians').doc(techId).update({
@@ -533,7 +563,8 @@ router.post('/update-status', async (req, res) => {
               });
               console.log(`💰 Updated earnings for tech ${techId}: +₹${finalAmount}`);
               
-              // --- PHASE 7: Continuous Learning Hook ---
+              // Continuous Learning Hook: record each outcome so the ML model can be retrained
+              // on real booking success/failure data rather than synthetic samples.
               try {
                 // Write to performance table
                 await db.collection('technician_performance').add({
@@ -598,7 +629,9 @@ router.post('/decline', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── CANCEL BY CUSTOMER OR TECHNICIAN ──
+// ── CANCEL — Customer or technician cancels a booking ──
+// If payment was already collected, creates a refund request in Firestore rather than
+// immediately cancelling, so admin can review and trigger the Razorpay refund manually.
 router.post('/cancel', async (req, res) => {
   try {
     const { bookingId, reason, cancelledBy } = req.body;
@@ -610,10 +643,11 @@ router.post('/cancel', async (req, res) => {
     const booking = docRef.data();
 
     const now = new Date().toISOString();
+    // Firestore batch: atomically update booking + (optionally) create refund request together.
     const batch = db.batch();
 
     if (booking.payment_status === 'Paid' || booking.paymentStatus === 'Paid') {
-      // Create Refund Request
+      // Paid booking → create a refund request record for admin review instead of instant cancel.
       batch.update(db.collection('bookings').doc(bookingId), {
         status: 'Cancellation Requested',
         cancel_reason: reason || '',
@@ -666,7 +700,7 @@ router.post('/cancel', async (req, res) => {
     if (updatedBooking && updatedBooking.technician_id && updatedBooking.technician_id !== 'broadcast') {
       notifyUser(updatedBooking.technician_id, 'bookingCancelled', updatedBooking);
       
-      // Emit socket event for real-time dashboard popup
+      // Use req.app.get('io') to retrieve the Socket.IO instance stored in server.js.
       const io = req.app.get('io');
       if (io) {
         // Send to both the booking room AND the tech's private room
@@ -792,10 +826,13 @@ router.get('/transactions/technician/:techId', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── AI RETRAINING PIPELINE ──
+// ── AI RETRAINING PIPELINE — Sends completed booking data to the Python ML server to retrain the model ──
+// The ML model predicts which technician is most likely to succeed for a given booking.
+// Retraining uses real outcome data so the model improves over time (continuous learning).
 router.post('/admin/retrain', async (req, res) => {
   try {
     const axios = require('axios');
+    // Fetch all completed bookings as the training dataset.
     const snap = await db.collection('bookings').where('status', '==', 'Completed').get();
     
     let trainingData = [];
@@ -840,7 +877,7 @@ router.post('/admin/retrain', async (req, res) => {
       });
     }
     
-    // Inject synthetic data if less than 10 samples to prevent ML API rejection
+    // The FastAPI ML server requires at least 10 samples to train; pad with synthetic data if needed.
     if (trainingData.length < 10) {
       const synthetic = [
         { skill_match: 0.9, distance: 2.1, rating: 4.8, experience: 5, budget_fit: 0.9, visibility_promotion: 0.2, quota_used_percentage: 0.4, success: 1 },

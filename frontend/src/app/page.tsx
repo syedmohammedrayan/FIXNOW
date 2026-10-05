@@ -1,3 +1,5 @@
+// 'use client' marks this file as a Client Component in Next.js App Router.
+// Needed here because we use Framer Motion for animations which requires access to the browser's DOM/window.
 'use client';
 
 import React from 'react';
@@ -7,6 +9,8 @@ import { Search, MapPin, Zap, ArrowRight, Activity, Shield, Sparkles, Star, Chec
 import Testimonials from '@/components/Testimonials';
 import Navbar from '@/components/Navbar';
 
+// LandingPage — the main entry point (/) of the application.
+// Serves as the marketing hero page to drive conversions to either the customer or technician signup flows.
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-cyan-500/30">

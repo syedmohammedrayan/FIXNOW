@@ -1,39 +1,40 @@
 const express = require('express');
 const router = express.Router();
+// Razorpay payment business logic lives in the controller to keep the route thin.
 const paymentController = require('../controllers/payment.controller');
 
-// Create Order (Phase 2)
+// ── Razorpay Payment Flow ──
+// Phase 1: Frontend calls create-order → backend creates a Razorpay order with amount.
 router.post('/create-order', paymentController.createOrder);
 
-// Verify Payment (Phase 4)
+// Phase 2: After user pays, Razorpay redirects; frontend sends IDs here to verify the signature.
 router.post('/verify', paymentController.verifyPayment);
 
-// Webhook (Phase 8)
-// Note: webhook signature verification requires raw body. We use express.raw for this specific route if needed,
-// but for simplicity we rely on JSON parsing in the global middleware. To be completely accurate with Razorpay,
-// you might need a raw body parser middleware specifically for this route.
+// Razorpay webhook: receives server-to-server payment events (charge.failed, payment.captured).
+// Note: full webhook accuracy requires a raw body parser to verify the HMAC signature correctly.
 router.post('/webhook', paymentController.handleWebhook);
 
-// Refund Payment (Direct)
+// Initiate a refund for a payment that was previously captured.
 router.post('/refund', paymentController.refundPayment);
 
-// --- Production Booking Flow ---
-// 1. Create Order before Booking
+// ── Production Booking Payment Flow ──
+
+// Step 1: Customer confirms booking → create a 10% advance Razorpay order.
 router.post('/create-booking-order', paymentController.createBookingOrder);
 
-// 2. Verify Order and Create Booking
+// Step 2: Verify the 10% advance payment; on success, create the booking in Firestore.
 router.post('/verify-booking', paymentController.verifyBookingOrder);
 
-// 3. Create Balance Order
+// Step 3: After service completion, create a Razorpay order for the remaining 90% balance.
 router.post('/create-balance-order', paymentController.createBalanceOrder);
 
-// 4. Verify Balance Payment
+// Step 4: Verify the balance payment and mark the booking as fully paid.
 router.post('/verify-balance-payment', paymentController.verifyBalancePayment);
 
-// 5. Admin Approve Refund Request
+// Admin approves a customer's refund request and triggers the Razorpay refund API.
 router.post('/refund-request/:id/approve', paymentController.approveRefundRequest);
 
-// 6. Admin Reject Refund Request
+// Admin rejects a customer's refund request with an explanation.
 router.post('/refund-request/:id/reject', paymentController.rejectRefundRequest);
 
 module.exports = router;
