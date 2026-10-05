@@ -19,7 +19,7 @@ const openaiNvidia = new OpenAI({
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const GEMINI_VISION_MODEL = 'gemini-2.5-flash-lite';
+const GEMINI_VISION_MODEL = 'gemini-3.5-flash-lite';
 
 /**
  * safeJsonParse — attempts to parse an AI response string as JSON.
@@ -259,7 +259,7 @@ router.post('/chat', async (req, res) => {
   } catch (error) {
     console.warn('NVIDIA Chat Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
       const prompt = `You are the FIXNOW AI Core Engine. Role: ${role}. UserId: ${userId}. 
       MISSION: Concierge for customers, technical supervisor for technicians.
       User message: ${message}`;
@@ -337,7 +337,7 @@ router.post('/parse-issue', async (req, res) => {
   } catch (error) {
     console.warn('NVIDIA Parse Issue Failed, falling back directly to Gemini:', error.message);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
       const prompt = `You are a multilingual repair triage expert.
       TASK: Pick EXACTLY one category from: ["HVAC / AC Technician", "Electrician", "Washing Machine Technician", "Water Systems Technician", "Refrigerator Technician", "Kitchen Services Technician", "Installation Services Technician", "Gas & Utilities", "Carpentry", "Plumbing", "Electronics & Smart Home", "Pest Control", "Cleaning Services", "Painter", "Renovation Service", "Moving & Misc", "Bike Mechanics", "Car Mechanics", "Rural Area Technicians"].
       RULES:
@@ -385,7 +385,7 @@ router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
     const base64Audio = req.file.buffer.toString("base64");
     console.log('[AI Voice] Trying Gemini for transcription');
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
     
     const prompt = "Please transcribe this audio. If it is in another language, translate it to English. Only output the final English text, nothing else.";
     
@@ -406,7 +406,7 @@ router.post('/transcribe-voice', upload.single('audio'), async (req, res) => {
     res.json({
       success: true,
       provider: "gemini",
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-3.5-flash-lite",
       transcript: transcript
     });
 

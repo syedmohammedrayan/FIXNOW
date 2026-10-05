@@ -120,7 +120,7 @@ Return "INVALID" for category if input is completely unreadable nonsense.`;
     try {
       console.log('[Frontend AI Vision] Trying Gemini Primary');
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
       // Gemini's generateContent accepts an array of content parts (text + inlineData).
       const result = await model.generateContent([
