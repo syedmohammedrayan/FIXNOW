@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }));
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.5-flash-lite",
+      model: "gemini-2.5-flash-lite",
       // systemInstruction sets a persistent context that the model follows throughout the conversation.
       systemInstruction: { role: "system", parts: [{ text: systemPrompt }] }
     });
