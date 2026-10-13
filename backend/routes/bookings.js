@@ -293,6 +293,34 @@ router.post('/create', async (req, res) => {
     };
     
     await db.collection('bookings').doc(booking.id).set(booking);
+
+    // If directly booked for a specific technician, increment their subscription bookingsUsed
+    if (booking.technician_id && booking.technician_id !== 'broadcast') {
+      try {
+        const subDoc = await db.collection('technician_subscriptions').doc(booking.technician_id).get();
+        if (subDoc.exists) {
+          await db.collection('technician_subscriptions').doc(booking.technician_id).update({
+            bookingsUsed: admin.firestore.FieldValue.increment(1)
+          });
+        } else {
+          await db.collection('technician_subscriptions').doc(booking.technician_id).set({
+            technicianId: booking.technician_id,
+            planId: 'free',
+            planName: 'Free Plan',
+            bookingLimit: 3,
+            bookingsUsed: 1,
+            priorityMultiplier: 1.0,
+            paymentStatus: 'active',
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: now,
+            updatedAt: now
+          });
+        }
+      } catch (subErr) {
+        console.warn('Failed to increment tech subscription on direct booking:', subErr.message);
+      }
+    }
+
     res.json({ success: true, bookingId, booking, otp: booking.otp });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -377,10 +405,10 @@ router.post('/accept-broadcast', async (req, res) => {
     const updateErr = null;
     if (updateErr) throw updateErr;
 
-    // Increment bookingsUsed
+    // Increment bookingsUsed atomically
     if (subRef.exists) {
       await db.collection('technician_subscriptions').doc(technicianId).update({
-        bookingsUsed: bookingsUsed + 1
+        bookingsUsed: admin.firestore.FieldValue.increment(1)
       });
     } else {
       // Create default plan document if it didn't exist
@@ -392,7 +420,9 @@ router.post('/accept-broadcast', async (req, res) => {
         bookingsUsed: 1,
         priorityMultiplier: 1.0,
         paymentStatus: 'active',
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
     }
 

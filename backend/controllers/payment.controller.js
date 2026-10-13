@@ -512,6 +512,33 @@ class PaymentController {
       
       await batch.commit();
 
+      // Increment technician's subscription bookingsUsed
+      if (bookingData.technicianId && bookingData.technicianId !== 'broadcast') {
+        try {
+          const subDoc = await db.collection('technician_subscriptions').doc(bookingData.technicianId).get();
+          if (subDoc.exists) {
+            await db.collection('technician_subscriptions').doc(bookingData.technicianId).update({
+              bookingsUsed: admin.firestore.FieldValue.increment(1)
+            });
+          } else {
+            await db.collection('technician_subscriptions').doc(bookingData.technicianId).set({
+              technicianId: bookingData.technicianId,
+              planId: 'free',
+              planName: 'Free Plan',
+              bookingLimit: 3,
+              bookingsUsed: 1,
+              priorityMultiplier: 1.0,
+              paymentStatus: 'active',
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+        } catch (subErr) {
+          console.warn('Failed to increment tech subscription on paid booking:', subErr.message);
+        }
+      }
+
       // Notifications
       const { notifyUser } = require('../services/notification.service');
       // Notify technician about the assigned paid booking

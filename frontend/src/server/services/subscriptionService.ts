@@ -15,6 +15,7 @@ export interface TechnicianSubscription {
   planName: string;
   bookingLimit: number;
   bookingsUsed: number;
+  remainingBookings?: number;
   priorityMultiplier: number;
   paymentStatus: string;
   expiresAt: string;

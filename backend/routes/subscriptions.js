@@ -53,46 +53,33 @@ router.get('/plans', async (req, res) => {
   }
 });
 
-// GET /api/subscriptions/:technicianId — Returns the technician's active subscription with expiry check.
+// GET /api/subscriptions/:technicianId — Returns the technician's active subscription with exact quota & remaining bookings.
 router.get('/:technicianId', async (req, res) => {
   try {
     const { technicianId } = req.params;
     const docRef = await db.collection('technician_subscriptions').doc(technicianId).get();
     
-    // Default free plan issued when no subscription record exists (new technician signup).
+    const now = new Date();
     const defaultFreeSub = {
       technicianId,
       planId: 'free',
       planName: 'Free Plan',
       bookingLimit: 3,
       bookingsUsed: 0,
+      remainingBookings: 3,
       priorityMultiplier: 1.0,
       paymentStatus: 'active',
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    if (docRef.exists) {
-      const sub = docRef.data();
-      
-      // Auto-expire: if the subscription date has passed, lock the technician out of new bookings.
-      if (sub.expiresAt && new Date(sub.expiresAt) < new Date()) {
-        const expiredSub = {
-          ...sub,
-          paymentStatus: 'expired',
-          bookingLimit: 0, // Blocks all new bookings until they renew
-          bookingsUsed: 0
-        };
-        await db.collection('technician_subscriptions').doc(technicianId).set(expiredSub);
-        return res.json({ success: true, subscription: expiredSub, message: "Subscription expired. Please purchase a new plan." });
-      }
+    let sub = docRef.exists ? docRef.data() : null;
 
-      res.json({ success: true, subscription: sub });
-    } else {
-      // Create a free plan record so the technician can start receiving bookings immediately.
+    if (!sub) {
+      // Create a free plan record with 3 bookings so the technician starts with fresh quota.
       await db.collection('technician_subscriptions').doc(technicianId).set(defaultFreeSub);
       
       try {
-        // Sync plan info to both users and technicians collections for the Admin dashboard.
         const updateData = { subscriptionPlan: 'free', expiresAt: defaultFreeSub.expiresAt };
         await db.collection('users').doc(technicianId).update(updateData);
         await db.collection('technicians').doc(technicianId).update(updateData);
@@ -100,8 +87,104 @@ router.get('/:technicianId', async (req, res) => {
         console.warn('Failed to sync default plan to users:', e.message);
       }
 
-      res.json({ success: true, subscription: defaultFreeSub });
+      return res.json({ success: true, subscription: defaultFreeSub });
     }
+
+    // Auto-expire / Rollover check:
+    if (sub.expiresAt && new Date(sub.expiresAt) < now) {
+      if (sub.planId !== 'free') {
+        // Paid plan expired: revert to standard Free Plan (3 bookings/month)
+        sub = {
+          technicianId,
+          planId: 'free',
+          planName: 'Free Plan',
+          bookingLimit: 3,
+          bookingsUsed: 0,
+          priorityMultiplier: 1.0,
+          paymentStatus: 'active',
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        await db.collection('technician_subscriptions').doc(technicianId).set(sub);
+      } else {
+        // Free plan monthly cycle: renew cycle with 3 bookings
+        sub.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        sub.bookingsUsed = 0;
+        sub.paymentStatus = 'active';
+        sub.updatedAt = new Date().toISOString();
+        await db.collection('technician_subscriptions').doc(technicianId).update({
+          expiresAt: sub.expiresAt,
+          bookingsUsed: 0,
+          paymentStatus: 'active',
+          updatedAt: sub.updatedAt
+        });
+      }
+    }
+
+    // Correct plan limits if corrupted, 0, or missing
+    let effectiveLimit = sub.bookingLimit;
+    if (!effectiveLimit || effectiveLimit <= 0) {
+      effectiveLimit = sub.planId === 'pro' ? 22 : (sub.planId === 'elite' ? 9999 : 3);
+      sub.bookingLimit = effectiveLimit;
+    }
+
+    // Live sync booking count from bookings collection in Firestore for this technician
+    let liveBookingsCount = 0;
+    try {
+      let cycleStart;
+      if (sub.cycleStartDate) {
+        cycleStart = new Date(sub.cycleStartDate);
+      } else if (sub.startedAt) {
+        cycleStart = new Date(sub.startedAt);
+      } else if (sub.expiresAt) {
+        cycleStart = new Date(new Date(sub.expiresAt).getTime() - 30 * 24 * 60 * 60 * 1000);
+      } else {
+        cycleStart = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      }
+      
+      const [snap1, snap2] = await Promise.all([
+        db.collection('bookings').where('technician_id', '==', technicianId).get().catch(() => ({ docs: [] })),
+        db.collection('bookings').where('technicianId', '==', technicianId).get().catch(() => ({ docs: [] }))
+      ]);
+      const seenBookingIds = new Set();
+      const allDocs = [...(snap1.docs || []), ...(snap2.docs || [])];
+
+      allDocs.forEach(bDoc => {
+        if (seenBookingIds.has(bDoc.id)) return;
+        seenBookingIds.add(bDoc.id);
+        const b = bDoc.data();
+        if (b.status && b.status !== 'Cancelled' && b.status !== 'Rejected') {
+          const bDate = b.createdAt ? new Date(b.createdAt) : (b.created_at ? new Date(b.created_at) : null);
+          if (!bDate || bDate >= cycleStart) {
+            liveBookingsCount++;
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('Could not live count technician bookings:', e.message);
+    }
+
+    const effectiveUsed = Math.max(sub.bookingsUsed || 0, liveBookingsCount);
+    const effectiveRemaining = effectiveLimit > 9000 ? 9999 : Math.max(0, effectiveLimit - effectiveUsed);
+
+    // Sync updated values to Firestore if they differed
+    if (sub.bookingsUsed !== effectiveUsed || sub.bookingLimit !== effectiveLimit) {
+      sub.bookingsUsed = effectiveUsed;
+      sub.bookingLimit = effectiveLimit;
+      await db.collection('technician_subscriptions').doc(technicianId).update({
+        bookingsUsed: effectiveUsed,
+        bookingLimit: effectiveLimit
+      }).catch(() => {});
+    }
+
+    const responseSubscription = {
+      ...sub,
+      bookingLimit: effectiveLimit,
+      bookingsUsed: effectiveUsed,
+      remainingBookings: effectiveRemaining
+    };
+
+    res.json({ success: true, subscription: responseSubscription });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
