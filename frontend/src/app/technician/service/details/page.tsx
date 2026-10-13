@@ -118,7 +118,7 @@ function TechnicianServiceContent() {
 
   // OTP states
   const [otpPhase, setOtpPhase] = useState<'idle' | 'generating' | 'entering' | 'verifying' | 'verified'>('idle');
-  const [otpInput, setOtpInput] = useState(['', '', '', '']);
+  const [otpInput, setOtpInput] = useState(['', '', '', '', '', '']);
   const [otpError, setOtpError] = useState('');
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -433,13 +433,13 @@ function TechnicianServiceContent() {
     const next = [...otpInput];
     next[i] = val.slice(-1);
     setOtpInput(next);
-    if (val && i < 3) otpRefs.current[i + 1]?.focus();
+    if (val && i < 5) otpRefs.current[i + 1]?.focus();
     if (!val && i > 0) otpRefs.current[i - 1]?.focus();
   };
 
   const handleVerifyOtp = async () => {
     const otp = otpInput.join('');
-    if (otp.length < 4) { setOtpError('Please enter all 4 digits.'); return; }
+    if (otp.length < 4) { setOtpError('Please enter the security code.'); return; }
     setOtpPhase('verifying');
     setOtpError('');
     try {
@@ -566,13 +566,22 @@ function TechnicianServiceContent() {
   };
 
   const handleRefuse = async () => {
+    if (booking?.status === 'In Progress' || booking?.otpVerified || booking?.otp_verified || otpPhase === 'verified') {
+      alert('⚠️ ACTIVE PROTOCOL: You cannot terminate or cancel the booking once OTP has been verified and service has begun.');
+      setRefuseConfirm(false);
+      return;
+    }
     setRefusing(true);
     try {
-      await axios.post(`${API_BASE}/api/bookings/customer-refused`, { bookingId, technicianId: user?.uid });
+      await axios.post(`${API_BASE}/api/bookings/cancel`, { 
+        bookingId, 
+        reason: 'Technician unable to perform service', 
+        cancelledBy: 'Technician' 
+      });
       setActionDone('refused');
       setTimeout(() => router.push('/technician/bookings'), 3000);
-    } catch (e) {
-      alert('Failed to update status.');
+    } catch (e: any) {
+      alert(e.response?.data?.error || 'Failed to update status.');
     } finally {
       setRefusing(false);
     }
@@ -709,9 +718,9 @@ function TechnicianServiceContent() {
                 
                 {otpPhase === 'entering' && (
                   <div>
-                    <div className="flex gap-2 sm:gap-3 justify-center mb-10">
+                    <div className="flex gap-2 sm:gap-3 justify-center mb-10 flex-wrap sm:flex-nowrap">
                       {otpInput.map((digit, i) => (
-                        <input key={i} ref={(el) => { otpRefs.current[i] = el; }} type="text" inputMode="numeric" maxLength={1} value={digit} onChange={(e) => handleOtpChange(i, e.target.value)} className="w-12 h-16 sm:w-14 sm:h-18 text-center text-2xl font-black bg-white/[0.05] border border-white/[0.1] focus:border-cyan-500/50 rounded-2xl text-white outline-none transition-all shadow-inner focus:bg-white/[0.08]" />
+                        <input key={i} ref={(el) => { otpRefs.current[i] = el; }} type="text" inputMode="numeric" maxLength={1} value={digit} onChange={(e) => handleOtpChange(i, e.target.value)} className="w-10 h-14 sm:w-14 sm:h-18 text-center text-xl sm:text-2xl font-black bg-white/[0.05] border border-white/[0.1] focus:border-cyan-500/50 rounded-xl sm:rounded-2xl text-white outline-none transition-all shadow-inner focus:bg-white/[0.08]" />
                       ))}
                     </div>
                     {otpError && <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl mb-6 text-rose-500 text-[10px] font-black uppercase tracking-wider text-center flex items-center justify-center gap-2"><AlertCircle className="size-3" /> {otpError}</div>}
@@ -744,7 +753,10 @@ function TechnicianServiceContent() {
                   </button>
                   <div className="grid grid-cols-2 gap-4">
                     <button onClick={() => window.print()} className="py-5 bg-white/[0.03] border border-white/[0.08] text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/[0.08] hover:text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><Printer className="size-4" /> Receipt</button>
-                    <button onClick={() => setRefuseConfirm(true)} disabled={refusing} className="py-5 bg-rose-500/[0.03] border border-rose-500/[0.1] text-rose-500 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-rose-500/10 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><XCircle className="size-4" /> Abort</button>
+                    <div className="py-5 bg-emerald-500/[0.05] border border-emerald-500/20 text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 shadow-xl select-none">
+                      <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                      Protocol Locked
+                    </div>
                   </div>
                 </div>
               )}

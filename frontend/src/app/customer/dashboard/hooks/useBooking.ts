@@ -82,6 +82,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     }));
   }, []);
 
+  useEffect(() => {
     if (userProfile?.name) setCustomerName(userProfile.name);
     if (userProfile?.phone || userProfile?.contact_number) setContactNumber(userProfile.phone || userProfile.contact_number || '');
     if (userProfile?.email) setEmail(userProfile.email);

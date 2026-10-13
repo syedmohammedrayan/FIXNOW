@@ -43,7 +43,7 @@ export default function SuccessState({
 
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 my-6 flex flex-col items-center justify-center w-full">
            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 leading-snug">Your Service OTP</span>
-           <span className="text-3xl font-black text-emerald-300 tracking-[0.25em] py-1">{bookingConfirmation.otp || '----'}</span>
+           <span className="text-3xl font-black text-emerald-300 tracking-[0.25em] py-1">{bookingConfirmation.otp || '------'}</span>
            <p className="text-[11px] text-emerald-400/80 mt-2 font-semibold">Share this with the technician to start the job.</p>
         </div>
 

@@ -421,16 +421,27 @@ export function useTechnicianData() {
   const updateJobStatus = async (status: string) => {
     if (!currentJob) return;
     try {
-      await axios.post(`${API_BASE}/api/bookings/update-status`, {
+      const res = await axios.post(`${API_BASE}/api/bookings/update-status`, {
         bookingId: currentJob.id,
         status,
       });
       setJobStatus(status);
-      if (socket) {
-        socket.emit("status_update", { bookingId: currentJob.id, status });
+      const otp = res.data?.otp || currentJob.otp;
+      if (otp && !currentJob.otp) {
+        setCurrentJob((prev: any) => ({ ...prev, otp }));
       }
-    } catch (e) {
-      alert("Status update failed.");
+      if (status === 'Arrived') {
+        setNotification({
+          message: "Arrived protocol confirmed! Customer has been sent their verification OTP via SMS, WhatsApp, and Email.",
+          type: 'success'
+        });
+      }
+      if (socket) {
+        socket.emit("status_update", { bookingId: currentJob.id, status, otp });
+        socket.emit("update_status", { bookingId: currentJob.id, status, otp });
+      }
+    } catch (e: any) {
+      alert(e.response?.data?.error || "Status update failed.");
     }
   };
 

@@ -230,15 +230,21 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Technician updates the booking status (e.g. "arrived", "in_progress", "completed").
-  socket.on('update_status', async (data) => {
-    const { bookingId, status } = data || {};
+  // Technician updates the booking status (e.g. "Arrived", "In Progress", "Completed").
+  const handleStatusBroadcast = async (data) => {
+    const { bookingId, status, otp } = data || {};
     if (!bookingId) return;
     const room = `booking_${bookingId}`;
-    // Broadcast the new status to the customer's tracking UI immediately.
-    io.to(room).emit('status_update', { status });
-    console.log(`📢 Status Update in ${room}: ${status}`);
-  });
+    // Broadcast the new status and OTP to the customer's tracking UI immediately.
+    io.to(room).emit('status_update', { status, otp });
+    if (status === 'Arrived') {
+      io.to(room).emit('technician_arrived', { bookingId, status, otp });
+    }
+    console.log(`📢 Status Update in ${room}: ${status}${otp ? ` (OTP: ${otp})` : ''}`);
+  };
+
+  socket.on('update_status', handleStatusBroadcast);
+  socket.on('status_update', handleStatusBroadcast);
 
   // Customer's booking is broadcast to all online technicians so any nearby one can accept.
   socket.on('broadcast_booking', (data) => {

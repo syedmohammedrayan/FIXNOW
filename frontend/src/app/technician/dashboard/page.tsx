@@ -112,7 +112,7 @@ export default function TechnicianDashboard() {
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [otpPhase, setOtpPhase] = useState<"idle" | "verifying" | "verified">("idle");
-  const [otpInput, setOtpInput] = useState(["", "", "", ""]);
+  const [otpInput, setOtpInput] = useState(["", "", "", "", "", ""]);
   const [otpError, setOtpError] = useState("");
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -381,7 +381,7 @@ export default function TechnicianDashboard() {
     const next = [...otpInput];
     next[i] = val.slice(-1);
     setOtpInput(next);
-    if (val && i < 3) otpRefs.current[i + 1]?.focus();
+    if (val && i < 5) otpRefs.current[i + 1]?.focus();
     if (!val && i > 0) otpRefs.current[i - 1]?.focus();
   };
 
@@ -389,7 +389,7 @@ export default function TechnicianDashboard() {
     if (!currentJob) return;
     const otp = otpInput.join("");
     if (otp.length < 4) {
-      setOtpError("Enter 4 digits");
+      setOtpError("Enter security code");
       return;
     }
     setOtpPhase("verifying");

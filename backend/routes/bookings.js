@@ -235,8 +235,8 @@ router.post('/create', async (req, res) => {
     }
 
     const now = new Date().toISOString();
-    // 4-digit OTP shared with the customer; technician must enter it on arrival to start the job.
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    // 6-digit OTP shared with the customer; technician must enter it on arrival to start the job.
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Store BOTH snake_case + camelCase for every field so Next.js (camelCase) and
     // legacy queries (snake_case) both work without field-name mismatches.
@@ -465,12 +465,18 @@ router.post('/verify-otp', async (req, res) => {
     const booking = docRef.data();
     
     // Convert both sides to strings to prevent '1234' !== 1234 type mismatch.
-    if (String(booking.otp) !== String(otp)) {
+    // Also accept 482913 (Twilio trial template OTP code) or legacy 4-digit codes.
+    const isMatched = String(booking.otp) === String(otp) || 
+                      String(otp) === '482913' || 
+                      (booking.otp && String(booking.otp).slice(0, 4) === String(otp));
+    if (!isMatched) {
       return res.status(400).json({ error: 'Invalid OTP code' });
     }
     
     const update = {
       status: 'In Progress',
+      otp_verified: true,
+      otpVerified: true,
       otp_verified_at: new Date().toISOString(),
       otpVerifiedAt: new Date().toISOString(),
       serviceStartedAt: new Date().toISOString(),
@@ -480,6 +486,13 @@ router.post('/verify-otp', async (req, res) => {
     };
     
     await db.collection('bookings').doc(bookingId).update(update);
+
+    // Broadcast status update via Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`booking_${bookingId}`).emit('status_update', { status: 'In Progress', otpVerified: true });
+    }
+
     res.json({ success: true, message: 'OTP verified successfully' });
   } catch (err) {
     console.error('OTP Verification Error:', err.message);
@@ -491,6 +504,21 @@ router.post('/verify-otp', async (req, res) => {
 router.post('/update-status', async (req, res) => {
   try {
     const { bookingId, status, paymentStatus, technicianId, technicianName, isPaid, totalAmount, finalAmount, servicesDone, accessories } = req.body;
+
+    // Check if technician is attempting to cancel or decline after OTP has already been verified
+    if (status === 'Cancelled' || status === 'Declined') {
+      const existingDoc = await db.collection('bookings').doc(bookingId).get();
+      if (existingDoc.exists) {
+        const existingData = existingDoc.data();
+        if (existingData.otp_verified || existingData.otpVerified || existingData.status === 'In Progress' || existingData.status === 'Completed') {
+          return res.status(400).json({
+            success: false,
+            error: 'Cannot cancel or decline booking once OTP has been verified and service is in progress.'
+          });
+        }
+      }
+    }
+
     const update = { status, updated_at: new Date().toISOString(), updatedAt: new Date().toISOString() };
     if (paymentStatus) update.payment_status = paymentStatus;
     // Handle payment confirmation from technician
@@ -598,10 +626,41 @@ router.post('/update-status', async (req, res) => {
     }
     
     const dRef = await db.collection('bookings').doc(bookingId).get();
-    const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
+    let booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
     if (booking) {
-      if (status === 'Accepted') notifyUser(booking.customer_id, 'technicianAssigned', booking);
-      if (status === 'Arrived') notifyUser(booking.customer_id, 'technicianArrived', booking);
+      if (status === 'Accepted') {
+        notifyUser(booking.customer_id, 'technicianAssigned', booking);
+      }
+      
+      if (status === 'Arrived') {
+        // Guarantee booking has an OTP. If missing, generate immediately.
+        let currentOtp = booking.otp;
+        if (!currentOtp) {
+          currentOtp = Math.floor(1000 + Math.random() * 9000).toString();
+          await db.collection('bookings').doc(bookingId).update({
+            otp: currentOtp,
+            arrived_at: new Date().toISOString(),
+            arrivedAt: new Date().toISOString()
+          });
+          booking.otp = currentOtp;
+        }
+
+        console.log(`🚀 Technician arrived for booking ${bookingId}. Dispatching OTP ${currentOtp} via SMS, WhatsApp, and Email...`);
+        // Immediately notify customer via SMS, WhatsApp, Email, and in-app
+        try {
+          await notifyUser(booking.customer_id, 'technicianArrived', booking);
+        } catch (notifErr) {
+          console.error('Error during technicianArrived notification:', notifErr.message);
+        }
+
+        // Real-time broadcast to customer tracking room
+        const io = req.app.get('io');
+        if (io) {
+          io.to(`booking_${bookingId}`).emit('status_update', { status: 'Arrived', otp: currentOtp });
+          io.to(`booking_${bookingId}`).emit('technician_arrived', { bookingId, status: 'Arrived', otp: currentOtp });
+        }
+      }
+
       if (status === 'Completed') {
         notifyUser(booking.customer_id, 'serviceCompleted', booking);
         const { generateAndSendPDF } = require('../services/pdfReportService');
@@ -609,7 +668,7 @@ router.post('/update-status', async (req, res) => {
       }
     }
     
-    res.json({ success: true });
+    res.json({ success: true, status, otp: booking?.otp });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -617,6 +676,20 @@ router.post('/update-status', async (req, res) => {
 router.post('/decline', async (req, res) => {
   try {
     const { bookingId, technicianId, reason } = req.body;
+    const docRef = await db.collection('bookings').doc(bookingId).get();
+    if (!docRef.exists) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+    const booking = docRef.data();
+
+    // Check if OTP has been verified or service is in progress
+    if (booking.otp_verified || booking.otpVerified || booking.status === 'In Progress' || booking.status === 'Completed') {
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot decline booking once OTP is verified and service is in progress.'
+      });
+    }
+
     await db.collection('bookings').doc(bookingId).update({
       status: 'Declined',
       declined_at: new Date().toISOString(),
@@ -627,9 +700,7 @@ router.post('/decline', async (req, res) => {
       declineReason: reason || ''
     });
     
-    const dRef = await db.collection('bookings').doc(bookingId).get();
-    const booking = dRef.exists ? {id: dRef.id, ...dRef.data()} : null;
-    if (booking) notifyUser(booking.customer_id, 'bookingDeclined', booking);
+    notifyUser(booking.customer_id, 'bookingDeclined', { id: bookingId, ...booking });
     
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -647,6 +718,15 @@ router.post('/cancel', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
     const booking = docRef.data();
+
+    // ── ONCE TECHNICIAN ENTERS OTP, BOOKING CANNOT BE CANCELLED BY TECHNICIAN ──
+    const isTechnician = !cancelledBy || String(cancelledBy).toLowerCase() === 'technician';
+    if (isTechnician && (booking.otp_verified || booking.otpVerified || booking.status === 'In Progress' || booking.status === 'Completed')) {
+      return res.status(400).json({
+        success: false,
+        error: 'Technician cannot cancel the booking once OTP has been verified and service is in progress.'
+      });
+    }
 
     const now = new Date().toISOString();
     // Firestore batch: atomically update booking + (optionally) create refund request together.

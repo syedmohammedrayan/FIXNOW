@@ -257,9 +257,9 @@ export default function ActiveJobCard({
                       <span className="text-[10px] sm:text-xs font-bold text-cyan-400 uppercase tracking-[0.2em]">Identity Verification</span>
                     </div>
                     <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-3 sm:mb-4 uppercase tracking-tight">Client Passcode</h3>
-                    <p className="text-slate-400 text-xs sm:text-sm mb-8 sm:mb-10 leading-relaxed max-w-sm">Enter the 4-digit security code provided by the client to initialize the mission protocol and commence work.</p>
+                    <p className="text-slate-400 text-xs sm:text-sm mb-8 sm:mb-10 leading-relaxed max-w-sm">Enter the security passcode provided by the client to initialize the mission protocol and commence work.</p>
                     
-                    <div className="flex gap-4 sm:gap-6 justify-center mb-10">
+                    <div className="flex gap-2 sm:gap-3 md:gap-4 justify-center mb-10 flex-wrap sm:flex-nowrap">
                       {otpInput.map((digit, i) => (
                         <div key={i} className="relative group/field">
                           <input
@@ -272,7 +272,7 @@ export default function ActiveJobCard({
                             value={digit}
                             onChange={(e) => handleOtpChange(i, e.target.value)}
                             className={cn(
-                              "w-12 h-16 sm:w-20 sm:h-24 text-center text-3xl sm:text-5xl font-black rounded-2xl bg-slate-950/50 border-2 transition-all duration-300 focus:outline-none focus:-translate-y-1",
+                              "w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-22 text-center text-2xl sm:text-3xl md:text-4xl font-black rounded-xl sm:rounded-2xl bg-slate-950/50 border-2 transition-all duration-300 focus:outline-none focus:-translate-y-1",
                               digit ? "border-cyan-500 text-white shadow-[0_10px_20px_rgba(34,211,238,0.15)]" : "border-white/10 text-slate-500 focus:border-cyan-500/50 hover:border-white/20"
                             )}
                           />

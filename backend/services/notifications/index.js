@@ -48,15 +48,41 @@ const templates = {
     push: { title: 'Technician Assigned', body: `${data.technician_name || data.techName} is on the way!` }
   }),
   // Sent when the technician marks status 'Arrived' — OTP is included to verify physical arrival.
-  technicianArrived: (data) => ({
-    sms: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
-    whatsapp: `Your verification code is ${data.otp}. It expires in 5 minutes. Do not share it.`,
-    push: { title: 'Technician Arrived', body: 'Share your OTP to begin the service.' },
-    email: { 
-      subject: 'Your FIXNOW Verification Code', 
-      html: `<h2>Your technician has arrived!</h2><p>Please share the following OTP with the technician to begin your service:</p><h1 style="font-size: 32px; letter-spacing: 5px; color: #10b981;">${data.otp}</h1><p>Do not share this code with anyone else.</p>`
-    }
-  }),
+  technicianArrived: (data) => {
+    const otpCode = data.otp || '----';
+    const techName = data.technician_name || data.technicianName || data.techName || 'Your technician';
+    const serviceCategory = data.category || 'Service';
+    return {
+      sms: `FIXNOW: Your technician ${techName} has arrived! Your verification OTP is ${otpCode}. Share this code with the technician to begin your ${serviceCategory}. Do not share with anyone else.`,
+      whatsapp: `*FIXNOW Service Verification*\n\nYour OTP code is: *${otpCode}*\n\nTechnician *${techName}* has arrived for your *${serviceCategory}*. Please share this 4-digit code with the technician to begin your service. Keep this code secure.`,
+      push: { title: 'Technician Arrived', body: `Your OTP is ${otpCode}. Share it with ${techName} to begin service.` },
+      email: { 
+        subject: `FIXNOW: Technician Arrived - Your OTP is ${otpCode}`, 
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); padding: 30px 20px; text-align: center;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #ffffff;">FIXNOW</h1>
+              <p style="margin: 5px 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.9);">Technician Arrival Passcode</p>
+            </div>
+            <div style="padding: 30px 25px; text-align: center;">
+              <p style="font-size: 16px; color: #94a3b8; margin: 0 0 20px;">Technician <strong style="color: #ffffff;">${techName}</strong> has arrived at your location for <strong style="color: #38bdf8;">${serviceCategory}</strong>.</p>
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 15px;">Please provide the following 4-digit Passcode to the technician to commence the service:</p>
+              <div style="background: rgba(16, 185, 129, 0.12); border: 2px dashed #10b981; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 240px;">
+                <span style="font-size: 42px; font-weight: 900; letter-spacing: 12px; color: #34d399; display: block; font-family: monospace;">${otpCode}</span>
+                <span style="font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #6ee7b7;">Verification Code</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 15px; margin: 25px 0 0; text-align: left; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                <strong style="color: #f59e0b;">Important:</strong> Only share this code once the technician is physically present. Once entered, the service protocol starts and cannot be cancelled.
+              </div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.05);">
+              © ${new Date().getFullYear()} FIXNOW Services • Automated Protocol Dispatch
+            </div>
+          </div>
+        `
+      }
+    };
+  },
   // Sent on job completion with the formatted rupee amount due.
   serviceCompleted: (data) => {
     const amount = Number(data.total_amount || data.amount || data.estimatedCostRange?.split('-')[0] || 0);
@@ -118,6 +144,7 @@ async function sendSMS(to, message) {
       from: process.env.TWILIO_PHONE,
       to: normalizedTo
     });
+    console.log(`📱 SMS successfully dispatched to ${normalizedTo} (SID: ${result.sid})`);
     return { success: true, sid: result.sid };
   } catch (error) {
     console.error('SMS Send Error:', error.message);
@@ -125,28 +152,37 @@ async function sendSMS(to, message) {
   }
 }
 
-// Sends a WhatsApp message via Twilio. Uses Twilio's WhatsApp sandbox number in development.
-// The 'whatsapp:' prefix is required by Twilio's WhatsApp API to distinguish from regular SMS.
+// Sends a WhatsApp message via Twilio.
 async function sendWhatsApp(to, message, contentSid = null, contentVariables = null) {
   try {
     const normalizedTo = normalizePhone(to);
     if (!normalizedTo) return { success: false, error: 'Invalid phone number' };
 
-    const options = {
-      from: process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886',
-      to: `whatsapp:${normalizedTo}`
-    };
+    const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+17372508034';
+    const formattedFrom = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`;
 
     if (contentSid) {
-      // Template-based WhatsApp messages (WhatsApp Business API approved templates).
-      options.contentSid = contentSid;
-      options.contentVariables = contentVariables;
-    } else {
-      // Free-form text messages (only allowed during 24h session window).
-      options.body = message;
+      try {
+        const payload = {
+          contentSid,
+          from: formattedFrom,
+          to: `whatsapp:${normalizedTo}`
+        };
+        if (contentVariables) payload.contentVariables = contentVariables;
+        const result = await client.messages.create(payload);
+        console.log(`💬 WhatsApp template dispatched to ${normalizedTo} (SID: ${result.sid})`);
+        return { success: true, sid: result.sid };
+      } catch (tmplErr) {
+        console.warn('Twilio WhatsApp Content Template failed, trying fallback to text:', tmplErr.message);
+      }
     }
 
-    const result = await client.messages.create(options);
+    const result = await client.messages.create({
+      body: message,
+      from: formattedFrom,
+      to: `whatsapp:${normalizedTo}`
+    });
+    console.log(`💬 WhatsApp message dispatched to ${normalizedTo} (SID: ${result.sid})`);
     return { success: true, sid: result.sid };
   } catch (error) {
     console.error('WhatsApp Send Error:', error.message);
@@ -163,16 +199,27 @@ async function sendPush(token, title, body, data = {}) {
 
 async function sendEmail(to, subject, html) {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return { success: false, error: 'No email credentials configured' };
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      return { success: false, error: 'No email credentials configured' };
+    }
     if (!to) return { success: false, error: 'No email provided' };
 
-    await emailTransporter.sendMail({
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    const info = await transporter.sendMail({
       from: `"FIXNOW" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
     });
-    return { success: true };
+    console.log(`📧 Email dispatched to ${to} (MessageId: ${info.messageId})`);
+    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Email Send Error:', error.message);
     return { success: false, error: error.message };
@@ -181,52 +228,76 @@ async function sendEmail(to, subject, html) {
 
 /**
  * notifyUser — the main entrypoint for all notifications in the system.
- * Fetches the user's phone from Firestore if not provided in data,
- * then fires SMS + WhatsApp + push notifications in parallel using Promise.allSettled.
- * Promise.allSettled (vs Promise.all) ensures one channel failing doesn't block the others.
+ * Sends SMS, WhatsApp, Email, Push concurrently so that failures in any one channel do not block others.
  */
-async function notifyUser(userId, type, data) {
+async function notifyUser(userId, type, data = {}) {
   const template = templates[type] ? templates[type](data) : null;
-  if (!template) return console.error('Invalid notification type:', type);
+  if (!template) {
+    console.error('Invalid notification type:', type);
+    return [];
+  }
 
   // Lazily require firebaseAdmin to avoid circular dependency at module load time.
   const { db } = require('../../config/firebaseAdmin');
-  let recipientPhone = data.phone || data.contact_number;
-  let pushToken = data.fcm_token;
+  let recipientPhone = data.phone || data.contact_number || data.contactNumber || data.customerPhone || data.customer_phone;
+  let pushToken = data.fcm_token || data.fcmToken;
   let recipientEmail = data.email || data.customer_email || data.customerEmail;
 
-  // If phone or push token is missing, look them up in the user's Firestore document.
-  if (userId && (!recipientPhone || !pushToken)) {
+  // 1. If phone or email is missing, check the user's Firestore document.
+  if (userId && (!recipientPhone || !recipientEmail || !pushToken)) {
     try {
       const uDoc = await db.collection('users').doc(userId).get();
-      const userData = uDoc.exists ? uDoc.data() : null;
-      if (userData) {
-        recipientPhone = recipientPhone || userData.phone;
-        pushToken = pushToken || userData.fcm_token;
-        recipientEmail = recipientEmail || userData.email;
+      if (uDoc.exists) {
+        const userData = uDoc.data();
+        recipientPhone = recipientPhone || userData.phone || userData.contact_number || userData.contactNumber;
+        pushToken = pushToken || userData.fcm_token || userData.fcmToken;
+        recipientEmail = recipientEmail || userData.email || userData.customer_email || userData.customerEmail;
       }
     } catch (e) {
       console.error('Failed to fetch user for notification:', e.message);
     }
   }
 
-  if (!recipientPhone) {
-    console.warn(`⚠️ Notification abort: No phone number found for user ${userId || 'anonymous'}`);
-    // Only continue if we have a push token as an alternative channel.
-    if (!pushToken) return [];
+  // 2. If still missing, check the booking document itself.
+  if ((!recipientPhone || !recipientEmail) && (data.id || data.bookingId)) {
+    try {
+      const bDoc = await db.collection('bookings').doc(data.id || data.bookingId).get();
+      if (bDoc.exists) {
+        const bData = bDoc.data();
+        recipientPhone = recipientPhone || bData.contact_number || bData.contactNumber || bData.phone;
+        recipientEmail = recipientEmail || bData.customer_email || bData.customerEmail || bData.email;
+      }
+    } catch (e) {
+      console.error('Failed to fetch booking for notification:', e.message);
+    }
   }
 
-  recipientPhone = normalizePhone(recipientPhone); 
+  console.log(`🔔 Sending ${type} notifications to user ${userId || 'anonymous'} (Phone: ${recipientPhone || 'N/A'}, Email: ${recipientEmail || 'N/A'})...`);
 
-  console.log(`🔔 Sending ${type} notifications to user ${userId} (${recipientPhone || 'PUSH ONLY'})...`);
+  const tasks = [];
 
-  // Send all three channels concurrently; individual failures are caught per-channel.
-  const results = await Promise.allSettled([
-    sendSMS(recipientPhone, template.sms),
-    sendWhatsApp(recipientPhone, template.whatsapp),
-    pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No token' }),
-    (template.email && recipientEmail) ? sendEmail(recipientEmail, template.email.subject, template.email.html) : Promise.resolve({ success: false, error: 'No email template or recipient' })
-  ]);
+  // Channel 1 & 2: SMS & WhatsApp
+  if (recipientPhone) {
+    const normalized = normalizePhone(recipientPhone);
+    tasks.push(sendSMS(normalized, template.sms));
+    tasks.push(sendWhatsApp(normalized, template.whatsapp));
+  } else {
+    tasks.push(Promise.resolve({ success: false, error: 'No phone number available' }));
+    tasks.push(Promise.resolve({ success: false, error: 'No phone number available' }));
+  }
+
+  // Channel 3: Push Notification
+  tasks.push(pushToken ? sendPush(pushToken, template.push.title, template.push.body, { bookingId: data.id }) : Promise.resolve({ success: false, error: 'No push token' }));
+
+  // Channel 4: Email Notification
+  if (template.email && recipientEmail) {
+    tasks.push(sendEmail(recipientEmail, template.email.subject, template.email.html));
+  } else {
+    tasks.push(Promise.resolve({ success: false, error: 'No recipient email or email template' }));
+  }
+
+  // Send all channels concurrently; individual failures are caught per-channel.
+  const results = await Promise.allSettled(tasks);
 
   // Persist a notification record in Firestore for in-app notification center.
   try {

@@ -13,6 +13,7 @@ export class MockProvider implements AIProvider {
   name = 'mock';
 
   // Returns a deterministic static response — useful for tests and demos without API keys.
+  async generate(request: AIRequest, options?: ProviderOptions): Promise<AIResponse> {
     const config = ProviderConfig.getInstance();
     
     return {
@@ -28,6 +29,7 @@ export class MockProvider implements AIProvider {
   }
 
   // Mock streaming simulates a stream object so callers don't need to branch on provider type.
+  async stream(request: AIRequest, options?: ProviderOptions): Promise<any> {
     return {
       id: request.requestId,
       simulateStream: 'Hello from Mock Provider'
