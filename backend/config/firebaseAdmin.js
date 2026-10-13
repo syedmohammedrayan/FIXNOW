@@ -32,6 +32,11 @@ try {
 
   // Firestore instance used throughout the backend for all database operations.
   db = admin.firestore();
+  try {
+    db.settings({ ignoreUndefinedProperties: true });
+  } catch (settingsErr) {
+    // Ignore if already initialized
+  }
   console.log("✅ Firebase connected");
 } catch (error) {
   // If credentials are missing or malformed the server still starts in demo mode.

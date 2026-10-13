@@ -222,7 +222,7 @@ router.post('/create-order', async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID // Sent to frontend for the checkout modal
+      keyId: (process.env.RAZORPAY_KEY_ID || 'rzp_test_T7A8g7ghSgCUE5').trim() // Sent to frontend for the checkout modal
     });
   } catch (error) {
     console.error("❌ Subscription Create Order Error:", error);

@@ -7,7 +7,7 @@ const getApiUrl = (): string => {
   }
   // Fallback for when the env var is accidentally missing in production deployments.
   if (typeof window !== 'undefined' && (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('onrender.com'))) {
-    return 'https://fixnow-backend.onrender.com';
+    return 'https://fixnow-backend-jmre.onrender.com';
   }
   // Local development default.
   return 'http://localhost:5050';
@@ -19,4 +19,4 @@ export const API_BASE = getApiUrl();
 export const SOCKET_URL = getApiUrl();
 
 // Razorpay public key is needed by the frontend checkout modal (not the secret — that stays on the server).
-export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_YourRealKeyHere';
+export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_T7A8g7ghSgCUE5';
