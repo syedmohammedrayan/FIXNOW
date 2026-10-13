@@ -243,6 +243,12 @@ function TrackingContent() {
 
     s.on('status_update', (data) => {
       if (data && data.status) setStatus(data.status);
+      if (data && data.otp) setOtp(data.otp);
+    });
+
+    s.on('technician_arrived', (data) => {
+      if (data && data.status) setStatus(data.status);
+      if (data && data.otp) setOtp(data.otp);
     });
 
     return () => {
