@@ -54,6 +54,7 @@ export default function TechnicianComplaintsPage() {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     let unsubProfile: (() => void) | undefined;
     let unsubComplaints: (() => void) | undefined;
 

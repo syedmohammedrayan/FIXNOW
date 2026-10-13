@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  staticPageGenerationTimeout: 300,
   images: { unoptimized: true },
   serverExternalPackages: ['pino'],
   experimental: {
