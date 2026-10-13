@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Search, X, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ALL_SERVICES } from '@/lib/services';
+import { getCategoryIcon } from './ServiceIcons';
+import ServiceCategoryPopover from './ServiceCategoryPopover';
 
 interface ServiceCatalogProps {
   serviceSearch: string;
@@ -14,6 +16,30 @@ interface ServiceCatalogProps {
   onSelectService: (service: string) => void;
 }
 
+// Exactly 20 main categories in specified order
+const MAIN_CATEGORIES = [
+  'All',
+  'HVAC / AC Technician',
+  'Refrigerator Technician',
+  'Washing Machine Technician',
+  'Kitchen Services Technician',
+  'Water Systems Technician',
+  'Electrician',
+  'Electronics & Smart Home',
+  'Carpentry',
+  'Plumbing',
+  'Gas & Utilities',
+  'Installation Services Technician',
+  'Pest Control',
+  'Cleaning Services',
+  'Painter',
+  'Renovation Service',
+  'Moving & Misc',
+  'Bike Mechanics',
+  'Car Mechanics',
+  'Rural Area Technicians',
+] as const;
+
 export default function ServiceCatalog({
   serviceSearch,
   setServiceSearch,
@@ -21,46 +47,93 @@ export default function ServiceCatalog({
   setSelectedCategory,
   onSelectService
 }: ServiceCatalogProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const categoryButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 200;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
+  // Filtered services for live search input
+  const searchResults = serviceSearch.trim()
+    ? ALL_SERVICES.flatMap(cat =>
+        cat.items
+          .filter(item => item.toLowerCase().includes(serviceSearch.toLowerCase().trim()))
+          .map(item => ({ item, category: cat.category }))
+      )
+    : [];
+
+  // Get subcategories for currently active popover category
+  const getSubcategories = (catName: string | null): string[] => {
+    if (!catName) return [];
+    if (catName === 'All') {
+      return ALL_SERVICES.flatMap(c => c.items);
+    }
+    const match = ALL_SERVICES.find(c => c.category === catName);
+    return match ? match.items : [];
+  };
+
+  const handleCategoryClick = (cat: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (activeCategory === cat) {
+      // Toggle close if already open
+      setActiveCategory(null);
+      setAnchorRect(null);
+    } else {
+      // Open or switch to the clicked category
+      const rect = e.currentTarget.getBoundingClientRect();
+      setAnchorRect(rect);
+      setActiveCategory(cat);
+      setSelectedCategory(cat);
     }
   };
 
-  const filtered = ALL_SERVICES
-    .filter(cat => selectedCategory === 'All' || cat.category === selectedCategory)
-    .flatMap(cat => cat.items)
-    .filter(item => !serviceSearch.trim() || item.toLowerCase().includes(serviceSearch.toLowerCase()));
+  const handleClosePopover = () => {
+    setActiveCategory(null);
+    setAnchorRect(null);
+  };
+
+  // Keep anchorRect updated if page scrolls or resizes
+  useEffect(() => {
+    if (!activeCategory) return;
+    const updateRect = () => {
+      const btn = categoryButtonRefs.current[activeCategory];
+      if (btn) {
+        setAnchorRect(btn.getBoundingClientRect());
+      }
+    };
+    updateRect();
+    window.addEventListener('scroll', updateRect, { passive: true });
+    window.addEventListener('resize', updateRect);
+    return () => {
+      window.removeEventListener('scroll', updateRect);
+      window.removeEventListener('resize', updateRect);
+    };
+  }, [activeCategory]);
 
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.1 }}
-      className="bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative overflow-hidden space-y-5 sm:space-y-8 mt-6 sm:mt-10 border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl"
+      className="bg-white/[0.04] backdrop-blur-2xl p-5 sm:p-7 md:p-10 relative space-y-6 sm:space-y-8 mt-6 sm:mt-10 border border-white/[0.08] rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl"
       style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05), 0 20px 60px rgba(0,0,0,0.3)' }}
     >
+      {/* Section Heading */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white flex items-center gap-2 sm:gap-3">
             <Search className="size-5 sm:size-6 text-white" /> Instant Connect Services
           </h2>
-          <p className="text-[9px] sm:text-xs text-white/50 font-bold uppercase tracking-widest mt-1 sm:mt-2">Browse or search 150+ verified technician types instantly</p>
+          <p className="text-[9px] sm:text-xs text-white/50 font-bold uppercase tracking-widest mt-1 sm:mt-2">
+            Browse or search 150+ verified technician types instantly
+          </p>
         </div>
         {serviceSearch.trim() && (
           <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/[0.06] text-white text-[10px] sm:text-xs font-black uppercase tracking-widest self-start">
-            {filtered.length} results
+            {searchResults.length} results
           </div>
         )}
       </div>
 
-      {/* Search Input */}
+      {/* Search Input - Preserved exactly as requested */}
       <div className="relative group">
         <Search className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 size-4 sm:size-5 text-white/20 group-focus-within:text-white/60 transition duration-300" />
         <input
@@ -75,6 +148,7 @@ export default function ServiceCatalog({
           <button
             type="button"
             onClick={() => setServiceSearch('')}
+            aria-label="Clear search"
             className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 p-1 rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06] transition"
           >
             <X className="size-4" />
@@ -82,80 +156,129 @@ export default function ServiceCatalog({
         )}
       </div>
 
-      {/* Category Pills with Scroll Controls */}
-      <div className="relative flex items-center group/scroll">
-        <button
-          type="button"
-          onClick={() => scroll('left')}
-          className="absolute left-0 z-10 p-1 bg-slate-900/80 text-white rounded-full opacity-0 group-hover/scroll:opacity-100 transition-opacity disabled:opacity-0 hidden sm:flex items-center justify-center -ml-2"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        
-        <div ref={scrollRef} className="flex flex-nowrap overflow-x-auto gap-2 pb-2 -mx-1 px-1 scrollbar-none w-full scroll-smooth">
-          {['All', ...ALL_SERVICES.map(s => s.category)].map((cat) => (
+      {/* Live Search Results Panel (only when search query is active) */}
+      {serviceSearch.trim() && (
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-neutral-200/90 shadow-xl space-y-3">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-neutral-900">
+                Matching Services ({searchResults.length})
+              </h3>
+              <p className="text-[11px] text-neutral-500 mt-0.5">
+                Click any service below to proceed with booking inspection
+              </p>
+            </div>
             <button
-              key={cat}
               type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all duration-300 whitespace-nowrap shrink-0",
-                selectedCategory === cat
-                  ? "bg-white text-slate-900 border-white shadow-lg shadow-black/20"
-                  : "bg-white/[0.04] text-white/50 border-white/[0.06] hover:border-white/30 hover:text-white"
-              )}
+              onClick={() => setServiceSearch('')}
+              className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-900 px-2.5 py-1 rounded-lg hover:bg-neutral-100 transition"
             >
-              {cat}
+              Clear search
             </button>
-          ))}
-        </div>
+          </div>
 
-        <button
-          type="button"
-          onClick={() => scroll('right')}
-          className="absolute right-0 z-10 p-1 bg-slate-900/80 text-white rounded-full opacity-0 group-hover/scroll:opacity-100 transition-opacity disabled:opacity-0 hidden sm:flex items-center justify-center -mr-2"
-        >
-          <ChevronRight className="size-4" />
-        </button>
-      </div>
-
-      {/* Service Items Grid */}
-      {filtered.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 max-h-[360px] sm:max-h-[420px] overflow-y-auto pr-1 sm:pr-2 pt-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          {filtered.map((item, i) => (
-            <motion.button
-              key={item + i}
-              type="button"
-              onClick={() => onSelectService(item)}
-              whileHover={{ y: -3, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.06] text-left flex flex-col justify-between transition-all duration-300 gap-1.5 sm:gap-2 group min-h-[75px] sm:min-h-[90px]"
-              style={{ boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.02)' }}
-            >
-              <div className="flex items-start justify-between">
-                <p className="text-[11px] sm:text-sm font-bold text-white/70 tracking-tight leading-snug group-hover:text-white transition-colors duration-300 line-clamp-2">
-                  {item}
-                </p>
-                <Sparkles className="size-3 sm:size-3.5 text-white group-hover:scale-110 opacity-0 group-hover:opacity-60 transition-all duration-300 flex-shrink-0" />
-              </div>
-              <span className="text-[7px] sm:text-[8px] font-black tracking-widest uppercase text-white/20 group-hover:text-white/40 mt-1">Select →</span>
-            </motion.button>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 sm:py-16 border-2 border-dashed border-white/[0.06] rounded-[1.5rem] sm:rounded-[2rem] bg-white/[0.02]">
-          <Search className="size-8 sm:size-10 text-white/20 mx-auto mb-4" />
-          <p className="text-white/30 font-black uppercase tracking-widest text-xs sm:text-sm">No Services Found</p>
-          <p className="text-white/15 font-medium text-[10px] sm:text-xs mt-2">Try a different search term or select another category</p>
-          <button
-            type="button"
-            onClick={() => { setServiceSearch(''); setSelectedCategory('All'); }}
-            className="mt-5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white text-slate-900 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition"
-          >
-            Clear Filters
-          </button>
+          {searchResults.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-neutral-200">
+              {searchResults.map((res, i) => (
+                <button
+                  key={res.item + i}
+                  type="button"
+                  onClick={() => onSelectService(res.item)}
+                  className="p-3 rounded-xl border border-neutral-100 bg-neutral-50/70 hover:bg-neutral-100/90 hover:border-neutral-200 text-left transition-all flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none"
+                >
+                  <p className="text-xs sm:text-[13px] font-semibold text-neutral-800 group-hover:text-neutral-950 line-clamp-2">
+                    {res.item}
+                  </p>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-100/80">
+                    <span className="text-[10px] font-medium text-neutral-400 group-hover:text-neutral-600 truncate pr-2">
+                      {res.category}
+                    </span>
+                    <span className="text-[10px] font-bold text-neutral-900 group-hover:translate-x-0.5 transition-transform shrink-0">
+                      Select →
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="py-8 text-center text-neutral-400 text-xs font-medium">
+              No services found matching &ldquo;{serviceSearch}&rdquo;. Try a different search term or select a category below.
+            </div>
+          )}
         </div>
       )}
+
+      {/* Main Service Category Grid - Exactly 4 columns on desktop */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-white/50 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-0.5">
+          <span>Categories ({MAIN_CATEGORIES.length})</span>
+          <span>Click any category to view sub-services</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {MAIN_CATEGORIES.map((cat) => {
+            const count = cat === 'All' ? ALL_SERVICES.length : (ALL_SERVICES.find(c => c.category === cat)?.items.length || 0);
+            const isSelected = activeCategory === cat;
+
+            return (
+              <button
+                key={cat}
+                data-category-card={cat}
+                ref={(el) => {
+                  categoryButtonRefs.current[cat] = el;
+                }}
+                type="button"
+                onClick={(e) => handleCategoryClick(cat, e)}
+                className={cn(
+                  "group relative text-left bg-white text-neutral-900 rounded-xl p-3.5 sm:p-4 border transition-all duration-200 flex items-center gap-3.5 min-h-[64px] sm:min-h-[68px] shadow-sm hover:shadow-md hover:bg-neutral-50/95 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none cursor-pointer",
+                  isSelected
+                    ? "border-neutral-900 ring-2 ring-neutral-900/15 shadow-md bg-neutral-50"
+                    : "border-neutral-200/90 hover:border-neutral-300"
+                )}
+                aria-haspopup="dialog"
+                aria-expanded={isSelected}
+              >
+                {/* Real-world appliance / service icon */}
+                <div
+                  className={cn(
+                    "p-2 rounded-lg shrink-0 transition-colors pointer-events-none",
+                    isSelected
+                      ? "bg-neutral-200 text-neutral-950"
+                      : "bg-neutral-100/90 text-neutral-800 group-hover:bg-neutral-200/80"
+                  )}
+                >
+                  {getCategoryIcon(cat, "size-5 shrink-0")}
+                </div>
+
+                {/* Category Name & Count */}
+                <div className="min-w-0 flex-1 pointer-events-none">
+                  <p className="text-xs sm:text-[13px] font-semibold text-neutral-900 leading-snug tracking-tight line-clamp-2">
+                    {cat}
+                  </p>
+                  <span className="text-[10px] text-neutral-400 font-medium block mt-0.5 group-hover:text-neutral-500 transition-colors">
+                    {cat === 'All' ? 'Browse all services' : `${count} services`}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Anchored Subcategory Popover */}
+      <AnimatePresence>
+        {activeCategory && (
+          <ServiceCategoryPopover
+            key={`popover-${activeCategory}`}
+            category={activeCategory}
+            subcategories={getSubcategories(activeCategory)}
+            anchorRect={anchorRect}
+            isOpen={Boolean(activeCategory)}
+            onClose={handleClosePopover}
+            onSelectService={onSelectService}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
