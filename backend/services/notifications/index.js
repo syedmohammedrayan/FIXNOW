@@ -133,17 +133,33 @@ const templates = {
 };
 
 // Sends an SMS via Twilio's messages API.
+// Automatically falls back to predefined trial template if required by Twilio trial account.
 async function sendSMS(to, message) {
   try {
     if (!process.env.TWILIO_PHONE) return { success: false, error: 'No Twilio phone configured' };
     const normalizedTo = normalizePhone(to);
     if (!normalizedTo) return { success: false, error: 'Invalid phone number' };
 
-    const result = await client.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE,
-      to: normalizedTo
-    });
+    let result;
+    try {
+      result = await client.messages.create({
+        body: message,
+        from: process.env.TWILIO_PHONE,
+        to: normalizedTo
+      });
+    } catch (err) {
+      if (err.message?.includes('predefined SMS templates') || err.code === 572006 || message.includes('OTP') || message.includes('verification')) {
+        console.log('Sending Twilio trial approved SMS template "sms_2fa"...');
+        result = await client.messages.create({
+          body: 'sms_2fa',
+          from: process.env.TWILIO_PHONE,
+          to: normalizedTo
+        });
+      } else {
+        throw err;
+      }
+    }
+
     console.log(`📱 SMS successfully dispatched to ${normalizedTo} (SID: ${result.sid})`);
     return { success: true, sid: result.sid };
   } catch (error) {
@@ -168,7 +184,9 @@ async function sendWhatsApp(to, message, contentSid = null, contentVariables = n
           from: formattedFrom,
           to: `whatsapp:${normalizedTo}`
         };
-        if (contentVariables) payload.contentVariables = contentVariables;
+        if (contentVariables) {
+          payload.contentVariables = typeof contentVariables === 'string' ? contentVariables : JSON.stringify(contentVariables);
+        }
         const result = await client.messages.create(payload);
         console.log(`💬 WhatsApp template dispatched to ${normalizedTo} (SID: ${result.sid})`);
         return { success: true, sid: result.sid };
@@ -280,7 +298,10 @@ async function notifyUser(userId, type, data = {}) {
   if (recipientPhone) {
     const normalized = normalizePhone(recipientPhone);
     tasks.push(sendSMS(normalized, template.sms));
-    tasks.push(sendWhatsApp(normalized, template.whatsapp));
+    
+    const waContentSid = (type === 'technicianArrived') ? 'HX25161c213d71bb75e073ead06f38fbbd' : null;
+    const waVariables = (type === 'technicianArrived') ? { '1': String(data.otp || '----') } : null;
+    tasks.push(sendWhatsApp(normalized, template.whatsapp, waContentSid, waVariables));
   } else {
     tasks.push(Promise.resolve({ success: false, error: 'No phone number available' }));
     tasks.push(Promise.resolve({ success: false, error: 'No phone number available' }));
