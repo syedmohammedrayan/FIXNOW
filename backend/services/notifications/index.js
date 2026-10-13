@@ -54,7 +54,7 @@ const templates = {
     const serviceCategory = data.category || 'Service';
     return {
       sms: `FIXNOW: Your technician ${techName} has arrived! Your verification OTP is ${otpCode}. Share this code with the technician to begin your ${serviceCategory}. Do not share with anyone else.`,
-      whatsapp: `*FIXNOW Service Verification*\n\nYour OTP code is: *${otpCode}*\n\nTechnician *${techName}* has arrived for your *${serviceCategory}*. Please share this 4-digit code with the technician to begin your service. Keep this code secure.`,
+      whatsapp: `*FIXNOW Service Verification*\n\nYour OTP code is: *${otpCode}*\n\nTechnician *${techName}* has arrived for your *${serviceCategory}*. Please share this code with the technician to begin your service. Keep this code secure.`,
       push: { title: 'Technician Arrived', body: `Your OTP is ${otpCode}. Share it with ${techName} to begin service.` },
       email: { 
         subject: `FIXNOW: Technician Arrived - Your OTP is ${otpCode}`, 
@@ -66,10 +66,10 @@ const templates = {
             </div>
             <div style="padding: 30px 25px; text-align: center;">
               <p style="font-size: 16px; color: #94a3b8; margin: 0 0 20px;">Technician <strong style="color: #ffffff;">${techName}</strong> has arrived at your location for <strong style="color: #38bdf8;">${serviceCategory}</strong>.</p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 15px;">Please provide the following 4-digit Passcode to the technician to commence the service:</p>
-              <div style="background: rgba(16, 185, 129, 0.12); border: 2px dashed #10b981; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 240px;">
-                <span style="font-size: 42px; font-weight: 900; letter-spacing: 12px; color: #34d399; display: block; font-family: monospace;">${otpCode}</span>
-                <span style="font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #6ee7b7;">Verification Code</span>
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 15px;">Please provide the following Passcode to the technician to commence the service:</p>
+              <div style="background: rgba(16, 185, 129, 0.12); border: 2px dashed #10b981; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 300px;">
+                <span style="font-size: 42px; font-weight: 900; letter-spacing: 10px; color: #34d399; display: block; font-family: monospace;">${otpCode}</span>
+                <span style="font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #6ee7b7; margin-top: 6px; display: block;">Verification Code</span>
               </div>
               <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 15px; margin: 25px 0 0; text-align: left; font-size: 12px; color: #94a3b8; line-height: 1.5;">
                 <strong style="color: #f59e0b;">Important:</strong> Only share this code once the technician is physically present. Once entered, the service protocol starts and cannot be cancelled.
