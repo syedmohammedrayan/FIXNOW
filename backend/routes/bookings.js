@@ -633,10 +633,10 @@ router.post('/update-status', async (req, res) => {
       }
       
       if (status === 'Arrived') {
-        // Guarantee booking has an OTP. If missing, generate immediately.
-        let currentOtp = booking.otp;
-        if (!currentOtp) {
-          currentOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        // Guarantee booking has a 6-digit OTP. If missing or less than 6 digits, generate a fresh 6-digit OTP.
+        let currentOtp = booking.otp ? String(booking.otp) : '';
+        if (!currentOtp || currentOtp.length < 6) {
+          currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
           await db.collection('bookings').doc(bookingId).update({
             otp: currentOtp,
             arrived_at: new Date().toISOString(),
