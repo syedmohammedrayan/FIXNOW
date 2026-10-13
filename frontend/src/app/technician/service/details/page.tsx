@@ -18,6 +18,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '@/lib/utils';
 import { io, Socket } from 'socket.io-client';
 import TechnicianSidebar from '@/components/technician/Sidebar';
+import ServiceReportModal from '@/components/common/ServiceReportModal';
 import { GoogleMap, OverlayViewF, DirectionsRenderer, Polyline } from '@react-google-maps/api';
 import { useGoogleMapsKey } from '@/hooks/useGoogleMapsKey';
 import { useGoogleMaps } from '@/components/GoogleMapsProvider';
@@ -137,6 +138,7 @@ function TechnicianServiceContent() {
 
   // Payment States
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cash'>('upi');
   const [isPaid, setIsPaid] = useState(false);
 
@@ -752,7 +754,7 @@ function TechnicianServiceContent() {
                     {completing ? <Loader2 className="size-6 animate-spin" /> : <CheckCircle2 className="size-6" />} Complete Protocol
                   </button>
                   <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => window.print()} className="py-5 bg-white/[0.03] border border-white/[0.08] text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/[0.08] hover:text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><Printer className="size-4" /> Receipt</button>
+                    <button onClick={() => setShowReportModal(true)} className="py-5 bg-white/[0.03] border border-white/[0.08] text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/[0.08] hover:text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl"><Printer className="size-4" /> Official Report</button>
                     <div className="py-5 bg-emerald-500/[0.05] border border-emerald-500/20 text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 shadow-xl select-none">
                       <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                       Protocol Locked
@@ -1111,6 +1113,19 @@ function TechnicianServiceContent() {
           </div>
         )}
       </AnimatePresence>
+
+      {showReportModal && (
+        <ServiceReportModal 
+          booking={booking ? { 
+            ...booking, 
+            servicesDone, 
+            accessories, 
+            totalAmount: calculateTotal ? calculateTotal() : booking.totalAmount, 
+            isPaid 
+          } : null} 
+          onClose={() => setShowReportModal(false)} 
+        />
+      )}
     </div>
   );
 }

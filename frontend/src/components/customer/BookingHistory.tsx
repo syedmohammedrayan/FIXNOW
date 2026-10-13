@@ -12,7 +12,8 @@ import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { getAvatarUrl } from '@/lib/image-utils';
 import ComplaintModal from '@/components/customer/ComplaintModal';
-import { AlertTriangle } from 'lucide-react';
+import ServiceReportModal from '@/components/common/ServiceReportModal';
+import { AlertTriangle, FileText } from 'lucide-react';
 
 interface BookingTech {
   name: string;
@@ -94,6 +95,7 @@ export default function BookingHistory({ userId, userProfile, onTrack, onBack }:
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'active' | 'past'>('active');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedReport, setSelectedReport] = useState<Booking | null>(null);
   const [showComplaintModal, setShowComplaintModal] = useState(false);
   const [complaintBooking, setComplaintBooking] = useState<Booking | null>(null);
 
@@ -341,10 +343,19 @@ export default function BookingHistory({ userId, userProfile, onTrack, onBack }:
 
                      <div className="flex items-center gap-3 w-full sm:w-auto">
                         {!live && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {booking.status === 'Completed' && (
+                              <button 
+                                onClick={() => setSelectedReport(booking)}
+                                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-2xl text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                              >
+                                <FileText className="size-3.5" />
+                                Official Report
+                              </button>
+                            )}
                             <button 
                               onClick={() => setSelectedBooking(booking)}
-                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
                             >
                               <History className="size-3.5" />
                               Details
@@ -354,7 +365,7 @@ export default function BookingHistory({ userId, userProfile, onTrack, onBack }:
                                 setComplaintBooking(booking);
                                 setShowComplaintModal(true);
                               }}
-                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-2xl text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-2xl text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl"
                             >
                               <AlertTriangle className="size-3.5" />
                               Complaint
@@ -606,6 +617,11 @@ export default function BookingHistory({ userId, userProfile, onTrack, onBack }:
             customer_name: userProfile?.name || 'Verified Customer',
             category: complaintBooking.category || 'Service'
           }}
+        />
+      {selectedReport && (
+        <ServiceReportModal 
+          booking={selectedReport} 
+          onClose={() => setSelectedReport(null)} 
         />
       )}
     </motion.div>

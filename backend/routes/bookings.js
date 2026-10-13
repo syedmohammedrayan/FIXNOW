@@ -912,6 +912,44 @@ router.get('/transactions/technician/:techId', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── OFFICIAL SERVICE REPORT & RECEIPT PDF DOWNLOAD ──
+router.get('/:bookingId/report-pdf', async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const docRef = await db.collection('bookings').doc(bookingId).get();
+    if (!docRef.exists) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+    const booking = { id: docRef.id, ...docRef.data() };
+    const { generateReportPDFBuffer } = require('../services/pdfReportService');
+    const pdfBuffer = await generateReportPDFBuffer(booking);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="FixNow_Service_Report_${bookingId.slice(-6).toUpperCase()}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error('PDF Download Error:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ── OFFICIAL SERVICE REPORT HTML PREVIEW ──
+router.get('/:bookingId/report-html', async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const docRef = await db.collection('bookings').doc(bookingId).get();
+    if (!docRef.exists) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+    const booking = { id: docRef.id, ...docRef.data() };
+    const { generateReportHTML } = require('../services/pdfReportService');
+    const html = generateReportHTML(booking);
+    res.send(html);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ── AI RETRAINING PIPELINE — Sends completed booking data to the Python ML server to retrain the model ──
 // The ML model predicts which technician is most likely to succeed for a given booking.
 // Retraining uses real outcome data so the model improves over time (continuous learning).
