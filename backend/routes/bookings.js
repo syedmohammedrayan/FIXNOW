@@ -697,7 +697,12 @@ router.post('/update-status', async (req, res) => {
       if (status === 'Completed') {
         notifyUser(booking.customer_id, 'serviceCompleted', booking);
         const { generateAndSendPDF } = require('../services/pdfReportService');
-        generateAndSendPDF(booking).catch(err => console.error('PDF Generate/Send Error:', err));
+        try {
+          await generateAndSendPDF(booking);
+          console.log(`✅ Official Service Report & Receipt dispatched to customer for booking ${bookingId}`);
+        } catch (pdfErr) {
+          console.error('❌ PDF Report Generation/Dispatch Error:', pdfErr.message);
+        }
       }
     }
     

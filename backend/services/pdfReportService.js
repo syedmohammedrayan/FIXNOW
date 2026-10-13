@@ -1,15 +1,6 @@
 const PDFDocument = require('pdfkit');
-const nodemailer = require('nodemailer');
+const { getMailTransporter } = require('../config/mailTransporter');
 require('dotenv').config();
-
-// Create Nodemailer Transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
 
 /**
  * Format currency to Indian Rupees
@@ -463,16 +454,32 @@ async function generateAndSendPDF(booking) {
   }
   
   // Find customer email
-  let recipientEmail = booking.customer_email || booking.customerEmail || booking.email;
-  if (!recipientEmail && booking.customer_id) {
+  let recipientEmail = booking.customer_email || booking.customerEmail || booking.email || booking.customer?.email;
+  const custId = booking.customer_id || booking.customerId || booking.userId || booking.user_id;
+  
+  if (!recipientEmail && custId) {
     try {
       const { db } = require('../config/firebaseAdmin');
-      const uDoc = await db.collection('users').doc(booking.customer_id).get();
+      const uDoc = await db.collection('users').doc(custId).get();
       if (uDoc.exists) {
-        recipientEmail = uDoc.data().email || '';
+        recipientEmail = uDoc.data().email || uDoc.data().customer_email || '';
       }
     } catch (e) {
       console.warn('Could not fetch user email for PDF delivery:', e.message);
+    }
+  }
+
+  // Fallback: check users collection by phone if email still missing
+  if (!recipientEmail && (booking.contact_number || booking.contactNumber || booking.phone)) {
+    try {
+      const { db } = require('../config/firebaseAdmin');
+      const phoneNum = booking.contact_number || booking.contactNumber || booking.phone;
+      const snap = await db.collection('users').where('phone', '==', phoneNum).limit(1).get();
+      if (!snap.empty) {
+        recipientEmail = snap.docs[0].data().email || '';
+      }
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -486,6 +493,7 @@ async function generateAndSendPDF(booking) {
     const htmlReport = generateReportHTML(booking);
     const orderId = (booking.id || '').slice(-6).toUpperCase();
 
+    const transporter = await getMailTransporter();
     await transporter.sendMail({
       from: `"FixNow Service Dispatch" <${process.env.EMAIL_USER}>`,
       to: recipientEmail,

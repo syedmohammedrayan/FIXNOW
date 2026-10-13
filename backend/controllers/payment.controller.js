@@ -647,8 +647,65 @@ class PaymentController {
         updatedAt: now,
         updated_at: now
       });
+
+      const updatedSnap = await bookingRef.get();
+      const updatedBooking = { id: updatedSnap.id, ...updatedSnap.data() };
+
+      // Dispatch Official Service Report & Receipt immediately to customer email
+      try {
+        const { generateAndSendPDF } = require('../services/pdfReportService');
+        await generateAndSendPDF(updatedBooking);
+        console.log(`📄 Official Service Report & Receipt dispatched to customer for booking ${bookingId}`);
+      } catch (pdfErr) {
+        console.error('⚠️ Failed to dispatch PDF report on balance payment:', pdfErr.message);
+      }
+
+      // Notify customer via SMS, WhatsApp, Email, and Push
+      try {
+        const { notifyUser } = require('../services/notifications');
+        notifyUser(updatedBooking.customer_id, 'serviceCompleted', updatedBooking);
+      } catch (notifErr) {
+        console.warn('⚠️ Notification trigger error on balance payment:', notifErr.message);
+      }
+
+      // Record transaction and update technician stats
+      if (updatedBooking.technician_id && balancePaid > 0) {
+        try {
+          const txnId = 'TXN_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+          const transaction = {
+            id: txnId,
+            booking_id: bookingId,
+            technician_id: updatedBooking.technician_id,
+            amount: balancePaid,
+            type: 'service_balance_payment',
+            status: 'Success',
+            payment_id: razorpay_payment_id,
+            description: `Balance payment for ${updatedBooking.category || 'Service'} #${bookingId.slice(-6)}`,
+            created_at: now
+          };
+          await db.collection('transactions').doc(txnId).set(transaction);
+
+          const admin = require('firebase-admin');
+          if (admin && admin.firestore) {
+            await db.collection('technicians').doc(updatedBooking.technician_id).update({
+              earnings: admin.firestore.FieldValue.increment(balancePaid),
+              completed_jobs: admin.firestore.FieldValue.increment(1),
+              total_jobs: admin.firestore.FieldValue.increment(1),
+              updated_at: now
+            });
+          }
+        } catch (tErr) {
+          console.error('⚠️ Error updating technician stats on balance payment:', tErr.message);
+        }
+      }
+
+      // Broadcast update to real-time socket room
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`booking_${bookingId}`).emit('status_update', { status: 'Completed', booking: updatedBooking });
+      }
       
-      return res.status(200).json({ success: true, message: 'Balance verified and booking completed.' });
+      return res.status(200).json({ success: true, message: 'Balance verified, booking completed, and service report dispatched.' });
     } catch (error) {
       console.error('❌ Verify Balance Payment Error:', error);
       return res.status(500).json({ success: false, message: error.message || 'Internal server error' });

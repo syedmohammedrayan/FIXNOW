@@ -4,15 +4,8 @@ require('dotenv').config();
 
 // Single authenticated Twilio client shared across all notification calls.
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const nodemailer = require('nodemailer');
+const { getMailTransporter } = require('../../config/mailTransporter');
 
-const emailTransporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
 
 /**
  * Normalises phone numbers to E.164 format (required by Twilio).
@@ -85,12 +78,28 @@ const templates = {
   },
   // Sent on job completion with the formatted rupee amount due.
   serviceCompleted: (data) => {
-    const amount = Number(data.total_amount || data.amount || data.estimatedCostRange?.split('-')[0] || 0);
+    const amount = Number(data.total_amount || data.totalAmount || data.amount || data.estimatedCostRange?.split('-')[0] || 0);
     const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const orderId = (data.id || '').slice(-6).toUpperCase();
     return {
       sms: `FIXNOW: Service completed! Final amount: ₹${formattedAmount}. Please rate us!`,
       whatsapp: `Service completed! ✅ Final amount: *₹${formattedAmount}*. Thank you for using FIXNOW!`,
-      push: { title: 'Service Completed', body: `Please settle the payment of ₹${formattedAmount} and rate your experience.` }
+      push: { title: 'Service Completed', body: `Please settle the payment of ₹${formattedAmount} and rate your experience.` },
+      email: {
+        subject: `Service Completed Successfully #${orderId} - FixNow Services`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h2 style="color: #0f172a; margin-top: 0;">Service Completed Successfully!</h2>
+            <p style="color: #475569; font-size: 15px;">Your ${data.category || 'service'} has been completed by certified technician <strong>${data.technician_name || data.technicianName || 'FixNow Specialist'}</strong>.</p>
+            <div style="background-color: #f8fafc; padding: 16px; border-radius: 6px; margin: 20px 0; border: 1px solid #cbd5e1;">
+              <p style="margin: 4px 0; color: #334155;"><strong>Order Ref:</strong> #${orderId}</p>
+              <p style="margin: 4px 0; color: #334155;"><strong>Total Settle Amount:</strong> ₹${formattedAmount}</p>
+              <p style="margin: 4px 0; color: #334155;"><strong>Status:</strong> Completed & Verified</p>
+            </div>
+            <p style="color: #64748b; font-size: 13px;">Your official MNC-standard service report and itemized tax invoice has also been generated and sent to this email address.</p>
+          </div>
+        `
+      }
     };
   },
   serviceStarted: (data) => ({
@@ -222,13 +231,7 @@ async function sendEmail(to, subject, html) {
     }
     if (!to) return { success: false, error: 'No email provided' };
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
+    const transporter = await getMailTransporter();
 
     const info = await transporter.sendMail({
       from: `"FIXNOW" <${process.env.EMAIL_USER}>`,
