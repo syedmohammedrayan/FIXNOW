@@ -385,16 +385,22 @@ class PaymentController {
       
       const paidAmount = Number(paymentDetails.amount) / 100;
 
-      // Ensure customer name is retrieved and stored properly
+      // Ensure customer details (name, email, phone) are retrieved and stored properly
       let customerName = bookingPayload.customerName;
-      if (!customerName && bookingPayload.customerId) {
+      let customerEmail = bookingPayload.customerEmail || bookingPayload.customer_email || bookingPayload.email || '';
+      let contactNumber = bookingPayload.contactNumber || bookingPayload.contact_number || '';
+
+      if ((!customerName || !contactNumber || !customerEmail) && bookingPayload.customerId) {
         try {
           const userDoc = await db.collection('users').doc(bookingPayload.customerId).get();
           if (userDoc.exists) {
-            customerName = userDoc.data()?.name || userDoc.data()?.fullName || 'Valued Customer';
+            const uData = userDoc.data();
+            if (!customerName) customerName = uData?.name || uData?.fullName || 'Valued Customer';
+            if (!customerEmail) customerEmail = uData?.email || uData?.customer_email || '';
+            if (!contactNumber) contactNumber = uData?.phone || uData?.contact_number || '';
           }
         } catch (e) {
-          console.warn("Failed to fetch customer name for booking:", e.message);
+          console.warn("Failed to fetch customer details for booking:", e.message);
         }
       }
       if (!customerName) customerName = 'Valued Customer';
@@ -413,7 +419,7 @@ class PaymentController {
       // 3. Create the Booking in Firestore
       const bookingId = 'BK_' + Date.now();
       const now = new Date().toISOString();
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
       const bookingRef = db.collection('bookings').doc(bookingId);
       
@@ -455,8 +461,11 @@ class PaymentController {
         customerId: bookingPayload.customerId || 'guest',
         customer_name: customerName,
         customerName: customerName,
-        contact_number: bookingPayload.contactNumber || '',
-        contactNumber: bookingPayload.contactNumber || '',
+        contact_number: contactNumber,
+        contactNumber: contactNumber,
+        customer_email: customerEmail,
+        customerEmail: customerEmail,
+        email: customerEmail,
         
         // Address & location
         address: bookingPayload.address || '',

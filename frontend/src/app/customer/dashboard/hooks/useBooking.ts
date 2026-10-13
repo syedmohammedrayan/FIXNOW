@@ -85,7 +85,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   useEffect(() => {
     if (userProfile?.name) setCustomerName(userProfile.name);
     if (userProfile?.phone || userProfile?.contact_number) setContactNumber(userProfile.phone || userProfile.contact_number || '');
-    if (userProfile?.email) setEmail(userProfile.email);
+    if (userProfile?.email || userProfile?.customer_email || userProfile?.customerEmail) setEmail(userProfile.email || userProfile.customer_email || userProfile.customerEmail || '');
     if (userProfile?.address) setAddress(userProfile.address);
   }, [userProfile]);
   const [paymentMethod, setPaymentMethod] = useState<'now' | 'later'>('now');
@@ -588,13 +588,18 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     const res = await axios.post(`${API_BASE}/api/bookings/create`, {
       customerId: userId || 'guest',
       technicianId: selectedTech?.id,
+      technicianName: selectedTech?.name,
       category: analysisResult?.category,
       estimatedCostRange: analysisResult?.estimatedCostRange,
       serviceSpecs: analysisResult?.serviceSpecs,
       technicalTerms: analysisResult?.technicalTerms,
       customerName,
+      customerEmail: email,
+      customer_email: email,
+      email: email,
       address,
       contactNumber,
+      contact_number: contactNumber,
       serviceTime,
       paymentMode,
       customerLat: origin.lat,
@@ -612,10 +617,23 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   };
 
   const confirmBooking = async () => {
-    if (!address.trim() || !contactNumber.trim() || !email.trim()) {
-      alert('Please enter service address, contact number, and email.');
+    const missing: string[] = [];
+    if (!customerName.trim()) missing.push('Full Name');
+    if (!address.trim()) missing.push('Service Address');
+    if (!contactNumber.trim()) missing.push('Contact Number');
+    if (!email.trim()) missing.push('Email Address');
+
+    if (missing.length > 0) {
+      alert(`Please enter required details: ${missing.join(', ')}.`);
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      alert('Please enter a valid email address (e.g. name@example.com) for OTP & receipt dispatch.');
+      return;
+    }
+
     setAnalyzing(true);
     try {
       if (paymentMethod === 'later') {
@@ -649,8 +667,11 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         technicalTerms: analysisResult?.technicalTerms,
         customerName,
         customerEmail: email,
+        customer_email: email,
+        email: email,
         address,
         contactNumber,
+        contact_number: contactNumber,
         serviceTime,
         paymentMode: 'pay_now',
         customerLat: origin.lat,
@@ -704,6 +725,11 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         order_id: orderId,
         name: 'FIXNOW',
         description: 'Service booking',
+        prefill: {
+          name: customerName,
+          email: email,
+          contact: contactNumber,
+        },
         handler: async (response: any) => {
           try {
             // 2. Verify payment and create booking on backend
@@ -749,8 +775,20 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   };
 
   const createBroadcastBooking = async () => {
-    if (!address.trim() || !contactNumber.trim() || !email.trim()) {
-      alert('Please enter service address, contact number, and email.');
+    const missing: string[] = [];
+    if (!customerName.trim()) missing.push('Full Name');
+    if (!address.trim()) missing.push('Service Address');
+    if (!contactNumber.trim()) missing.push('Contact Number');
+    if (!email.trim()) missing.push('Email Address');
+
+    if (missing.length > 0) {
+      alert(`Please enter required details: ${missing.join(', ')}.`);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      alert('Please enter a valid email address (e.g. name@example.com) for OTP & receipt dispatch.');
       return;
     }
     if (!analysisResult) return;
@@ -762,7 +800,10 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         customerId: userId || 'GUEST_' + Date.now(),
         customerName: customerName || 'Valued Customer',
         contactNumber,
+        contact_number: contactNumber,
         customerEmail: email,
+        customer_email: email,
+        email: email,
         address,
         customerLat: origin.lat,
         customerLng: origin.lng,

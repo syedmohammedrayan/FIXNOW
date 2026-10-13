@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Smartphone, Clock, X, User } from 'lucide-react';
+import { MapPin, Smartphone, Clock, X, User, Mail } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Technician, AnalysisResult } from '../types';
 import { getAvatarUrl } from '@/lib/image-utils';
@@ -33,6 +33,8 @@ export default function BookingForm({
   analysisResult,
   address,
   setAddress,
+  email,
+  setEmail,
   contactNumber,
   setContactNumber,
   customerName,
@@ -99,59 +101,87 @@ export default function BookingForm({
         <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-10">
           {/* Personal Identity Section */}
           <div>
-            <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 mb-2 block">Personal Identity</label>
-            <div className="relative">
-              <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+            <div className="flex items-center justify-between ml-1 mb-2">
+              <label className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em] block">Personal Identity</label>
+              <span className="text-[9px] font-bold text-amber-400/80 uppercase tracking-widest">Required</span>
+            </div>
+            <div className="relative group">
+              <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-white transition-colors" />
               <input
                 type="text"
                 className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white focus:outline-none focus:border-white/20 focus:ring-4 focus:ring-white/5 transition font-medium shadow-sm placeholder:text-white/20 text-sm"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Full Name"
+                placeholder="e.g. Mirza Ayaan Ali Baig"
               />
             </div>
           </div>
 
           {/* Service Location Section */}
           <div>
-            <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 mb-2 block">Service Location</label>
-            <div className="relative">
-              <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+            <div className="flex items-center justify-between ml-1 mb-2">
+              <label className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em] block">Service Location</label>
+              <span className="text-[9px] font-bold text-amber-400/80 uppercase tracking-widest">Required</span>
+            </div>
+            <div className="relative group">
+              <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-white transition-colors" />
               <input
                 ref={addressInputRef}
                 type="text"
                 className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white focus:outline-none focus:border-white/20 focus:ring-4 focus:ring-white/5 transition font-medium shadow-sm placeholder:text-white/20 text-sm"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Complete service address..."
+                placeholder="e.g. Flat 302, Green Valley Apartments, Mehdipatnam"
               />
             </div>
           </div>
 
+          {/* Contact Communication Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Contact Line */}
             <div>
-              <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 mb-2 block">Contact Line</label>
-              <div className="relative">
-                <Smartphone className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+              <div className="flex items-center justify-between ml-1 mb-2">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em] block">Contact Line</label>
+                <span className="text-[9px] font-bold text-amber-400/80 uppercase tracking-widest">Required</span>
+              </div>
+              <div className="relative group">
+                <Smartphone className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-white transition-colors" />
                 <input
                   type="tel"
                   className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white focus:outline-none focus:border-white/20 focus:ring-4 focus:ring-white/5 transition font-medium shadow-sm placeholder:text-white/20 text-sm"
                   value={contactNumber}
                   onChange={(e) => setContactNumber(e.target.value)}
-                  placeholder="Mobile No."
+                  placeholder="e.g. +91 98765 43210"
                 />
               </div>
             </div>
 
-            {/* Protocol Timestamp (Auto-fetched) */}
+            {/* Email Dispatch */}
             <div>
-              <label className="text-[10px] sm:text-[11px] font-black text-white/30 uppercase tracking-[0.2em] ml-1 mb-2 block">Protocol Timestamp</label>
+              <div className="flex items-center justify-between ml-1 mb-2">
+                <label className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em] block">Email Dispatch</label>
+                <span className="text-[9px] font-bold text-amber-400/80 uppercase tracking-widest">Required</span>
+              </div>
               <div className="relative group">
-                <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-hover:rotate-12 transition-transform" />
-                <div className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white/40 font-bold text-[12px] sm:text-[13px] shadow-inner select-none cursor-default">
-                  {serviceTime}
-                </div>
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-white transition-colors" />
+                <input
+                  type="email"
+                  className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white focus:outline-none focus:border-white/20 focus:ring-4 focus:ring-white/5 transition font-medium shadow-sm placeholder:text-white/20 text-sm"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. customer@example.com"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Protocol Timestamp (Auto-fetched) */}
+          <div>
+            <label className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em] ml-1 mb-2 block">Protocol Timestamp (Scheduled Time)</label>
+            <div className="relative group">
+              <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-hover:rotate-12 transition-transform" />
+              <div className="w-full rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-12 py-3.5 sm:py-4 text-white/40 font-bold text-[12px] sm:text-[13px] shadow-inner select-none cursor-default">
+                {serviceTime}
               </div>
             </div>
           </div>

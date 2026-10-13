@@ -213,17 +213,19 @@ router.post('/create', async (req, res) => {
       console.warn("Failed to fetch eligible techs for broadcast:", err.message);
     }
 
-    // Ensure customer name and phone are retrieved and stored properly
+    // Ensure customer name, phone, and email are retrieved and stored properly
     let customerName = req.body.customerName;
     let contactNumber = req.body.contactNumber || req.body.contact_number;
+    let customerEmail = req.body.customerEmail || req.body.customer_email || req.body.email || '';
     
-    if ((!customerName || !contactNumber) && customerId) {
+    if ((!customerName || !contactNumber || !customerEmail) && customerId) {
       try {
         const userDoc = await db.collection('users').doc(customerId).get();
         if (userDoc.exists) {
           const uData = userDoc.data();
           if (!customerName) customerName = uData?.name || uData?.fullName || 'Valued Customer';
           if (!contactNumber) contactNumber = uData?.phone || uData?.phoneNumber || '';
+          if (!customerEmail) customerEmail = uData?.email || uData?.customer_email || '';
         }
       } catch (e) {
         console.warn("Failed to fetch customer details for booking:", e.message);
@@ -261,8 +263,9 @@ router.post('/create', async (req, res) => {
       customerName: customerName,
       contact_number: contactNumber,
       contactNumber: contactNumber,
-      customer_email: req.body.customerEmail || req.body.customer_email || '',
-      customerEmail: req.body.customerEmail || req.body.customer_email || '',
+      customer_email: customerEmail,
+      customerEmail: customerEmail,
+      email: customerEmail,
       // Address & location (dual format)
       address: req.body.address || '',
       customer_location: req.body.customerLocation || req.body.customer_location || null,

@@ -10,7 +10,7 @@ import { Notification, Reminder } from '../types';
 
 export function useDashboardData() {
   const [userId, setUserId] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<{ name?: string, avatar?: string }>({});
+  const [userProfile, setUserProfile] = useState<{ name?: string; avatar?: string; email?: string; phone?: string; address?: string }>({});
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [activeJob, setActiveJob] = useState<any>(null);
@@ -32,14 +32,28 @@ export function useDashboardData() {
       }
     };
 
-    const fetchUserProfile = async (uid: string) => {
+    const fetchUserProfile = async (uid: string, authUser?: any) => {
       try {
         const userDoc = await getDoc(doc(db, 'users', uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
           let avatarUrl = data.avatar || '';
           if (avatarUrl && !avatarUrl.startsWith('http')) avatarUrl = `${API_BASE}${avatarUrl}`;
-          setUserProfile({ name: data.name, avatar: avatarUrl });
+          setUserProfile({
+            name: data.name || data.fullName || authUser?.displayName || '',
+            avatar: avatarUrl,
+            email: data.email || data.customer_email || authUser?.email || '',
+            phone: data.phone || data.contact_number || data.phoneNumber || authUser?.phoneNumber || '',
+            address: data.address || ''
+          });
+        } else if (authUser) {
+          setUserProfile({
+            name: authUser.displayName || '',
+            avatar: authUser.photoURL || '',
+            email: authUser.email || '',
+            phone: authUser.phoneNumber || '',
+            address: ''
+          });
         }
       } catch (err) {
         console.error('Failed to fetch user profile:', err);
@@ -63,7 +77,7 @@ export function useDashboardData() {
           console.error(err);
         }
         fetchReminders(u.uid);
-        fetchUserProfile(u.uid);
+        fetchUserProfile(u.uid, u);
       } else {
         setReminders([]);
         setUserProfile({});

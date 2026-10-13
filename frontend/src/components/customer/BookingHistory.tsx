@@ -618,6 +618,8 @@ export default function BookingHistory({ userId, userProfile, onTrack, onBack }:
             category: complaintBooking.category || 'Service'
           }}
         />
+      )}
+
       {selectedReport && (
         <ServiceReportModal 
           booking={selectedReport} 
