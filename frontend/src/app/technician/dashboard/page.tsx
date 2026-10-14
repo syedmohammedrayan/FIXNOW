@@ -43,6 +43,7 @@ import { StatCard, MetricRow, ServiceManifest } from "@/components/technician/Da
 import { DeclinedHistory, TransactionLedger } from "@/components/technician/LedgerComponents";
 import IdVerificationBox from "@/components/technician/IdVerificationBox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import TermsAcceptanceDialog from "@/components/common/TermsAcceptanceDialog";
 
 // Dynamic Components
 
@@ -102,7 +103,12 @@ export default function TechnicianDashboard() {
     declineBroadcast,
     updateJobStatus,
     bellNotifications, setBellNotifications,
-    markNotificationRead
+    markNotificationRead,
+    // Terms & Conditions gate
+    termsDialogOpen,
+    acceptingJob,
+    handleTermsAccept,
+    handleTermsCancel,
   } = useTechnicianData();
 
   const [currentView, setCurrentView] = useState("dashboard");
@@ -854,6 +860,15 @@ export default function TechnicianDashboard() {
           )}
         </div>
       </main>
+
+      <TermsAcceptanceDialog
+        open={termsDialogOpen}
+        role="technician"
+        actionLabel="I Agree & Accept Booking"
+        actionSubmitting={acceptingJob}
+        onCancel={handleTermsCancel}
+        onAccept={handleTermsAccept}
+      />
     </div>
   );
 }

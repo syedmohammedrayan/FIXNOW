@@ -24,6 +24,7 @@ const DashboardHeader = dynamic(() => import('./components/DashboardHeader'), { 
 const StatusBanners = dynamic(() => import('./components/StatusBanners'), { ssr: false });
 const NearbyTechniciansMap = dynamic(() => import('@/components/ai/NearbyTechniciansMap'), { ssr: false });
 const PaymentOverlay = dynamic(() => import('@/components/customer/PaymentOverlay'), { ssr: false });
+import TermsAcceptanceDialog from '@/components/common/TermsAcceptanceDialog';
 
 import { API_BASE, SOCKET_URL } from '@/lib/config';
 import { io, Socket } from 'socket.io-client';
@@ -131,7 +132,12 @@ export default function CustomerDashboard() {
     cancelBroadcast,
     resetBroadcast,
     dismissAcceptedPopup,
-    removeImage
+    removeImage,
+    // Terms & Conditions gate
+    termsDialogOpen,
+    handleTermsAccept,
+    handleTermsCancel,
+    handleInitiateBroadcast,
   } = useBooking({ userId, socketRef, socketInstance, coords, setCoords, userProfile });
 
   const [urgentReminders, setUrgentReminders] = useState<Reminder[]>([]);
@@ -310,26 +316,37 @@ export default function CustomerDashboard() {
 
   if ((bookingStep === 'confirm' && selectedTech) || bookingStep === 'broadcast_confirm') {
     return (
-      <BookingForm 
-        selectedTech={bookingStep === 'broadcast_confirm' ? null : selectedTech!}
-        analysisResult={analysisResult}
-        address={address}
-        setAddress={setAddress}
-        contactNumber={contactNumber}
-        setContactNumber={setContactNumber}
-        email={email}
-        setEmail={setEmail}
-        customerName={customerName}
-        setCustomerName={setCustomerName}
-        serviceTime={serviceTime}
-        setServiceTime={setServiceTime}
-        paymentMethod={paymentMethod}
-        setPaymentMethod={setPaymentMethod}
-        onConfirm={bookingStep === 'broadcast_confirm' ? createBroadcastBooking : confirmBooking}
-        onCancel={() => setBookingStep('input')}
-        analyzing={analyzing}
-        addressInputRef={addressInputRef}
-      />
+      <>
+        <BookingForm 
+          selectedTech={bookingStep === 'broadcast_confirm' ? null : selectedTech!}
+          analysisResult={analysisResult}
+          address={address}
+          setAddress={setAddress}
+          contactNumber={contactNumber}
+          setContactNumber={setContactNumber}
+          email={email}
+          setEmail={setEmail}
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+          serviceTime={serviceTime}
+          setServiceTime={setServiceTime}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          onConfirm={bookingStep === 'broadcast_confirm' ? createBroadcastBooking : confirmBooking}
+          onCancel={() => setBookingStep('input')}
+          analyzing={analyzing}
+          addressInputRef={addressInputRef}
+        />
+
+        <TermsAcceptanceDialog
+          open={termsDialogOpen}
+          role="customer"
+          actionLabel="I Agree & Continue"
+          actionSubmitting={analyzing}
+          onCancel={handleTermsCancel}
+          onAccept={handleTermsAccept}
+        />
+      </>
     );
   }
 
@@ -420,7 +437,7 @@ export default function CustomerDashboard() {
               {analysisResult && (
                 <AnalysisResultView 
                   analysisResult={analysisResult} 
-                  onBroadcastBook={() => setBookingStep('broadcast_confirm')}
+                  onBroadcastBook={handleInitiateBroadcast}
                   isWaitingForBroadcast={isWaitingForBroadcast}
                   broadcastStatus={broadcastStatus}
                   broadcastTimerEnd={broadcastTimerEnd}
@@ -489,6 +506,14 @@ export default function CustomerDashboard() {
         deleting={deleting}
       />
 
+      <TermsAcceptanceDialog
+        open={termsDialogOpen}
+        role="customer"
+        actionLabel="I Agree & Continue"
+        actionSubmitting={analyzing}
+        onCancel={handleTermsCancel}
+        onAccept={handleTermsAccept}
+      />
 
     </div>
   );

@@ -9,6 +9,7 @@ const { db, admin } = require('../config/firebaseAdmin');
 const { notifyUser } = require('../services/notifications');
 // getBatchETA fetches driving ETA for multiple technicians in one Google Maps call.
 const { getRealETA, getBatchETA } = require('../services/etaService');
+const { verifyAndRecordTerms } = require('../middleware/termsValidator');
 
 // ── THE ULTIMATE CANONICAL REGISTRY (19 ROLES) ──
 // Central source of truth for all service categories — used for matching, routing, and filtering.
@@ -177,6 +178,18 @@ router.post('/search', async (req, res) => {
 // to Firestore with both snake_case and camelCase field names for cross-consumer compatibility.
 router.post('/create', async (req, res) => {
   try {
+    const isBroadcast = req.body.technicianId === 'broadcast' || req.body.technician_id === 'broadcast';
+    const requiredAction = isBroadcast ? 'initiate_broadcast' : 'confirm_booking';
+
+    // Enforce mandatory customer Terms & Conditions acceptance
+    const termsRecord = await verifyAndRecordTerms({
+      req,
+      res,
+      requiredRole: 'customer',
+      requiredAction,
+    });
+    if (!termsRecord) return; // verifyAndRecordTerms already sent rejection response
+
     // Prefix + timestamp makes a collision-resistant booking ID without a DB sequence.
     const bookingId = 'BK_' + Date.now();
     const { category, customerId } = req.body;
@@ -298,6 +311,9 @@ router.post('/create', async (req, res) => {
       // OTP & broadcast
       otp: otp, 
       eligible_tech_ids: eligibleTechIds,
+      // Terms and conditions acceptance record
+      customer_terms_acceptance: termsRecord,
+      customerTermsAcceptance: termsRecord,
     };
     
     await db.collection('bookings').doc(booking.id).set(booking);
@@ -361,6 +377,16 @@ router.post('/accept-broadcast', async (req, res) => {
   try {
     const { bookingId, technicianId, technicianName, technicianAvatar, technicianPhone, technicianRating } = req.body;
     
+    // Enforce mandatory technician Terms & Conditions acceptance
+    const termsRecord = await verifyAndRecordTerms({
+      req,
+      res,
+      requiredRole: 'technician',
+      requiredAction: 'accept_booking',
+      targetBookingId: bookingId,
+    });
+    if (!termsRecord) return; // Rejection response already sent
+
     // Read the booking first to guard against two technicians accepting simultaneously.
     const docRef = await db.collection('bookings').doc(bookingId).get();
     const booking = docRef.exists ? {id: docRef.id, ...docRef.data()} : null;
@@ -403,6 +429,8 @@ router.post('/accept-broadcast', async (req, res) => {
       technician_rating: technicianRating || 5.0,
       technicianRating: technicianRating || 5.0,
       status: 'Accepted',
+      technician_terms_acceptance: termsRecord,
+      technicianTermsAcceptance: termsRecord,
       accepted_at: new Date().toISOString(),
       acceptedAt: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -546,6 +574,19 @@ router.post('/update-status', async (req, res) => {
   try {
     const { bookingId, status, paymentStatus, technicianId, technicianName, isPaid, totalAmount, finalAmount, servicesDone, accessories } = req.body;
 
+    // Enforce mandatory technician Terms & Conditions acceptance when accepting a booking
+    let termsRecord = null;
+    if (status === 'Accepted') {
+      termsRecord = await verifyAndRecordTerms({
+        req,
+        res,
+        requiredRole: 'technician',
+        requiredAction: 'accept_booking',
+        targetBookingId: bookingId,
+      });
+      if (!termsRecord) return; // Rejection response already sent
+    }
+
     // Check if technician is attempting to cancel or decline after OTP has already been verified
     if (status === 'Cancelled' || status === 'Declined') {
       const existingDoc = await db.collection('bookings').doc(bookingId).get();
@@ -561,6 +602,10 @@ router.post('/update-status', async (req, res) => {
     }
 
     const update = { status, updated_at: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    if (termsRecord) {
+      update.technician_terms_acceptance = termsRecord;
+      update.technicianTermsAcceptance = termsRecord;
+    }
     if (paymentStatus) update.payment_status = paymentStatus;
     // Handle payment confirmation from technician
     if (isPaid === true) {

@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { API_BASE } from '@/lib/config';
 import { cn } from '@/lib/utils';
+import TermsAcceptanceDialog, { TermsAcknowledgement, TECHNICIAN_TERMS_VERSION } from '@/components/common/TermsAcceptanceDialog';
 
 interface Booking {
   id: string;
@@ -129,6 +130,8 @@ export default function TechnicianBookings() {
   const [declineReason, setDeclineReason] = useState('');
   const [declining, setDeclining] = useState(false);
   const [accepting, setAccepting] = useState<string | null>(null);
+  const [termsDialogOpen, setTermsDialogOpen] = useState(false);
+  const [bookingToAccept, setBookingToAccept] = useState<Booking | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -170,17 +173,42 @@ export default function TechnicianBookings() {
     return () => unsubscribe();
   }, [user?.uid]);
 
-  const handleAccept = async (booking: Booking) => {
+  const requestAccept = (booking: Booking) => {
+    setBookingToAccept(booking);
+    setTermsDialogOpen(true);
+  };
+
+  const handleTermsCancel = () => {
+    setTermsDialogOpen(false);
+    setBookingToAccept(null);
+  };
+
+  const handleTermsAccept = async (ack: TermsAcknowledgement) => {
+    if (!bookingToAccept) return;
+    const booking = bookingToAccept;
+    setTermsDialogOpen(false);
+    setBookingToAccept(null);
     setAccepting(booking.id);
     try {
+      const token = await auth.currentUser?.getIdToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.post(`${API_BASE}/api/bookings/update-status`, { 
         bookingId: booking.id, 
         status: 'Accepted',
         technicianId: user?.uid,
-        technicianName: techProfile?.name || 'Your Technician'
-      });
-    } catch (e) {
-      alert('Failed to accept booking.');
+        technicianName: techProfile?.name || 'Your Technician',
+        termsAcknowledgement: {
+          ...ack,
+          role: 'technician',
+          termsType: 'technician',
+          termsVersion: TECHNICIAN_TERMS_VERSION,
+          action: 'accept_booking',
+          bookingId: booking.id,
+          accepted: true,
+        }
+      }, { headers });
+    } catch (e: any) {
+      alert(e.response?.data?.error || 'Failed to accept booking.');
     } finally {
       setAccepting(null);
     }
@@ -301,7 +329,7 @@ export default function TechnicianBookings() {
                       </div>
                       {tab === 'pending' && (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-4 lg:mt-0">
-                          <button onClick={() => handleAccept(booking)} className="flex-1 sm:flex-none px-6 py-3 bg-white text-slate-900 rounded-2xl text-sm font-black flex items-center justify-center gap-2 active:scale-95 transition">{accepting === booking.id ? <Loader2 className="animate-spin size-4" /> : <CheckCircle2 className="size-4" />} Accept</button>
+                          <button onClick={() => requestAccept(booking)} className="flex-1 sm:flex-none px-6 py-3 bg-white text-slate-900 rounded-2xl text-sm font-black flex items-center justify-center gap-2 active:scale-95 transition">{accepting === booking.id ? <Loader2 className="animate-spin size-4" /> : <CheckCircle2 className="size-4" />} Accept</button>
                           <button onClick={() => setDeclineModal({ open: true, booking })} className="flex-1 sm:flex-none px-5 py-3 bg-white/5 border border-white/10 text-slate-400 rounded-2xl text-sm font-bold text-center">Decline</button>
                         </div>
                       )}
@@ -332,6 +360,15 @@ export default function TechnicianBookings() {
           </div>
         )}
       </AnimatePresence>
+
+      <TermsAcceptanceDialog
+        open={termsDialogOpen}
+        role="technician"
+        actionLabel="I Agree & Accept Booking"
+        actionSubmitting={accepting !== null}
+        onCancel={handleTermsCancel}
+        onAccept={handleTermsAccept}
+      />
     </div>
   );
 }

@@ -9,6 +9,8 @@ import { AnalysisResult, Technician } from '../types';
 import { Socket } from 'socket.io-client';
 import { calculateTechnicianRank } from '@/server/ai/agents/aiRankingEngine';
 import loadRazorpay from '@/lib/loadRazorpay';
+import { auth } from '@/lib/firebase';
+import { TermsAcknowledgement, CUSTOMER_TERMS_VERSION } from '@/components/common/TermsAcceptanceDialog';
 
 interface UseBookingProps {
   userId: string | null;
@@ -71,6 +73,22 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
   const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [serviceTime, setServiceTime] = useState('');
+
+  // ── Terms & Conditions acceptance gate state ──
+  const [termsDialogOpen, setTermsDialogOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'confirm_booking' | 'initiate_broadcast' | null>(null);
+
+  const getAuthHeaders = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (token) {
+        return { Authorization: `Bearer ${token}` };
+      }
+    } catch (e) {
+      console.warn('Could not get auth token for booking request', e);
+    }
+    return {};
+  };
 
   useEffect(() => {
     setServiceTime(new Date().toLocaleString('en-IN', { 
@@ -583,8 +601,9 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     setBookingStep('confirm');
   };
 
-  const createBookingRecord = async (paymentMode: 'pay_now' | 'pay_later') => {
+  const createBookingRecord = async (paymentMode: 'pay_now' | 'pay_later', ack?: TermsAcknowledgement) => {
     const origin = coords || { lat: 37.7749, lng: -122.4194 };
+    const headers = await getAuthHeaders();
     const res = await axios.post(`${API_BASE}/api/bookings/create`, {
       customerId: userId || 'guest',
       technicianId: selectedTech?.id,
@@ -604,7 +623,14 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       paymentMode,
       customerLat: origin.lat,
       customerLng: origin.lng,
-    });
+      termsAcknowledgement: ack || {
+        role: 'customer',
+        termsType: 'customer',
+        termsVersion: CUSTOMER_TERMS_VERSION,
+        action: 'confirm_booking',
+        accepted: true,
+      },
+    }, { headers });
     if (res.data.success) {
       setBookingConfirmation(res.data.booking);
       setBookingStep('done');
@@ -616,7 +642,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     }
   };
 
-  const confirmBooking = async () => {
+  // Called when user clicks "Confirm Request" or "Execute Secure Payment" on BookingForm
+  const confirmBooking = () => {
     const missing: string[] = [];
     if (!customerName.trim()) missing.push('Full Name');
     if (!address.trim()) missing.push('Service Address');
@@ -634,10 +661,16 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       return;
     }
 
+    // Intercept confirmation with mandatory Terms & Conditions dialog
+    setPendingAction('confirm_booking');
+    setTermsDialogOpen(true);
+  };
+
+  const executeConfirmBooking = async (ack: TermsAcknowledgement) => {
     setAnalyzing(true);
     try {
       if (paymentMethod === 'later') {
-        await createBookingRecord('pay_later');
+        await createBookingRecord('pay_later', ack);
         setAnalyzing(false);
         return;
       }
@@ -676,14 +709,20 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         paymentMode: 'pay_now',
         customerLat: origin.lat,
         customerLng: origin.lng,
+        termsAcknowledgement: ack,
       };
 
       console.log("BOOKING PAYLOAD");
       console.log(bookingPayload);
       console.log("analysisResult", analysisResult);
 
-      // 1. Create Razorpay order BEFORE booking creation
-      const orderRes = await axios.post(`${API_BASE}/api/payment/create-booking-order`, bookingPayload);
+      const headers = await getAuthHeaders();
+
+      // 1. Create Razorpay order BEFORE booking creation (including terms acknowledgement)
+      const orderRes = await axios.post(`${API_BASE}/api/payment/create-booking-order`, {
+        ...bookingPayload,
+        termsAcknowledgement: ack,
+      }, { headers });
 
       if (!orderRes.data.success) {
         throw new Error(orderRes.data.message || 'Failed to create payment order');
@@ -732,13 +771,15 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         },
         handler: async (response: any) => {
           try {
-            // 2. Verify payment and create booking on backend
+            const authHeaders = await getAuthHeaders();
+            // 2. Verify payment and create booking on backend (including terms acknowledgement)
             const verifyRes = await axios.post(`${API_BASE}/api/payment/verify-booking`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              bookingPayload
-            });
+              bookingPayload,
+              termsAcknowledgement: ack,
+            }, { headers: authHeaders });
             
             if (verifyRes.data.success) {
               const newBooking = verifyRes.data.booking;
@@ -759,6 +800,7 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
             // Create the booking record directly so presentation and real flow NEVER fail.
             try {
               const origin = coords || { lat: 37.7749, lng: -122.4194 };
+              const fallbackHeaders = await getAuthHeaders();
               const fallbackRes = await axios.post(`${API_BASE}/api/bookings/create`, {
                 ...bookingPayload,
                 customerLat: origin.lat,
@@ -769,7 +811,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
                 advancePaymentId: response.razorpay_payment_id,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpayOrderId: response.razorpay_order_id,
-              });
+                termsAcknowledgement: ack,
+              }, { headers: fallbackHeaders });
               
               if (fallbackRes.data.success) {
                 const newBooking = fallbackRes.data.booking;
@@ -806,7 +849,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     }
   };
 
-  const createBroadcastBooking = async () => {
+  // Called when user clicks "Initiate Booking" button on BookingForm (for broadcast)
+  const createBroadcastBooking = () => {
     const missing: string[] = [];
     if (!customerName.trim()) missing.push('Full Name');
     if (!address.trim()) missing.push('Service Address');
@@ -824,10 +868,60 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
       return;
     }
     if (!analysisResult) return;
+
+    // Intercept broadcast confirmation with mandatory Terms & Conditions dialog
+    setPendingAction('initiate_broadcast');
+    setTermsDialogOpen(true);
+  };
+
+  // Called when user clicks "Initiate Booking for [category]" directly in AnalysisResultView
+  const handleInitiateBroadcast = () => {
+    setPendingAction('initiate_broadcast');
+    setTermsDialogOpen(true);
+  };
+
+  const handleTermsCancel = () => {
+    setTermsDialogOpen(false);
+    setPendingAction(null);
+  };
+
+  const handleTermsAccept = async (ack: TermsAcknowledgement) => {
+    setTermsDialogOpen(false);
+    const actionToRun = pendingAction;
+    setPendingAction(null);
+
+    if (actionToRun === 'confirm_booking') {
+      await executeConfirmBooking(ack);
+    } else if (actionToRun === 'initiate_broadcast') {
+      if (bookingStep === 'broadcast_confirm') {
+        await executeCreateBroadcastBooking(ack);
+      } else {
+        // Triggered from AnalysisResultView
+        // If customer details are already complete, initiate immediately
+        if (address.trim() && contactNumber.trim() && email.trim() && customerName.trim()) {
+          await executeCreateBroadcastBooking(ack);
+        } else {
+          // Transition to broadcast confirmation form to input missing details
+          setBookingStep('broadcast_confirm');
+        }
+      }
+    }
+  };
+
+  const executeCreateBroadcastBooking = async (ack?: TermsAcknowledgement) => {
+    if (!analysisResult) return;
     setAnalyzing(true);
 
     try {
       const origin = coords || { lat: 37.7749, lng: -122.4194 };
+      const termsAck = ack || {
+        role: 'customer',
+        termsType: 'customer',
+        termsVersion: CUSTOMER_TERMS_VERSION,
+        action: 'initiate_broadcast',
+        accepted: true,
+      };
+
       const payload = {
         customerId: userId || 'GUEST_' + Date.now(),
         customerName: customerName || 'Valued Customer',
@@ -849,10 +943,12 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
         status: 'Pending',
         serviceTime: 'As soon as possible',
         paymentMode: 'pay_later', // Always pay after service for broadcast
-        paymentStatus: 'Unpaid'
+        paymentStatus: 'Unpaid',
+        termsAcknowledgement: termsAck,
       };
 
-      const res = await axios.post(`${API_BASE}/api/bookings/create`, payload);
+      const headers = await getAuthHeaders();
+      const res = await axios.post(`${API_BASE}/api/bookings/create`, payload, { headers });
       if (res.data.success) {
         const newBooking = res.data.booking;
         setBookingConfirmation(newBooking);
@@ -963,6 +1059,8 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     address, setAddress,
     contactNumber,
     setContactNumber,
+    email,
+    setEmail,
     customerName,
     setCustomerName,
     serviceTime,
@@ -987,6 +1085,12 @@ export function useBooking({ userId, socketRef, socketInstance, coords, setCoord
     cancelBroadcast,
     resetBroadcast,
     dismissAcceptedPopup,
-    removeImage
+    removeImage,
+    // Terms & Conditions gate exports
+    termsDialogOpen,
+    pendingAction,
+    handleTermsAccept,
+    handleTermsCancel,
+    handleInitiateBroadcast,
   };
 }

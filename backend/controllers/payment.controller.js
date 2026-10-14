@@ -1,5 +1,6 @@
 const razorpayService = require('../services/razorpay.service');
 const { db } = require('../config/firebaseAdmin');
+const { verifyAndRecordTerms } = require('../middleware/termsValidator');
 
 /**
  * PaymentController — manages the financial lifecycle of a service booking.
@@ -304,6 +305,15 @@ class PaymentController {
    */
   async createBookingOrder(req, res) {
     try {
+      // Enforce mandatory customer Terms & Conditions acceptance
+      const termsRecord = await verifyAndRecordTerms({
+        req,
+        res,
+        requiredRole: 'customer',
+        requiredAction: 'confirm_booking',
+      });
+      if (!termsRecord) return;
+
       const { estimatedCostRange, customerId, technicianId, category } = req.body;
       
       // Calculate amount securely on backend based on estimated cost range
@@ -367,6 +377,15 @@ class PaymentController {
    */
   async verifyBookingOrder(req, res) {
     try {
+      // Enforce mandatory customer Terms & Conditions acceptance
+      const termsRecord = await verifyAndRecordTerms({
+        req,
+        res,
+        requiredRole: 'customer',
+        requiredAction: 'confirm_booking',
+      });
+      if (!termsRecord) return;
+
       const { 
         razorpay_order_id, 
         razorpay_payment_id, 
@@ -501,7 +520,9 @@ class PaymentController {
         technicianName: bookingPayload.technicianName || '',
         
         // Operations
-        otp: otp
+        otp: otp,
+        customer_terms_acceptance: termsRecord,
+        customerTermsAcceptance: termsRecord,
       };
 
       const batch = db.batch();

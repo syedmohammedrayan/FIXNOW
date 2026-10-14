@@ -10,6 +10,7 @@ import { Socket, io } from 'socket.io-client';
 import { isCategoryMatch } from '@/app/utils/categoryMatcher';
 import { SOCKET_URL, API_BASE } from "@/lib/config";
 import axios from "axios";
+import { TermsAcknowledgement, TECHNICIAN_TERMS_VERSION } from '@/components/common/TermsAcceptanceDialog';
 
 export function useTechnicianData() {
   const router = useRouter();
@@ -39,6 +40,24 @@ export function useTechnicianData() {
   const [cancelledBooking, setCancelledBooking] = useState<{ bookingId: string; customerName: string; reason: string } | null>(null);
   const [bellNotifications, setBellNotifications] = useState<any[]>([]);
   
+  // ── Terms & Conditions acceptance state ──
+  const [termsDialogOpen, setTermsDialogOpen] = useState(false);
+  const [pendingJobToAccept, setPendingJobToAccept] = useState<any | null>(null);
+  const [pendingBroadcastToAccept, setPendingBroadcastToAccept] = useState<string | null>(null);
+  const [acceptingJob, setAcceptingJob] = useState(false);
+
+  const getAuthHeaders = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (token) {
+        return { Authorization: `Bearer ${token}` };
+      }
+    } catch (e) {
+      console.warn('Could not get auth token for technician booking request', e);
+    }
+    return {};
+  };
+
   const prevToolOrdersRef = useRef<any[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
@@ -335,37 +354,97 @@ export function useTechnicianData() {
     return () => unsub();
   }, [user]);
 
-  const acceptJob = async (job: any) => {
+  // Intercept job acceptance from dispatch queue with mandatory Terms dialog
+  const acceptJob = (job: any) => {
     if (currentJob) {
       alert("⚠️ ACTIVE PROTOCOL: You cannot accept new assignments while a service is in progress.");
       return;
     }
+    setPendingBroadcastToAccept(null);
+    setPendingJobToAccept(job);
+    setTermsDialogOpen(true);
+  };
+
+  // Intercept broadcast acceptance with mandatory Terms dialog
+  const acceptBroadcast = (broadcastId: string) => {
+    if (currentJob) {
+      alert("⚠️ ACTIVE PROTOCOL: You cannot accept new assignments while a service is in progress.");
+      return;
+    }
+    setPendingJobToAccept(null);
+    setPendingBroadcastToAccept(broadcastId);
+    setTermsDialogOpen(true);
+  };
+
+  const handleTermsCancel = () => {
+    setTermsDialogOpen(false);
+    setPendingJobToAccept(null);
+    setPendingBroadcastToAccept(null);
+  };
+
+  const handleTermsAccept = async (ack: TermsAcknowledgement) => {
+    setTermsDialogOpen(false);
+    const job = pendingJobToAccept;
+    const broadcastId = pendingBroadcastToAccept;
+    setPendingJobToAccept(null);
+    setPendingBroadcastToAccept(null);
+
+    if (job) {
+      await executeAcceptJob(job, ack);
+    } else if (broadcastId) {
+      await executeAcceptBroadcast(broadcastId, ack);
+    }
+  };
+
+  const executeAcceptJob = async (job: any, ack: TermsAcknowledgement) => {
+    setAcceptingJob(true);
     try {
+      const headers = await getAuthHeaders();
       await axios.post(`${API_BASE}/api/bookings/update-status`, {
         bookingId: job.id,
         status: "Accepted",
         technicianId: user?.uid,
         technicianName: profile.name || "Technician",
-      });
+        termsAcknowledgement: {
+          ...ack,
+          role: 'technician',
+          termsType: 'technician',
+          termsVersion: TECHNICIAN_TERMS_VERSION,
+          action: 'accept_booking',
+          bookingId: job.id,
+          accepted: true,
+        }
+      }, { headers });
+      setNotification({ message: "Job accepted successfully!", type: 'success' });
+      fetchTechData(user?.uid);
     } catch (e: any) {
       alert(e.response?.data?.error || "Failed to accept job.");
+    } finally {
+      setAcceptingJob(false);
     }
   };
 
-  const acceptBroadcast = async (broadcastId: string) => {
-    if (currentJob) {
-      alert("⚠️ ACTIVE PROTOCOL: You cannot accept new assignments while a service is in progress.");
-      return;
-    }
+  const executeAcceptBroadcast = async (broadcastId: string, ack: TermsAcknowledgement) => {
+    setAcceptingJob(true);
     try {
+      const headers = await getAuthHeaders();
       const res = await axios.post(`${API_BASE}/api/bookings/accept-broadcast`, {
         bookingId: broadcastId,
         technicianId: user?.uid,
         technicianName: profile?.name || "Technician",
         technicianAvatar: profile?.avatar || null,
         technicianPhone: profile?.phone || null,
-        technicianRating: profile?.rating || 5.0
-      });
+        technicianRating: profile?.rating || 5.0,
+        termsAcknowledgement: {
+          ...ack,
+          role: 'technician',
+          termsType: 'technician',
+          termsVersion: TECHNICIAN_TERMS_VERSION,
+          action: 'accept_booking',
+          bookingId: broadcastId,
+          accepted: true,
+        }
+      }, { headers });
       
       if (res.data.success) {
         setNotification({ message: "Broadcast accepted successfully! Starting job.", type: 'success' });
@@ -397,6 +476,8 @@ export function useTechnicianData() {
           router.push('/technician/subscription');
         }, 1500);
       }
+    } finally {
+      setAcceptingJob(false);
     }
   };
 
@@ -493,6 +574,11 @@ export function useTechnicianData() {
     bellNotifications,
     setBellNotifications,
     markNotificationRead,
-    handleSignOut
+    handleSignOut,
+    // Terms & Conditions gate exports
+    termsDialogOpen,
+    acceptingJob,
+    handleTermsAccept,
+    handleTermsCancel,
   };
 }
