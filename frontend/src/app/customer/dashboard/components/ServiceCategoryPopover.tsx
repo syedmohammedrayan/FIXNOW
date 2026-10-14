@@ -44,7 +44,7 @@ export default function ServiceCategoryPopover({
     setMounted(true);
   }, []);
 
-  // Compute exact viewport-relative fixed position from anchorRect or DOM element
+  // Compute exact viewport-relative fixed position from anchorRect or live DOM element
   const computePosition = useCallback(() => {
     if (typeof window === 'undefined') return;
 
@@ -70,8 +70,8 @@ export default function ServiceCategoryPopover({
     const spaceAbove = rect.top - margin;
     const spaceBelow = viewportHeight - rect.bottom - margin;
 
-    // Prefer placing ABOVE when >= 220px of space is available
-    const placeAbove = spaceAbove >= 220 || (spaceAbove >= 160 && spaceAbove > spaceBelow);
+    // Prefer placing ABOVE when >= 200px of space is available
+    const placeAbove = spaceAbove >= 200 || (spaceAbove >= 150 && spaceAbove > spaceBelow);
 
     let top: number | undefined;
     let bottom: number | undefined;
@@ -168,15 +168,14 @@ export default function ServiceCategoryPopover({
   if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {isOpen && category && (
         <motion.div
           ref={popoverRef}
-          key={`popover-${category}`}
-          initial={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 6 : -6 }}
+          initial={{ opacity: 0, scale: 0.96, y: position.placement === 'top' ? 6 : -6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 4 : -4 }}
-          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, scale: 0.96, y: position.placement === 'top' ? 4 : -4 }}
+          transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: 'fixed',
             top: position.top !== undefined ? `${position.top}px` : 'auto',
