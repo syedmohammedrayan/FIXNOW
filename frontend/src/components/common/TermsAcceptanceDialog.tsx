@@ -145,13 +145,21 @@ export default function TermsAcceptanceDialog({
       <DialogPrimitive.Portal>
         {/* Viewport-level backdrop overlay */}
         <DialogPrimitive.Overlay
-          className="fixed inset-0 z-[999] bg-black/55 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="terms-dialog-overlay fixed inset-0 z-[9999] bg-black/60 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
         />
 
         {/* Centered Modal Container */}
         <DialogPrimitive.Content
           aria-describedby="terms-description"
-          className="fixed left-1/2 top-1/2 z-[1000] -translate-x-1/2 -translate-y-1/2 w-[92vw] sm:w-full sm:max-w-[560px] max-h-[85vh] flex flex-col bg-white text-[#202124] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5E7EB] overflow-hidden focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+          className="terms-dialog-content fixed left-1/2 top-1/2 z-[10000] -translate-x-1/2 -translate-y-1/2 w-[92vw] sm:w-full sm:max-w-[560px] max-h-[85vh] flex flex-col bg-white text-[#202124] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5E7EB] overflow-hidden focus:outline-none"
+          style={{
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 10000,
+          }}
         >
           {/* Header */}
           <div className="shrink-0 p-6 pb-4 border-b border-[#E5E7EB] bg-white relative">

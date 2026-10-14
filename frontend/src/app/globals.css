@@ -92,10 +92,36 @@ html {
   max-width: 100vw;
 }
 
-/* Ensure all direct body children (except background layers and chatbot) sit above z-index: 0 */
-body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor):not(.dynamic-bg-grain):not(.chatbot-container) {
+/* Ensure direct body layout children sit above z-index: 0, while excluding background layers, chatbot, and viewport modal portals */
+body > *:not(.dynamic-bg-slider):not(.dynamic-bg-overlay):not(.dynamic-bg-cursor):not(.dynamic-bg-grain):not(.chatbot-container):not([data-radix-portal]):not([data-radix-dialog-overlay]):not([data-radix-dialog-content]):not([role="dialog"]):not([data-radix-popper-content-wrapper]):not(.terms-dialog-overlay):not(.terms-dialog-content) {
   position: relative;
   z-index: 1;
+}
+
+/* Radix dialog portals & viewport-level overlays */
+[data-radix-portal] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  pointer-events: none;
+}
+
+[data-radix-portal] > * {
+  pointer-events: auto;
+}
+
+.terms-dialog-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+}
+
+.terms-dialog-content {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10000 !important;
 }
 
 .chatbot-container {
