@@ -1,18 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { ShieldCheck, ChevronDown, CheckCircle2 } from 'lucide-react';
 
 export interface TermsAcknowledgement {
   role: 'customer' | 'technician';
@@ -77,30 +69,34 @@ export default function TermsAcceptanceDialog({
   const defaultActionLabel = isCustomer ? 'I Agree & Continue' : 'I Agree & Accept Booking';
   const submitButtonLabel = actionLabel || defaultActionLabel;
 
-  // Reset scroll and states whenever the dialog is opened
+  // Reset scroll and states whenever the dialog is opened & lock background scroll
   useEffect(() => {
     if (open) {
       setHasReadToBottom(false);
       setHasCheckedAgreement(false);
 
+      // Prevent background scrolling while modal is open
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
       const checkInitialFit = () => {
         const el = scrollRef.current;
         if (el) {
           el.scrollTop = 0;
-          // If content fits completely inside visible height (no scrolling needed)
-          if (el.scrollHeight <= el.clientHeight + 6) {
+          // If content fits completely inside visible height (no scrolling required)
+          if (el.scrollHeight <= el.clientHeight + 8) {
             setHasReadToBottom(true);
           }
         }
       };
 
-      const timer = setTimeout(checkInitialFit, 60);
-
-      // Listen for window resize to recheck if it fits
+      const timer = setTimeout(checkInitialFit, 50);
       window.addEventListener('resize', checkInitialFit);
+
       return () => {
         clearTimeout(timer);
         window.removeEventListener('resize', checkInitialFit);
+        document.body.style.overflow = originalOverflow;
       };
     } else {
       setHasReadToBottom(false);
@@ -111,7 +107,7 @@ export default function TermsAcceptanceDialog({
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
-    const tolerance = 6;
+    const tolerance = 8;
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - tolerance) {
       setHasReadToBottom(true);
     }
@@ -138,7 +134,7 @@ export default function TermsAcceptanceDialog({
   };
 
   return (
-    <Dialog
+    <DialogPrimitive.Root
       open={open}
       onOpenChange={(isOpen) => {
         if (!isOpen && !actionSubmitting) {
@@ -146,130 +142,137 @@ export default function TermsAcceptanceDialog({
         }
       }}
     >
-      <DialogContent
-        className="max-w-lg sm:max-w-xl w-[94vw] bg-slate-950/95 backdrop-blur-2xl border border-white/10 text-white shadow-2xl rounded-2xl sm:rounded-3xl p-5 sm:p-7 gap-5 overflow-hidden"
-        style={{
-          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
-        }}
-      >
-        {/* Header */}
-        <DialogHeader className="space-y-2 text-left">
-          <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4 text-indigo-400" />
+      <DialogPrimitive.Portal>
+        {/* Viewport-level backdrop overlay */}
+        <DialogPrimitive.Overlay
+          className="fixed inset-0 z-[999] bg-black/55 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        />
+
+        {/* Centered Modal Container */}
+        <DialogPrimitive.Content
+          aria-describedby="terms-description"
+          className="fixed left-1/2 top-1/2 z-[1000] -translate-x-1/2 -translate-y-1/2 w-[92vw] sm:w-full sm:max-w-[560px] max-h-[85vh] flex flex-col bg-white text-[#202124] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5E7EB] overflow-hidden focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+        >
+          {/* Header */}
+          <div className="shrink-0 p-6 pb-4 border-b border-[#E5E7EB] bg-white relative">
+            <div className="pr-8">
+              <DialogPrimitive.Title className="text-xl sm:text-[22px] font-semibold text-[#202124] tracking-tight">
+                {title}
+              </DialogPrimitive.Title>
+              <DialogPrimitive.Description
+                id="terms-description"
+                className="text-sm text-[#5F6368] mt-1.5 leading-normal"
+              >
+                {intro}
+              </DialogPrimitive.Description>
             </div>
-            <DialogTitle className="text-lg sm:text-xl font-black text-white tracking-tight">
-              {title}
-            </DialogTitle>
+
+            {/* Understated X Close Button */}
+            <DialogPrimitive.Close
+              disabled={actionSubmitting}
+              className="absolute right-4 top-4 size-8 flex items-center justify-center rounded-lg text-[#5F6368] hover:text-[#202124] hover:bg-[#F1F3F4] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E5E7EB] disabled:pointer-events-none"
+            >
+              <Cross2Icon className="size-4" />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
           </div>
-          <DialogDescription className="text-xs sm:text-sm text-slate-400 leading-relaxed font-medium">
-            {intro}
-          </DialogDescription>
-        </DialogHeader>
 
-        {/* Thin neutral divider */}
-        <div className="h-px w-full bg-white/10 -mt-1" />
-
-        {/* Scrollable Terms Content */}
-        <div className="relative">
+          {/* Scrollable Terms Content */}
           <div
             ref={scrollRef}
             onScroll={handleScroll}
             tabIndex={0}
             role="region"
-            aria-label="Terms and Conditions Content"
-            className="max-h-60 sm:max-h-68 overflow-y-auto pr-3 space-y-3.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/40 rounded-xl scrollbar-thin scrollbar-thumb-white/15 scrollbar-track-transparent"
+            aria-label="Terms and Conditions Document"
+            className="flex-1 overflow-y-auto p-6 space-y-4 bg-white text-[#202124] focus:outline-none scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
           >
-            {terms.map((termText, index) => {
-              const termNumber = index + 1;
-              return (
-                <div
-                  key={termNumber}
-                  className="flex items-start gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors"
-                >
-                  <span className="flex items-center justify-center size-6 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-black shrink-0 mt-0.5">
-                    {termNumber}
-                  </span>
-                  <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
-                    {termNumber}. {termText}
-                  </p>
-                </div>
-              );
-            })}
+            <ol className="space-y-4.5">
+              {terms.map((termText, index) => {
+                const termNumber = index + 1;
+                return (
+                  <li
+                    key={termNumber}
+                    className="flex items-start gap-3.5 text-[14px] sm:text-[15px] leading-[1.6] text-[#202124]"
+                  >
+                    <span className="font-semibold text-[#202124] select-none shrink-0 w-4 text-right">
+                      {termNumber}.
+                    </span>
+                    <span className="font-normal text-[#202124]">{termText}</span>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
 
-          {/* Reading progress indicator / scroll hint */}
-          {!hasReadToBottom && (
-            <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] font-semibold text-amber-400/90 animate-pulse">
-              <ChevronDown className="w-3.5 h-3.5" />
-              <span>Scroll down to read the complete terms</span>
+          {/* Persistent Footer */}
+          <div className="shrink-0 p-5 sm:p-6 border-t border-[#E5E7EB] bg-[#FAFAFA] rounded-b-2xl space-y-4">
+            {/* Reading instruction / progress helper */}
+            <div className="text-[12px] sm:text-[13px] font-normal leading-tight">
+              {!hasReadToBottom ? (
+                <p className="text-[#D97706] flex items-center gap-1.5">
+                  <span className="inline-block animate-bounce">↓</span>
+                  Please scroll to the bottom of the terms to enable agreement.
+                </p>
+              ) : (
+                <p className="text-[#15803D]">
+                  All terms have been read. Please check the agreement box below.
+                </p>
+              )}
             </div>
-          )}
-          {hasReadToBottom && (
-            <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] font-semibold text-emerald-400">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Terms completely read</span>
+
+            {/* Agreement Checkbox */}
+            <div className="pt-1">
+              <label
+                htmlFor="terms-agreement-checkbox"
+                className="flex items-start gap-3 cursor-pointer select-none group"
+              >
+                <Checkbox
+                  id="terms-agreement-checkbox"
+                  checked={hasCheckedAgreement}
+                  onCheckedChange={handleCheckboxChange}
+                  className="mt-0.5 border-[#D1D5DB] data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB] data-[state=checked]:text-white rounded"
+                />
+                <span className="text-[13px] sm:text-[14px] font-medium text-[#202124] leading-snug group-hover:text-black">
+                  {checkboxLabel}
+                </span>
+              </label>
             </div>
-          )}
-        </div>
 
-        {/* Agreement Checkbox Area */}
-        <div className="pt-2 border-t border-white/10 space-y-2">
-          <label
-            htmlFor="terms-agreement-checkbox"
-            className={cn(
-              'flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none',
-              hasCheckedAgreement
-                ? 'bg-indigo-500/10 border-indigo-500/30'
-                : 'bg-white/[0.02] border-white/10 hover:border-white/20'
-            )}
-          >
-            <Checkbox
-              id="terms-agreement-checkbox"
-              checked={hasCheckedAgreement}
-              onCheckedChange={handleCheckboxChange}
-              className="mt-0.5 border-white/30 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
-            />
-            <span className="text-xs sm:text-sm font-semibold text-slate-200 leading-snug">
-              {checkboxLabel}
-            </span>
-          </label>
-        </div>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={actionSubmitting}
+                className="px-4 py-2 text-[13px] sm:text-[14px] font-medium text-[#5F6368] hover:text-[#202124] hover:bg-[#E5E7EB]/60 rounded-xl transition-colors focus:outline-none"
+              >
+                Cancel
+              </button>
 
-        {/* Footer */}
-        <DialogFooter className="flex flex-row items-center justify-end gap-3 pt-1 border-t border-white/10">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onCancel}
-            disabled={actionSubmitting}
-            className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 px-4 h-10 rounded-xl"
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="button"
-            onClick={handleAcceptClick}
-            disabled={!canAccept}
-            className={cn(
-              'text-xs font-black uppercase tracking-wider h-10 px-5 rounded-xl transition-all shadow-lg',
-              canAccept
-                ? 'bg-white text-slate-950 hover:bg-slate-100 active:scale-[0.98]'
-                : 'bg-white/10 text-white/40 cursor-not-allowed border border-white/5'
-            )}
-          >
-            {actionSubmitting ? (
-              <span className="flex items-center gap-2">
-                <span className="size-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                Processing...
-              </span>
-            ) : (
-              submitButtonLabel
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              <button
+                type="button"
+                onClick={handleAcceptClick}
+                disabled={!canAccept}
+                className={cn(
+                  'px-5 py-2.5 text-[13px] sm:text-[14px] font-semibold rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2',
+                  canAccept
+                    ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] active:scale-[0.98] focus:ring-[#2563EB] cursor-pointer'
+                    : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
+                )}
+              >
+                {actionSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="size-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  submitButtonLabel
+                )}
+              </button>
+            </div>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
