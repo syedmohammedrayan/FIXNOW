@@ -208,14 +208,14 @@ export default function ServiceCatalog({
         </div>
       )}
 
-      {/* Main Service Category Grid - Exactly 4 columns on desktop */}
+      {/* Main Service Category Grid - Exactly 3 columns on desktop */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-white/50 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-0.5">
           <span>Categories ({MAIN_CATEGORIES.length})</span>
           <span>Click any category to view sub-services</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-4.5">
           {MAIN_CATEGORIES.map((cat) => {
             const count = cat === 'All' ? ALL_SERVICES.length : (ALL_SERVICES.find(c => c.category === cat)?.items.length || 0);
             const isSelected = activeCategory === cat;
@@ -230,7 +230,7 @@ export default function ServiceCatalog({
                 type="button"
                 onClick={(e) => handleCategoryClick(cat, e)}
                 className={cn(
-                  "group relative text-left bg-white text-neutral-900 rounded-xl p-3.5 sm:p-4 border transition-all duration-200 flex items-center gap-3.5 min-h-[64px] sm:min-h-[68px] shadow-sm hover:shadow-md hover:bg-neutral-50/95 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none cursor-pointer",
+                  "group relative text-left bg-white text-neutral-900 rounded-xl sm:rounded-2xl p-4 sm:p-4.5 lg:p-5 border transition-all duration-200 flex items-center gap-4 sm:gap-4.5 min-h-[72px] sm:min-h-[76px] lg:min-h-[82px] shadow-sm hover:shadow-md hover:bg-neutral-50/95 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none cursor-pointer",
                   isSelected
                     ? "border-neutral-900 ring-2 ring-neutral-900/15 shadow-md bg-neutral-50"
                     : "border-neutral-200/90 hover:border-neutral-300"
@@ -238,24 +238,24 @@ export default function ServiceCatalog({
                 aria-haspopup="dialog"
                 aria-expanded={isSelected}
               >
-                {/* Real-world appliance / service icon */}
+                {/* Real-world appliance / service icon container (44px mobile, 48px desktop) */}
                 <div
                   className={cn(
-                    "p-2 rounded-lg shrink-0 transition-colors pointer-events-none",
+                    "w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors pointer-events-none",
                     isSelected
                       ? "bg-neutral-200 text-neutral-950"
                       : "bg-neutral-100/90 text-neutral-800 group-hover:bg-neutral-200/80"
                   )}
                 >
-                  {getCategoryIcon(cat, "size-5 shrink-0")}
+                  {getCategoryIcon(cat, "size-6 sm:size-[26px] shrink-0")}
                 </div>
 
                 {/* Category Name & Count */}
                 <div className="min-w-0 flex-1 pointer-events-none">
-                  <p className="text-xs sm:text-[13px] font-semibold text-neutral-900 leading-snug tracking-tight line-clamp-2">
+                  <p className="text-[14px] sm:text-[15px] lg:text-base font-semibold text-neutral-900 leading-snug tracking-tight break-words">
                     {cat}
                   </p>
-                  <span className="text-[10px] text-neutral-400 font-medium block mt-0.5 group-hover:text-neutral-500 transition-colors">
+                  <span className="text-[11px] sm:text-xs text-neutral-500 font-medium block mt-1 group-hover:text-neutral-600 transition-colors">
                     {cat === 'All' ? 'Browse all services' : `${count} services`}
                   </span>
                 </div>

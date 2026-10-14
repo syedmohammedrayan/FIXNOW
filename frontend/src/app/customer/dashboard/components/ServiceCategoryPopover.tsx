@@ -55,7 +55,7 @@ export default function ServiceCategoryPopover({
 
     const popoverWidth = Math.min(
       Math.max(anchorRect.width, 320),
-      Math.min(420, viewportWidth - margin * 2)
+      Math.min(480, viewportWidth - margin * 2)
     );
 
     // Available space above and below the anchor in the current viewport
