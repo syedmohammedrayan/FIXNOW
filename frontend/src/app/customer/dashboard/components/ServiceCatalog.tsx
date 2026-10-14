@@ -266,19 +266,14 @@ export default function ServiceCatalog({
       </div>
 
       {/* Anchored Subcategory Popover */}
-      <AnimatePresence>
-        {activeCategory && (
-          <ServiceCategoryPopover
-            key={`popover-${activeCategory}`}
-            category={activeCategory}
-            subcategories={getSubcategories(activeCategory)}
-            anchorRect={anchorRect}
-            isOpen={Boolean(activeCategory)}
-            onClose={handleClosePopover}
-            onSelectService={onSelectService}
-          />
-        )}
-      </AnimatePresence>
+      <ServiceCategoryPopover
+        category={activeCategory || ''}
+        subcategories={getSubcategories(activeCategory)}
+        anchorRect={anchorRect}
+        isOpen={Boolean(activeCategory)}
+        onClose={handleClosePopover}
+        onSelectService={onSelectService}
+      />
     </motion.div>
   );
 }

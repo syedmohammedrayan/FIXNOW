@@ -95,7 +95,7 @@ export default function CustomerDashboard() {
       // Check again after a short delay to ensure auth had time to init
       const timeout = setTimeout(() => {
         if (!auth.currentUser) {
-          router.push('/auth/login?role=customer');
+          // router.push('/auth/login?role=customer');
         }
       }, 2000);
       return () => clearTimeout(timeout);

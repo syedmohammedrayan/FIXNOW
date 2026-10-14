@@ -44,9 +44,18 @@ export default function ServiceCategoryPopover({
     setMounted(true);
   }, []);
 
-  // Compute exact viewport-relative fixed position from anchorRect
+  // Compute exact viewport-relative fixed position from anchorRect or DOM element
   const computePosition = useCallback(() => {
-    if (!anchorRect) return;
+    if (typeof window === 'undefined') return;
+
+    let rect = anchorRect;
+    if (category) {
+      const el = document.querySelector(`[data-category-card="${category}"]`);
+      if (el) {
+        rect = el.getBoundingClientRect();
+      }
+    }
+    if (!rect) return;
 
     const margin = 12;
     const gap = 8;
@@ -54,16 +63,15 @@ export default function ServiceCategoryPopover({
     const viewportHeight = window.innerHeight;
 
     const popoverWidth = Math.min(
-      Math.max(anchorRect.width, 320),
+      Math.max(rect.width, 320),
       Math.min(480, viewportWidth - margin * 2)
     );
 
-    // Available space above and below the anchor in the current viewport
-    const spaceAbove = anchorRect.top - margin;
-    const spaceBelow = viewportHeight - anchorRect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+    const spaceBelow = viewportHeight - rect.bottom - margin;
 
-    // Prefer placing ABOVE whenever sufficient space (>= 250px) is available
-    const placeAbove = spaceAbove >= 250 || (spaceAbove >= 180 && spaceAbove > spaceBelow);
+    // Prefer placing ABOVE when >= 220px of space is available
+    const placeAbove = spaceAbove >= 220 || (spaceAbove >= 160 && spaceAbove > spaceBelow);
 
     let top: number | undefined;
     let bottom: number | undefined;
@@ -72,18 +80,15 @@ export default function ServiceCategoryPopover({
 
     if (placeAbove) {
       placement = 'top';
-      // Anchor directly above the button's top edge
-      bottom = viewportHeight - anchorRect.top + gap;
+      bottom = viewportHeight - rect.top + gap;
       maxHeight = Math.min(400, Math.max(160, spaceAbove - gap));
     } else {
       placement = 'bottom';
-      // Anchor directly below the button's bottom edge
-      top = anchorRect.bottom + gap;
+      top = rect.bottom + gap;
       maxHeight = Math.min(400, Math.max(160, spaceBelow - gap));
     }
 
-    // Align left with the anchor button, clamped strictly inside the viewport
-    let left = anchorRect.left;
+    let left = rect.left;
     const maxLeft = viewportWidth - popoverWidth - margin;
     if (left > maxLeft) left = maxLeft;
     if (left < margin) left = margin;
@@ -96,13 +101,13 @@ export default function ServiceCategoryPopover({
       width: popoverWidth,
       maxHeight
     });
-  }, [anchorRect]);
+  }, [anchorRect, category]);
 
   useLayoutEffect(() => {
-    if (isOpen && anchorRect) {
+    if (isOpen) {
       computePosition();
     }
-  }, [isOpen, anchorRect, computePosition]);
+  }, [isOpen, computePosition]);
 
   // Recalculate on window scroll or resize to keep popover attached to anchor
   useEffect(() => {
@@ -141,7 +146,7 @@ export default function ServiceCategoryPopover({
         return;
       }
 
-      // If click is on any category card button, let the category button's own onClick toggle or switch it!
+      // If click is on any category card button, let the category button's own onClick switch or toggle it
       if (target.closest('[data-category-card]')) {
         return;
       }
@@ -160,92 +165,94 @@ export default function ServiceCategoryPopover({
     };
   }, [isOpen, onClose]);
 
-  if (!mounted || !isOpen || !anchorRect) return null;
+  if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <AnimatePresence>
-      <motion.div
-        ref={popoverRef}
-        key={`popover-${category}`}
-        initial={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 6 : -6 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 4 : -4 }}
-        transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          position: 'fixed',
-          top: position.top !== undefined ? `${position.top}px` : 'auto',
-          bottom: position.bottom !== undefined ? `${position.bottom}px` : 'auto',
-          left: `${position.left}px`,
-          width: `${position.width}px`,
-          maxHeight: `${position.maxHeight}px`,
-          zIndex: 99999
-        }}
-        className="bg-white rounded-2xl border border-neutral-200/90 shadow-2xl shadow-black/30 flex flex-col overflow-hidden text-neutral-900"
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${category} subcategories`}
-      >
-        {/* Header */}
-        <div className="px-4 py-3 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/90 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0 pr-2">
-            <div className="p-1.5 rounded-lg bg-white border border-neutral-200 shadow-2xs shrink-0">
-              {getCategoryIcon(category, "size-4 text-neutral-900")}
+    <AnimatePresence mode="wait">
+      {isOpen && category && (
+        <motion.div
+          ref={popoverRef}
+          key={`popover-${category}`}
+          initial={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 6 : -6 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: position.placement === 'top' ? 4 : -4 }}
+          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            position: 'fixed',
+            top: position.top !== undefined ? `${position.top}px` : 'auto',
+            bottom: position.bottom !== undefined ? `${position.bottom}px` : 'auto',
+            left: `${position.left}px`,
+            width: `${position.width}px`,
+            maxHeight: `${position.maxHeight}px`,
+            zIndex: 99999
+          }}
+          className="bg-white rounded-2xl border border-neutral-200/90 shadow-2xl shadow-black/30 flex flex-col overflow-hidden text-neutral-900 pointer-events-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${category} subcategories`}
+        >
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/90 shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0 pr-2">
+              <div className="p-1.5 rounded-lg bg-white border border-neutral-200 shadow-2xs shrink-0">
+                {getCategoryIcon(category, "size-4 text-neutral-900")}
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-xs sm:text-sm font-bold text-neutral-900 tracking-tight truncate leading-tight">
+                  {category}
+                </h3>
+                <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mt-0.5">
+                  {subcategories.length} {subcategories.length === 1 ? 'service' : 'services'} available
+                </span>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h3 className="text-xs sm:text-sm font-bold text-neutral-900 tracking-tight truncate leading-tight">
-                {category}
-              </h3>
-              <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mt-0.5">
-                {subcategories.length} {subcategories.length === 1 ? 'service' : 'services'} available
-              </span>
-            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              aria-label="Close popover"
+              className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-800 hover:bg-neutral-200/60 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-neutral-400 focus:outline-none"
+            >
+              <X className="size-4" />
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-            aria-label="Close popover"
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-800 hover:bg-neutral-200/60 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-neutral-400 focus:outline-none"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+          {/* Subcategories List */}
+          <div className="p-2 overflow-y-auto flex-1 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
+            {subcategories.length > 0 ? (
+              subcategories.map((sub, idx) => (
+                <button
+                  key={sub + idx}
+                  type="button"
+                  onClick={() => {
+                    onSelectService(sub);
+                    onClose();
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100 active:bg-neutral-200/80 transition-all flex items-center justify-between group focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none"
+                >
+                  <span className="line-clamp-2 pr-2 group-hover:font-semibold transition-all">
+                    {sub}
+                  </span>
+                  <ChevronRight className="size-3.5 text-neutral-300 group-hover:text-neutral-800 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              ))
+            ) : (
+              <div className="p-4 text-center text-xs text-neutral-400 font-medium">
+                No specific subcategories found.
+              </div>
+            )}
+          </div>
 
-        {/* Subcategories List */}
-        <div className="p-2 overflow-y-auto flex-1 space-y-1 scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
-          {subcategories.length > 0 ? (
-            subcategories.map((sub, idx) => (
-              <button
-                key={sub + idx}
-                type="button"
-                onClick={() => {
-                  onSelectService(sub);
-                  onClose();
-                }}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100 active:bg-neutral-200/80 transition-all flex items-center justify-between group focus-visible:ring-2 focus-visible:ring-blue-600 focus:outline-none"
-              >
-                <span className="line-clamp-2 pr-2 group-hover:font-semibold transition-all">
-                  {sub}
-                </span>
-                <ChevronRight className="size-3.5 text-neutral-300 group-hover:text-neutral-800 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </button>
-            ))
-          ) : (
-            <div className="p-4 text-center text-xs text-neutral-400 font-medium">
-              No specific subcategories found.
-            </div>
-          )}
-        </div>
-
-        {/* Footer info note */}
-        <div className="px-4 py-2 border-t border-neutral-100 bg-neutral-50/70 flex items-center justify-between text-[10px] text-neutral-400 font-medium shrink-0">
-          <span>Click service to book inspection</span>
-          <span className="text-neutral-400">Esc to close</span>
-        </div>
-      </motion.div>
+          {/* Footer info note */}
+          <div className="px-4 py-2 border-t border-neutral-100 bg-neutral-50/70 flex items-center justify-between text-[10px] text-neutral-400 font-medium shrink-0">
+            <span>Click service to book inspection</span>
+            <span className="text-neutral-400">Esc to close</span>
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>,
     document.body
   );
